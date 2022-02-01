@@ -1,28 +1,193 @@
+using System;
 using System.IO;
+using System.Linq;
 using System.Reflection;
 using System.Threading.Tasks;
 using Xunit;
-
 
 namespace s2protocol.NET.tests;
 
 public class DecodeTests
 {
-    [Fact]
-    public async Task HeaderTest()
+    public static readonly string? assemblyPath = Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location);
+
+    [Theory]
+    [InlineData("test1.SC2Replay")]
+    [InlineData("test2.SC2Replay")]
+    [InlineData("test3.SC2Replay")]
+    [InlineData("test4.SC2Replay")]
+    public async Task HeaderTestAsync(string replayFile)
     {
-        var path = Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location);
-        Assert.True(path != null, "Could not get ExecutionAssembly path");
-        if (path != null)
+        Assert.True(assemblyPath != null, "Could not get ExecutionAssembly path");
+        if (assemblyPath == null)
         {
-            ReplayDecoder decoder = new(path);
-            var replay = await decoder.DecodeAsync(@"C:\Users\pax77\Documents\StarCraft II\Accounts\107095918\2-S2-1-226401\Replays\Multiplayer\Direct Strike (4468).SC2Replay").ConfigureAwait(false);
-            Assert.True(replay != null, "Sc2Replay was null");
-            if (replay != null)
-            {
-                Assert.True(replay.Header.BaseBuild > 0, "Could not get replay.Header BaseBuild");
-            }
-            decoder.Dispose();
+            return;
         }
+        ReplayDecoder decoder = new(assemblyPath);
+        ReplayDecoderOptions options = new ReplayDecoderOptions()
+        {
+            Details = false,
+            Metadata = false,
+            MessageEvents = false,
+            TrackerEvents = false
+        };
+        var replay = await decoder.DecodeAsync(Path.Combine(assemblyPath, "replays", replayFile)).ConfigureAwait(false);
+        Assert.True(replay != null, "Sc2Replay was null");
+        if (replay == null)
+        {
+            decoder.Dispose();
+            return;
+        }
+        Assert.True(replay.Header.BaseBuild > 0, "Could not get replay.Header BaseBuild");
+        decoder.Dispose();
+    }
+
+    [Theory]
+    [InlineData("test1.SC2Replay")]
+    [InlineData("test2.SC2Replay")]
+    [InlineData("test3.SC2Replay")]
+    [InlineData("test4.SC2Replay")]
+    public async Task DetailsTestAsync(string replayFile)
+    {
+        Assert.True(assemblyPath != null, "Could not get ExecutionAssembly path");
+        if (assemblyPath == null)
+        {
+            return;
+        }
+        ReplayDecoder decoder = new(assemblyPath);
+        ReplayDecoderOptions options = new ReplayDecoderOptions()
+        {
+            Details = true,
+            Metadata = false,
+            MessageEvents = false,
+            TrackerEvents = false
+        };
+        var replay = await decoder.DecodeAsync(Path.Combine(assemblyPath, "replays", replayFile)).ConfigureAwait(false);
+        Assert.True(replay != null, "Sc2Replay was null");
+        if (replay == null)
+        {
+            decoder.Dispose();
+            return;
+        }
+        Assert.True(replay.Details != null, "Could not get replay.Details");
+        if (replay.Details == null)
+        {
+            decoder.Dispose();
+            return;
+        }
+        Assert.True(replay.Details.DateTimeUTC != DateTime.MinValue, "Could not get replay.Details DateTimeUTC");
+
+        decoder.Dispose();
+    }
+
+    [Theory]
+    [InlineData("test1.SC2Replay")]
+    [InlineData("test2.SC2Replay")]
+    [InlineData("test3.SC2Replay")]
+    [InlineData("test4.SC2Replay")]
+    public async Task MetadataTestAsync(string replayFile)
+    {
+        Assert.True(assemblyPath != null, "Could not get ExecutionAssembly path");
+        if (assemblyPath == null)
+        {
+            return;
+        }
+        ReplayDecoder decoder = new(assemblyPath);
+        ReplayDecoderOptions options = new ReplayDecoderOptions()
+        {
+            Details = false,
+            Metadata = true,
+            MessageEvents = false,
+            TrackerEvents = false
+        };
+        var replay = await decoder.DecodeAsync(Path.Combine(assemblyPath, "replays", replayFile)).ConfigureAwait(false);
+        Assert.True(replay != null, "Sc2Replay was null");
+        if (replay == null)
+        {
+            decoder.Dispose();
+            return;
+        }
+        Assert.True(replay.Metadata != null, "Could not get replay.Metadata");
+        if (replay.Metadata == null)
+        {
+            decoder.Dispose();
+            return;
+        }
+        Assert.True(replay.Metadata.BaseBuild.Any(), "Could not get replay.Metadata BaseBuild");
+
+        decoder.Dispose();
+    }
+
+    [Theory]
+    [InlineData("test2.SC2Replay")]
+    public async Task MessageEventsTestAsync(string replayFile)
+    {
+        Assert.True(assemblyPath != null, "Could not get ExecutionAssembly path");
+        if (assemblyPath == null)
+        {
+            return;
+        }
+        ReplayDecoder decoder = new(assemblyPath);
+        ReplayDecoderOptions options = new ReplayDecoderOptions()
+        {
+            Details = false,
+            Metadata = false,
+            MessageEvents = true,
+            TrackerEvents = false
+        };
+        var replay = await decoder.DecodeAsync(Path.Combine(assemblyPath, "replays", replayFile)).ConfigureAwait(false);
+        Assert.True(replay != null, "Sc2Replay was null");
+        if (replay == null)
+        {
+            decoder.Dispose();
+            return;
+        }
+        Assert.True(replay.ChatMessages != null, "Could not get replay.ChatMessages");
+        if (replay.ChatMessages == null)
+        {
+            decoder.Dispose();
+            return;
+        }
+        Assert.True(replay.ChatMessages.Any(), "Could not get replay.ChatMessages");
+
+        decoder.Dispose();
+    }
+
+    [Theory]
+    [InlineData("test1.SC2Replay")]
+    [InlineData("test2.SC2Replay")]
+    [InlineData("test3.SC2Replay")]
+    [InlineData("test4.SC2Replay")]
+    public async Task TrackerTestAsync(string replayFile)
+    {
+        Assert.True(assemblyPath != null, "Could not get ExecutionAssembly path");
+        if (assemblyPath == null)
+        {
+            return;
+        }
+        ReplayDecoder decoder = new(assemblyPath);
+        ReplayDecoderOptions options = new ReplayDecoderOptions()
+        {
+            Details = false,
+            Metadata = false,
+            MessageEvents = false,
+            TrackerEvents = true
+        };
+        var replay = await decoder.DecodeAsync(Path.Combine(assemblyPath, "replays", replayFile)).ConfigureAwait(false);
+        Assert.True(replay != null, "Sc2Replay was null");
+        if (replay == null)
+        {
+            decoder.Dispose();
+            return;
+        }
+        Assert.True(replay.TrackerEvents != null, "Could not get replay.TrackerEvents");
+        if (replay.TrackerEvents == null)
+        {
+            decoder.Dispose();
+            return;
+        }
+        Assert.True(replay.TrackerEvents.SUnitBornEvents.Any(), "Could not get replay.TrackerEvents SUnitBornEvents");
+
+        decoder.Dispose();
     }
 }
