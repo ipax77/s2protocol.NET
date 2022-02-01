@@ -5,34 +5,28 @@ using System.Text;
 using System.Threading.Tasks;
 
 namespace s2protocol.NET.Models;
-/// <summary>Record <c>SUnitBornEvent</c> SUnitBornEvent</summary>
+/// <summary>Record <c>SUnitInitEvent</c> SUnitInitEvent</summary>
 ///
-public record SUnitBornEvent : TrackerEvent
+public record SUnitInitEvent : TrackerEvent
 {
-    /// <summary>Record <c>SUnitBornEvent</c> constructor</summary>
+    /// <summary>Record <c>SUnitInitEvent</c> constructor</summary>
     ///
-    public SUnitBornEvent(TrackerEvent trackerEvent,
+    public SUnitInitEvent(TrackerEvent trackerEvent,
                           int unitTagIndex,
                           int unitTagRecycle,
-                          string? creatorAbilityName,
-                          int? creatorUnitTagRecycle,
                           int controlPlayerId,
                           int x,
                           int y,
                           int upkeepPlayerId,
-                          string unitTypeName,
-                          int? creatorUnitTagIndex) : base(trackerEvent)
+                          string unitTypeName) : base(trackerEvent)
     {
         UnitTagIndex = unitTagIndex;
         UnitTagRecycle = unitTagRecycle;
-        CreatorAbilityName = creatorAbilityName;
-        CreatorUnitTagRecycle = creatorUnitTagRecycle;
         ControlPlayerId = controlPlayerId;
         X = x;
         Y = y;
         UpkeepPlayerId = upkeepPlayerId;
         UnitTypeName = unitTypeName;
-        CreatorUnitTagIndex = creatorUnitTagIndex;
     }
 
     /// <summary>Event UnitTagIndex</summary>
@@ -41,12 +35,6 @@ public record SUnitBornEvent : TrackerEvent
     /// <summary>Event UnitTagRecycle</summary>
     ///
     public int UnitTagRecycle { get; init; }
-    /// <summary>Event CreatorAbilityName</summary>
-    ///
-    public string? CreatorAbilityName { get; init; }
-    /// <summary>Event CreatorUnitTagRecycle</summary>
-    ///
-    public int? CreatorUnitTagRecycle { get; init; }
     /// <summary>Event ControlPlayerId</summary>
     ///
     public int ControlPlayerId { get; init; }
@@ -62,7 +50,4 @@ public record SUnitBornEvent : TrackerEvent
     /// <summary>Event UnitTypeName</summary>
     ///
     public string UnitTypeName { get; init; }
-    /// <summary>Event CreatorUnitTagIndex</summary>
-    ///
-    public int? CreatorUnitTagIndex { get; init; }
 }

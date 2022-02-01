@@ -186,8 +186,6 @@ public sealed class ReplayDecoder : IDisposable
                     return null;
                 throw new DecodeException($"could not get replay details {replayPath}");
             }
-
-            replay.DetailsPyDic = details;
             replay.Details = Parse.Datails(details);
         }
 
@@ -212,11 +210,40 @@ public sealed class ReplayDecoder : IDisposable
                     return null;
                 throw new DecodeException($"could not get replay messages {replayPath}");
             }
-            replay.MessagesPyDic = messages;
-            replay.ChatMessages = Parse.ParseMessages(messages);
+            replay.ChatMessages = Parse.Messages(messages);
+        }
+
+        if (options.TrackerEvents)
+        {
+            var trackerEvents = await GetTrackereventsAsync(archive, protocol, token);
+            if (trackerEvents == null)
+            {
+                if (token.IsCancellationRequested)
+                    return null;
+                throw new DecodeException($"could not get replay TrackerEvents {replayPath}");
+            }
+            replay.TrackerEvents = Parse.Tracker(trackerEvents);
         }
 
         return replay;
+    }
+
+    private static async Task<dynamic?> GetTrackereventsAsync(dynamic archive, dynamic protocol, CancellationToken token)
+    {
+        try
+        {
+            return await Task.Run(() =>
+            {
+                var treacker_enc = archive.read_file("replay.tracker.events");
+                if (treacker_enc != null)
+                {
+                    return protocol.decode_replay_tracker_events(treacker_enc);
+                }
+                return null;
+            }, token).ConfigureAwait(false);
+        }
+        catch (OperationCanceledException) { }
+        return null;
     }
 
     private static async Task<dynamic?> GetMessagesAsync(dynamic archive, dynamic protocol, CancellationToken token)

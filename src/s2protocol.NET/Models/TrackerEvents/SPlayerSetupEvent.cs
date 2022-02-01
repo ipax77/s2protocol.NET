@@ -12,14 +12,10 @@ public record SPlayerSetupEvent : TrackerEvent
     /// <summary>Record <c>SPlayerSetupEvent</c> constructor</summary>
     ///
     public SPlayerSetupEvent(
-        int playerId,
-        int eventId,
-        TrackerEventType eventType,
-        int bits,
-        int gameloop,
+        TrackerEvent trackerEvent,
         int type,
         int userId,
-        int slotId) : base(playerId, eventId, eventType, bits, gameloop)
+        int slotId) : base(trackerEvent)
     {
         Type = type;
         UserId = userId;

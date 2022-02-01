@@ -28,6 +28,26 @@ internal partial class Parse
         else return "";
     }
 
+    internal static string? GetNullableString(PythonDictionary pydic, string property)
+    {
+        if (pydic.TryGetValue(property, out object? value))
+        {
+            if (value != null && value.GetType() == typeof(Bytes))
+            {
+                Bytes? b = value as Bytes;
+                if (b != null)
+                    return Encoding.UTF8.GetString(b.ToArray());
+                else
+                    return null;
+            }
+            else
+            {
+                return value?.ToString();
+            }
+        }
+        else return null;
+    }
+
     internal static int GetInt(PythonDictionary pydic, string property)
     {
         if (pydic.TryGetValue(property, out object? value))
@@ -52,6 +72,33 @@ internal partial class Parse
         else
         {
             return 0;
+        }
+    }
+
+    internal static int? GetNullableInt(PythonDictionary pydic, string property)
+    {
+        if (pydic.TryGetValue(property, out object? value))
+        {
+            if (value != null && value.GetType() == typeof(Int32))
+            {
+                int? i = value as int?;
+                if (i != null)
+                {
+                    return i.Value;
+                }
+                else
+                {
+                    return null;
+                }
+            }
+            else
+            {
+                return null;
+            }
+        }
+        else
+        {
+            return null;
         }
     }
 

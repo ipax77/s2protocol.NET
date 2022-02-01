@@ -7,15 +7,6 @@ namespace s2protocol.NET;
 ///
 public record Sc2Replay 
 {
-    /// <summary>Replay Header (dynamic PythonDictionary)</summary>
-    ///
-    public dynamic HeaderPyDic { get; init; }
-    /// <summary>Replay Details (dynamic PythonDictionary)</summary>
-    ///
-    public dynamic? DetailsPyDic { get; set; }
-    /// <summary>Replay Messages (dynamic PythonDictionary)</summary>
-    ///
-    public dynamic? MessagesPyDic { get; set; }
     /// <summary>Replay Header infos</summary>
     ///
     public Header Header { get; init; }
@@ -29,12 +20,14 @@ public record Sc2Replay
     /// <summary>Replay chat messages</summary>
     ///
     public ICollection<ChatMessageEvent>? ChatMessages { get; internal set; }
+    /// <summary>Replay TrackerEvents</summary>
+    ///
+    public TrackerEvents? TrackerEvents { get; internal set; }
 
     /// <summary>Record <c>Sc2Replay</c> constructor</summary>
     ///
     public Sc2Replay (dynamic header)
     {
-        HeaderPyDic = header;
         Header = Parser.Parse.Header(header);
     }
 }

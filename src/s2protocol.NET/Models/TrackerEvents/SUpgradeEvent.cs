@@ -11,13 +11,9 @@ public record SUpgradeEvent : TrackerEvent
 {
     /// <summary>Record <c>SUpgradeEvent</c> constructor</summary>
     ///
-    public SUpgradeEvent(int playerId,
-                         int eventId,
-                         TrackerEventType eventType,
-                         int bits,
-                         int gameloop,
+    public SUpgradeEvent(TrackerEvent trackerEvent,
                          int count,
-                         string upgradeTypeName) : base(playerId, eventId, eventType, bits, gameloop)
+                         string upgradeTypeName) : base(trackerEvent)
     {
         Count = count; ;
         UpgradeTypeName = upgradeTypeName;

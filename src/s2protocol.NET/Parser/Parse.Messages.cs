@@ -9,7 +9,7 @@ using System.Threading.Tasks;
 namespace s2protocol.NET.Parser;
 internal partial class Parse
 {
-    public static List<ChatMessageEvent> ParseMessages(dynamic generator)
+    public static List<ChatMessageEvent> Messages(dynamic generator)
     {
         List<ChatMessageEvent> messages = new List<ChatMessageEvent>();
         foreach (PythonDictionary pydic in generator)
