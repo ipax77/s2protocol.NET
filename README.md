@@ -1,6 +1,6 @@
 # Introduction
 
-dotnet 6 wrapper for [Blizzards s2protocol](https://github.com/Blizzard/s2protocol)
+dotnet 6 wrapper for [Blizzards s2protocol](https://github.com/Blizzard/s2protocol) for decoding/parsing SC2Replays
 using IronPython (2.7)
 
 # Getting started
