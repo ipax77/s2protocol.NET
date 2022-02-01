@@ -13,7 +13,7 @@ public record SUnitPositionsEvent : TrackerEvent
     {
         FirstUnitIndex = firstUnitIndex;
         List<UnitPosition> units = new List<UnitPosition>();
-        if (items.Length >= 3 && items.Length % 3 == 0)
+        if (items != null && items.Length >= 3 && items.Length % 3 == 0)
         {
             for (int i = 0; i < items.Length; i += 3)
             {
@@ -33,7 +33,7 @@ public record SUnitPositionsEvent : TrackerEvent
     public int FirstUnitIndex { get; init; }
     /// <summary>Event Items</summary>
     ///
-    public UnitPosition[] UnitPositions { get; init; }
+    public ICollection<UnitPosition> UnitPositions { get; init; }
 }
 
 /// <summary>Record <c>UnitPosition</c> SUnitPositionsEvent UnitPosition</summary>

@@ -17,8 +17,8 @@ namespace s2protocol.NET;
 public sealed class ReplayDecoder : IDisposable
 {
     private readonly ScriptScope scriptScope;
-    dynamic? versions;
-    List<int> intVersions = new List<int>();
+    private dynamic? versions;
+    private readonly List<int> intVersions = new List<int>();
     private readonly SemaphoreSlim semaphoreSlim = new SemaphoreSlim(1, 1);
     internal static ILogger<ReplayDecoder> logger = NullLoggerFactory.Instance.CreateLogger<ReplayDecoder>();
 
@@ -41,6 +41,7 @@ public sealed class ReplayDecoder : IDisposable
             }).SetMinimumLevel(logLevel);
         });
         logger = loggerFactory.CreateLogger<ReplayDecoder>();
+        loggerFactory.Dispose();
     }
 
     private ScriptScope LoadEngine(string appPath)

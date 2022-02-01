@@ -30,32 +30,32 @@ public sealed record TrackerEvents
 
     /// <summary>Event ControlPlayerId</summary>
     ///
-    public SPlayerSetupEvent[] SPlayerSetupEvents { get; init; }
+    public ICollection<SPlayerSetupEvent> SPlayerSetupEvents { get; init; }
     /// <summary>Event ControlPlayerId</summary>
     ///
-    public SPlayerStatsEvent[] SPlayerStatsEvents { get; init; }
+    public ICollection<SPlayerStatsEvent> SPlayerStatsEvents { get; init; }
     /// <summary>Event ControlPlayerId</summary>
     ///
-    public SUnitBornEvent[] SUnitBornEvents { get; init; }
+    public ICollection<SUnitBornEvent> SUnitBornEvents { get; init; }
     /// <summary>Event ControlPlayerId</summary>
     ///
-    public SUnitDiedEvent[] SUnitDiedEvents { get; init; }
+    public ICollection<SUnitDiedEvent> SUnitDiedEvents { get; init; }
     /// <summary>Event ControlPlayerId</summary>
     ///
-    public SUnitOwnerChangeEvent[] SUnitOwnerChangeEvents { get; init; }
+    public ICollection<SUnitOwnerChangeEvent> SUnitOwnerChangeEvents { get; init; }
     /// <summary>Event ControlPlayerId</summary>
     ///
-    public SUnitPositionsEvent[] SUnitPositionsEvents { get; init; }
+    public ICollection<SUnitPositionsEvent> SUnitPositionsEvents { get; init; }
     /// <summary>Event ControlPlayerId</summary>
     ///
-    public SUnitTypeChangeEvent[] SUnitTypeChangeEvents { get; init; }
+    public ICollection<SUnitTypeChangeEvent> SUnitTypeChangeEvents { get; init; }
     /// <summary>Event ControlPlayerId</summary>
     ///
-    public SUpgradeEvent[] SUpgradeEvents { get; init; }
+    public ICollection<SUpgradeEvent> SUpgradeEvents { get; init; }
     /// <summary>Event ControlPlayerId</summary>
     ///
-    public SUnitInitEvent[] SUnitInitEvents { get; init; }
+    public ICollection<SUnitInitEvent> SUnitInitEvents { get; init; }
     /// <summary>Event ControlPlayerId</summary>
     ///
-    public SUnitDoneEvent[] SUnitDoneEvents { get; init; }
+    public ICollection<SUnitDoneEvent> SUnitDoneEvents { get; init; }
 }

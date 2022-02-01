@@ -29,7 +29,7 @@ public sealed record DetailsPlayer
         TeamId = teamId;
         Toon = toon;
         WorkingSetSlotId = workingSetSlotId;
-        if (name.Contains("<sp/>", StringComparison.Ordinal))
+        if (name != null && name.Contains("<sp/>", StringComparison.Ordinal))
         {
             var ents = name.Split("<sp/>");
             Name = ents[1];
@@ -37,7 +37,7 @@ public sealed record DetailsPlayer
         }
         else
         {
-            Name = name;
+            Name = name ?? "";
         }
     }
 
