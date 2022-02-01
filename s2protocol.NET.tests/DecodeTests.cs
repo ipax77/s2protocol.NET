@@ -31,7 +31,7 @@ public class DecodeTests
             MessageEvents = false,
             TrackerEvents = false
         };
-        var replay = await decoder.DecodeAsync(Path.Combine(assemblyPath, "replays", replayFile)).ConfigureAwait(false);
+        var replay = await decoder.DecodeAsync(Path.Combine(assemblyPath, "replays", replayFile), options).ConfigureAwait(false);
         Assert.True(replay != null, "Sc2Replay was null");
         if (replay == null)
         {
@@ -62,7 +62,7 @@ public class DecodeTests
             MessageEvents = false,
             TrackerEvents = false
         };
-        var replay = await decoder.DecodeAsync(Path.Combine(assemblyPath, "replays", replayFile)).ConfigureAwait(false);
+        var replay = await decoder.DecodeAsync(Path.Combine(assemblyPath, "replays", replayFile), options).ConfigureAwait(false);
         Assert.True(replay != null, "Sc2Replay was null");
         if (replay == null)
         {
@@ -100,7 +100,7 @@ public class DecodeTests
             MessageEvents = false,
             TrackerEvents = false
         };
-        var replay = await decoder.DecodeAsync(Path.Combine(assemblyPath, "replays", replayFile)).ConfigureAwait(false);
+        var replay = await decoder.DecodeAsync(Path.Combine(assemblyPath, "replays", replayFile), options).ConfigureAwait(false);
         Assert.True(replay != null, "Sc2Replay was null");
         if (replay == null)
         {
@@ -135,7 +135,7 @@ public class DecodeTests
             MessageEvents = true,
             TrackerEvents = false
         };
-        var replay = await decoder.DecodeAsync(Path.Combine(assemblyPath, "replays", replayFile)).ConfigureAwait(false);
+        var replay = await decoder.DecodeAsync(Path.Combine(assemblyPath, "replays", replayFile), options).ConfigureAwait(false);
         Assert.True(replay != null, "Sc2Replay was null");
         if (replay == null)
         {
@@ -173,7 +173,7 @@ public class DecodeTests
             MessageEvents = false,
             TrackerEvents = true
         };
-        var replay = await decoder.DecodeAsync(Path.Combine(assemblyPath, "replays", replayFile)).ConfigureAwait(false);
+        var replay = await decoder.DecodeAsync(Path.Combine(assemblyPath, "replays", replayFile), options).ConfigureAwait(false);
         Assert.True(replay != null, "Sc2Replay was null");
         if (replay == null)
         {
