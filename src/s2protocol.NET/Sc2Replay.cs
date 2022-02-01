@@ -5,7 +5,7 @@ namespace s2protocol.NET;
 
 /// <summary>Record <c>Sc2Replay</c> Starcaft2 replay model</summary>
 ///
-public record Sc2Replay 
+public record Sc2Replay
 {
     /// <summary>Replay Header infos</summary>
     ///
@@ -26,7 +26,7 @@ public record Sc2Replay
 
     /// <summary>Record <c>Sc2Replay</c> constructor</summary>
     ///
-    public Sc2Replay (dynamic header)
+    public Sc2Replay(dynamic header)
     {
         Header = Parser.Parse.Header(header);
     }

@@ -1,16 +1,14 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using IronPython.Runtime;
+using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Logging.Abstractions;
+using Microsoft.Scripting.Hosting;
+using s2protocol.NET.Models;
+using s2protocol.NET.Parser;
 using System.Globalization;
-using System.Linq;
 using System.Runtime.CompilerServices;
 using System.Text;
-using System.Threading.Channels;
-using System.Threading.Tasks;
-using IronPython.Runtime;
-using Microsoft.Scripting.Hosting;
-using s2protocol.NET.Parser;
 using System.Text.Json;
-using s2protocol.NET.Models;
+using System.Threading.Channels;
 
 namespace s2protocol.NET;
 
@@ -22,14 +20,27 @@ public sealed class ReplayDecoder : IDisposable
     dynamic? versions;
     List<int> intVersions = new List<int>();
     private readonly SemaphoreSlim semaphoreSlim = new SemaphoreSlim(1, 1);
+    internal static ILogger<ReplayDecoder> logger = NullLoggerFactory.Instance.CreateLogger<ReplayDecoder>();
 
     /// <summary>Creates the decoder</summary>
-    /// <param name="appPath">The path to the executing assembly
+    /// <param name="appPath">The path to the executing assembly</param>
     /// <example>Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location</example>
-    /// </param>
-    public ReplayDecoder(string appPath)
+    /// <param name="logLevel"> Optional loglevel. Default = LogLevel.Warning</param>
+    /// 
+    public ReplayDecoder(string appPath, LogLevel logLevel = LogLevel.Warning)
     {
         scriptScope = LoadEngine(appPath);
+        var loggerFactory = LoggerFactory.Create(builder =>
+        {
+            builder.ClearProviders();
+            builder.AddSimpleConsole(options =>
+            {
+                options.IncludeScopes = true;
+                options.SingleLine = true;
+                options.TimestampFormat = "yyyy-MM-dd HH:mm:ss ";
+            }).SetMinimumLevel(logLevel);
+        });
+        logger = loggerFactory.CreateLogger<ReplayDecoder>();
     }
 
     private ScriptScope LoadEngine(string appPath)
@@ -37,6 +48,7 @@ public sealed class ReplayDecoder : IDisposable
 
         if (!Directory.Exists(appPath))
         {
+            logger.EngineError($"Could not find python libraries with path {appPath}");
             throw new ArgumentNullException(nameof(appPath), "Could not find python libraries.");
         }
 
@@ -57,11 +69,12 @@ public sealed class ReplayDecoder : IDisposable
             {
                 intVersions.Add(int.Parse(v.Substring(8, 5), CultureInfo.InvariantCulture));
             }
-
+            logger.EngineStarted("Python engine started");
             return scope;
         }
         catch (Exception ex)
         {
+            logger.EngineError($"Python engine start failed: {ex.Message}");
             throw new EngineException(ex.Message);
         }
     }
@@ -154,7 +167,7 @@ public sealed class ReplayDecoder : IDisposable
             {
                 baseBuild = intVersions.Last();
             }
-            Console.WriteLine($"fixed protocol from {replBuild} to {baseBuild}");
+            logger.DecodeDebug($"fixed protocol from {replBuild} to {baseBuild}: {replayPath}");
         }
 
         await semaphoreSlim.WaitAsync(token).ConfigureAwait(false);

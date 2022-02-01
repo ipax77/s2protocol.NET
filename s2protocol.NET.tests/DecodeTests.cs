@@ -20,7 +20,7 @@ public class DecodeTests
             Assert.True(replay != null, "Sc2Replay was null");
             if (replay != null)
             {
-                Assert.True(replay.HeaderPyDic != null, "Could not get replay.Header");
+                Assert.True(replay.Header.BaseBuild > 0, "Could not get replay.Header BaseBuild");
             }
             decoder.Dispose();
         }

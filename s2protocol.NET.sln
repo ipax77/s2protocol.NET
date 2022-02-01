@@ -9,8 +9,6 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "s2protocol.NET", "src\s2pro
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "s2protocol.NET.tests", "s2protocol.NET.tests\s2protocol.NET.tests.csproj", "{D8B0E890-6AEC-4C00-97EE-C40F7A1B657A}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "s2protocolTest", "..\s2protocolTest\s2protocolTest.csproj", "{EF7E07AF-95E8-43F9-A56B-2AFF8DC5E1B4}"
-EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -25,10 +23,6 @@ Global
 		{D8B0E890-6AEC-4C00-97EE-C40F7A1B657A}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{D8B0E890-6AEC-4C00-97EE-C40F7A1B657A}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{D8B0E890-6AEC-4C00-97EE-C40F7A1B657A}.Release|Any CPU.Build.0 = Release|Any CPU
-		{EF7E07AF-95E8-43F9-A56B-2AFF8DC5E1B4}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{EF7E07AF-95E8-43F9-A56B-2AFF8DC5E1B4}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{EF7E07AF-95E8-43F9-A56B-2AFF8DC5E1B4}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{EF7E07AF-95E8-43F9-A56B-2AFF8DC5E1B4}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

@@ -1,10 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-namespace s2protocol.NET.Models;
+﻿namespace s2protocol.NET.Models;
 /// <summary>Record <c>Event</c> Event baseclass</summary>
 ///
 public record TrackerEvent

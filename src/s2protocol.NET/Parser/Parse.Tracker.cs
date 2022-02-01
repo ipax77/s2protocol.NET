@@ -1,10 +1,5 @@
 ﻿using IronPython.Runtime;
 using s2protocol.NET.Models;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace s2protocol.NET.Parser;
 internal partial class Parse
@@ -64,6 +59,10 @@ internal partial class Parse
                 else if (trackerEvent.EventType == TrackerEventType.SUnitInitEvent)
                 {
                     SUnitInitEvents.Add(GetSUnitInitEvent(eventDic, trackerEvent));
+                }
+                else
+                {
+                    ReplayDecoder.logger.DecodeWarning($"Tracker event type unknown: {GetString(eventDic, "_event")}");
                 }
             }
         }

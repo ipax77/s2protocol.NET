@@ -1,9 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Text.Json.Serialization;
-using System.Threading.Tasks;
+﻿using System.Text.Json.Serialization;
 
 namespace s2protocol.NET.Models;
 /// <summary>Record <c>MetadataPlayer</c> Parsed replay player infos</summary>

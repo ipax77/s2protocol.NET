@@ -1,10 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-namespace s2protocol.NET.Models;
+﻿namespace s2protocol.NET.Models;
 /// <summary>Record <c>Details</c> Parsed replay detail infos</summary>
 ///
 public sealed record Details
@@ -43,6 +37,7 @@ public sealed record Details
         TimeUTC = timeUTC;
         Title = title;
         Players = players;
+        DateTimeUTC = DateTime.FromFileTime(timeUTC);
     }
 
     /// <summary>Replay CampaignIndex</summary>
@@ -84,6 +79,9 @@ public sealed record Details
     /// <summary>Replay TimeUTC</summary>
     ///
     public long TimeUTC { get; init; }
+    /// <summary>Replay TimeUTC</summary>
+    ///
+    public DateTime DateTimeUTC { get; init; }
     /// <summary>Replay Title</summary>
     ///
     public string Title { get; init; }

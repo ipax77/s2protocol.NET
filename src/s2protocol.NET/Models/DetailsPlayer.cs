@@ -1,10 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-namespace s2protocol.NET.Models;
+﻿namespace s2protocol.NET.Models;
 
 /// <summary>Record <c>DetailsPlayer</c> Parsed replay player infos</summary>
 ///
@@ -29,13 +23,22 @@ public sealed record DetailsPlayer
         Control = control;
         Handicap = handicap;
         Hero = hero;
-        Name = name;
         Observe = observe;
         Race = race;
         Result = result;
         TeamId = teamId;
         Toon = toon;
         WorkingSetSlotId = workingSetSlotId;
+        if (name.Contains("<sp/>", StringComparison.Ordinal))
+        {
+            var ents = name.Split("<sp/>");
+            Name = ents[1];
+            ClanName = ents[0].Substring(4, ents[0].Length - 8);
+        }
+        else
+        {
+            Name = name;
+        }
     }
 
     /// <summary>Record <c>PlayerColor</c> Parsed replay player color infos</summary>
@@ -50,9 +53,12 @@ public sealed record DetailsPlayer
     /// <summary>Player Hero</summary>
     ///
     public string Hero { get; init; }
-    /// <summary>Player Name</summary>
+    /// <summary>Player Name (without clanTag)</summary>
     ///
     public string Name { get; init; }
+    /// <summary>Player ClanName</summary>
+    ///
+    public string? ClanName { get; init; }
     /// <summary>Player Observe</summary>
     ///
     public int Observe { get; init; }
@@ -71,7 +77,6 @@ public sealed record DetailsPlayer
     /// <summary>Player WorkingSetSlotId</summary>
     ///
     public int WorkingSetSlotId { get; init; }
-
 }
 
 /// <summary>Record <c>Toon</c> Parsed replay player Toon infos</summary>

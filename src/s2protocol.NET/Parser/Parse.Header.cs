@@ -1,10 +1,4 @@
 ﻿using IronPython.Runtime;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using System.Globalization;
 using s2protocol.NET.Models;
 
 namespace s2protocol.NET.Parser;
@@ -52,13 +46,13 @@ internal partial class Parse
             return "";
         else
             if (pydic.ContainsKey("m_ngdpRootKey"))
+        {
+            PythonDictionary? rootDic = pydic["m_ngdpRootKey"] as PythonDictionary;
+            if (rootDic != null)
             {
-                PythonDictionary? rootDic = pydic["m_ngdpRootKey"] as PythonDictionary;
-                if (rootDic != null)
-                {
-                    return GetAsciiString(rootDic, "m_data");
-                }
+                return GetAsciiString(rootDic, "m_data");
             }
+        }
         return "";
     }
 }
