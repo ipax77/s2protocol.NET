@@ -8,6 +8,7 @@ using IronPython (2.7)
 dotnet 6
 ## Installation
 ```csharp
+dotnet add package IronPython.StdLib --version 2.7.11
 dotnet add package s2protocol.NET
 ```
 ## Usage
