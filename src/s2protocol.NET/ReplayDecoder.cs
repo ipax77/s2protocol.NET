@@ -58,10 +58,10 @@ public sealed class ReplayDecoder : IDisposable
             ScriptEngine engine = IronPython.Hosting.Python.CreateEngine();
             var paths = engine.GetSearchPaths();
             paths.Add(Path.Combine(appPath, "Lib"));
-            paths.Add(Path.Combine(appPath, "pylib"));
+            paths.Add(Path.Combine(appPath, "libs2"));
             engine.SetSearchPaths(paths);
             var scope = engine.CreateScope();
-            engine.ExecuteFile(appPath + "/pylib/mpyq.py", scope);
+            engine.ExecuteFile(appPath + "/libs2/mpyq.py", scope);
             engine.Execute("import s2protocol", scope);
             engine.Execute("from s2protocol import versions", scope);
             versions = scope.GetVariable("versions");
