@@ -46,6 +46,7 @@
   </ItemGroup>
 <ItemGroup>
   <None Include="libs2\**">
+          <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
           <Pack>true</Pack>
           <PackageCopyToOutput>true</PackageCopyToOutput>
           <PackageFlatten>false</PackageFlatten>
