@@ -63,13 +63,13 @@ await foreach (var sc2rep in decoder.DecodeParallel(replays, threads, options, c
 * No InitData
 
 # ChangeLog
-<details open="open"><summary>v0.5.0</summary>
+<details open="open"><summary>v0.6.0</summary>
 
 >- Init
 
 </details>
 
-<details><summary>v0.5.0</summary>
+<details><summary>v0.6.0</summary>
 
 >- Init
 </details>
