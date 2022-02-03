@@ -33,7 +33,7 @@ public sealed record DetailsPlayer
         {
             var ents = name.Split("<sp/>");
             Name = ents[1];
-            ClanName = ents[0].Substring(4, ents[0].Length - 8);
+            ClanName = ents[0].Length > 8 ? ents[0][4..^4] : null;
         }
         else
         {
