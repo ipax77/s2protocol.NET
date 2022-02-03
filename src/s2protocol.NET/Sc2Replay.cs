@@ -10,6 +10,9 @@ public record Sc2Replay
     /// <summary>Replay Header infos</summary>
     ///
     public Header Header { get; init; }
+    /// <summary>Replay initdata</summary>
+    ///
+    public Initdata? Initdata { get; internal set; }
 
     /// <summary>Replay details infos</summary>
     ///
