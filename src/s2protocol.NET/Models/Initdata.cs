@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Numerics;
 using System.Text;
 using System.Threading.Tasks;
 
@@ -388,7 +389,7 @@ public sealed record GameOptions
                        int userDifficulty,
                        bool advancedSharedControl,
                        bool cooperative,
-                       int clientDebugFlags,
+                       long clientDebugFlags,
                        int observers,
                        bool teamsTogether,
                        bool randomRaces,
@@ -447,7 +448,7 @@ public sealed record GameOptions
     public bool Cooperative { get; init; }
     /// <summary>InitData GameOptions ClientDebugFlags</summary>
     ///
-    public int ClientDebugFlags { get; init; }
+    public long ClientDebugFlags { get; init; }
     /// <summary>InitData GameOptions Observers</summary>
     ///
     public int Observers { get; init; }
@@ -468,12 +469,12 @@ public sealed record SlotDescription
 {
     /// <summary>Record <c>SlotDescription</c> constructor</summary>
     ///
-    public SlotDescription(ICollection<int> allowedRaces,
-                           ICollection<int> allowedColors,
-                           ICollection<decimal> allowedAIBuilds,
-                           ICollection<decimal> allowedDifficulty,
-                           ICollection<int> allowedObserveTypes,
-                           ICollection<decimal> allowedControls)
+    public SlotDescription(KeyValuePair<int, BigInteger> allowedRaces,
+                           KeyValuePair<int, BigInteger> allowedColors,
+                           KeyValuePair<int, BigInteger> allowedAIBuilds,
+                           KeyValuePair<int, BigInteger> allowedDifficulty,
+                           KeyValuePair<int, BigInteger> allowedObserveTypes,
+                           KeyValuePair<int, BigInteger> allowedControls)
     {
         AllowedRaces = allowedRaces;
         AllowedColors = allowedColors;
@@ -485,22 +486,22 @@ public sealed record SlotDescription
 
     /// <summary>InitData SlotDescription AllowedRaces</summary>
     ///
-    public ICollection<int> AllowedRaces { get; init; }
+    public KeyValuePair<int, BigInteger> AllowedRaces { get; init; }
     /// <summary>InitData SlotDescription AllowedColors</summary>
     ///
-    public ICollection<int> AllowedColors { get; init; }
+    public KeyValuePair<int, BigInteger> AllowedColors { get; init; }
     /// <summary>InitData SlotDescription AllowedAIBuilds</summary>
     ///
-    public ICollection<decimal> AllowedAIBuilds { get; init; }
+    public KeyValuePair<int, BigInteger> AllowedAIBuilds { get; init; }
     /// <summary>InitData SlotDescription AllowedDifficulty</summary>
     ///
-    public ICollection<decimal> AllowedDifficulty { get; init; }
+    public KeyValuePair<int, BigInteger> AllowedDifficulty { get; init; }
     /// <summary>InitData SlotDescription AllowedObserveTypes</summary>
     ///
-    public ICollection<int> AllowedObserveTypes { get; init; }
+    public KeyValuePair<int, BigInteger> AllowedObserveTypes { get; init; }
     /// <summary>InitData SlotDescription AllowedControls</summary>
     ///
-    public ICollection<decimal> AllowedControls { get; init; }
+    public KeyValuePair<int, BigInteger> AllowedControls { get; init; }
 }
 
 /// <summary>Record <c>GameDescription</c> Parsed UserInitialData GameDescription</summary>
@@ -525,8 +526,8 @@ public sealed record GameDescription
                            int maxObservers,
                            bool isRealtimeMode,
                            int maxUsers,
-                           int modFileSyncChecksum,
-                           int mapFileSyncChecksum,
+                           long modFileSyncChecksum,
+                           long mapFileSyncChecksum,
                            int maxPlayers,
                            ICollection<string> cacheHandles,
                            int gameSpeed,
@@ -618,10 +619,10 @@ public sealed record GameDescription
     public int MaxUsers { get; init; }
     /// <summary>InitData GameDescription ModFileSyncChecksum</summary>
     ///
-    public int ModFileSyncChecksum { get; init; }
+    public long ModFileSyncChecksum { get; init; }
     /// <summary>InitData GameDescription MapFileSyncChecksum</summary>
     ///
-    public int MapFileSyncChecksum { get; init; }
+    public long MapFileSyncChecksum { get; init; }
     /// <summary>InitData GameDescription MaxPlayers</summary>
     ///
     public int MaxPlayers { get; init; }

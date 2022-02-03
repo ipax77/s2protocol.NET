@@ -31,5 +31,6 @@ else
     if (replay != null && replay.Initdata != null)
     {
         Console.WriteLine("indahouse");
+        Console.WriteLine(replay.Initdata);
     }
 }

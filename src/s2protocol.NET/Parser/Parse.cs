@@ -1,4 +1,5 @@
 ﻿using IronPython.Runtime;
+using System.Numerics;
 using System.Text;
 
 namespace s2protocol.NET.Parser;
@@ -102,9 +103,9 @@ internal partial class Parse
     {
         if (pydic.TryGetValue(property, out object? value))
         {
-            if (value != null && value.GetType() == typeof(System.Numerics.BigInteger))
+            if (value != null && value.GetType() == typeof(BigInteger))
             {
-                System.Numerics.BigInteger? i = value as System.Numerics.BigInteger?;
+                BigInteger? i = value as BigInteger?;
                 if (i != null)
                 {
                     return (long)i;
@@ -184,5 +185,103 @@ internal partial class Parse
             }
         }
         else return 0;
+    }
+
+    internal static List<int> GetIntList(PythonDictionary pydic, string property)
+    {
+        List<int> intList = new List<int>();
+        if (pydic.TryGetValue(property, out object? value))
+        {
+            if (value != null && value.GetType() == typeof(List))
+            {
+                List list = (List)value;
+                foreach (var item in list)
+                {
+                    int? i = item as int?;
+                    if (i != null)
+                    {
+                        intList.Add(i.Value);
+                    }
+                }
+            }
+        }
+        return intList;
+    }
+
+    internal static List<long> GetLongList(PythonDictionary pydic, string property)
+    {
+        List<long> longList = new List<long>();
+        if (pydic.TryGetValue(property, out object? value))
+        {
+            if (value != null && value.GetType() == typeof(List))
+            {
+                List list = (List)value;
+                foreach (var item in list)
+                {
+                    long? i = item as long?;
+                    if (i != null)
+                    {
+                        longList.Add(i.Value);
+                    }
+                }
+            }
+        }
+        return longList;
+    }
+
+    internal static KeyValuePair<int, BigInteger> GetIntBigTuple(PythonDictionary pydic, string property)
+    {
+        int intEnt = 0;
+        BigInteger bigEnt = 0;
+        if (pydic.TryGetValue(property, out object? value))
+        {
+            if (value != null && value.GetType() == typeof(PythonTuple))
+            {
+                PythonTuple? tuple = value as PythonTuple;
+                if (tuple != null)
+                {
+                    int? tKey = tuple[0] as int?;
+                    if (tKey != null)
+                    {
+                        intEnt = tKey.Value;
+                    }
+
+                    if (tuple[1].GetType() == typeof(int))
+                    {
+                        bigEnt = (tuple[1] as int?) ?? 0;
+                    }
+                    if (tuple[1].GetType() == typeof(BigInteger))
+                    {
+                        var bitInt = tuple[1] as BigInteger?;
+                        if (bitInt != null)
+                        {
+                            bigEnt = bitInt.Value;
+                        }
+                    }
+                }
+            }
+        }
+        return new KeyValuePair<int, BigInteger>(intEnt, bigEnt);
+    }
+
+    internal static List<string> GetStringList(PythonDictionary pydic, string property)
+    {
+        List<string> stringList = new List<string>();
+        if (pydic.TryGetValue(property, out object? value))
+        {
+            if (value != null && value.GetType() == typeof(List))
+            {
+                List list = (List)value;
+                foreach (var item in list)
+                {
+                    string? i = item as string;
+                    if (i != null)
+                    {
+                        stringList.Add(i);
+                    }
+                }
+            }
+        }
+        return stringList;
     }
 }
