@@ -30,7 +30,8 @@ else
         Details = true,
         Metadata = false,
         MessageEvents = false,
-        TrackerEvents = false
+        TrackerEvents = false,
+        GameEvents = true
     };
 
     Sc2Replay? replay = await decoder.DecodeAsync(replayFilePath, options);

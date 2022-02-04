@@ -30,7 +30,8 @@ public class DecodeTests
             Details = false,
             Metadata = false,
             MessageEvents = false,
-            TrackerEvents = false
+            TrackerEvents = false,
+            GameEvents = false,
         };
         var replay = await decoder.DecodeAsync(Path.Combine(assemblyPath, "replays", replayFile), options).ConfigureAwait(false);
         Assert.True(replay != null, "Sc2Replay was null");
@@ -62,7 +63,8 @@ public class DecodeTests
             Details = true,
             Metadata = false,
             MessageEvents = false,
-            TrackerEvents = false
+            TrackerEvents = false,
+            GameEvents = false,
         };
         var replay = await decoder.DecodeAsync(Path.Combine(assemblyPath, "replays", replayFile), options).ConfigureAwait(false);
         Assert.True(replay != null, "Sc2Replay was null");
@@ -101,7 +103,8 @@ public class DecodeTests
             Details = false,
             Metadata = true,
             MessageEvents = false,
-            TrackerEvents = false
+            TrackerEvents = false,
+            GameEvents = false,
         };
         var replay = await decoder.DecodeAsync(Path.Combine(assemblyPath, "replays", replayFile), options).ConfigureAwait(false);
         Assert.True(replay != null, "Sc2Replay was null");
@@ -137,7 +140,8 @@ public class DecodeTests
             Details = false,
             Metadata = false,
             MessageEvents = true,
-            TrackerEvents = false
+            TrackerEvents = false,
+            GameEvents = false,
         };
         var replay = await decoder.DecodeAsync(Path.Combine(assemblyPath, "replays", replayFile), options).ConfigureAwait(false);
         Assert.True(replay != null, "Sc2Replay was null");
@@ -176,7 +180,8 @@ public class DecodeTests
             Details = false,
             Metadata = false,
             MessageEvents = false,
-            TrackerEvents = true
+            TrackerEvents = true,
+            GameEvents = false,
         };
         var replay = await decoder.DecodeAsync(Path.Combine(assemblyPath, "replays", replayFile), options).ConfigureAwait(false);
         Assert.True(replay != null, "Sc2Replay was null");
@@ -215,7 +220,8 @@ public class DecodeTests
             Details = false,
             Metadata = false,
             MessageEvents = false,
-            TrackerEvents = false
+            TrackerEvents = false,
+            GameEvents = false,
         };
         var replay = await decoder.DecodeAsync(Path.Combine(assemblyPath, "replays", replayFile), options).ConfigureAwait(false);
         Assert.True(replay != null, "Sc2Replay was null");
@@ -230,8 +236,44 @@ public class DecodeTests
             decoder.Dispose();
             return;
         }
-        //Assert.True(replay.Initdata.SUnitBornEvents.Any(), "Could not get replay.TrackerEvents SUnitBornEvents");
+        decoder.Dispose();
+    }
 
+    [Theory]
+    [InlineData("test1.SC2Replay")]
+    [InlineData("test2.SC2Replay")]
+    [InlineData("test3.SC2Replay")]
+    [InlineData("test4.SC2Replay")]
+    public async Task GameventsTestAsync(string replayFile)
+    {
+        Assert.True(assemblyPath != null, "Could not get ExecutionAssembly path");
+        if (assemblyPath == null)
+        {
+            return;
+        }
+        ReplayDecoder decoder = new(assemblyPath);
+        ReplayDecoderOptions options = new ReplayDecoderOptions()
+        {
+            Initdata = false,
+            Details = false,
+            Metadata = false,
+            MessageEvents = false,
+            TrackerEvents = false,
+            GameEvents = true,
+        };
+        var replay = await decoder.DecodeAsync(Path.Combine(assemblyPath, "replays", replayFile), options).ConfigureAwait(false);
+        Assert.True(replay != null, "Sc2Replay was null");
+        if (replay == null)
+        {
+            decoder.Dispose();
+            return;
+        }
+        Assert.True(replay.GameEvents != null, "Could not get replay.GameEvents");
+        if (replay.GameEvents == null)
+        {
+            decoder.Dispose();
+            return;
+        }
         decoder.Dispose();
     }
 }

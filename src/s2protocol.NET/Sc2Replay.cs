@@ -49,4 +49,9 @@ public record Sc2Replay
     ///
     [JsonInclude]
     public TrackerEvents? TrackerEvents { get; internal set; }
+    /// <summary>Replay GameEvents</summary>
+    ///
+    [JsonInclude]
+    public GameEvents? GameEvents { get; internal set; }
+
 }

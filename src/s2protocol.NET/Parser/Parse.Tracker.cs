@@ -71,8 +71,6 @@ internal partial class Parse
             }
         }
 
-        //SUnitInitEvent = 9,
-
         return new TrackerEvents(
             SPlayerSetupEvents.ToArray(),
             SPlayerStatsEvents.ToArray(),
