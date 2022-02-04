@@ -33,7 +33,7 @@ public sealed class ReplayDecoder : IDisposable
         scriptScope = LoadEngine(appPath);
     }
 
-    private ILogger<ReplayDecoder> CreateLogger(LogLevel logLevel)
+    private static ILogger<ReplayDecoder> CreateLogger(LogLevel logLevel)
     {
         Console.OutputEncoding = Encoding.UTF8;
         var loggerFactory = LoggerFactory.Create(builder =>

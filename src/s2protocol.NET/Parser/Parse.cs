@@ -93,7 +93,7 @@ internal partial class Parse
             {
                 if (value != null)
                 {
-                    ReplayDecoder.logger.DecodeWarning($"{property} was no nullable Int32: {value?.GetType()} {value?.ToString()}");
+                    ReplayDecoder.logger.DecodeWarning($"{property} was no nullable Int32: {value.GetType()} {value}");
                 }
                 return null;
             }
@@ -120,7 +120,7 @@ internal partial class Parse
                 }
                 else
                 {
-                    ReplayDecoder.logger.DecodeWarning($"{property} was no BigInteger or Int32: {value?.GetType()} {value?.ToString()}");
+                    ReplayDecoder.logger.DecodeWarning($"{property} was no BigInteger or Int32: {value.GetType()} {value}");
                     return 0;
                 }
             }
@@ -151,7 +151,7 @@ internal partial class Parse
                 }
                 else
                 {
-                    ReplayDecoder.logger.DecodeWarning($"{property} was no nullable BigInteger or Int32: {value?.GetType()} {value?.ToString()}");
+                    ReplayDecoder.logger.DecodeWarning($"{property} was no nullable BigInteger or Int32: {value.GetType()} {value}");
                     return null;
                 }
             }
