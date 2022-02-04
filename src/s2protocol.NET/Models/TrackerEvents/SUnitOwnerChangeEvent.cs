@@ -1,4 +1,6 @@
-﻿namespace s2protocol.NET.Models;
+﻿using System.Text.Json.Serialization;
+
+namespace s2protocol.NET.Models;
 /// <summary>Record <c>SUnitOwnerChangeEvent</c> SUnitOwnerChangeEvent</summary>
 ///
 public record SUnitOwnerChangeEvent : TrackerEvent
@@ -16,6 +18,16 @@ public record SUnitOwnerChangeEvent : TrackerEvent
         UnitTagRecycle = unitTagRecycle;
         ControlPlayerId = controlPlayerId;
         UpkeepPlayerId = upkeepPlayerId;
+    }
+
+    [JsonConstructor]
+#pragma warning disable CS1591 // Missing XML comment for publicly visible type or member
+#pragma warning disable CS8618 // Non-nullable field must contain a non-null value when exiting constructor. Consider declaring as nullable.
+    public SUnitOwnerChangeEvent()
+#pragma warning restore CS8618 // Non-nullable field must contain a non-null value when exiting constructor. Consider declaring as nullable.
+#pragma warning restore CS1591 // Missing XML comment for publicly visible type or member
+    {
+
     }
 
     /// <summary>Event UnitTagIndex</summary>

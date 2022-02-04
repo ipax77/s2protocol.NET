@@ -1,9 +1,5 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Numerics;
-using System.Text;
-using System.Threading.Tasks;
+﻿using System.Numerics;
+using System.Text.Json.Serialization;
 
 namespace s2protocol.NET.Models;
 
@@ -337,6 +333,16 @@ public sealed record LobbyState
         GameDuration = gameDuration;
     }
 
+    [JsonConstructor]
+#pragma warning disable CS1591 // Missing XML comment for publicly visible type or member
+#pragma warning disable CS8618 // Non-nullable field must contain a non-null value when exiting constructor. Consider declaring as nullable.
+    public LobbyState()
+#pragma warning restore CS8618 // Non-nullable field must contain a non-null value when exiting constructor. Consider declaring as nullable.
+#pragma warning restore CS1591 // Missing XML comment for publicly visible type or member
+    {
+
+    }
+
     /// <summary>InitData LobbyState MaxUsers</summary>
     ///
     public int MaxUsers { get; init; }
@@ -413,6 +419,16 @@ public sealed record GameOptions
         BuildCoachEnabled = buildCoachEnabled;
     }
 
+    [JsonConstructor]
+#pragma warning disable CS1591 // Missing XML comment for publicly visible type or member
+#pragma warning disable CS8618 // Non-nullable field must contain a non-null value when exiting constructor. Consider declaring as nullable.
+    public GameOptions()
+#pragma warning restore CS8618 // Non-nullable field must contain a non-null value when exiting constructor. Consider declaring as nullable.
+#pragma warning restore CS1591 // Missing XML comment for publicly visible type or member
+    {
+
+    }
+
     /// <summary>InitData GameOptions Competitive</summary>
     ///
     public bool Competitive { get; init; }
@@ -482,6 +498,16 @@ public sealed record SlotDescription
         AllowedDifficulty = allowedDifficulty;
         AllowedObserveTypes = allowedObserveTypes;
         AllowedControls = allowedControls;
+    }
+
+    [JsonConstructor]
+#pragma warning disable CS1591 // Missing XML comment for publicly visible type or member
+#pragma warning disable CS8618 // Non-nullable field must contain a non-null value when exiting constructor. Consider declaring as nullable.
+    public SlotDescription()
+#pragma warning restore CS8618 // Non-nullable field must contain a non-null value when exiting constructor. Consider declaring as nullable.
+#pragma warning restore CS1591 // Missing XML comment for publicly visible type or member
+    {
+
     }
 
     /// <summary>InitData SlotDescription AllowedRaces</summary>
@@ -567,6 +593,16 @@ public sealed record GameDescription
         MapSizeY = mapSizeY;
         MapSizeX = mapSizeX;
         IsPremadeFFA = isPremadeFFA;
+    }
+
+    [JsonConstructor]
+#pragma warning disable CS1591 // Missing XML comment for publicly visible type or member
+#pragma warning disable CS8618 // Non-nullable field must contain a non-null value when exiting constructor. Consider declaring as nullable.
+    public GameDescription()
+#pragma warning restore CS8618 // Non-nullable field must contain a non-null value when exiting constructor. Consider declaring as nullable.
+#pragma warning restore CS1591 // Missing XML comment for publicly visible type or member
+    {
+
     }
 
     /// <summary>InitData GameDescription MaxRaces</summary>
