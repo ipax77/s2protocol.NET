@@ -15,7 +15,7 @@ internal partial class Parse
         List<SUnitTypeChangeEvent> SUnitTypeChangeEvents = new();
         List<SUpgradeEvent> SUpgradeEvents = new();
         List<SUnitInitEvent> SUnitInitEvents = new();
-        List<SUnitDoneEvent> SUnitDoneEvent = new();
+        List<SUnitDoneEvent> SUnitDoneEvents = new();
 
         foreach (var ent in pydic)
         {
@@ -60,6 +60,10 @@ internal partial class Parse
                 {
                     SUnitInitEvents.Add(GetSUnitInitEvent(eventDic, trackerEvent));
                 }
+                else if (trackerEvent.EventType == TrackerEventType.SUnitDoneEvent)
+                {
+                    SUnitDoneEvents.Add(GetSUnitDoneEvent(eventDic, trackerEvent));
+                }
                 else
                 {
                     ReplayDecoder.logger.DecodeWarning($"Tracker event type unknown: {GetString(eventDic, "_event")}");
@@ -79,8 +83,15 @@ internal partial class Parse
             SUnitTypeChangeEvents.ToArray(),
             SUpgradeEvents.ToArray(),
             SUnitInitEvents.ToArray(),
-            SUnitDoneEvent.ToArray()
+            SUnitDoneEvents.ToArray()
         );
+    }
+
+    private static SUnitDoneEvent GetSUnitDoneEvent(PythonDictionary pydic, TrackerEvent trackerEvent)
+    {
+        int unitTagIndex = GetInt(pydic, "m_unitTagIndex");
+        int unitTagRecycle = GetInt(pydic, "m_unitTagRecycle");
+        return new SUnitDoneEvent(trackerEvent, unitTagIndex, unitTagRecycle);
     }
 
     private static TrackerEvent GetTrackerEvent(PythonDictionary pydic)
@@ -291,7 +302,7 @@ internal partial class Parse
     {
         int unitTagIndex = GetInt(pydic, "m_unitTagIndex");
         int unitTagRecycle = GetInt(pydic, "m_unitTagRecycle");
-        int killerPlayerId = GetInt(pydic, "m_killerPlayerId");
+        int? killerPlayerId = GetNullableInt(pydic, "m_killerPlayerId");
         int x = GetInt(pydic, "m_x");
         int y = GetInt(pydic, "m_y");
         int? killerUnitTagRecycle = GetNullableInt(pydic, "m_killerUnitTagRecycle");
@@ -317,7 +328,7 @@ internal partial class Parse
     private static SPlayerSetupEvent GetSPlayerSetupEvent(PythonDictionary pydic, TrackerEvent trackerEvent)
     {
         int type = GetInt(pydic, "m_type");
-        int userId = GetInt(pydic, "m_userId");
+        int? userId = GetNullableInt(pydic, "m_userId");
         int slotId = GetInt(pydic, "m_slotId");
         return new SPlayerSetupEvent(trackerEvent, type, userId, slotId);
     }

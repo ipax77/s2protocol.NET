@@ -29,7 +29,13 @@ public sealed class ReplayDecoder : IDisposable
     /// 
     public ReplayDecoder(string appPath, LogLevel logLevel = LogLevel.Warning)
     {
+        logger = CreateLogger(logLevel);
         scriptScope = LoadEngine(appPath);
+    }
+
+    private static ILogger<ReplayDecoder> CreateLogger(LogLevel logLevel)
+    {
+        Console.OutputEncoding = Encoding.UTF8;
         var loggerFactory = LoggerFactory.Create(builder =>
         {
             builder.ClearProviders();
@@ -37,11 +43,12 @@ public sealed class ReplayDecoder : IDisposable
             {
                 options.IncludeScopes = true;
                 options.SingleLine = true;
-                options.TimestampFormat = "yyyy-MM-dd HH:mm:ss ";
+                options.UseUtcTimestamp = true;
             }).SetMinimumLevel(logLevel);
         });
-        logger = loggerFactory.CreateLogger<ReplayDecoder>();
+        var logger = loggerFactory.CreateLogger<ReplayDecoder>();
         loggerFactory.Dispose();
+        return logger;
     }
 
     private ScriptScope LoadEngine(string appPath)
@@ -190,6 +197,19 @@ public sealed class ReplayDecoder : IDisposable
 
         Sc2Replay replay = new Sc2Replay(header);
 
+        if (options.Initdata)
+        {
+            var init = await GetInitdataAsync(archive, protocol, token);
+
+            if (init == null)
+            {
+                if (token.IsCancellationRequested)
+                    return null;
+                throw new DecodeException($"could not get replay initdata {replayPath}");
+            }
+            replay.Initdata = Parse.InitData(init);
+        }
+
         if (options.Details)
         {
             var details = await GetDetailsAsync(archive, protocol, token);
@@ -240,6 +260,24 @@ public sealed class ReplayDecoder : IDisposable
         }
 
         return replay;
+    }
+
+    private static async Task<dynamic?> GetInitdataAsync(dynamic archive, dynamic protocol, CancellationToken token)
+    {
+        try
+        {
+            return await Task.Run(() =>
+            {
+                var init_enc = archive.read_file("replay.initData");
+                if (init_enc != null)
+                {
+                    return protocol.decode_replay_initdata(init_enc);
+                }
+                return null;
+            }, token).ConfigureAwait(false);
+        }
+        catch (OperationCanceledException) { }
+        return null;
     }
 
     private static async Task<dynamic?> GetTrackereventsAsync(dynamic archive, dynamic protocol, CancellationToken token)

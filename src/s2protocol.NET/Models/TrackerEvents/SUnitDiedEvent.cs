@@ -1,4 +1,6 @@
-﻿namespace s2protocol.NET.Models;
+﻿using System.Text.Json.Serialization;
+
+namespace s2protocol.NET.Models;
 /// <summary>Record <c>SUnitDiedEvent</c> SUnitDiedEvent</summary>
 ///
 public record SUnitDiedEvent : TrackerEvent
@@ -9,7 +11,7 @@ public record SUnitDiedEvent : TrackerEvent
     public SUnitDiedEvent(TrackerEvent trackerEvent,
                           int unitTagIndex,
                           int unitTagRecycle,
-                          int killerPlayerId,
+                          int? killerPlayerId,
                           int x,
                           int y,
                           int? killerUnitTagRecycle,
@@ -24,6 +26,16 @@ public record SUnitDiedEvent : TrackerEvent
         KillerUnitTagIndex = killerUnitTagIndex;
     }
 
+    [JsonConstructor]
+#pragma warning disable CS1591 // Missing XML comment for publicly visible type or member
+#pragma warning disable CS8618 // Non-nullable field must contain a non-null value when exiting constructor. Consider declaring as nullable.
+    public SUnitDiedEvent()
+#pragma warning restore CS8618 // Non-nullable field must contain a non-null value when exiting constructor. Consider declaring as nullable.
+#pragma warning restore CS1591 // Missing XML comment for publicly visible type or member
+    {
+
+    }
+
     /// <summary>Event UnitTagIndex</summary>
     ///
     public int UnitTagIndex { get; init; }
@@ -32,7 +44,7 @@ public record SUnitDiedEvent : TrackerEvent
     public int UnitTagRecycle { get; init; }
     /// <summary>Event ControlPlayerId</summary>
     ///
-    public int KillerPlayerId { get; init; }
+    public int? KillerPlayerId { get; init; }
     /// <summary>Event Y</summary>
     ///
     public int Y { get; init; }
