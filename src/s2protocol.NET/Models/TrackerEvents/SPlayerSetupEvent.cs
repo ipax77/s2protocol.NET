@@ -8,7 +8,7 @@ public record SPlayerSetupEvent : TrackerEvent
     public SPlayerSetupEvent(
         TrackerEvent trackerEvent,
         int type,
-        int userId,
+        int? userId,
         int slotId) : base(trackerEvent)
     {
         Type = type;
@@ -21,7 +21,7 @@ public record SPlayerSetupEvent : TrackerEvent
     public int Type { get; init; }
     /// <summary>Event Gameloop</summary>
     ///
-    public int UserId { get; init; }
+    public int? UserId { get; init; }
     /// <summary>Event SlotId</summary>
     ///
     public int SlotId { get; init; }

@@ -135,6 +135,37 @@ internal partial class Parse
         }
     }
 
+    internal static long? GetNullableBigInt(PythonDictionary pydic, string property)
+    {
+        if (pydic.TryGetValue(property, out object? value))
+        {
+            if (value != null)
+            {
+                if (value.GetType() == typeof(BigInteger))
+                {
+                    return (long)(BigInteger)value;
+                }
+                else if (value.GetType() == typeof(Int32))
+                {
+                    return (long)(Int32)value;
+                }
+                else
+                {
+                    ReplayDecoder.logger.DecodeWarning($"{property} was no nullable BigInteger or Int32: {value?.GetType()} {value?.ToString()}");
+                    return null;
+                }
+            }
+            else
+            {
+                return null;
+            }
+        }
+        else
+        {
+            return null;
+        }
+    }
+
     internal static bool GetBool(PythonDictionary pydic, string property)
     {
         if (pydic.TryGetValue(property, out object? value))

@@ -49,7 +49,7 @@ internal partial class Parse
                 bool isRealtimeMode = GetBool(descDic, "m_isRealtimeMode");
                 int maxUsers = GetInt(descDic, "m_maxUsers");
                 long modFileSyncChecksum = GetBigInt(descDic, "m_modFileSyncChecksum");
-                int mapFileSyncChecksum = GetInt(descDic, "m_mapFileSyncChecksum");
+                long mapFileSyncChecksum = GetBigInt(descDic, "m_mapFileSyncChecksum");
                 int maxPlayers = GetInt(descDic, "m_maxPlayers");
                 List<string> cacheHandles = GetStringList(descDic, "m_cacheHandles");
                 int gameSpeed = GetInt(descDic, "m_gameSpeed");
@@ -187,7 +187,7 @@ internal partial class Parse
                 int defaultDifficulty = GetInt(lobbyDic, "m_defaultDifficulty");
                 bool isSinglePlayer = GetBool(lobbyDic, "m_isSinglePlayer");
                 int phase = GetInt(lobbyDic, "m_phase");
-                int hostUserId = GetInt(lobbyDic, "m_hostUserId");
+                int? hostUserId = GetNullableInt(lobbyDic, "m_hostUserId");
                 int maxObs = GetInt(lobbyDic, "m_maxObservers");
                 int defaultAIBuild = GetInt(lobbyDic, "m_defaultAIBuild");
                 int pickedMapTag = GetInt(lobbyDic, "m_pickedMapTag");
@@ -325,7 +325,7 @@ internal partial class Parse
                         int? racePreference = GetRacePreference(initDic);
                         int randomSeed = GetInt(initDic, "m_randomSeed");
                         string hero = GetString(initDic, "m_hero");
-                        int? scaledRating = GetNullableInt(initDic, "m_scaledRating");
+                        long? scaledRating = GetNullableBigInt(initDic, "m_scaledRating");
                         UserInitialData initData = new UserInitialData(mount,
                                                                        skin,
                                                                        observe,

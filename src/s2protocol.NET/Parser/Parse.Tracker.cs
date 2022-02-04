@@ -328,7 +328,7 @@ internal partial class Parse
     private static SPlayerSetupEvent GetSPlayerSetupEvent(PythonDictionary pydic, TrackerEvent trackerEvent)
     {
         int type = GetInt(pydic, "m_type");
-        int userId = GetInt(pydic, "m_userId");
+        int? userId = GetNullableInt(pydic, "m_userId");
         int slotId = GetInt(pydic, "m_slotId");
         return new SPlayerSetupEvent(trackerEvent, type, userId, slotId);
     }

@@ -54,7 +54,7 @@ public sealed record UserInitialData
                            int? racePreference,
                            int randomSeed,
                            string hero,
-                           int? scaledRating)
+                           long? scaledRating)
     {
         Mount = mount;
         Skin = skin;
@@ -133,7 +133,7 @@ public sealed record UserInitialData
     public string Hero { get; init; }
     /// <summary>InitData ScaledRating</summary>
     ///
-    public int? ScaledRating { get; init; }
+    public long? ScaledRating { get; init; }
 }
 
 /// <summary>Record <c>Slot</c> Parsed UserInitialData Slot</summary>
@@ -317,7 +317,7 @@ public sealed record LobbyState
                       int defaultDifficulty,
                       bool isSinglePlayer,
                       int phase,
-                      int hostUserId,
+                      int? hostUserId,
                       int maxObservers,
                       int defaultAIBuild,
                       int pickedMapTag,
@@ -354,7 +354,7 @@ public sealed record LobbyState
     public int Phase { get; init; }
     /// <summary>InitData LobbyState HostUserId</summary>
     ///
-    public int HostUserId { get; init; }
+    public int? HostUserId { get; init; }
     /// <summary>InitData LobbyState MaxObservers</summary>
     ///
     public int MaxObservers { get; init; }
@@ -527,7 +527,7 @@ public sealed record GameDescription
                            bool isRealtimeMode,
                            int maxUsers,
                            long modFileSyncChecksum,
-                           int mapFileSyncChecksum,
+                           long mapFileSyncChecksum,
                            int maxPlayers,
                            ICollection<string> cacheHandles,
                            int gameSpeed,
@@ -622,7 +622,7 @@ public sealed record GameDescription
     public long ModFileSyncChecksum { get; init; }
     /// <summary>InitData GameDescription MapFileSyncChecksum</summary>
     ///
-    public int MapFileSyncChecksum { get; init; }
+    public long MapFileSyncChecksum { get; init; }
     /// <summary>InitData GameDescription MaxPlayers</summary>
     ///
     public int MaxPlayers { get; init; }
