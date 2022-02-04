@@ -29,7 +29,13 @@ public sealed class ReplayDecoder : IDisposable
     /// 
     public ReplayDecoder(string appPath, LogLevel logLevel = LogLevel.Warning)
     {
+        logger = CreateLogger(logLevel);
         scriptScope = LoadEngine(appPath);
+    }
+
+    private ILogger<ReplayDecoder> CreateLogger(LogLevel logLevel)
+    {
+        Console.OutputEncoding = Encoding.UTF8;
         var loggerFactory = LoggerFactory.Create(builder =>
         {
             builder.ClearProviders();
@@ -37,11 +43,12 @@ public sealed class ReplayDecoder : IDisposable
             {
                 options.IncludeScopes = true;
                 options.SingleLine = true;
-                options.TimestampFormat = "yyyy-MM-dd HH:mm:ss ";
+                options.UseUtcTimestamp = true;
             }).SetMinimumLevel(logLevel);
         });
-        logger = loggerFactory.CreateLogger<ReplayDecoder>();
+        var logger = loggerFactory.CreateLogger<ReplayDecoder>();
         loggerFactory.Dispose();
+        return logger;
     }
 
     private ScriptScope LoadEngine(string appPath)

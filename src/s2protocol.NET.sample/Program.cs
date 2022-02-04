@@ -1,6 +1,7 @@
 ﻿// See https://aka.ms/new-console-template for more information
 using s2protocol.NET;
 using System.Reflection;
+using System.Text.Json;
 
 Console.WriteLine("Hello, World!");
 
@@ -13,7 +14,7 @@ if (assemblyPath == null)
 } 
 else
 {
-    string replayPath = Path.Combine(assemblyPath, @"..\..\..\..\..\s2protocol.NET.tests\replays\test1.SC2Replay");
+    string replayPath = Path.Combine(assemblyPath, @"..\..\..\..\..\s2protocol.NET.tests\replays\test2.SC2Replay");
 
     ReplayDecoder decoder = new(assemblyPath);
 
@@ -31,6 +32,7 @@ else
     if (replay != null && replay.Initdata != null)
     {
         Console.WriteLine("indahouse");
-        Console.WriteLine(replay.Initdata);
+        var json = JsonSerializer.Serialize(replay.Initdata, new JsonSerializerOptions() { WriteIndented = true });
+        Console.WriteLine(json);
     }
 }

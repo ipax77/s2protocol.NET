@@ -41,7 +41,7 @@ public sealed record UserInitialData
                            int observe,
                            int? teamPreference,
                            string toonHandle,
-                           object combinedRaceLevels,
+                           long combinedRaceLevels,
                            int highestLeague,
                            string clanTag,
                            bool testMap,
@@ -51,7 +51,7 @@ public sealed record UserInitialData
                            bool customInterface,
                            string clanLogo,
                            string name,
-                           string? racePreference,
+                           int? racePreference,
                            int randomSeed,
                            string hero,
                            int? scaledRating)
@@ -94,7 +94,7 @@ public sealed record UserInitialData
     public string ToonHandle { get; init; }
     /// <summary>InitData CombinedRaceLevels</summary>
     ///
-    public object CombinedRaceLevels { get; init; }
+    public long CombinedRaceLevels { get; init; }
     /// <summary>InitData HighestLeague</summary>
     ///
     public int HighestLeague { get; init; }
@@ -124,7 +124,7 @@ public sealed record UserInitialData
     public string Name { get; init; }
     /// <summary>InitData RacePreference</summary>
     ///
-    public string? RacePreference { get; init; }
+    public int? RacePreference { get; init; }
     /// <summary>InitData RandomSeed</summary>
     ///
     public int RandomSeed { get; init; }
@@ -159,7 +159,7 @@ public sealed record Slot
                 int commanderMasteryLevel,
                 int trophyId,
                 int brutalPlusDifficulty,
-                string? racePref,
+                int? racePref,
                 int? tandemId,
                 string hero,
                 string commander,
@@ -261,7 +261,7 @@ public sealed record Slot
     public int BrutalPlusDifficulty { get; init; }
     /// <summary>InitData Slot RacePref</summary>
     ///
-    public string? RacePref { get; init; }
+    public int? RacePref { get; init; }
     /// <summary>InitData Slot TandemId</summary>
     ///
     public int? TandemId { get; init; }
@@ -527,7 +527,7 @@ public sealed record GameDescription
                            bool isRealtimeMode,
                            int maxUsers,
                            long modFileSyncChecksum,
-                           long mapFileSyncChecksum,
+                           int mapFileSyncChecksum,
                            int maxPlayers,
                            ICollection<string> cacheHandles,
                            int gameSpeed,
@@ -622,7 +622,7 @@ public sealed record GameDescription
     public long ModFileSyncChecksum { get; init; }
     /// <summary>InitData GameDescription MapFileSyncChecksum</summary>
     ///
-    public long MapFileSyncChecksum { get; init; }
+    public int MapFileSyncChecksum { get; init; }
     /// <summary>InitData GameDescription MaxPlayers</summary>
     ///
     public int MaxPlayers { get; init; }

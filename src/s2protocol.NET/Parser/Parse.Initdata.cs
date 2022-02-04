@@ -49,7 +49,7 @@ internal partial class Parse
                 bool isRealtimeMode = GetBool(descDic, "m_isRealtimeMode");
                 int maxUsers = GetInt(descDic, "m_maxUsers");
                 long modFileSyncChecksum = GetBigInt(descDic, "m_modFileSyncChecksum");
-                long mapFileSyncChecksum = GetBigInt(descDic, "m_mapFileSyncChecksum");
+                int mapFileSyncChecksum = GetInt(descDic, "m_mapFileSyncChecksum");
                 int maxPlayers = GetInt(descDic, "m_maxPlayers");
                 List<string> cacheHandles = GetStringList(descDic, "m_cacheHandles");
                 int gameSpeed = GetInt(descDic, "m_gameSpeed");
@@ -182,7 +182,7 @@ internal partial class Parse
             PythonDictionary? lobbyDic = pydic["m_lobbyState"] as PythonDictionary;
             if (lobbyDic != null)
             {
-                int maxUser = GetInt(lobbyDic, "m_slots");
+                int maxUser = GetInt(lobbyDic, "m_maxUsers");
                 List<Slot> slots = GetSlots(lobbyDic);
                 int defaultDifficulty = GetInt(lobbyDic, "m_defaultDifficulty");
                 bool isSinglePlayer = GetBool(lobbyDic, "m_isSinglePlayer");
@@ -225,7 +225,7 @@ internal partial class Parse
                         int aCEnemyRace = GetInt(slotDic, "m_aCEnemyRace");
                         string toonHandle = GetString(slotDic, "m_toonHandle");
                         List<int> rewardOverrides = GetIntList(slotDic, "m_rewardOverrides");
-                        int? userId = GetInt(slotDic, "m_userId");
+                        int? userId = GetNullableInt(slotDic, "m_userId");
                         string skin = GetString(slotDic, "m_skin");
                         List<int> commanderMasteryTalents = GetIntList(slotDic, "m_commanderMasteryTalents");
                         int aiBuild = GetInt(slotDic, "m_aiBuild");
@@ -235,12 +235,12 @@ internal partial class Parse
                         int logoIndex = GetInt(slotDic, "m_logoIndex");
                         List<string> artifacts = GetStringList(slotDic, "m_artifacts");
                         int difficulty = GetInt(slotDic, "m_difficulty");
-                        int? tandemLeaderId = GetInt(slotDic, "m_tandemLeaderId");
+                        int? tandemLeaderId = GetNullableInt(slotDic, "m_tandemLeaderId");
                         int commanderMasteryLevel = GetInt(slotDic, "m_commanderMasteryLevel");
                         int trophyId = GetInt(slotDic, "m_trophyId");
                         int brutalPlusDifficulty = GetInt(slotDic, "m_brutalPlusDifficulty");
-                        string? racePref = GetString(slotDic, "m_racePref");
-                        int? tandemId = GetInt(slotDic, "m_tandemId");
+                        int? racePref = GetRacePreference(slotDic, "m_racePref");
+                        int? tandemId = GetNullableInt(slotDic, "m_tandemId");
                         string hero = GetString(slotDic, "m_hero");
                         string commander = GetString(slotDic, "m_commander");
                         string mount = GetString(slotDic, "m_mount");
@@ -249,7 +249,7 @@ internal partial class Parse
                         int aCEnemyWaveType = GetInt(slotDic, "m_aCEnemyWaveType");
                         int control = GetInt(slotDic, "m_control");
                         List<int> licenses = GetIntList(slotDic, "m_licenses");
-                        int? colorPref = GetInt(slotDic, "m_colorPref");
+                        int? colorPref = GetColorPreference(slotDic);
                         bool hasSilencePenalty = GetBool(slotDic, "m_hasSilencePenalty");
                         int workingSetSlotId = GetInt(slotDic, "m_workingSetSlotId");
                         List<int> retryMutationIndexes = GetIntList(slotDic, "m_retryMutationIndexes");
@@ -312,7 +312,7 @@ internal partial class Parse
                         int observe = GetInt(initDic, "m_observe");
                         int? teamPref = GetTeamPreference(initDic);
                         string toonHandle = GetString(initDic, "m_toonHandle");
-                        int combinedRaceLevels = GetInt(initDic, "m_combinedRaceLevels");
+                        long combinedRaceLevels = GetBigInt(initDic, "m_combinedRaceLevels");
                         int highestLeague = GetInt(initDic, "m_highestLeague");
                         string clanTag = GetString(initDic, "m_clanTag");
                         bool testMap = GetBool(initDic, "m_testMap");
@@ -322,7 +322,7 @@ internal partial class Parse
                         bool customInterface = GetBool(initDic, "m_customInterface");
                         string clanLogo = GetString(initDic, "m_clanLogo");
                         string name = GetString(initDic, "m_name");
-                        string? racePreference = GetRacePreference(initDic);
+                        int? racePreference = GetRacePreference(initDic);
                         int randomSeed = GetInt(initDic, "m_randomSeed");
                         string hero = GetString(initDic, "m_hero");
                         int? scaledRating = GetNullableInt(initDic, "m_scaledRating");
@@ -366,14 +366,26 @@ internal partial class Parse
         return null;
     }
 
-    private static string? GetRacePreference(PythonDictionary pydic)
+    private static int? GetRacePreference(PythonDictionary pydic, string property = "m_racePreference")
     {
-        if (pydic.ContainsKey("m_racePreference"))
+        if (pydic.ContainsKey(property))
         {
-            PythonDictionary? raceDic = pydic["m_racePreference"] as PythonDictionary;
+            PythonDictionary? raceDic = pydic[property] as PythonDictionary;
             if (raceDic != null)
             {
-                return GetNullableString(raceDic, "m_race");
+                return GetNullableInt(raceDic, "m_race");
+            }
+        }
+        return null;
+    }
+    private static int? GetColorPreference(PythonDictionary pydic)
+    {
+        if (pydic.ContainsKey("m_colorPref"))
+        {
+            PythonDictionary? colDic = pydic["m_colorPref"] as PythonDictionary;
+            if (colDic != null)
+            {
+                return GetNullableInt(colDic, "m_color");
             }
         }
         return null;

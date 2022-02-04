@@ -63,6 +63,7 @@ internal partial class Parse
             }
             else
             {
+                ReplayDecoder.logger.DecodeWarning($"{property} was no Int32: {value?.GetType()} {value?.ToString()}");
                 return 0;
             }
         }
@@ -90,6 +91,10 @@ internal partial class Parse
             }
             else
             {
+                if (value != null)
+                {
+                    ReplayDecoder.logger.DecodeWarning($"{property} was no nullable Int32: {value?.GetType()} {value?.ToString()}");
+                }
                 return null;
             }
         }
@@ -103,18 +108,21 @@ internal partial class Parse
     {
         if (pydic.TryGetValue(property, out object? value))
         {
-            if (value != null && value.GetType() == typeof(BigInteger))
+            if (value != null)
             {
-                BigInteger? i = value as BigInteger?;
-                if (i != null)
+                if (value.GetType() == typeof(BigInteger))
                 {
-                    return (long)i;
+                    return (long)(BigInteger)value;
+                }
+                else if (value.GetType() == typeof(Int32))
+                {
+                    return (long)(Int32)value;
                 }
                 else
                 {
+                    ReplayDecoder.logger.DecodeWarning($"{property} was no BigInteger or Int32: {value?.GetType()} {value?.ToString()}");
                     return 0;
                 }
-
             }
             else
             {
@@ -145,6 +153,7 @@ internal partial class Parse
             }
             else
             {
+                ReplayDecoder.logger.DecodeWarning($"{property} was no bool: {value?.GetType()} {value?.ToString()}");
                 return false;
             }
         }
@@ -165,6 +174,7 @@ internal partial class Parse
             }
             else
             {
+                ReplayDecoder.logger.DecodeWarning($"{property} was no ascii string: {value?.GetType()} {value?.ToString()}");
                 return value?.ToString() ?? "";
             }
         }
@@ -181,6 +191,7 @@ internal partial class Parse
             }
             else
             {
+                ReplayDecoder.logger.DecodeWarning($"{property} was no double: {value?.GetType()} {value?.ToString()}");
                 return 0;
             }
         }
@@ -204,6 +215,10 @@ internal partial class Parse
                     }
                 }
             }
+            else
+            {
+                ReplayDecoder.logger.DecodeWarning($"{property} was no int list: {value?.GetType()} {value?.ToString()}");
+            }
         }
         return intList;
     }
@@ -224,6 +239,10 @@ internal partial class Parse
                         longList.Add(i.Value);
                     }
                 }
+            }
+            else
+            {
+                ReplayDecoder.logger.DecodeWarning($"{property} was no long list: {value?.GetType()} {value?.ToString()}");
             }
         }
         return longList;
@@ -246,11 +265,11 @@ internal partial class Parse
                         intEnt = tKey.Value;
                     }
 
-                    if (tuple[1].GetType() == typeof(int))
+                    if (tuple[1].GetType() == typeof(Int32))
                     {
                         bigEnt = (tuple[1] as int?) ?? 0;
                     }
-                    if (tuple[1].GetType() == typeof(BigInteger))
+                    else if (tuple[1].GetType() == typeof(BigInteger))
                     {
                         var bitInt = tuple[1] as BigInteger?;
                         if (bitInt != null)
@@ -258,7 +277,15 @@ internal partial class Parse
                             bigEnt = bitInt.Value;
                         }
                     }
+                    else
+                    {
+                        ReplayDecoder.logger.DecodeWarning($"{property} value was no PythonTuple Int32 or BigInteger: {tuple[1]?.GetType()} {tuple[1].ToString()}");
+                    }
                 }
+            }
+            else
+            {
+                ReplayDecoder.logger.DecodeWarning($"{property} was no PythonTuple: {value?.GetType()} {value?.ToString()}");
             }
         }
         return new KeyValuePair<int, BigInteger>(intEnt, bigEnt);
@@ -280,6 +307,10 @@ internal partial class Parse
                         stringList.Add(i);
                     }
                 }
+            }
+            else
+            {
+                ReplayDecoder.logger.DecodeWarning($"{property} was no string list: {value?.GetType()} {value?.ToString()}");
             }
         }
         return stringList;
