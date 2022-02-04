@@ -321,7 +321,7 @@ public sealed record LobbyState
                       int maxObservers,
                       int defaultAIBuild,
                       int pickedMapTag,
-                      int randomSeed,
+                      long randomSeed,
                       int gameDuration)
     {
         MaxUsers = maxUsers;
@@ -366,7 +366,7 @@ public sealed record LobbyState
     public int PickedMapTag { get; init; }
     /// <summary>InitData LobbyState RandomSeed</summary>
     ///
-    public int RandomSeed { get; init; }
+    public long RandomSeed { get; init; }
     /// <summary>InitData LobbyState GameDuration</summary>
     ///
     public int GameDuration { get; init; }
@@ -522,7 +522,7 @@ public sealed record GameDescription
                            int defaultAIBuild,
                            int gameType,
                            bool hasNonBlizzardExtensionMod,
-                           int randomValue,
+                           long randomValue,
                            int maxObservers,
                            bool isRealtimeMode,
                            int maxUsers,
@@ -607,7 +607,7 @@ public sealed record GameDescription
     public bool HasNonBlizzardExtensionMod { get; init; }
     /// <summary>InitData GameDescription RandomValue</summary>
     ///
-    public int RandomValue { get; init; }
+    public long RandomValue { get; init; }
     /// <summary>InitData GameDescription MaxObservers</summary>
     ///
     public int MaxObservers { get; init; }

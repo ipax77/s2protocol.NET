@@ -14,25 +14,27 @@ if (assemblyPath == null)
 } 
 else
 {
-    string replayPath = Path.Combine(assemblyPath, @"..\..\..\..\..\s2protocol.NET.tests\replays\test2.SC2Replay");
+    string replayPath = Path.Combine(assemblyPath, @"..\..\..\..\..\s2protocol.NET.tests\replays");
+    string replayFilePath = Path.Combine(replayPath, "test1.SC2Replay");
+    List<string> replayFilePaths = Directory.GetFiles(replayPath).ToList();
+
 
     ReplayDecoder decoder = new(assemblyPath);
 
     ReplayDecoderOptions options = new ReplayDecoderOptions()
     {
-        Initdata = true,
+        Initdata = false,
         Details = false,
         Metadata = false,
         MessageEvents = false,
         TrackerEvents = false
     };
 
-    Sc2Replay? replay = await decoder.DecodeAsync(replayPath, options);
+    // Sc2Replay? replay = await decoder.DecodeAsync(replayPath, options);
+    // Sc2Replay? replay = await decoder.DecodeAsync(replayPath);
 
-    if (replay != null && replay.Initdata != null)
+    await foreach (var replay in decoder.DecodeParallel(replayFilePaths, 8))
     {
-        Console.WriteLine("indahouse");
-        var json = JsonSerializer.Serialize(replay.Initdata, new JsonSerializerOptions() { WriteIndented = true });
-        Console.WriteLine(json);
+        Console.WriteLine($"replay {replay.Details.DateTimeUTC}");
     }
 }

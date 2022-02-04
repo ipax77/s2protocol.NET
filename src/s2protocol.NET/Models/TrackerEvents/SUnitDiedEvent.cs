@@ -9,7 +9,7 @@ public record SUnitDiedEvent : TrackerEvent
     public SUnitDiedEvent(TrackerEvent trackerEvent,
                           int unitTagIndex,
                           int unitTagRecycle,
-                          int killerPlayerId,
+                          int? killerPlayerId,
                           int x,
                           int y,
                           int? killerUnitTagRecycle,
@@ -32,7 +32,7 @@ public record SUnitDiedEvent : TrackerEvent
     public int UnitTagRecycle { get; init; }
     /// <summary>Event ControlPlayerId</summary>
     ///
-    public int KillerPlayerId { get; init; }
+    public int? KillerPlayerId { get; init; }
     /// <summary>Event Y</summary>
     ///
     public int Y { get; init; }

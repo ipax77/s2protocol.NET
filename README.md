@@ -61,7 +61,6 @@ await foreach (var sc2rep in decoder.DecodeParallel(replays, threads, options, c
 # Known Limitations / ToDo
 * No GameEvents
 * No AttirbuteEvents
-* No InitData
 
 # ChangeLog
 <details open="open"><summary>v0.6.0</summary>

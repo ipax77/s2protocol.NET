@@ -44,7 +44,7 @@ internal partial class Parse
                 int defaultAIBuild = GetInt(descDic, "m_defaultAIBuild");
                 int gameType = GetInt(descDic, "m_gameType");
                 bool hasNonBlizzardExtensionMod = GetBool(descDic, "m_hasNonBlizzardExtensionMod");
-                int randomValue = GetInt(descDic, "m_randomValue");
+                long randomValue = GetBigInt(descDic, "m_randomValue");
                 int maxObservers = GetInt(descDic, "m_maxObservers");
                 bool isRealtimeMode = GetBool(descDic, "m_isRealtimeMode");
                 int maxUsers = GetInt(descDic, "m_maxUsers");
@@ -191,7 +191,7 @@ internal partial class Parse
                 int maxObs = GetInt(lobbyDic, "m_maxObservers");
                 int defaultAIBuild = GetInt(lobbyDic, "m_defaultAIBuild");
                 int pickedMapTag = GetInt(lobbyDic, "m_pickedMapTag");
-                int randomSeed = GetInt(lobbyDic, "m_randomSeed");
+                long randomSeed = GetBigInt(lobbyDic, "m_randomSeed");
                 int gameDuration = GetInt(lobbyDic, "m_gameDuration");
                 return new LobbyState(maxUser,
                                       slots,
