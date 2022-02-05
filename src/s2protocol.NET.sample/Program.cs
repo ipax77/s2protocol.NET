@@ -39,24 +39,27 @@ else
     if (replay != null && replay.Details != null)
     {
         Console.WriteLine($"replay dateTime: {replay.Details.DateTimeUTC}");
+        var json = JsonSerializer.Serialize(replay, new JsonSerializerOptions() { WriteIndented = true });
+        Console.WriteLine(json);
+
     }
 
-    Stopwatch sw = new Stopwatch();
-    sw.Start();
+    //Stopwatch sw = new Stopwatch();
+    //sw.Start();
 
-    int i = 0;
-    await foreach (var rep in decoder.DecodeParallel(replayFilePaths, 16, options))
-    {
-       i++;
-       if (rep != null && rep.Details != null)
-       {
-        Console.WriteLine($"replay {rep.Details.DateTimeUTC}");
-       }
-    }
+    //int i = 0;
+    //await foreach (var rep in decoder.DecodeParallel(replayFilePaths, 16, options))
+    //{
+    //   i++;
+    //   if (rep != null && rep.Details != null)
+    //   {
+    //    Console.WriteLine($"replay {rep.Details.DateTimeUTC}");
+    //   }
+    //}
 
-    sw.Stop();
-    Console.WriteLine($"done decoding {i} replays in {sw.ElapsedMilliseconds}ms");
-    Console.ReadLine();
+    //sw.Stop();
+    //Console.WriteLine($"done decoding {i} replays in {sw.ElapsedMilliseconds}ms");
+    //Console.ReadLine();
     
     decoder.Dispose();
 }

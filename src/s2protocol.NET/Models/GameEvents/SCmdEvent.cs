@@ -7,7 +7,8 @@ public record SCmdEvent : GameEvent
 {
     /// <summary>Record <c>SCmdEvent</c> constructor</summary>
     ///
-    public SCmdEvent(int? unitGroup,
+    public SCmdEvent(GameEvent gameEvent,
+                 int? unitGroup,
                  int abilLink,
                  int abilCmdIndex,
                  string? abilCmdData,
@@ -16,7 +17,7 @@ public record SCmdEvent : GameEvent
                  int? targetZ,
                  int cmdFlags,
                  int sequence,
-                 int? otherUnit)
+                 int? otherUnit) : base(gameEvent)
     {
         UnitGroup = unitGroup;
         AbilLink = abilLink;

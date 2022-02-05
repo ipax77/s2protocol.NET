@@ -116,7 +116,7 @@ internal partial class Parse
                 }
                 else if (value.GetType() == typeof(Int32))
                 {
-                    return (long)(Int32)value;
+                    return (int)value;
                 }
                 else
                 {
@@ -145,9 +145,9 @@ internal partial class Parse
                 {
                     return (long)(BigInteger)value;
                 }
-                else if (value.GetType() == typeof(Int32))
+                else if (value.GetType() == typeof(int))
                 {
-                    return (long)(Int32)value;
+                    return (int)value;
                 }
                 else
                 {
@@ -170,7 +170,7 @@ internal partial class Parse
     {
         if (pydic.TryGetValue(property, out object? value))
         {
-            if (value != null && value.GetType() == typeof(Boolean))
+            if (value != null && value.GetType() == typeof(bool))
             {
                 bool? b = value as bool?;
                 if (b != null)
@@ -198,7 +198,7 @@ internal partial class Parse
     {
         if (pydic.TryGetValue(property, out object? value))
         {
-            if (value != null && value.GetType() == typeof(String))
+            if (value != null && value.GetType() == typeof(string))
             {
                 var bytes = Encoding.UTF8.GetBytes(value.ToString() ?? "");
                 return Encoding.UTF8.GetString(bytes);
@@ -296,7 +296,7 @@ internal partial class Parse
                         intEnt = tKey.Value;
                     }
 
-                    if (tuple[1].GetType() == typeof(Int32))
+                    if (tuple[1].GetType() == typeof(int))
                     {
                         bigEnt = (tuple[1] as int?) ?? 0;
                     }

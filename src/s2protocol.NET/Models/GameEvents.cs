@@ -13,21 +13,9 @@ public sealed record GameEvents
 {
     /// <summary>Record <c>GameEvents</c> constructor</summary>
     ///
-    public GameEvents(ICollection<SBankFileEvent> sBankFileEvents,
-                      ICollection<SBankKeyEvent> sBankKeyEvents,
-                      ICollection<SBankSectionEvent> sBankSectionEvents,
-                      ICollection<SBankSignatureEvent> sBankSignatureEvents,
-                      ICollection<SBankValueEvent> sBankValueEvents,
-                      ICollection<SCameraUpdateEvent> sCameraUpdateEvents,
-                      ICollection<SCmdEvent> sCmdEvents)
+    public GameEvents(ICollection<GameEvent> gameEvents)
     {
-        SBankFileEvents = sBankFileEvents;
-        SBankKeyEvents = sBankKeyEvents;
-        SBankSectionEvents = sBankSectionEvents;
-        SBankSignatureEvents = sBankSignatureEvents;
-        SBankValueEvents = sBankValueEvents;
-        SCameraUpdateEvents = sCameraUpdateEvents;
-        SCmdEvents = sCmdEvents;
+        BaseGameEvents = gameEvents;
     }
 
     [JsonConstructor]
@@ -40,37 +28,67 @@ public sealed record GameEvents
 
     }
 
-    /// <summary>Event SBankFileEvents</summary>
+    /// <summary>BaseGameEvents</summary>
     ///
-    public ICollection<SBankFileEvent> SBankFileEvents { get; init; }
-    /// <summary>Event SBankKeyEvents</summary>
-    ///    }
-    public ICollection<SBankKeyEvent> SBankKeyEvents { get; init; }
-    /// <summary>Event SBankSectionEvents</summary>
+    public ICollection<GameEvent> BaseGameEvents { get; init; }
+    /// <summary>SBankFileEvent (extract from BaseGameEvents)</summary>
     ///
-    public ICollection<SBankSectionEvent> SBankSectionEvents { get; init; }
-    /// <summary>Event SBankSignatureEvents</summary>
+    public ICollection<SBankFileEvent> SBankFileEvents => BaseGameEvents.OfType<SBankFileEvent>().ToArray();
+    /// <summary>SBankKeyEvent (extract from BaseGameEvents)</summary>
     ///
-    public ICollection<SBankSignatureEvent> SBankSignatureEvents { get; init; }
-    /// <summary>Event SBankValueEvents</summary>
-    ///        init; }
-    public ICollection<SBankValueEvent> SBankValueEvents { get; init; }
-    /// <summary>Event SCameraUpdateEvents</summary>
+    public ICollection<SBankKeyEvent> SBankKeyEvents => BaseGameEvents.OfType<SBankKeyEvent>().ToArray();
+    /// <summary>SBankSectionEvent (extract from BaseGameEvents)</summary>
     ///
-    public ICollection<SCameraUpdateEvent> SCameraUpdateEvents { get; init; }
-    /// <summary>Event SCmdEvents</summary>
-    /// 
-    public ICollection<SCmdEvent> SCmdEvents { get; init; }
-    //public ICollection<SCmdUpdateTargetPointEvent> SCmdUpdateTargetPointEvents { get; init; }
-    //public ICollection<SCommandManagerStateEvent> SCommandManagerStateEvents { get; init; }
-    //public ICollection<SControlGroupUpdateEvent> SControlGroupUpdateEvents { get; init; }
-    //public ICollection<SGameUserLeaveEvent> SGameUserLeaveEvents { get; init; }
-    //public ICollection<SSelectionDeltaEvent> SSelectionDeltaEvents { get; init; }
-    //public ICollection<SSetSyncLoadingTimeEvent> SSetSyncLoadingTimeEvents { get; init; }
-    //public ICollection<SSetSyncPlayingTimeEvent> SSetSyncPlayingTimeEvents { get; init; }
-    //public ICollection<STriggerDialogControlEvent> STriggerDialogControlEvents { get; init; }
-    //public ICollection<STriggerPingEvent> STriggerPingEvents { get; init; }
-    //public ICollection<STriggerSoundLengthSyncEvent> STriggerSoundLengthSyncEvents { get; init; }
-    //public ICollection<SUserFinishedLoadingSyncEvent> SUserFinishedLoadingSyncEvents { get; init; }
-    //public ICollection<SUserOptionsEvent> SUserOptionsEvents { get; init; }
+    public ICollection<SBankSectionEvent> SBankSectionEvents => BaseGameEvents.OfType<SBankSectionEvent>().ToArray();
+    /// <summary>SBankSignatureEvent (extract from BaseGameEvents)</summary>
+    ///
+    public ICollection<SBankSignatureEvent> SBankSignatureEvents => BaseGameEvents.OfType<SBankSignatureEvent>().ToArray();
+    /// <summary>SBankValueEvent (extract from BaseGameEvents)</summary>
+    ///
+    public ICollection<SBankValueEvent> SBankValueEvents => BaseGameEvents.OfType<SBankValueEvent>().ToArray();
+    /// <summary>SCameraUpdateEvent (extract from BaseGameEvents)</summary>
+    ///
+    public ICollection<SCameraUpdateEvent> SCameraUpdateEvents => BaseGameEvents.OfType<SCameraUpdateEvent>().ToArray();
+    /// <summary>SCmdEvent (extract from BaseGameEvents)</summary>
+    ///
+    public ICollection<SCmdEvent> SCmdEvents => BaseGameEvents.OfType<SCmdEvent>().ToArray();
+    /// <summary>SCmdUpdateTargetPointEvents (extract from BaseGameEvents)</summary>
+    ///
+    public ICollection<SCmdUpdateTargetPointEvent> SCmdUpdateTargetPointEvents => BaseGameEvents.OfType<SCmdUpdateTargetPointEvent>().ToArray();
+    /// <summary>SCommandManagerStateEvents (extract from BaseGameEvents)</summary>
+    ///
+    public ICollection<SCommandManagerStateEvent> SCommandManagerStateEvents => BaseGameEvents.OfType<SCommandManagerStateEvent>().ToArray();
+    /// <summary>SControlGroupUpdateEvents (extract from BaseGameEvents)</summary>
+    ///
+    public ICollection<SControlGroupUpdateEvent> SControlGroupUpdateEvents => BaseGameEvents.OfType<SControlGroupUpdateEvent>().ToArray();
+    /// <summary>SGameUserLeaveEvents (extract from BaseGameEvents)</summary>
+    ///
+    public ICollection<SGameUserLeaveEvent> SGameUserLeaveEvents => BaseGameEvents.OfType<SGameUserLeaveEvent>().ToArray();
+    /// <summary>SSelectionDeltaEvents (extract from BaseGameEvents)</summary>
+    ///
+    public ICollection<SSelectionDeltaEvent> SSelectionDeltaEvents => BaseGameEvents.OfType<SSelectionDeltaEvent>().ToArray();
+    /// <summary>SSetSyncLoadingTimeEvents (extract from BaseGameEvents)</summary>
+    ///
+    public ICollection<SSetSyncLoadingTimeEvent> SSetSyncLoadingTimeEvents => BaseGameEvents.OfType<SSetSyncLoadingTimeEvent>().ToArray();
+    /// <summary>SSetSyncPlayingTimeEvents (extract from BaseGameEvents)</summary>
+    ///
+    public ICollection<SSetSyncPlayingTimeEvent> SSetSyncPlayingTimeEvents => BaseGameEvents.OfType<SSetSyncPlayingTimeEvent>().ToArray();
+    /// <summary>STriggerDialogControlEvents (extract from BaseGameEvents)</summary>
+    ///
+    public ICollection<STriggerDialogControlEvent> STriggerDialogControlEvents => BaseGameEvents.OfType<STriggerDialogControlEvent>().ToArray();
+    /// <summary>STriggerPingEvents (extract from BaseGameEvents)</summary>
+    ///
+    public ICollection<STriggerPingEvent> STriggerPingEvents => BaseGameEvents.OfType<STriggerPingEvent>().ToArray();
+    /// <summary>STriggerSoundLengthSyncEvents (extract from BaseGameEvents)</summary>
+    ///
+    public ICollection<STriggerSoundLengthSyncEvent> STriggerSoundLengthSyncEvents => BaseGameEvents.OfType<STriggerSoundLengthSyncEvent>().ToArray();
+    /// <summary>SUserFinishedLoadingSyncEvents (extract from BaseGameEvents)</summary>
+    ///
+    public ICollection<SUserFinishedLoadingSyncEvent> SUserFinishedLoadingSyncEvents => BaseGameEvents.OfType<SUserFinishedLoadingSyncEvent>().ToArray();
+    /// <summary>SUserOptionsEvents (extract from BaseGameEvents)</summary>
+    ///
+    public ICollection<SUserOptionsEvent> SUserOptionsEvents => BaseGameEvents.OfType<SUserOptionsEvent>().ToArray();
+    /// <summary>UnknownGameEvents with raw PythonDictionary (extract from BaseGameEvents)</summary>
+    ///
+    public ICollection<UnknownGameEvent> UnknownGameEvents => BaseGameEvents.OfType<UnknownGameEvent>().ToArray();
 }

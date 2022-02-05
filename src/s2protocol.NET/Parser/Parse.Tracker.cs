@@ -6,16 +6,7 @@ internal partial class Parse
 {
     public static TrackerEvents Tracker(dynamic pydic)
     {
-        List<SPlayerSetupEvent> SPlayerSetupEvents = new();
-        List<SPlayerStatsEvent> SPlayerStatsEvents = new();
-        List<SUnitBornEvent> SUnitBornEvents = new();
-        List<SUnitDiedEvent> SUnitDiedEvents = new();
-        List<SUnitOwnerChangeEvent> SUnitOwnerChangeEvents = new();
-        List<SUnitPositionsEvent> SUnitPositionsEvents = new();
-        List<SUnitTypeChangeEvent> SUnitTypeChangeEvents = new();
-        List<SUpgradeEvent> SUpgradeEvents = new();
-        List<SUnitInitEvent> SUnitInitEvents = new();
-        List<SUnitDoneEvent> SUnitDoneEvents = new();
+        List<TrackerEvent> trackerevents = new List<TrackerEvent>();
 
         foreach (var ent in pydic)
         {
@@ -24,65 +15,42 @@ internal partial class Parse
             {
                 TrackerEvent trackerEvent = GetTrackerEvent(eventDic);
 
-                if (trackerEvent.EventType == TrackerEventType.SUnitBornEvent)
+                TrackerEvent detailEvent = trackerEvent.EventType switch
                 {
-                    SUnitBornEvents.Add(GetSUnitBornEvent(eventDic, trackerEvent));
-                }
-                else if (trackerEvent.EventType == TrackerEventType.SPlayerSetupEvent)
-                {
-                    SPlayerSetupEvents.Add(GetSPlayerSetupEvent(eventDic, trackerEvent));
-                }
-                else if (trackerEvent.EventType == TrackerEventType.SUnitDiedEvent)
-                {
-                    SUnitDiedEvents.Add(GetSUnitDiedEvent(eventDic, trackerEvent));
-                }
-                else if (trackerEvent.EventType == TrackerEventType.SPlayerStatsEvent)
-                {
-                    SPlayerStatsEvents.Add(GetSPlayerStatsEvent(eventDic, trackerEvent));
-                }
-                else if (trackerEvent.EventType == TrackerEventType.SUnitOwnerChangeEvent)
-                {
-                    SUnitOwnerChangeEvents.Add(GetSUnitOwnerChangeEvent(eventDic, trackerEvent));
-                }
-                else if (trackerEvent.EventType == TrackerEventType.SUnitPositionsEvent)
-                {
-                    SUnitPositionsEvents.Add(GetSUnitPositionsEvent(eventDic, trackerEvent));
-                }
-                else if (trackerEvent.EventType == TrackerEventType.SUnitTypeChangeEvent)
-                {
-                    SUnitTypeChangeEvents.Add(GetSUnitTypeChangeEvent(eventDic, trackerEvent));
-                }
-                else if (trackerEvent.EventType == TrackerEventType.SUpgradeEvent)
-                {
-                    SUpgradeEvents.Add(GetSUpgradeEvent(eventDic, trackerEvent));
-                }
-                else if (trackerEvent.EventType == TrackerEventType.SUnitInitEvent)
-                {
-                    SUnitInitEvents.Add(GetSUnitInitEvent(eventDic, trackerEvent));
-                }
-                else if (trackerEvent.EventType == TrackerEventType.SUnitDoneEvent)
-                {
-                    SUnitDoneEvents.Add(GetSUnitDoneEvent(eventDic, trackerEvent));
-                }
-                else
-                {
-                    ReplayDecoder.logger.DecodeWarning($"Tracker event type unknown: {GetString(eventDic, "_event")}");
-                }
+                    TrackerEventType.SPlayerSetupEvent => GetSPlayerSetupEvent(eventDic, trackerEvent),
+                    TrackerEventType.SPlayerStatsEvent => GetSPlayerStatsEvent(eventDic, trackerEvent),
+                    TrackerEventType.SUnitBornEvent => GetSUnitBornEvent(eventDic, trackerEvent),
+                    TrackerEventType.SUnitDiedEvent => GetSUnitDiedEvent(eventDic, trackerEvent),
+                    TrackerEventType.SUnitOwnerChangeEvent => GetSUnitOwnerChangeEvent(eventDic, trackerEvent),
+                    TrackerEventType.SUnitPositionsEvent => GetSUnitPositionsEvent(eventDic, trackerEvent),
+                    TrackerEventType.SUnitTypeChangeEvent => GetSUnitTypeChangeEvent(eventDic, trackerEvent),
+                    TrackerEventType.SUpgradeEvent => GetSUpgradeEvent(eventDic, trackerEvent),
+                    TrackerEventType.SUnitInitEvent => GetSUnitInitEvent(eventDic, trackerEvent),
+                    TrackerEventType.SUnitDoneEvent => GetSUnitDoneEvent(eventDic, trackerEvent),
+                    _ => GetUnknownEvent(eventDic, trackerEvent)
+                };
+                trackerevents.Add(detailEvent);
             }
         }
 
         return new TrackerEvents(
-            SPlayerSetupEvents.ToArray(),
-            SPlayerStatsEvents.ToArray(),
-            SUnitBornEvents.ToArray(),
-            SUnitDiedEvents.ToArray(),
-            SUnitOwnerChangeEvents.ToArray(),
-            SUnitPositionsEvents.ToArray(),
-            SUnitTypeChangeEvents.ToArray(),
-            SUpgradeEvents.ToArray(),
-            SUnitInitEvents.ToArray(),
-            SUnitDoneEvents.ToArray()
+            trackerevents.OfType<SPlayerSetupEvent>().ToArray(),
+            trackerevents.OfType<SPlayerStatsEvent>().ToArray(),
+            trackerevents.OfType<SUnitBornEvent>().ToArray(),
+            trackerevents.OfType<SUnitDiedEvent>().ToArray(),
+            trackerevents.OfType<SUnitOwnerChangeEvent>().ToArray(),
+            trackerevents.OfType<SUnitPositionsEvent>().ToArray(),
+            trackerevents.OfType<SUnitTypeChangeEvent>().ToArray(),
+            trackerevents.OfType<SUpgradeEvent>().ToArray(),
+            trackerevents.OfType<SUnitInitEvent>().ToArray(),
+            trackerevents.OfType<SUnitDoneEvent>().ToArray()
         );
+    }
+
+    private static TrackerEvent GetUnknownEvent(PythonDictionary pydic, TrackerEvent trackerEvent)
+    {
+        ReplayDecoder.logger.DecodeWarning($"Game event type unknown: {GetString(pydic, "_event")}");
+        return trackerEvent;
     }
 
     private static SUnitDoneEvent GetSUnitDoneEvent(PythonDictionary pydic, TrackerEvent trackerEvent)

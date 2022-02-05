@@ -5,8 +5,7 @@ namespace s2protocol.NET.Models;
 ///
 public record GameEvent
 {
-    /// <summary>Record <c>Event</c> base constructor</summary>
-    /// <comment>Tracker events are new in version 2.0.8, they do not exist in replays recorded with older versions of the game.</comment>
+    /// <summary>Record <c>GameEvent</c> base constructor</summary>
     /// 
     public GameEvent(int userId, int eventId, string eventType, int bits, int gameloop)
     {
@@ -39,8 +38,7 @@ public record GameEvent
         };
     }
 
-    /// <summary>Record <c>Event</c> base clone constructor</summary>
-    /// <comment>Tracker events are new in version 2.0.8, they do not exist in replays recorded with older versions of the game.</comment>
+    /// <summary>Record <c>GameEvent</c> base clone constructor</summary>
     /// 
     public GameEvent(GameEvent gameEvent)
     {
