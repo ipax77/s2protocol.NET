@@ -38,7 +38,7 @@ internal partial class Parse
                     GameEventType.SUserFinishedLoadingSyncEvent => GetSUserFinishedLoadingSyncEvent(gameDic, gameEvent),
                     GameEventType.SUserOptionsEvent => GetSUserOptionsEvent(gameDic, gameEvent),
                     GameEventType.SCmdUpdateTargetUnitEvents => GetSCmdUpdateTargetUnitEvent(gameDic, gameEvent),
-                    GameEventType.STriggerKeyPressedEvent => new STriggerKeyPressedEvent(gameEvent),
+                    GameEventType.STriggerKeyPressedEvent => GetSTriggerKeyPressedEvent(gameDic, gameEvent),
                     _ => GetUnknownEvent(gameDic, gameEvent)
                 };
                 gameevents.Add(detailEvent);
