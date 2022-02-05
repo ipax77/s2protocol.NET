@@ -9,8 +9,8 @@ public record SCmdUpdateTargetPointEvent : GameEvent
     ///
     public SCmdUpdateTargetPointEvent(
         GameEvent gameEvent,
-        int x,
-        int y,
+        long x,
+        long y,
         long z) : base(gameEvent)
     {
         TargetX = x;
@@ -30,10 +30,10 @@ public record SCmdUpdateTargetPointEvent : GameEvent
 
     /// <summary>Event TargetX</summary>
     ///
-    public int TargetX { get; init; }
+    public long TargetX { get; init; }
     /// <summary>Event TargetY</summary>
     ///
-    public int TargetY { get; init; }
+    public long TargetY { get; init; }
     /// <summary>Event TargetZ</summary>
     ///
     public long TargetZ { get; init; }

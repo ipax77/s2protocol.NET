@@ -12,11 +12,11 @@ internal partial class Parse
         int cmdFalgs = GetInt(gameDic, "m_cmdFlags");
         int sequence = GetInt(gameDic, "m_sequence");
         int? otherUnit = GetNullableInt(gameDic, "m_otherUnit");
-        (int? targetX, int? targetY, int? targetZ) = GetSCmdEventTarget(gameDic);
+        (long? targetX, long? targetY, long? targetZ) = GetSCmdEventTarget(gameDic);
         return new SCmdEvent(gameEvent, unitGroup, abilLink, abilCmdIndex, abilCmdData, targetX, targetY, targetZ, cmdFalgs, sequence, otherUnit);
     }
 
-    private static (int?, int?, int?) GetSCmdEventTarget(PythonDictionary pydic)
+    private static (long?, long?, long?) GetSCmdEventTarget(PythonDictionary pydic)
     {
         if (pydic.TryGetValue("m_data", out object? data))
         {
@@ -29,9 +29,9 @@ internal partial class Parse
                         PythonDictionary? targetDic = target as PythonDictionary;
                         if (targetDic != null)
                         {
-                            int x = GetInt(targetDic, "x");
-                            int y = GetInt(targetDic, "y");
-                            int z = GetInt(targetDic, "z");
+                            long x = GetBigInt(targetDic, "x");
+                            long y = GetBigInt(targetDic, "y");
+                            long z = GetBigInt(targetDic, "z");
                             return (x, y, z);
                         }
                     }

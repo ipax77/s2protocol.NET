@@ -12,9 +12,9 @@ public record SCmdEvent : GameEvent
                  int abilLink,
                  int abilCmdIndex,
                  string? abilCmdData,
-                 int? targetX,
-                 int? targetY,
-                 int? targetZ,
+                 long? targetX,
+                 long? targetY,
+                 long? targetZ,
                  int cmdFlags,
                  int sequence,
                  int? otherUnit) : base(gameEvent)
@@ -55,13 +55,13 @@ public record SCmdEvent : GameEvent
     public string? AbilCmdData { get; init; }
     /// <summary>Event TargetX</summary>
     ///
-    public int? TargetX { get; init; }
+    public long? TargetX { get; init; }
     /// <summary>Event TargetY</summary>
     ///
-    public int? TargetY { get; init; }
+    public long? TargetY { get; init; }
     /// <summary>Event TargetZ</summary>
     ///
-    public int? TargetZ { get; init; }
+    public long? TargetZ { get; init; }
     /// <summary>Event CmdFlags</summary>
     ///
     public int CmdFlags { get; init; }

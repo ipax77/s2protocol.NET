@@ -8,10 +8,10 @@ public record STriggerDialogControlEvent : GameEvent
     /// <summary>Record <c>STriggerDialogControlEvent</c> constructor</summary>
     ///
     public STriggerDialogControlEvent(GameEvent gameEvent,
-                                      int controlId,
+                                      long controlId,
                                       int? mouseButton,
                                       string? textChanged,
-                                      int eventTypeId) : base(gameEvent)
+                                      long eventTypeId) : base(gameEvent)
     {
         ControlId = controlId;
         MouseButton = mouseButton;
@@ -33,7 +33,7 @@ public record STriggerDialogControlEvent : GameEvent
 
     /// <summary>Event Type</summary>
     ///
-    public int ControlId { get; init; }
+    public long ControlId { get; init; }
     /// <summary>Event MouseButton</summary>
     ///
     public int? MouseButton { get; init; }
@@ -42,6 +42,6 @@ public record STriggerDialogControlEvent : GameEvent
     public string? TextChanged { get; init; }
     /// <summary>Event EventType</summary>
     ///
-    public int EventTypeId { get; init; }
+    public long EventTypeId { get; init; }
 
 }

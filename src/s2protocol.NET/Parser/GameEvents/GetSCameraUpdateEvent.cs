@@ -12,11 +12,11 @@ internal partial class Parse
         int? yaw = GetNullableInt(gameDic, "m_yaw");
         int? pitch = GetNullableInt(gameDic, "m_pitch");
         bool follow = GetBool(gameDic, "m_follow");
-        (int? targetX, int? targetY) = GetSCameraUpdateEventTarget(gameDic);
+        (long? targetX, long? targetY) = GetSCameraUpdateEventTarget(gameDic);
         return new SCameraUpdateEvent(gameEvent, reason, distance, targetX, targetY, yaw, pitch, follow);
     }
 
-    private static (int?, int?) GetSCameraUpdateEventTarget(PythonDictionary pydic)
+    private static (long?, long?) GetSCameraUpdateEventTarget(PythonDictionary pydic)
     {
         if (pydic.TryGetValue("m_target", out object? target))
         {
@@ -25,8 +25,8 @@ internal partial class Parse
                 PythonDictionary? targetDic = target as PythonDictionary;
                 if (targetDic != null)
                 {
-                    int x = GetInt(targetDic, "x");
-                    int y = GetInt(targetDic, "y");
+                    long x = GetBigInt(targetDic, "x");
+                    long y = GetBigInt(targetDic, "y");
                     return (x, y);
                 }
             }

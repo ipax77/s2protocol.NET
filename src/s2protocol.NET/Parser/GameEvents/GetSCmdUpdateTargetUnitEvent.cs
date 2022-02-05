@@ -13,7 +13,7 @@ internal partial class Parse
             if (targetDic != null)
             {
                 int m_snapshotControlPlayerId = GetInt(targetDic, "m_snapshotControlPlayerId");
-                (int pointX, int pointY, long pointZ) = GetSnapshotPoint(targetDic);
+                (long pointX, long pointY, long pointZ) = GetSnapshotPoint(targetDic);
                 int m_snapshotUpkeepPlayerId = GetInt(targetDic, "m_snapshotUpkeepPlayerId");
                 int m_timer = GetInt(targetDic, "m_timer");
                 int m_targetUnitFlags = GetInt(targetDic, "m_targetUnitFlags");
@@ -43,14 +43,14 @@ internal partial class Parse
                                      0);
     }
 
-    private static (int, int, long) GetSnapshotPoint(PythonDictionary pydic)
+    private static (long, long, long) GetSnapshotPoint(PythonDictionary pydic)
     {
         if (pydic.TryGetValue("m_snapshotPoint", out object? point))
         {
             PythonDictionary? pointDic = point as PythonDictionary;
             if (pointDic != null)
             {
-                return (GetInt(pointDic, "x"), GetInt(pointDic, "y"), GetBigInt(pointDic, "z"));
+                return (GetBigInt(pointDic, "x"), GetBigInt(pointDic, "y"), GetBigInt(pointDic, "z"));
             }
         }
         return (0, 0, 0);

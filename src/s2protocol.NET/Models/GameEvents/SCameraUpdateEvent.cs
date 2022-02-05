@@ -10,8 +10,8 @@ public record SCameraUpdateEvent : GameEvent
     public SCameraUpdateEvent(GameEvent gameEvent,
                           string? reason,
                           int? distance,
-                          int? targetX,
-                          int? targetY,
+                          long? targetX,
+                          long? targetY,
                           int? yaw,
                           int? pitch,
                           bool follow) : base(gameEvent)
@@ -43,10 +43,10 @@ public record SCameraUpdateEvent : GameEvent
     public int? Distance { get; init; }
     /// <summary>Event TargetX</summary>
     ///
-    public int? TargetX { get; init; }
+    public long? TargetX { get; init; }
     /// <summary>Event TargetY</summary>
     ///
-    public int? TargetY { get; init; }
+    public long? TargetY { get; init; }
     /// <summary>Event Yaw</summary>
     ///
     public int? Yaw { get; init; }

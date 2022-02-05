@@ -13,12 +13,12 @@ public record STriggerPingEvent : GameEvent
                              bool unitIsUnderConstruction,
                              int option,
                              int unit,
-                             int unitX,
-                             int unitY,
-                             int unitZ,
+                             long unitX,
+                             long unitY,
+                             long unitZ,
                              int? unitControlPlayerId,
-                             int pointX,
-                             int pointY,
+                             long pointX,
+                             long pointY,
                              int? unitUpkeepPlayerId) : base(gameEvent)
     {
         PingedMinimap = pingedMinimap;
@@ -62,22 +62,22 @@ public record STriggerPingEvent : GameEvent
     public int Unit { get; init; }
     /// <summary>Event UnitX</summary>
     ///    
-    public int UnitX { get; init; }
+    public long UnitX { get; init; }
     /// <summary>Event UnitY</summary>
     ///    
-    public int UnitY { get; init; }
+    public long UnitY { get; init; }
     /// <summary>Event UnitZ</summary>
     ///    
-    public int UnitZ { get; init; }
+    public long UnitZ { get; init; }
     /// <summary>Event UnitControlPlayerId</summary>
     ///    
     public int? UnitControlPlayerId { get; init; }
     /// <summary>Event PointX</summary>
     ///    
-    public int PointX { get; init; }
+    public long PointX { get; init; }
     /// <summary>Event PointY</summary>
     ///    
-    public int PointY { get; init; }
+    public long PointY { get; init; }
     /// <summary>Event UnitUpkeepPlayerId</summary>
     ///    
     public int? UnitUpkeepPlayerId { get; init; }

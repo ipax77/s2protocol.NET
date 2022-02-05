@@ -87,10 +87,10 @@ internal partial class Parse
 
     private static STriggerDialogControlEvent GetSTriggerDialogControlEvent(PythonDictionary gameDic, GameEvent gameEvent)
     {
-        int m_controlId = GetInt(gameDic, "m_controlId");
+        long m_controlId = GetBigInt(gameDic, "m_controlId");
         int? mouseButton = GetMouseButton(gameDic);
         string? textChanged = GetTextChanged(gameDic);
-        int m_eventType = GetInt(gameDic, "m_eventType");
+        long m_eventType = GetBigInt(gameDic, "m_eventType");
         return new STriggerDialogControlEvent(gameEvent, m_controlId, mouseButton, textChanged, m_eventType);
     }
 
@@ -153,16 +153,16 @@ internal partial class Parse
 
     private static SCmdUpdateTargetPointEvent GetSCmdUpdateTargetPointEvent(PythonDictionary gameDic, GameEvent gameEvent)
     {
-        int x = 0;
-        int y = 0;
+        long x = 0;
+        long y = 0;
         long z = 0;
         if (gameDic.TryGetValue("m_target", out object? target))
         {
             PythonDictionary? targetDic = gameDic["m_target"] as PythonDictionary;
             if (targetDic != null)
             {
-                x = GetInt(targetDic, "x");
-                y = GetInt(targetDic, "y");
+                x = GetBigInt(targetDic, "x");
+                y = GetBigInt(targetDic, "y");
                 z = GetBigInt(targetDic, "z");
             }
         }

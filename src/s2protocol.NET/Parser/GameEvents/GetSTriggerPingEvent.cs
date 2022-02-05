@@ -12,9 +12,9 @@ internal partial class Parse
         bool unitIsUnderConstruction = GetBool(gameDic, "m_unitIsUnderConstruction");
         int option = GetInt(gameDic, "m_option");
         int unit = GetInt(gameDic, "m_unit");
-        (int unitX, int unitY, int unitZ) = GetUnitPosition(gameDic);
+        (long unitX, long unitY, long unitZ) = GetUnitPosition(gameDic);
         int? unitControlPlayerId = GetNullableInt(gameDic, "m_unitControlPlayerId");
-        (int pointX, int pointY) = GetPoint(gameDic);
+        (long pointX, long pointY) = GetPoint(gameDic);
         int? unitUpkeepPlayerId = GetNullableInt(gameDic, "m_unitUpkeepPlayerId");
         return new STriggerPingEvent(gameEvent,
                                      pingedMinimap,
@@ -31,31 +31,31 @@ internal partial class Parse
                                      unitUpkeepPlayerId);
     }
 
-    private static (int, int) GetPoint(PythonDictionary pydic)
+    private static (long, long) GetPoint(PythonDictionary pydic)
     {
         if (pydic.ContainsKey("m_point"))
         {
             PythonDictionary? pointDic = pydic["m_point"] as PythonDictionary;
             if (pointDic != null)
             {
-                int x = GetInt(pointDic, "x");
-                int y = GetInt(pointDic, "y");
+                long x = GetBigInt(pointDic, "x");
+                long y = GetBigInt(pointDic, "y");
                 return (x, y);
             }
         }
         return (0, 0);
     }
 
-    private static (int, int, int) GetUnitPosition(PythonDictionary pydic)
+    private static (long, long, long) GetUnitPosition(PythonDictionary pydic)
     {
         if (pydic.ContainsKey("m_unitPosition"))
         {
             PythonDictionary? posDic = pydic["m_unitPosition"] as PythonDictionary;
             if (posDic != null)
             {
-                int x = GetInt(posDic, "x");
-                int y = GetInt(posDic, "y");
-                int z = GetInt(posDic, "z");
+                long x = GetBigInt(posDic, "x");
+                long y = GetBigInt(posDic, "y");
+                long z = GetBigInt(posDic, "z");
                 return (x, y, z);
             }
         }

@@ -9,8 +9,8 @@ public record SCmdUpdateTargetUnitEvent : GameEvent
     ///
     public SCmdUpdateTargetUnitEvent(GameEvent gameEvent,
                                      int snapshotControlPlayerId,
-                                     int snapshotPointX,
-                                     int snapshotPointY,
+                                     long snapshotPointX,
+                                     long snapshotPointY,
                                      long snapshotPointZ,
                                      int snapshotUpkeepPlayerId,
                                      int timer,
@@ -44,10 +44,10 @@ public record SCmdUpdateTargetUnitEvent : GameEvent
     public int SnapshotControlPlayerId { get; init; }
     /// <summary>Event SnapshotPointX</summary>
     ///    
-    public int SnapshotPointX { get; init; }
+    public long SnapshotPointX { get; init; }
     /// <summary>Event SnapshotPointY</summary>
     ///    
-    public int SnapshotPointY { get; init; }
+    public long SnapshotPointY { get; init; }
     /// <summary>Event SnapshotPointZ</summary>
     ///    
     public long SnapshotPointZ { get; init; }
