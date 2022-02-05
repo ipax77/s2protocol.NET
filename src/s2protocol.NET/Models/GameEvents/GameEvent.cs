@@ -35,6 +35,7 @@ public record GameEvent
             "NNet.Game.SUserFinishedLoadingSyncEvent" => GameEventType.SUserFinishedLoadingSyncEvent,
             "NNet.Game.SUserOptionsEvent" => GameEventType.SUserOptionsEvent,
             "NNet.Game.SCmdUpdateTargetUnitEvent" => GameEventType.SCmdUpdateTargetUnitEvents,
+            "NNet.Game.STriggerKeyPressedEvent" => GameEventType.STriggerKeyPressedEvent,
             _ => GameEventType.None
         };
     }
@@ -110,5 +111,6 @@ public enum GameEventType
     SUserFinishedLoadingSyncEvent = 18,
     SUserOptionsEvent = 19,
     SCmdUpdateTargetUnitEvents = 20,
+    STriggerKeyPressedEvent = 21,
 #pragma warning restore CS1591 // Missing XML comment for publicly visible type or member
 }
