@@ -11,7 +11,7 @@ public record STriggerPingEvent : GameEvent
                              bool pingedMinimap,
                              int unitLink,
                              bool unitIsUnderConstruction,
-                             int option,
+                             long option,
                              int unit,
                              long unitX,
                              long unitY,
@@ -56,7 +56,7 @@ public record STriggerPingEvent : GameEvent
     public bool UnitIsUnderConstruction { get; init; }
     /// <summary>Event Option</summary>
     ///    
-    public int Option { get; init; }
+    public long Option { get; init; }
     /// <summary>Event Unit</summary>
     ///    
     public int Unit { get; init; }

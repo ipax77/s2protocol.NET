@@ -19,6 +19,8 @@ else
     string replayPath = Path.Combine(assemblyPath, @"..\..\..\..\..\s2protocol.NET.tests\replays");
     string replayFilePath = Path.Combine(replayPath, "test3.SC2Replay");
 
+    replayPath = @"C:\Users\pax77\Documents\StarCraft II\Accounts\107095918\2-S2-1-226401\Replays\Multiplayer";
+
     List<string> replayFilePaths = Directory.GetFiles(replayPath).Take(1000).ToList();
 
 
@@ -52,7 +54,7 @@ else
         i++;
         if (rep != null && rep.Details != null)
         {
-            Console.WriteLine($"replay {rep.Details.DateTimeUTC}");
+            Console.WriteLine($"replay {rep.Details.DateTimeUTC} {rep.FileName}");
         }
     }
 

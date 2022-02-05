@@ -10,7 +10,7 @@ internal partial class Parse
         bool pingedMinimap = GetBool(gameDic, "m_pingedMinimap");
         int unitLink = GetInt(gameDic, "m_unitLink");
         bool unitIsUnderConstruction = GetBool(gameDic, "m_unitIsUnderConstruction");
-        int option = GetInt(gameDic, "m_option");
+        long option = GetBigInt(gameDic, "m_option");
         int unit = GetInt(gameDic, "m_unit");
         (long unitX, long unitY, long unitZ) = GetUnitPosition(gameDic);
         int? unitControlPlayerId = GetNullableInt(gameDic, "m_unitControlPlayerId");

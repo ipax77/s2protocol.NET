@@ -195,7 +195,7 @@ public sealed class ReplayDecoder : IDisposable
             throw new DecodeException($"could not get replay protocol {replayPath} {baseBuild}");
         }
 
-        Sc2Replay replay = new Sc2Replay(header);
+        Sc2Replay replay = new Sc2Replay(header, Path.GetFileNameWithoutExtension(replayPath));
 
         if (options.Initdata)
         {
