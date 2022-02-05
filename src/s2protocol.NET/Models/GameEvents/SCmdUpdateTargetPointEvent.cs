@@ -9,9 +9,13 @@ public record SCmdUpdateTargetPointEvent : GameEvent
     ///
     public SCmdUpdateTargetPointEvent(
         GameEvent gameEvent,
-        string name) : base(gameEvent)
+        int x,
+        int y,
+        long z) : base(gameEvent)
     {
-        Name = name;
+        TargetX = x;
+        TargetY = y;
+        TargetZ = z;
     }
 
     [JsonConstructor]
@@ -24,7 +28,13 @@ public record SCmdUpdateTargetPointEvent : GameEvent
 
     }
 
-    /// <summary>Event Type</summary>
+    /// <summary>Event TargetX</summary>
     ///
-    public string Name { get; init; }
+    public int TargetX { get; init; }
+    /// <summary>Event TargetY</summary>
+    ///
+    public int TargetY { get; init; }
+    /// <summary>Event TargetZ</summary>
+    ///
+    public long TargetZ { get; init; }
 }

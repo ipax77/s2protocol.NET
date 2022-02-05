@@ -9,9 +9,9 @@ public record SControlGroupUpdateEvent : GameEvent
     ///
     public SControlGroupUpdateEvent(
         GameEvent gameEvent,
-        string name) : base(gameEvent)
+        int controlGroupUpdate) : base(gameEvent)
     {
-        Name = name;
+        ControlGroupUpdate = controlGroupUpdate;
     }
 
     [JsonConstructor]
@@ -24,7 +24,7 @@ public record SControlGroupUpdateEvent : GameEvent
 
     }
 
-    /// <summary>Event Type</summary>
+    /// <summary>Event ControlGroupUpdate</summary>
     ///
-    public string Name { get; init; }
+    public int ControlGroupUpdate { get; init; }
 }

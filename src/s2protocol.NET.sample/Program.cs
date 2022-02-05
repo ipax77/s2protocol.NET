@@ -39,8 +39,11 @@ else
     if (replay != null && replay.Details != null)
     {
         Console.WriteLine($"replay dateTime: {replay.Details.DateTimeUTC}");
-        var json = JsonSerializer.Serialize(replay, new JsonSerializerOptions() { WriteIndented = true });
-        Console.WriteLine(json);
+
+        Console.WriteLine($"replay gameevent SSelectionDeltaEvent: {replay.GameEvents.SCmdUpdateTargetUnitEvents.First()}");
+        
+        // var json = JsonSerializer.Serialize(replay, new JsonSerializerOptions() { WriteIndented = true });
+        // Console.WriteLine(json);
 
     }
 

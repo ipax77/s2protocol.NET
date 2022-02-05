@@ -7,11 +7,12 @@ public record SCommandManagerStateEvent : GameEvent
 {
     /// <summary>Record <c>SCommandManagerStateEvent</c> constructor</summary>
     ///
-    public SCommandManagerStateEvent(
-        GameEvent gameEvent,
-        string name) : base(gameEvent)
+    public SCommandManagerStateEvent(GameEvent gameEvent,
+                                     int state,
+                                     int? sequence) : base(gameEvent)
     {
-        Name = name;
+        State = state;
+        Sequence = sequence;
     }
 
     [JsonConstructor]
@@ -24,7 +25,10 @@ public record SCommandManagerStateEvent : GameEvent
 
     }
 
-    /// <summary>Event Type</summary>
+    /// <summary>Event State</summary>
     ///
-    public string Name { get; init; }
+    public int State { get; init; }
+    /// <summary>Event Sequence</summary>
+    ///
+    public int? Sequence { get; init; }
 }

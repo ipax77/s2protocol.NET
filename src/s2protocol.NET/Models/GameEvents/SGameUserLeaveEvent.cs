@@ -9,9 +9,9 @@ public record SGameUserLeaveEvent : GameEvent
     ///
     public SGameUserLeaveEvent(
         GameEvent gameEvent,
-        string name) : base(gameEvent)
+        int leaveReason) : base(gameEvent)
     {
-        Name = name;
+        LeaveReason = leaveReason;
     }
 
     [JsonConstructor]
@@ -24,7 +24,7 @@ public record SGameUserLeaveEvent : GameEvent
 
     }
 
-    /// <summary>Event Type</summary>
+    /// <summary>Event LeaveReason</summary>
     ///
-    public string Name { get; init; }
+    public int LeaveReason { get; init; }
 }

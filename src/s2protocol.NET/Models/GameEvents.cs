@@ -1,9 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Text.Json.Serialization;
-using System.Threading.Tasks;
+﻿using System.Text.Json.Serialization;
 
 namespace s2protocol.NET.Models;
 
@@ -88,6 +83,9 @@ public sealed record GameEvents
     /// <summary>SUserOptionsEvents (extract from BaseGameEvents)</summary>
     ///
     public ICollection<SUserOptionsEvent> SUserOptionsEvents => BaseGameEvents.OfType<SUserOptionsEvent>().ToArray();
+    /// <summary>SCmdUpdateTargetUnitEvents (extract from BaseGameEvents)</summary>
+    ///
+    public ICollection<SCmdUpdateTargetUnitEvent> SCmdUpdateTargetUnitEvents => BaseGameEvents.OfType<SCmdUpdateTargetUnitEvent>().ToArray();
     /// <summary>UnknownGameEvents with raw PythonDictionary (extract from BaseGameEvents)</summary>
     ///
     public ICollection<UnknownGameEvent> UnknownGameEvents => BaseGameEvents.OfType<UnknownGameEvent>().ToArray();

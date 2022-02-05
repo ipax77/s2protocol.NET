@@ -34,6 +34,7 @@ public record GameEvent
             "NNet.Game.STriggerSoundLengthSyncEvent" => GameEventType.STriggerSoundLengthSyncEvent,
             "NNet.Game.SUserFinishedLoadingSyncEvent" => GameEventType.SUserFinishedLoadingSyncEvent,
             "NNet.Game.SUserOptionsEvent" => GameEventType.SUserOptionsEvent,
+            "NNet.Game.SCmdUpdateTargetUnitEvent" => GameEventType.SCmdUpdateTargetUnitEvents,
             _ => GameEventType.None
         };
     }
@@ -98,15 +99,16 @@ public enum GameEventType
     SCmdEvent = 7,
     SCmdUpdateTargetPointEvent = 8,
     SCommandManagerStateEvent = 9,
-    SControlGroupUpdateEvent= 10,
-    SGameUserLeaveEvent= 11,
-    SSelectionDeltaEvent= 12,
-    SSetSyncLoadingTimeEvent= 13,
-    SSetSyncPlayingTimeEvent= 14,
-    STriggerDialogControlEvent= 15,
-    STriggerPingEvent= 16,
-    STriggerSoundLengthSyncEvent= 17,
-    SUserFinishedLoadingSyncEvent= 18,
-    SUserOptionsEvent = 19
+    SControlGroupUpdateEvent = 10,
+    SGameUserLeaveEvent = 11,
+    SSelectionDeltaEvent = 12,
+    SSetSyncLoadingTimeEvent = 13,
+    SSetSyncPlayingTimeEvent = 14,
+    STriggerDialogControlEvent = 15,
+    STriggerPingEvent = 16,
+    STriggerSoundLengthSyncEvent = 17,
+    SUserFinishedLoadingSyncEvent = 18,
+    SUserOptionsEvent = 19,
+    SCmdUpdateTargetUnitEvents = 20,
 #pragma warning restore CS1591 // Missing XML comment for publicly visible type or member
 }
