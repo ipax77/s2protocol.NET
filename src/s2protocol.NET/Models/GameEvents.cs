@@ -86,6 +86,9 @@ public sealed record GameEvents
     /// <summary>SCmdUpdateTargetUnitEvents (extract from BaseGameEvents)</summary>
     ///
     public ICollection<SCmdUpdateTargetUnitEvent> SCmdUpdateTargetUnitEvents => BaseGameEvents.OfType<SCmdUpdateTargetUnitEvent>().ToArray();
+    /// <summary>SUnitClickEvents (extract from BaseGameEvents)</summary>
+    ///
+    public ICollection<SUnitClickEvent> SUnitClickEvents => BaseGameEvents.OfType<SUnitClickEvent>().ToArray();
     /// <summary>UnknownGameEvents with raw PythonDictionary (extract from BaseGameEvents)</summary>
     ///
     public ICollection<UnknownGameEvent> UnknownGameEvents => BaseGameEvents.OfType<UnknownGameEvent>().ToArray();
