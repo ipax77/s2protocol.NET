@@ -41,6 +41,7 @@ public record GameEvent
             "NNet.Game.STriggerChatMessageEvent" => GameEventType.STriggerChatMessageEvent,
             "NNet.Game.STriggerMouseClickedEvent" => GameEventType.STriggerMouseClickedEvent,
             "NNet.Game.STriggerSoundtrackDoneEvent" => GameEventType.STriggerSoundtrackDoneEvent,
+            "NNet.Game.SCameraSaveEvent" => GameEventType.SCameraSaveEvent,
             _ => GameEventType.None
         };
     }
@@ -122,5 +123,6 @@ public enum GameEventType
     STriggerChatMessageEvent = 24,
     STriggerMouseClickedEvent = 25,
     STriggerSoundtrackDoneEvent = 26,
+    SCameraSaveEvent = 27,
 #pragma warning restore CS1591 // Missing XML comment for publicly visible type or member
 }

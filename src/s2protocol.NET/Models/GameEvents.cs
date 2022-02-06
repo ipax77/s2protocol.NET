@@ -98,7 +98,9 @@ public sealed record GameEvents
     /// <summary>STriggerSoundtrackDoneEvent (extract from BaseGameEvents)</summary>
     ///    
     public ICollection<STriggerSoundtrackDoneEvent> STriggerSoundtrackDoneEvents => BaseGameEvents.OfType<STriggerSoundtrackDoneEvent>().ToArray();
-
+    /// <summary>SCameraSaveEvent (extract from BaseGameEvents)</summary>
+    ///    
+    public ICollection<SCameraSaveEvent> SCameraSaveEvents => BaseGameEvents.OfType<SCameraSaveEvent>().ToArray();
     /// <summary>UnknownGameEvents with raw PythonDictionary (extract from BaseGameEvents)</summary>
     ///
     public ICollection<UnknownGameEvent> UnknownGameEvents => BaseGameEvents.OfType<UnknownGameEvent>().ToArray();
