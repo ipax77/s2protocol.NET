@@ -38,30 +38,30 @@ else
         GameEvents = true
     };
 
-    Sc2Replay? replay = await decoder.DecodeAsync(replayFilePath, options);
+    //Sc2Replay? replay = await decoder.DecodeAsync(replayFilePath, options);
 
-    if (replay != null && replay.Details != null)
-    {
-        Console.WriteLine($"replay dateTime: {replay.Details.DateTimeUTC}");
-
-        Console.WriteLine($"replay gameevent SSelectionDeltaEvent: {replay.GameEvents.GetGameEvents<SBankFileEvent>().First()}");
-    }
-
-    //Stopwatch sw = new Stopwatch();
-    //sw.Start();
-
-    //int i = 0;
-    //await foreach (var rep in decoder.DecodeParallel(replayFilePaths, 16, options))
+    //if (replay != null && replay.Details != null)
     //{
-    //    i++;
-    //    if (rep != null && rep.Details != null)
-    //    {
-    //        Console.WriteLine($"replay {rep.Details.DateTimeUTC} {rep.FileName}");
-    //    }
+    //    Console.WriteLine($"replay dateTime: {replay.Details.DateTimeUTC}");
+
+    //    Console.WriteLine($"replay gameevent SSelectionDeltaEvent: {replay.GameEvents.GetGameEvents<SBankFileEvent>().First()}");
     //}
 
-    //sw.Stop();
-    //Console.WriteLine($"done decoding {i} replays in {sw.ElapsedMilliseconds}ms");
+    Stopwatch sw = new Stopwatch();
+    sw.Start();
+
+    int i = 0;
+    await foreach (var rep in decoder.DecodeParallel(replayFilePaths, 16, options))
+    {
+        i++;
+        if (rep != null && rep.Details != null)
+        {
+            Console.WriteLine($"replay {rep.Details.DateTimeUTC} {rep.FileName}");
+        }
+    }
+
+    sw.Stop();
+    Console.WriteLine($"done decoding {i} replays in {sw.ElapsedMilliseconds}ms");
     Console.ReadLine();
 
     decoder.Dispose();

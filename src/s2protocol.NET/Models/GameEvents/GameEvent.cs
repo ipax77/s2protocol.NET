@@ -52,6 +52,7 @@ public record GameEvent
             "NNet.Game.STriggerTransmissionOffsetEvent" => GameEventType.STriggerTransmissionOffsetEvent,
             "NNet.Game.STriggerButtonPressedEvent" => GameEventType.STriggerButtonPressedEvent,
             "NNet.Game.STriggerGameMenuItemSelectedEvent" => GameEventType.STriggerGameMenuItemSelectedEvent,
+            "NNet.Game.STriggerMouseMovedEvent" => GameEventType.STriggerMouseMovedEvent,
             _ => GameEventType.None
         };
     }
@@ -144,6 +145,7 @@ public enum GameEventType
     STriggerTransmissionOffsetEvent = 35,
     STriggerButtonPressedEvent = 36,
     STriggerGameMenuItemSelectedEvent = 37,
+    STriggerMouseMovedEvent = 38,
 
 #pragma warning restore CS1591 // Missing XML comment for publicly visible type or member
 }
