@@ -48,6 +48,9 @@ public record GameEvent
             "NNet.Game.STriggerSoundOffsetEvent" => GameEventType.STriggerSoundOffsetEvent,
             "NNet.Game.STriggerTargetModeUpdateEvent" => GameEventType.STriggerTargetModeUpdateEvent,
             "NNet.Game.STriggerTransmissionCompleteEvent" => GameEventType.STriggerTransmissionCompleteEvent,
+            "NNet.Game.SAchievementAwardedEvent" => GameEventType.SAchievementAwardedEvent,
+            "NNet.Game.STriggerTransmissionOffsetEvent" => GameEventType.STriggerTransmissionOffsetEvent,
+            "NNet.Game.STriggerButtonPressedEvent" => GameEventType.STriggerButtonPressedEvent,
             _ => GameEventType.None
         };
     }
@@ -136,5 +139,9 @@ public enum GameEventType
     STriggerSoundOffsetEvent = 31,
     STriggerTargetModeUpdateEvent = 32,
     STriggerTransmissionCompleteEvent = 33,
+    SAchievementAwardedEvent = 34,
+    STriggerTransmissionOffsetEvent = 35,
+    STriggerButtonPressedEvent = 36,
+
 #pragma warning restore CS1591 // Missing XML comment for publicly visible type or member
 }
