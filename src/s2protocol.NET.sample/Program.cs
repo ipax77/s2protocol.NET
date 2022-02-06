@@ -49,7 +49,7 @@ else
     sw.Start();
 
     int i = 0;
-    await foreach (var rep in decoder.DecodeParallel(replayFilePaths, 1, options))
+    await foreach (var rep in decoder.DecodeParallel(replayFilePaths, 16, options))
     {
         i++;
         if (rep != null && rep.Details != null)

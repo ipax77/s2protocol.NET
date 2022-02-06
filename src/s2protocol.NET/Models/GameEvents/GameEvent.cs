@@ -42,6 +42,12 @@ public record GameEvent
             "NNet.Game.STriggerMouseClickedEvent" => GameEventType.STriggerMouseClickedEvent,
             "NNet.Game.STriggerSoundtrackDoneEvent" => GameEventType.STriggerSoundtrackDoneEvent,
             "NNet.Game.SCameraSaveEvent" => GameEventType.SCameraSaveEvent,
+            "NNet.Game.STriggerCutsceneBookmarkFiredEvent" => GameEventType.STriggerCutsceneBookmarkFiredEvent,
+            "NNet.Game.STriggerCutsceneEndSceneFiredEvent" => GameEventType.STriggerCutsceneEndSceneFiredEvent,
+            "NNet.Game.STriggerSoundLengthQueryEvent" => GameEventType.STriggerSoundLengthQueryEvent,
+            "NNet.Game.STriggerSoundOffsetEvent" => GameEventType.STriggerSoundOffsetEvent,
+            "NNet.Game.STriggerTargetModeUpdateEvent" => GameEventType.STriggerTargetModeUpdateEvent,
+            "NNet.Game.STriggerTransmissionCompleteEvent" => GameEventType.STriggerTransmissionCompleteEvent,
             _ => GameEventType.None
         };
     }
@@ -124,5 +130,11 @@ public enum GameEventType
     STriggerMouseClickedEvent = 25,
     STriggerSoundtrackDoneEvent = 26,
     SCameraSaveEvent = 27,
+    STriggerCutsceneBookmarkFiredEvent = 28,
+    STriggerCutsceneEndSceneFiredEvent = 29,
+    STriggerSoundLengthQueryEvent = 30,
+    STriggerSoundOffsetEvent = 31,
+    STriggerTargetModeUpdateEvent = 32,
+    STriggerTransmissionCompleteEvent = 33,
 #pragma warning restore CS1591 // Missing XML comment for publicly visible type or member
 }
