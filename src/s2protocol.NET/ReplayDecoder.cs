@@ -281,7 +281,37 @@ public sealed class ReplayDecoder : IDisposable
             replay.GameEvents = Parse.GameEvents(gameEvents);
         }
 
+        if (options.AttributeEvents)
+        {
+            var attributeEvents = await GetAttributeEventsAsync(archive, protocol, token);
+            if (attributeEvents == null)
+            {
+                if (token.IsCancellationRequested)
+                    return null;
+                throw new DecodeException($"could not get replay AttributeEvents {replayPath}");
+            }
+            replay.AttributeEvents = Parse.GetAttributeEvents(attributeEvents);
+        }
+
         return replay;
+    }
+
+    private static async Task<dynamic?> GetAttributeEventsAsync(dynamic archive, dynamic protocol, CancellationToken token)
+    {
+        try
+        {
+            return await Task.Run(() =>
+            {
+                var game_enc = archive.read_file("replay.attributes.events");
+                if (game_enc != null)
+                {
+                    return protocol.decode_replay_attributes_events(game_enc);
+                }
+                return null;
+            }, token).ConfigureAwait(false);
+        }
+        catch (OperationCanceledException) { }
+        return null;
     }
 
     private static async Task<dynamic?> GetGameEventsAsync(dynamic archive, dynamic protocol, CancellationToken token)

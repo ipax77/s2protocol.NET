@@ -1,5 +1,4 @@
-﻿using IronPython.Runtime;
-using System.Text.Json.Serialization;
+﻿using System.Text.Json.Serialization;
 
 namespace s2protocol.NET.Models;
 /// <summary>Record <c>UnknownGameEvent</c> UnknownGameEvent</summary>

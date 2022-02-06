@@ -22,4 +22,8 @@ public record ReplayDecoderOptions
     /// <summary>Decode TrackerEvents</summary>
     /// 
     public bool TrackerEvents { get; set; } = true;
+    /// <summary>Decode AttributeEvents</summary>
+    /// 
+    public bool AttributeEvents { get; set; } = true;
+
 }

@@ -56,5 +56,8 @@ public record Sc2Replay
     ///
     [JsonInclude]
     public GameEvents? GameEvents { get; internal set; }
-
+    /// <summary>Replay AttributeEvents</summary>
+    ///
+    [JsonInclude]
+    public AttributeEvents? AttributeEvents { get; internal set; }
 }
