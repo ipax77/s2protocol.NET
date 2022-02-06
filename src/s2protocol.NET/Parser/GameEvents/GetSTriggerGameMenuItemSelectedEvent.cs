@@ -6,7 +6,7 @@ internal partial class Parse
 {
     private static STriggerGameMenuItemSelectedEvent GetSTriggerGameMenuItemSelectedEvent(PythonDictionary pydic, GameEvent gameEvent)
     {
-        int m_gameMenuItemIndex = GetInt(pydic, "m_gameMenuItemIndex");
+        long m_gameMenuItemIndex = GetBigInt(pydic, "m_gameMenuItemIndex");
         return new STriggerGameMenuItemSelectedEvent(gameEvent, m_gameMenuItemIndex);
     }
 }

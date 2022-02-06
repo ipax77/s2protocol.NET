@@ -51,6 +51,7 @@ public record GameEvent
             "NNet.Game.SAchievementAwardedEvent" => GameEventType.SAchievementAwardedEvent,
             "NNet.Game.STriggerTransmissionOffsetEvent" => GameEventType.STriggerTransmissionOffsetEvent,
             "NNet.Game.STriggerButtonPressedEvent" => GameEventType.STriggerButtonPressedEvent,
+            "NNet.Game.STriggerGameMenuItemSelectedEvent" => GameEventType.STriggerGameMenuItemSelectedEvent,
             _ => GameEventType.None
         };
     }

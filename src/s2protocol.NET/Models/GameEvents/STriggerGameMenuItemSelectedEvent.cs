@@ -9,7 +9,7 @@ public record STriggerGameMenuItemSelectedEvent : GameEvent
     ///
     public STriggerGameMenuItemSelectedEvent(
         GameEvent gameEvent,
-        int gameMenuItemIndex) : base(gameEvent)
+        long gameMenuItemIndex) : base(gameEvent)
     {
         GameMenuItemIndex = gameMenuItemIndex;
     }
@@ -24,5 +24,5 @@ public record STriggerGameMenuItemSelectedEvent : GameEvent
     }
     /// <summary>Event GameMenuItemIndex</summary>
     ///
-    public int GameMenuItemIndex { get; init; }
+    public long GameMenuItemIndex { get; init; }
 }

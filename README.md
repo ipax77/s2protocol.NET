@@ -59,11 +59,17 @@ await foreach (var sc2rep in decoder.DecodeParallel(replays, threads, options, c
 ```
 
 # Known Limitations / ToDo
-* No GameEvents
 * No AttirbuteEvents
 
 # ChangeLog
-<details open="open"><summary>v0.6.1</summary>
+
+<details open="open"><summary>v0.6.2</summary>
+
+>- GameEvents
+
+</details>
+
+<details><summary>v0.6.1</summary>
 
 >- Fixed some types (nullable/BigInteger/long)
 >- Initdata is now available

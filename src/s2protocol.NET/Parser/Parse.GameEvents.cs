@@ -86,10 +86,11 @@ internal partial class Parse
         return 0;
     }
 
-    private static UnknownGameEvent GetUnknownEvent(PythonDictionary pydic, GameEvent gameEvent)
+    private static GameEvent GetUnknownEvent(PythonDictionary pydic, GameEvent gameEvent)
     {
         ReplayDecoder.logger.DecodeWarning($"Game event type unknown: {GetString(pydic, "_event")}");
-        return new UnknownGameEvent(gameEvent, pydic);
+        // return new UnknownGameEvent(gameEvent, pydic);
+        return gameEvent;
     }
 
     private static SUserFinishedLoadingSyncEvent GetSUserFinishedLoadingSyncEvent(PythonDictionary gameDic, GameEvent gameEvent)

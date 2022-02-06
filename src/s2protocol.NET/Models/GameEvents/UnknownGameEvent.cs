@@ -10,10 +10,9 @@ public record UnknownGameEvent : GameEvent
     ///
     public UnknownGameEvent(
         GameEvent gameEvent,
-        PythonDictionary data) : base(gameEvent)
+        string name) : base(gameEvent)
     {
-        Data = data;
-        EventTypeName = Parser.Parse.GetString(data, "_event");
+        EventTypeName = name;
     }
 
     [JsonConstructor]
@@ -26,9 +25,6 @@ public record UnknownGameEvent : GameEvent
 
     }
 
-    /// <summary>Event PythonDictionary data</summary>
-    ///
-    public PythonDictionary Data { get; init; }
     /// <summary>EventTypeName</summary>
     ///
     public string EventTypeName { get; init; }

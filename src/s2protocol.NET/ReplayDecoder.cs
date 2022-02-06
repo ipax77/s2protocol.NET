@@ -73,7 +73,7 @@ public sealed class ReplayDecoder : IDisposable
             engine.Execute("from s2protocol import versions", scope);
             versions = scope.GetVariable("versions");
             List pyVersions = versions.list_all();
-            foreach (string v in pyVersions)
+            foreach (string v in pyVersions.OrderBy(o => o))
             {
                 intVersions.Add(int.Parse(v.Substring(8, 5), CultureInfo.InvariantCulture));
             }
@@ -120,13 +120,23 @@ public sealed class ReplayDecoder : IDisposable
             await Parallel.ForEachAsync(replayPaths, parallelOptions, async (replayPath, token) =>
             {
                 var replay = await DecodeAsync(replayPath, options, token).ConfigureAwait(false);
+
                 if (replay != null)
                 {
                     channel.Writer.TryWrite(replay);
                 }
+                else
+                {
+                    logger.DecodeWarning($"failed decoding replay {replayPath}");
+                }
             }).ConfigureAwait(false);
         }
         catch (OperationCanceledException) { }
+        catch (Exception ex)
+        {
+            logger.DecodeError($"failed decoding replays: {ex.Message}");
+            throw new DecodeException($"failed decoding replays: {ex.Message}");
+        }
         finally
         {
             channel.Writer.Complete();
@@ -170,7 +180,7 @@ public sealed class ReplayDecoder : IDisposable
         if (!intVersions.Contains(baseBuild))
         {
             int replBuild = baseBuild;
-            baseBuild = intVersions.FirstOrDefault(f => f > baseBuild);
+            baseBuild = intVersions.LastOrDefault(f => f < baseBuild);
             if (baseBuild == 0)
             {
                 baseBuild = intVersions.Last();
