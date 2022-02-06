@@ -41,6 +41,9 @@ internal partial class Parse
                     GameEventType.STriggerKeyPressedEvent => GetSTriggerKeyPressedEvent(gameDic, gameEvent),
                     GameEventType.SUnitClickEvent => GetSUnitClickEvent(gameDic, gameEvent),
                     GameEventType.SDecrementGameTimeRemainingEvent => GetSDecrementGameTimeRemainingEvent(gameDic, gameEvent),
+                    GameEventType.STriggerChatMessageEvent => GetSTriggerChatMessageEvent(gameDic, gameEvent),
+                    GameEventType.STriggerMouseClickedEvent => GetSTriggerMouseClickedEvent(gameDic, gameEvent),
+                    GameEventType.STriggerSoundtrackDoneEvent => GetSTriggerSoundtrackDoneEvent(gameDic, gameEvent),
                     _ => GetUnknownEvent(gameDic, gameEvent)
                 };
                 gameevents.Add(detailEvent);

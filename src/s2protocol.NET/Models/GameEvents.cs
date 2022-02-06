@@ -89,6 +89,16 @@ public sealed record GameEvents
     /// <summary>SUnitClickEvents (extract from BaseGameEvents)</summary>
     ///
     public ICollection<SUnitClickEvent> SUnitClickEvents => BaseGameEvents.OfType<SUnitClickEvent>().ToArray();
+    /// <summary>STriggerChatMessageEvent (extract from BaseGameEvents)</summary>
+    ///    
+    public ICollection<STriggerChatMessageEvent> STriggerChatMessageEvents => BaseGameEvents.OfType<STriggerChatMessageEvent>().ToArray();
+    /// <summary>STriggerMouseClickedEvent (extract from BaseGameEvents)</summary>
+    ///    
+    public ICollection<STriggerMouseClickedEvent> STriggerMouseClickedEvents => BaseGameEvents.OfType<STriggerMouseClickedEvent>().ToArray();
+    /// <summary>STriggerSoundtrackDoneEvent (extract from BaseGameEvents)</summary>
+    ///    
+    public ICollection<STriggerSoundtrackDoneEvent> STriggerSoundtrackDoneEvents => BaseGameEvents.OfType<STriggerSoundtrackDoneEvent>().ToArray();
+
     /// <summary>UnknownGameEvents with raw PythonDictionary (extract from BaseGameEvents)</summary>
     ///
     public ICollection<UnknownGameEvent> UnknownGameEvents => BaseGameEvents.OfType<UnknownGameEvent>().ToArray();

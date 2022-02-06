@@ -38,6 +38,9 @@ public record GameEvent
             "NNet.Game.STriggerKeyPressedEvent" => GameEventType.STriggerKeyPressedEvent,
             "NNet.Game.SUnitClickEvent" => GameEventType.SUnitClickEvent,
             "NNet.Game.SDecrementGameTimeRemainingEvent" => GameEventType.SDecrementGameTimeRemainingEvent,
+            "NNet.Game.STriggerChatMessageEvent" => GameEventType.STriggerChatMessageEvent,
+            "NNet.Game.STriggerMouseClickedEvent" => GameEventType.STriggerMouseClickedEvent,
+            "NNet.Game.STriggerSoundtrackDoneEvent" => GameEventType.STriggerSoundtrackDoneEvent,
             _ => GameEventType.None
         };
     }
@@ -116,5 +119,8 @@ public enum GameEventType
     STriggerKeyPressedEvent = 21,
     SUnitClickEvent = 22,
     SDecrementGameTimeRemainingEvent = 23,
+    STriggerChatMessageEvent = 24,
+    STriggerMouseClickedEvent = 25,
+    STriggerSoundtrackDoneEvent = 26,
 #pragma warning restore CS1591 // Missing XML comment for publicly visible type or member
 }
