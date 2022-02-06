@@ -142,6 +142,7 @@ public enum GameEventType
     SAchievementAwardedEvent = 34,
     STriggerTransmissionOffsetEvent = 35,
     STriggerButtonPressedEvent = 36,
+    STriggerGameMenuItemSelectedEvent = 37,
 
 #pragma warning restore CS1591 // Missing XML comment for publicly visible type or member
 }
