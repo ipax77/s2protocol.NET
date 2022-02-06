@@ -17,8 +17,7 @@ internal partial class Parse
         {
             if (target != null)
             {
-                PythonDictionary? targetDic = target as PythonDictionary;
-                if (targetDic != null)
+                if (target is PythonDictionary targetDic)
                 {
                     return (GetBigInt(targetDic, "x"), GetBigInt(targetDic, "y"));
                 }

@@ -28,8 +28,7 @@ internal partial class Parse
         int basebuild = 0;
         if (pydic.ContainsKey("m_version"))
         {
-            var versionDic = pydic["m_version"] as PythonDictionary;
-            if (versionDic != null)
+            if (pydic["m_version"] is PythonDictionary versionDic)
             {
                 version = new Version(GetInt(versionDic, "m_major"), GetInt(versionDic, "m_minor"), GetInt(versionDic, "m_revision"));
                 flags = GetInt(versionDic, "m_flags");
@@ -47,8 +46,7 @@ internal partial class Parse
         else
             if (pydic.ContainsKey("m_ngdpRootKey"))
         {
-            PythonDictionary? rootDic = pydic["m_ngdpRootKey"] as PythonDictionary;
-            if (rootDic != null)
+            if (pydic["m_ngdpRootKey"] is PythonDictionary rootDic)
             {
                 return GetAsciiString(rootDic, "m_data");
             }

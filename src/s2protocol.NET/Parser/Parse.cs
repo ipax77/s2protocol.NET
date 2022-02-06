@@ -11,8 +11,7 @@ internal partial class Parse
         {
             if (value != null && value.GetType() == typeof(Bytes))
             {
-                Bytes? b = value as Bytes;
-                if (b != null)
+                if (value is Bytes b)
                     return Encoding.UTF8.GetString(b.ToArray());
                 else
                     return "";
@@ -31,8 +30,7 @@ internal partial class Parse
         {
             if (value != null && value.GetType() == typeof(Bytes))
             {
-                Bytes? b = value as Bytes;
-                if (b != null)
+                if (value is Bytes b)
                     return Encoding.UTF8.GetString(b.ToArray());
                 else
                     return null;
@@ -231,7 +229,7 @@ internal partial class Parse
 
     internal static List<int> GetIntList(PythonDictionary pydic, string property)
     {
-        List<int> intList = new List<int>();
+        List<int> intList = new();
         if (pydic.TryGetValue(property, out object? value))
         {
             if (value != null && value.GetType() == typeof(List))
@@ -256,7 +254,7 @@ internal partial class Parse
 
     internal static List<long> GetLongList(PythonDictionary pydic, string property)
     {
-        List<long> longList = new List<long>();
+        List<long> longList = new();
         if (pydic.TryGetValue(property, out object? value))
         {
             if (value != null && value.GetType() == typeof(List))
@@ -287,8 +285,7 @@ internal partial class Parse
         {
             if (value != null && value.GetType() == typeof(PythonTuple))
             {
-                PythonTuple? tuple = value as PythonTuple;
-                if (tuple != null)
+                if (value is PythonTuple tuple)
                 {
                     int? tKey = tuple[0] as int?;
                     if (tKey != null)
@@ -310,7 +307,7 @@ internal partial class Parse
                     }
                     else
                     {
-                        ReplayDecoder.logger.DecodeWarning($"{property} value was no PythonTuple Int32 or BigInteger: {tuple[1]?.GetType()} {tuple[1].ToString()}");
+                        ReplayDecoder.logger.DecodeWarning($"{property} value was no PythonTuple Int32 or BigInteger: {tuple[1]?.GetType()} {tuple[1]}");
                     }
                 }
             }
@@ -324,7 +321,7 @@ internal partial class Parse
 
     internal static List<string> GetStringList(PythonDictionary pydic, string property)
     {
-        List<string> stringList = new List<string>();
+        List<string> stringList = new();
         if (pydic.TryGetValue(property, out object? value))
         {
             if (value != null && value.GetType() == typeof(List))
@@ -332,8 +329,7 @@ internal partial class Parse
                 List list = (List)value;
                 foreach (var item in list)
                 {
-                    string? i = item as string;
-                    if (i != null)
+                    if (item is string i)
                     {
                         stringList.Add(i);
                     }

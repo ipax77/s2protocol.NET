@@ -7,12 +7,11 @@ internal partial class Parse
 {
     public static GameEvents GameEvents(dynamic pydic)
     {
-        List<GameEvent> gameevents = new List<GameEvent>();
+        List<GameEvent> gameevents = new();
 
         foreach (var ent in pydic)
         {
-            PythonDictionary? gameDic = ent as PythonDictionary;
-            if (gameDic != null)
+            if (ent is PythonDictionary gameDic)
             {
                 GameEvent gameEvent = GetGameEvent(gameDic);
 
@@ -34,8 +33,8 @@ internal partial class Parse
                     GameEventType.SSetSyncPlayingTimeEvent => GetSSetSyncPlayingTimeEvent(gameDic, gameEvent),
                     GameEventType.STriggerDialogControlEvent => GetSTriggerDialogControlEvent(gameDic, gameEvent),
                     GameEventType.STriggerPingEvent => GetSTriggerPingEvent(gameDic, gameEvent),
-                    GameEventType.STriggerSoundLengthSyncEvent => GetSTriggerSoundLengthSyncEvent(gameDic, gameEvent),
-                    GameEventType.SUserFinishedLoadingSyncEvent => GetSUserFinishedLoadingSyncEvent(gameDic, gameEvent),
+                    GameEventType.STriggerSoundLengthSyncEvent => new STriggerSoundLengthSyncEvent(gameEvent),
+                    GameEventType.SUserFinishedLoadingSyncEvent => new SUserFinishedLoadingSyncEvent(gameEvent),
                     GameEventType.SUserOptionsEvent => GetSUserOptionsEvent(gameDic, gameEvent),
                     GameEventType.SCmdUpdateTargetUnitEvents => GetSCmdUpdateTargetUnitEvent(gameDic, gameEvent),
                     GameEventType.STriggerKeyPressedEvent => GetSTriggerKeyPressedEvent(gameDic, gameEvent),
@@ -78,8 +77,7 @@ internal partial class Parse
     {
         if (pydic.ContainsKey("_userid"))
         {
-            PythonDictionary? userDic = pydic["_userid"] as PythonDictionary;
-            if (userDic != null)
+            if (pydic["_userid"] is PythonDictionary userDic)
             {
                 return GetInt(userDic, "m_userId");
             }
@@ -92,16 +90,6 @@ internal partial class Parse
         ReplayDecoder.logger.DecodeInformation($"Game event type unknown: {GetString(pydic, "_event")}");
         return new UnknownGameEvent(gameEvent, GetString(pydic, "_event"));
         // return gameEvent;
-    }
-
-    private static SUserFinishedLoadingSyncEvent GetSUserFinishedLoadingSyncEvent(PythonDictionary gameDic, GameEvent gameEvent)
-    {
-        return new SUserFinishedLoadingSyncEvent(gameEvent);
-    }
-
-    private static STriggerSoundLengthSyncEvent GetSTriggerSoundLengthSyncEvent(PythonDictionary gameDic, GameEvent gameEvent)
-    {
-        return new STriggerSoundLengthSyncEvent(gameEvent);
     }
 
     private static STriggerDialogControlEvent GetSTriggerDialogControlEvent(PythonDictionary gameDic, GameEvent gameEvent)
@@ -117,8 +105,7 @@ internal partial class Parse
     {
         if (pydic.ContainsKey("m_eventData"))
         {
-            PythonDictionary? mouseDic = pydic["m_eventData"] as PythonDictionary;
-            if (mouseDic != null)
+            if (pydic["m_eventData"] is PythonDictionary mouseDic)
             {
                 return GetNullableInt(mouseDic, "MouseButton");
             }
@@ -130,8 +117,7 @@ internal partial class Parse
     {
         if (pydic.ContainsKey("m_eventData"))
         {
-            PythonDictionary? mouseDic = pydic["m_eventData"] as PythonDictionary;
-            if (mouseDic != null)
+            if (pydic["m_eventData"] is PythonDictionary mouseDic)
             {
                 return GetNullableString(mouseDic, "TextChanged");
             }
@@ -177,8 +163,7 @@ internal partial class Parse
         long z = 0;
         if (gameDic.TryGetValue("m_target", out object? target))
         {
-            PythonDictionary? targetDic = gameDic["m_target"] as PythonDictionary;
-            if (targetDic != null)
+            if (target is PythonDictionary targetDic)
             {
                 x = GetBigInt(targetDic, "x");
                 y = GetBigInt(targetDic, "y");

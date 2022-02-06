@@ -235,7 +235,7 @@ public sealed class ReplayDecoder : IDisposable
 
         if (options.Metadata)
         {
-            var metadata = await GetMetadataAsync(archive, protocol, token);
+            var metadata = await GetMetadataAsync(archive, token);
             if (metadata == null)
             {
                 if (token.IsCancellationRequested)
@@ -386,7 +386,7 @@ public sealed class ReplayDecoder : IDisposable
         return null;
     }
 
-    private static async Task<Metadata?> GetMetadataAsync(dynamic archive, dynamic protocol, CancellationToken token)
+    private static async Task<Metadata?> GetMetadataAsync(dynamic archive, CancellationToken token)
     {
         try
         {

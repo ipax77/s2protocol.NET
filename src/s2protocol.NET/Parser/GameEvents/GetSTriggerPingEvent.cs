@@ -18,7 +18,7 @@ internal partial class Parse
         int? unitUpkeepPlayerId = GetNullableInt(gameDic, "m_unitUpkeepPlayerId");
         return new STriggerPingEvent(gameEvent,
                                      pingedMinimap,
-                                     unit,
+                                     unitLink,
                                      unitIsUnderConstruction,
                                      option,
                                      unit,
@@ -35,8 +35,7 @@ internal partial class Parse
     {
         if (pydic.ContainsKey("m_point"))
         {
-            PythonDictionary? pointDic = pydic["m_point"] as PythonDictionary;
-            if (pointDic != null)
+            if (pydic["m_point"] is PythonDictionary pointDic)
             {
                 long x = GetBigInt(pointDic, "x");
                 long y = GetBigInt(pointDic, "y");
@@ -50,8 +49,7 @@ internal partial class Parse
     {
         if (pydic.ContainsKey("m_unitPosition"))
         {
-            PythonDictionary? posDic = pydic["m_unitPosition"] as PythonDictionary;
-            if (posDic != null)
+            if (pydic["m_unitPosition"] is PythonDictionary posDic)
             {
                 long x = GetBigInt(posDic, "x");
                 long y = GetBigInt(posDic, "y");

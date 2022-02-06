@@ -6,12 +6,11 @@ internal partial class Parse
 {
     internal static TrackerEvents Tracker(dynamic pydic)
     {
-        List<TrackerEvent> trackerevents = new List<TrackerEvent>();
+        List<TrackerEvent> trackerevents = new();
 
         foreach (var ent in pydic)
         {
-            PythonDictionary? eventDic = ent as PythonDictionary;
-            if (eventDic != null)
+            if (ent is PythonDictionary eventDic)
             {
                 TrackerEvent trackerEvent = GetTrackerEvent(eventDic);
 
@@ -101,11 +100,10 @@ internal partial class Parse
     private static SUnitPositionsEvent GetSUnitPositionsEvent(PythonDictionary pydic, TrackerEvent trackerEvent)
     {
         int firstUnitIndex = GetInt(pydic, "m_firstUnitIndex");
-        List<int> items = new List<int>();
+        List<int> items = new();
         if (pydic.ContainsKey("m_items"))
         {
-            var nums = pydic["m_items"] as ICollection<object>;
-            if (nums != null)
+            if (pydic["m_items"] is ICollection<object> nums)
             {
                 foreach (var num in nums)
                 {
@@ -146,14 +144,14 @@ internal partial class Parse
         int unitTagIndex = GetInt(pydic, "m_unitTagIndex");
         int unitTagRecycle = GetInt(pydic, "m_unitTagRecycle");
         string? creatorAbilityName = GetNullableString(pydic, "m_creatorAbilityName");
-        string? creatorUnitTagRecylce = GetNullableString(pydic, "m_creatorUnitTagRecycle");
+        int? creatorUnitTagRecylce = GetNullableInt(pydic, "m_creatorUnitTagRecycle");
         int controlPlayerId = GetInt(pydic, "m_controlPlayerId");
         int x = GetInt(pydic, "m_x");
         int y = GetInt(pydic, "m_y");
         int upkeepPlayerId = GetInt(pydic, "m_upkeepPlayerId");
         string unitTypeName = GetString(pydic, "m_unitTypeName");
         int? creatorUnitTagIndex = GetNullableInt(pydic, "m_creatorUnitTagIndex");
-        return new SUnitBornEvent(trackerEvent, unitTagIndex, unitTagRecycle, creatorAbilityName, creatorUnitTagIndex, controlPlayerId, x, y, upkeepPlayerId, unitTypeName, creatorUnitTagIndex);
+        return new SUnitBornEvent(trackerEvent, unitTagIndex, unitTagRecycle, creatorAbilityName, creatorUnitTagRecylce, controlPlayerId, x, y, upkeepPlayerId, unitTypeName, creatorUnitTagIndex);
     }
 
     private static SPlayerSetupEvent GetSPlayerSetupEvent(PythonDictionary pydic, TrackerEvent trackerEvent)

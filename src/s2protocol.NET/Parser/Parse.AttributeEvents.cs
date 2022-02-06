@@ -7,8 +7,7 @@ internal partial class Parse
 {
     internal static AttributeEvents GetAttributeEvents(dynamic pydic)
     {
-        PythonDictionary? attrDic = pydic as PythonDictionary;
-        if (attrDic != null)
+        if (pydic is PythonDictionary attrDic)
         {
             int source = GetInt(attrDic, "source");
             int mapNameSpace = GetInt(attrDic, "mapNamespace");
@@ -24,14 +23,12 @@ internal partial class Parse
 
         if (attrDic.TryGetValue("scopes", out object? scopes))
         {
-            PythonDictionary? scopesDic = attrDic["scopes"] as PythonDictionary;
-            if (scopesDic != null)
+            if (scopes is PythonDictionary scopesDic)
             {
                 foreach (var scopeEnt in scopesDic)
                 {
                     int? scope = scopeEnt.Key as int?;
-                    PythonDictionary? scopeDic = scopeEnt.Value as PythonDictionary;
-                    if (scope != null && scopeDic != null)
+                    if (scope != null && scopeEnt.Value is PythonDictionary scopeDic)
                     {
                         scopesList.AddRange(GetAttributeScopes(scope.Value, scopeDic));
                     }
@@ -44,17 +41,15 @@ internal partial class Parse
 
     private static List<AttributeEventScope> GetAttributeScopes(int scope, PythonDictionary scopeDic)
     {
-        List<AttributeEventScope> scopes = new List<AttributeEventScope>();
+        List<AttributeEventScope> scopes = new();
         foreach (var ent in scopeDic)
         {
             int? scopeId = ent.Key as int?;
-            List? scopeList = ent.Value as List;
-            if (scopeId != null && scopeList != null)
+            if (scopeId != null && ent.Value is List scopeList)
             {
                 foreach (var listEnt in scopeList)
                 {
-                    PythonDictionary? entDic = listEnt as PythonDictionary;
-                    if (entDic != null)
+                    if (listEnt is PythonDictionary entDic)
                     {
                         int @namespace = GetInt(entDic, "namespace");
                         int attrid = GetInt(entDic, "attrid");

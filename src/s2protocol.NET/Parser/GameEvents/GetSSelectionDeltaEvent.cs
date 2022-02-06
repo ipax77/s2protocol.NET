@@ -16,28 +16,24 @@ internal partial class Parse
     {
         if (pydic.ContainsKey("m_delta"))
         {
-            PythonDictionary? deltaDic = pydic["m_delta"] as PythonDictionary;
-            if (deltaDic != null)
+            if (pydic["m_delta"] is PythonDictionary deltaDic)
             {
 
                 List<int> addUnitTags = GetIntList(deltaDic, "m_addUnitTags");
-                List<SelectionDeltaEventDeltaSubGroup> subgroups = new List<SelectionDeltaEventDeltaSubGroup>();
-                List<int> zeroIndices = new List<int>();
+                List<SelectionDeltaEventDeltaSubGroup> subgroups = new();
+                List<int> zeroIndices = new();
 
                 if (deltaDic.TryGetValue("m_addSubgroups", out object? subGroups))
                 {
                     if (subGroups != null)
                     {
-                        List? subGroupList = subGroups as List;
-                        if (subGroupList != null)
+                        if (subGroups is List subGroupList)
                         {
 
 
-                            List<int> zeroindices = new List<int>();
                             foreach (var ent in subGroupList)
                             {
-                                PythonDictionary? subDic = ent as PythonDictionary;
-                                if (subDic != null)
+                                if (ent is PythonDictionary subDic)
                                 {
                                     subgroups.Add(new SelectionDeltaEventDeltaSubGroup(
                                         GetInt(subDic, "m_unitLink"),
@@ -53,8 +49,7 @@ internal partial class Parse
 
                 if (deltaDic.TryGetValue("m_removeMask", out object? removeMask))
                 {
-                    PythonDictionary? removeDic = deltaDic["m_removeMask"] as PythonDictionary;
-                    if (removeDic != null)
+                    if (removeMask is PythonDictionary removeDic)
                     {
                         zeroIndices = GetIntList(removeDic, "ZeroIndices");
                     }

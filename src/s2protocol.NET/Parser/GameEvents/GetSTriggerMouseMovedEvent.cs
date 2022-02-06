@@ -17,8 +17,7 @@ internal partial class Parse
         {
             if (pos != null)
             {
-                PythonDictionary? posDic = pydic["m_posWorld"] as PythonDictionary;
-                if (posDic != null)
+                if (pydic["m_posWorld"] is PythonDictionary posDic)
                 {
                     return (GetBigInt(posDic, "x"), GetBigInt(posDic, "y"));
                 }

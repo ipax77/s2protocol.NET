@@ -6,7 +6,7 @@ internal partial class Parse
 {
     public static List<ChatMessageEvent> Messages(dynamic generator)
     {
-        List<ChatMessageEvent> messages = new List<ChatMessageEvent>();
+        List<ChatMessageEvent> messages = new();
         foreach (PythonDictionary pydic in generator)
         {
             var _event = GetString(pydic, "_event");
@@ -26,8 +26,7 @@ internal partial class Parse
     {
         if (pydic.ContainsKey("_userid"))
         {
-            PythonDictionary? usrdic = pydic["_userid"] as PythonDictionary;
-            if (usrdic != null)
+            if (pydic["_userid"] is PythonDictionary usrdic)
             {
                 return GetInt(usrdic, "m_userId");
             }

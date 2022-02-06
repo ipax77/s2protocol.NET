@@ -17,8 +17,7 @@ internal partial class Parse
     {
         if (pydic.TryGetValue("m_posUI", out object? pos))
         {
-            PythonDictionary? posDic = pos as PythonDictionary;
-            if (posDic != null)
+            if (pos is PythonDictionary posDic)
             {
                 return (GetBigInt(posDic, "x"), GetBigInt(posDic, "y"));
             }

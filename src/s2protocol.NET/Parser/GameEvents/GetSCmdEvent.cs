@@ -20,14 +20,13 @@ internal partial class Parse
     {
         if (pydic.TryGetValue("m_data", out object? data))
         {
-            if (data != null && data as PythonDictionary != null)
+            if (data != null)
             {
                 if (pydic.TryGetValue("TargetPoint", out object? target))
                 {
                     if (target != null)
                     {
-                        PythonDictionary? targetDic = target as PythonDictionary;
-                        if (targetDic != null)
+                        if (target is PythonDictionary targetDic)
                         {
                             long x = GetBigInt(targetDic, "x");
                             long y = GetBigInt(targetDic, "y");
@@ -45,8 +44,7 @@ internal partial class Parse
     {
         if (pydic.ContainsKey("m_abil"))
         {
-            PythonDictionary? abilDic = pydic["m_abil"] as PythonDictionary;
-            if (abilDic != null)
+            if (pydic["m_abil"] is PythonDictionary abilDic)
             {
                 int link = GetInt(abilDic, "m_abilLink");
                 int cmdIndex = GetInt(abilDic, "m_abilCmdIndex");

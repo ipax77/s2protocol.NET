@@ -32,7 +32,9 @@ ReplayDecoderOptions options = new ReplayDecoderOptions()
     Details = false,
     Metadata = false,
     MessageEvents = false,
-    TrackerEvents = true
+    TrackerEvents = true,
+    GameEvents = false,
+    AttributeEvets = false
 };
 
 CancellationTokenSource cts = new();
@@ -59,13 +61,17 @@ await foreach (var sc2rep in decoder.DecodeParallel(replays, threads, options, c
 ```
 
 # Known Limitations / ToDo
-* No AttirbuteEvents
+
+## GameEvents
+STriggerSoundLengthSyncEvent => no data
+SControlGroupUpdateEvent => no mask
 
 # ChangeLog
 
 <details open="open"><summary>v0.6.2</summary>
 
 >- GameEvents
+>- AttributeEvents
 
 </details>
 

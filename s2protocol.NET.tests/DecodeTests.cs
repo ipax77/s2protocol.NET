@@ -32,6 +32,7 @@ public class DecodeTests
             MessageEvents = false,
             TrackerEvents = false,
             GameEvents = false,
+            AttributeEvents = false,
         };
         var replay = await decoder.DecodeAsync(Path.Combine(assemblyPath, "replays", replayFile), options).ConfigureAwait(false);
         Assert.True(replay != null, "Sc2Replay was null");
@@ -65,6 +66,7 @@ public class DecodeTests
             MessageEvents = false,
             TrackerEvents = false,
             GameEvents = false,
+            AttributeEvents = false,
         };
         var replay = await decoder.DecodeAsync(Path.Combine(assemblyPath, "replays", replayFile), options).ConfigureAwait(false);
         Assert.True(replay != null, "Sc2Replay was null");
@@ -105,6 +107,7 @@ public class DecodeTests
             MessageEvents = false,
             TrackerEvents = false,
             GameEvents = false,
+            AttributeEvents = false,
         };
         var replay = await decoder.DecodeAsync(Path.Combine(assemblyPath, "replays", replayFile), options).ConfigureAwait(false);
         Assert.True(replay != null, "Sc2Replay was null");
@@ -142,6 +145,7 @@ public class DecodeTests
             MessageEvents = true,
             TrackerEvents = false,
             GameEvents = false,
+            AttributeEvents = false,
         };
         var replay = await decoder.DecodeAsync(Path.Combine(assemblyPath, "replays", replayFile), options).ConfigureAwait(false);
         Assert.True(replay != null, "Sc2Replay was null");
@@ -182,6 +186,7 @@ public class DecodeTests
             MessageEvents = false,
             TrackerEvents = true,
             GameEvents = false,
+            AttributeEvents = false,
         };
         var replay = await decoder.DecodeAsync(Path.Combine(assemblyPath, "replays", replayFile), options).ConfigureAwait(false);
         Assert.True(replay != null, "Sc2Replay was null");
@@ -222,6 +227,7 @@ public class DecodeTests
             MessageEvents = false,
             TrackerEvents = false,
             GameEvents = false,
+            AttributeEvents = false,
         };
         var replay = await decoder.DecodeAsync(Path.Combine(assemblyPath, "replays", replayFile), options).ConfigureAwait(false);
         Assert.True(replay != null, "Sc2Replay was null");
@@ -260,6 +266,7 @@ public class DecodeTests
             MessageEvents = false,
             TrackerEvents = false,
             GameEvents = true,
+            AttributeEvents = false,
         };
         var replay = await decoder.DecodeAsync(Path.Combine(assemblyPath, "replays", replayFile), options).ConfigureAwait(false);
         Assert.True(replay != null, "Sc2Replay was null");
@@ -270,6 +277,45 @@ public class DecodeTests
         }
         Assert.True(replay.GameEvents != null, "Could not get replay.GameEvents");
         if (replay.GameEvents == null)
+        {
+            decoder.Dispose();
+            return;
+        }
+        decoder.Dispose();
+    }
+
+    [Theory]
+    [InlineData("test1.SC2Replay")]
+    [InlineData("test2.SC2Replay")]
+    [InlineData("test3.SC2Replay")]
+    [InlineData("test4.SC2Replay")]
+    public async Task AttributeEventsTestAsync(string replayFile)
+    {
+        Assert.True(assemblyPath != null, "Could not get ExecutionAssembly path");
+        if (assemblyPath == null)
+        {
+            return;
+        }
+        ReplayDecoder decoder = new(assemblyPath);
+        ReplayDecoderOptions options = new ReplayDecoderOptions()
+        {
+            Initdata = false,
+            Details = false,
+            Metadata = false,
+            MessageEvents = false,
+            TrackerEvents = false,
+            GameEvents = false,
+            AttributeEvents = true,
+        };
+        var replay = await decoder.DecodeAsync(Path.Combine(assemblyPath, "replays", replayFile), options).ConfigureAwait(false);
+        Assert.True(replay != null, "Sc2Replay was null");
+        if (replay == null)
+        {
+            decoder.Dispose();
+            return;
+        }
+        Assert.True(replay.AttributeEvents != null, "Could not get replay.AttributeEvents");
+        if (replay.AttributeEvents == null)
         {
             decoder.Dispose();
             return;

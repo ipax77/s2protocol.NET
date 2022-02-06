@@ -9,8 +9,7 @@ internal partial class Parse
     {
         if (pydic.TryGetValue("m_target", out object? target))
         {
-            PythonDictionary? targetDic = pydic["m_target"] as PythonDictionary;
-            if (targetDic != null)
+            if (target is PythonDictionary targetDic)
             {
                 int m_snapshotControlPlayerId = GetInt(targetDic, "m_snapshotControlPlayerId");
                 (long pointX, long pointY, long pointZ) = GetSnapshotPoint(targetDic);
@@ -47,8 +46,7 @@ internal partial class Parse
     {
         if (pydic.TryGetValue("m_snapshotPoint", out object? point))
         {
-            PythonDictionary? pointDic = point as PythonDictionary;
-            if (pointDic != null)
+            if (point is PythonDictionary pointDic)
             {
                 return (GetBigInt(pointDic, "x"), GetBigInt(pointDic, "y"), GetBigInt(pointDic, "z"));
             }
