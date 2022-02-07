@@ -73,7 +73,7 @@ public sealed class ReplayDecoder : IDisposable
             engine.Execute("from s2protocol import versions", scope);
             versions = scope.GetVariable("versions");
             List pyVersions = versions.list_all();
-            foreach (string v in pyVersions)
+            foreach (string v in pyVersions.OrderBy(o => o))
             {
                 intVersions.Add(int.Parse(v.Substring(8, 5), CultureInfo.InvariantCulture));
             }
@@ -120,13 +120,23 @@ public sealed class ReplayDecoder : IDisposable
             await Parallel.ForEachAsync(replayPaths, parallelOptions, async (replayPath, token) =>
             {
                 var replay = await DecodeAsync(replayPath, options, token).ConfigureAwait(false);
+
                 if (replay != null)
                 {
                     channel.Writer.TryWrite(replay);
                 }
+                else
+                {
+                    logger.DecodeWarning($"failed decoding replay {replayPath}");
+                }
             }).ConfigureAwait(false);
         }
         catch (OperationCanceledException) { }
+        catch (Exception ex)
+        {
+            logger.DecodeError($"failed decoding replays: {ex.Message}");
+            throw new DecodeException($"failed decoding replays: {ex.Message}");
+        }
         finally
         {
             channel.Writer.Complete();
@@ -170,7 +180,7 @@ public sealed class ReplayDecoder : IDisposable
         if (!intVersions.Contains(baseBuild))
         {
             int replBuild = baseBuild;
-            baseBuild = intVersions.FirstOrDefault(f => f > baseBuild);
+            baseBuild = intVersions.LastOrDefault(f => f < baseBuild);
             if (baseBuild == 0)
             {
                 baseBuild = intVersions.Last();
@@ -195,7 +205,7 @@ public sealed class ReplayDecoder : IDisposable
             throw new DecodeException($"could not get replay protocol {replayPath} {baseBuild}");
         }
 
-        Sc2Replay replay = new Sc2Replay(header);
+        Sc2Replay replay = new Sc2Replay(header, Path.GetFileNameWithoutExtension(replayPath));
 
         if (options.Initdata)
         {
@@ -225,7 +235,7 @@ public sealed class ReplayDecoder : IDisposable
 
         if (options.Metadata)
         {
-            var metadata = await GetMetadataAsync(archive, protocol, token);
+            var metadata = await GetMetadataAsync(archive, token);
             if (metadata == null)
             {
                 if (token.IsCancellationRequested)
@@ -257,9 +267,83 @@ public sealed class ReplayDecoder : IDisposable
                 throw new DecodeException($"could not get replay TrackerEvents {replayPath}");
             }
             replay.TrackerEvents = Parse.Tracker(trackerEvents);
+            if (replay.TrackerEvents != null)
+            {
+                replay.TrackerEvents.SUnitBornEvents.ToList().ForEach(f => f.UnitIndex = GetUnitIndex(protocol, f.UnitTagIndex, f.UnitTagRecycle));
+                replay.TrackerEvents.SUnitInitEvents.ToList().ForEach(f => f.UnitIndex = GetUnitIndex(protocol, f.UnitTagIndex, f.UnitTagRecycle));
+                replay.TrackerEvents.SUnitDiedEvents.ToList().ForEach(f => f.UnitIndex = GetUnitIndex(protocol, f.UnitTagIndex, f.UnitTagRecycle));
+                replay.TrackerEvents.SUnitDoneEvents.ToList().ForEach(f => f.UnitIndex = GetUnitIndex(protocol, f.UnitTagIndex, f.UnitTagRecycle));
+                replay.TrackerEvents.SUnitOwnerChangeEvents.ToList().ForEach(f => f.UnitIndex = GetUnitIndex(protocol, f.UnitTagIndex, f.UnitTagRecycle));
+                Parse.SetTrackerEventsUnitConnections(replay.TrackerEvents);
+            }
+        }
+
+        if (options.GameEvents)
+        {
+            var gameEvents = await GetGameEventsAsync(archive, protocol, token);
+            if (gameEvents == null)
+            {
+                if (token.IsCancellationRequested)
+                    return null;
+                throw new DecodeException($"could not get replay TrackerEvents {replayPath}");
+            }
+            replay.GameEvents = Parse.GameEvents(gameEvents);
+        }
+
+        if (options.AttributeEvents)
+        {
+            var attributeEvents = await GetAttributeEventsAsync(archive, protocol, token);
+            if (attributeEvents == null)
+            {
+                if (token.IsCancellationRequested)
+                    return null;
+                throw new DecodeException($"could not get replay AttributeEvents {replayPath}");
+            }
+            replay.AttributeEvents = Parse.GetAttributeEvents(attributeEvents);
         }
 
         return replay;
+    }
+
+    private static int GetUnitIndex(dynamic protocol, int unitTagIndex, int unitTagRecyle)
+    {
+        return protocol.unit_tag(unitTagIndex, unitTagRecyle);
+    }
+
+    private static async Task<dynamic?> GetAttributeEventsAsync(dynamic archive, dynamic protocol, CancellationToken token)
+    {
+        try
+        {
+            return await Task.Run(() =>
+            {
+                var game_enc = archive.read_file("replay.attributes.events");
+                if (game_enc != null)
+                {
+                    return protocol.decode_replay_attributes_events(game_enc);
+                }
+                return null;
+            }, token).ConfigureAwait(false);
+        }
+        catch (OperationCanceledException) { }
+        return null;
+    }
+
+    private static async Task<dynamic?> GetGameEventsAsync(dynamic archive, dynamic protocol, CancellationToken token)
+    {
+        try
+        {
+            return await Task.Run(() =>
+            {
+                var game_enc = archive.read_file("replay.game.events");
+                if (game_enc != null)
+                {
+                    return protocol.decode_replay_game_events(game_enc);
+                }
+                return null;
+            }, token).ConfigureAwait(false);
+        }
+        catch (OperationCanceledException) { }
+        return null;
     }
 
     private static async Task<dynamic?> GetInitdataAsync(dynamic archive, dynamic protocol, CancellationToken token)
@@ -316,7 +400,7 @@ public sealed class ReplayDecoder : IDisposable
         return null;
     }
 
-    private static async Task<Metadata?> GetMetadataAsync(dynamic archive, dynamic protocol, CancellationToken token)
+    private static async Task<Metadata?> GetMetadataAsync(dynamic archive, CancellationToken token)
     {
         try
         {

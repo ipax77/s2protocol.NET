@@ -13,10 +13,17 @@ public record ReplayDecoderOptions
     /// <summary>Decode Metadata (APM, Race selected/assigned)</summary>
     /// 
     public bool Metadata { get; set; } = true;
+    /// <summary>Decode TrackerEvents</summary>
+    /// 
+    public bool GameEvents { get; set; } = true;
     /// <summary>Decode MessageEvents</summary>
     /// 
     public bool MessageEvents { get; set; } = true;
     /// <summary>Decode TrackerEvents</summary>
     /// 
     public bool TrackerEvents { get; set; } = true;
+    /// <summary>Decode AttributeEvents</summary>
+    /// 
+    public bool AttributeEvents { get; set; } = true;
+
 }

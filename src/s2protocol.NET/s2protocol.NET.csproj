@@ -9,11 +9,11 @@
     <PackageReadmeFile>README.md</PackageReadmeFile>
     <RepositoryUrl>https://github.com/ipax77/s2protocol.NET</RepositoryUrl>
     <PackageTags>Starcraft2;Blizzard;s2protocol;IronPython;Replay;Replays;Decoder;Wrapper</PackageTags>
-    <AssemblyVersion>0.6.1.0</AssemblyVersion>
+    <AssemblyVersion>0.6.2.0</AssemblyVersion>
     <Owners>Philipp Hetzner</Owners>
     <Authors>Philipp Hetzner</Authors>
-    <Version>0.6.1</Version>
-	  <FileVersion>0.6.1.0</FileVersion>    
+    <Version>0.6.2</Version>
+	  <FileVersion>0.6.2.0</FileVersion>    
     <PackageLicenseExpression>MIT</PackageLicenseExpression>
     <EnforceCodeStyleInBuild>true</EnforceCodeStyleInBuild>
     <EnableNETAnalyzers>true</EnableNETAnalyzers>

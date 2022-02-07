@@ -10,8 +10,9 @@ public record Sc2Replay
 {
     /// <summary>Record <c>Sc2Replay</c> constructor</summary>
     ///
-    public Sc2Replay(dynamic header)
+    public Sc2Replay(dynamic header, string fileName)
     {
+        FileName = fileName;
         Header = Parser.Parse.Header(header);
     }
 
@@ -24,7 +25,9 @@ public record Sc2Replay
     {
 
     }
-
+    /// <summary>Replay FileName</summary>
+    ///
+    public string FileName { get; init; }
     /// <summary>Replay Header infos</summary>
     ///
     public Header Header { get; init; }
@@ -49,4 +52,12 @@ public record Sc2Replay
     ///
     [JsonInclude]
     public TrackerEvents? TrackerEvents { get; internal set; }
+    /// <summary>Replay GameEvents</summary>
+    ///
+    [JsonInclude]
+    public GameEvents? GameEvents { get; internal set; }
+    /// <summary>Replay AttributeEvents</summary>
+    ///
+    [JsonInclude]
+    public AttributeEvents? AttributeEvents { get; internal set; }
 }

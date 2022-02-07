@@ -8,8 +8,7 @@ internal partial class Parse
     {
         if (pydic.ContainsKey("m_syncLobbyState"))
         {
-            PythonDictionary? initDic = pydic["m_syncLobbyState"] as PythonDictionary;
-            if (initDic != null)
+            if (pydic["m_syncLobbyState"] is PythonDictionary initDic)
             {
                 List<UserInitialData> userInitialDatas = GetUserInitialData(initDic);
                 LobbyState lobbyState = GetLobbyState(initDic);
@@ -24,8 +23,7 @@ internal partial class Parse
     {
         if (pydic.ContainsKey("m_gameDescription"))
         {
-            PythonDictionary? descDic = pydic["m_gameDescription"] as PythonDictionary;
-            if (descDic != null)
+            if (pydic["m_gameDescription"] is PythonDictionary descDic)
             {
                 int maxRaces = GetInt(descDic, "m_maxRaces");
                 int maxTeams = GetInt(descDic, "m_maxTeams");
@@ -94,8 +92,7 @@ internal partial class Parse
     {
         if (pydic.ContainsKey("m_gameOptions"))
         {
-            PythonDictionary? optDic = pydic["m_gameOptions"] as PythonDictionary;
-            if (optDic != null)
+            if (pydic["m_gameOptions"] is PythonDictionary optDic)
             {
                 bool competitive = GetBool(optDic, "m_competitive");
                 bool practice = GetBool(optDic, "m_practice");
@@ -138,16 +135,14 @@ internal partial class Parse
 
     private static List<SlotDescription> GetSlotDescriptions(PythonDictionary pydic)
     {
-        List<SlotDescription> slotDescscitions = new List<SlotDescription>();
+        List<SlotDescription> slotDescscitions = new();
         if (pydic.ContainsKey("m_slotDescriptions"))
         {
-            List? slotDescs = pydic["m_slotDescriptions"] as List;
-            if (slotDescs != null)
+            if (pydic["m_slotDescriptions"] is List slotDescs)
             {
                 foreach (var slotDesc in slotDescs)
                 {
-                    PythonDictionary? slotDic = slotDesc as PythonDictionary;
-                    if (slotDic != null)
+                    if (slotDesc is PythonDictionary slotDic)
                     {
                         var allowedRaces = GetIntBigTuple(slotDic, "m_allowedRaces");
                         var allowedColors = GetIntBigTuple(slotDic, "m_allowedColors");
@@ -174,8 +169,7 @@ internal partial class Parse
     {
         if (pydic.ContainsKey("m_lobbyState"))
         {
-            PythonDictionary? lobbyDic = pydic["m_lobbyState"] as PythonDictionary;
-            if (lobbyDic != null)
+            if (pydic["m_lobbyState"] is PythonDictionary lobbyDic)
             {
                 int maxUser = GetInt(lobbyDic, "m_maxUsers");
                 List<Slot> slots = GetSlots(lobbyDic);
@@ -206,16 +200,14 @@ internal partial class Parse
 
     private static List<Slot> GetSlots(PythonDictionary pydic)
     {
-        List<Slot> slots = new List<Slot>();
+        List<Slot> slots = new();
         if (pydic.ContainsKey("m_slots"))
         {
-            var slotList = pydic["m_slots"] as List;
-            if (slotList != null)
+            if (pydic["m_slots"] is List slotList)
             {
                 foreach (var item in slotList)
                 {
-                    PythonDictionary? slotDic = item as PythonDictionary;
-                    if (slotDic != null)
+                    if (item is PythonDictionary slotDic)
                     {
                         int aCEnemyRace = GetInt(slotDic, "m_aCEnemyRace");
                         string toonHandle = GetString(slotDic, "m_toonHandle");
@@ -290,17 +282,14 @@ internal partial class Parse
 
     private static List<UserInitialData> GetUserInitialData(PythonDictionary pydic)
     {
-        List<UserInitialData> initDatas = new List<UserInitialData>();
+        List<UserInitialData> initDatas = new();
         if (pydic.ContainsKey("m_userInitialData"))
         {
-            List? userInitalDatas = pydic["m_userInitialData"] as List;
-
-            if (userInitalDatas != null)
+            if (pydic["m_userInitialData"] is List userInitalDatas)
             {
                 foreach (var userInitalData in userInitalDatas)
                 {
-                    PythonDictionary? initDic = userInitalData as PythonDictionary;
-                    if (initDic != null)
+                    if (userInitalData is PythonDictionary initDic)
                     {
                         string mount = GetString(initDic, "m_mount");
                         string skin = GetString(initDic, "m_skin");
@@ -321,25 +310,25 @@ internal partial class Parse
                         int randomSeed = GetInt(initDic, "m_randomSeed");
                         string hero = GetString(initDic, "m_hero");
                         long? scaledRating = GetNullableBigInt(initDic, "m_scaledRating");
-                        UserInitialData initData = new UserInitialData(mount,
-                                                                       skin,
-                                                                       observe,
-                                                                       teamPref,
-                                                                       toonHandle,
-                                                                       combinedRaceLevels,
-                                                                       highestLeague,
-                                                                       clanTag,
-                                                                       testMap,
-                                                                       testAuto,
-                                                                       examine,
-                                                                       testType,
-                                                                       customInterface,
-                                                                       clanLogo,
-                                                                       name,
-                                                                       racePreference,
-                                                                       randomSeed,
-                                                                       hero,
-                                                                       scaledRating);
+                        UserInitialData initData = new(mount,
+                                                        skin,
+                                                        observe,
+                                                        teamPref,
+                                                        toonHandle,
+                                                        combinedRaceLevels,
+                                                        highestLeague,
+                                                        clanTag,
+                                                        testMap,
+                                                        testAuto,
+                                                        examine,
+                                                        testType,
+                                                        customInterface,
+                                                        clanLogo,
+                                                        name,
+                                                        racePreference,
+                                                        randomSeed,
+                                                        hero,
+                                                        scaledRating);
                         initDatas.Add(initData);
                     }
                 }
@@ -352,8 +341,7 @@ internal partial class Parse
     {
         if (pydic.ContainsKey("m_teamPreference"))
         {
-            PythonDictionary? teamDic = pydic["m_teamPreference"] as PythonDictionary;
-            if (teamDic != null)
+            if (pydic["m_teamPreference"] is PythonDictionary teamDic)
             {
                 return GetNullableInt(teamDic, "m_team");
             }
@@ -365,8 +353,7 @@ internal partial class Parse
     {
         if (pydic.ContainsKey(property))
         {
-            PythonDictionary? raceDic = pydic[property] as PythonDictionary;
-            if (raceDic != null)
+            if (pydic[property] is PythonDictionary raceDic)
             {
                 return GetNullableInt(raceDic, "m_race");
             }
@@ -377,8 +364,7 @@ internal partial class Parse
     {
         if (pydic.ContainsKey("m_colorPref"))
         {
-            PythonDictionary? colDic = pydic["m_colorPref"] as PythonDictionary;
-            if (colDic != null)
+            if (pydic["m_colorPref"] is PythonDictionary colDic)
             {
                 return GetNullableInt(colDic, "m_color");
             }

@@ -4,94 +4,59 @@ using s2protocol.NET.Models;
 namespace s2protocol.NET.Parser;
 internal partial class Parse
 {
-    public static TrackerEvents Tracker(dynamic pydic)
+    internal static TrackerEvents Tracker(dynamic pydic)
     {
-        List<SPlayerSetupEvent> SPlayerSetupEvents = new();
-        List<SPlayerStatsEvent> SPlayerStatsEvents = new();
-        List<SUnitBornEvent> SUnitBornEvents = new();
-        List<SUnitDiedEvent> SUnitDiedEvents = new();
-        List<SUnitOwnerChangeEvent> SUnitOwnerChangeEvents = new();
-        List<SUnitPositionsEvent> SUnitPositionsEvents = new();
-        List<SUnitTypeChangeEvent> SUnitTypeChangeEvents = new();
-        List<SUpgradeEvent> SUpgradeEvents = new();
-        List<SUnitInitEvent> SUnitInitEvents = new();
-        List<SUnitDoneEvent> SUnitDoneEvents = new();
+        List<TrackerEvent> trackerevents = new();
 
         foreach (var ent in pydic)
         {
-            PythonDictionary? eventDic = ent as PythonDictionary;
-            if (eventDic != null)
+            if (ent is PythonDictionary eventDic)
             {
                 TrackerEvent trackerEvent = GetTrackerEvent(eventDic);
 
-                if (trackerEvent.EventType == TrackerEventType.SUnitBornEvent)
+                TrackerEvent detailEvent = trackerEvent.EventType switch
                 {
-                    SUnitBornEvents.Add(GetSUnitBornEvent(eventDic, trackerEvent));
-                }
-                else if (trackerEvent.EventType == TrackerEventType.SPlayerSetupEvent)
-                {
-                    SPlayerSetupEvents.Add(GetSPlayerSetupEvent(eventDic, trackerEvent));
-                }
-                else if (trackerEvent.EventType == TrackerEventType.SUnitDiedEvent)
-                {
-                    SUnitDiedEvents.Add(GetSUnitDiedEvent(eventDic, trackerEvent));
-                }
-                else if (trackerEvent.EventType == TrackerEventType.SPlayerStatsEvent)
-                {
-                    SPlayerStatsEvents.Add(GetSPlayerStatsEvent(eventDic, trackerEvent));
-                }
-                else if (trackerEvent.EventType == TrackerEventType.SUnitOwnerChangeEvent)
-                {
-                    SUnitOwnerChangeEvents.Add(GetSUnitOwnerChangeEvent(eventDic, trackerEvent));
-                }
-                else if (trackerEvent.EventType == TrackerEventType.SUnitPositionsEvent)
-                {
-                    SUnitPositionsEvents.Add(GetSUnitPositionsEvent(eventDic, trackerEvent));
-                }
-                else if (trackerEvent.EventType == TrackerEventType.SUnitTypeChangeEvent)
-                {
-                    SUnitTypeChangeEvents.Add(GetSUnitTypeChangeEvent(eventDic, trackerEvent));
-                }
-                else if (trackerEvent.EventType == TrackerEventType.SUpgradeEvent)
-                {
-                    SUpgradeEvents.Add(GetSUpgradeEvent(eventDic, trackerEvent));
-                }
-                else if (trackerEvent.EventType == TrackerEventType.SUnitInitEvent)
-                {
-                    SUnitInitEvents.Add(GetSUnitInitEvent(eventDic, trackerEvent));
-                }
-                else if (trackerEvent.EventType == TrackerEventType.SUnitDoneEvent)
-                {
-                    SUnitDoneEvents.Add(GetSUnitDoneEvent(eventDic, trackerEvent));
-                }
-                else
-                {
-                    ReplayDecoder.logger.DecodeWarning($"Tracker event type unknown: {GetString(eventDic, "_event")}");
-                }
+                    TrackerEventType.SPlayerSetupEvent => GetSPlayerSetupEvent(eventDic, trackerEvent),
+                    TrackerEventType.SPlayerStatsEvent => GetSPlayerStatsEvent(eventDic, trackerEvent),
+                    TrackerEventType.SUnitBornEvent => GetSUnitBornEvent(eventDic, trackerEvent),
+                    TrackerEventType.SUnitDiedEvent => GetSUnitDiedEvent(eventDic, trackerEvent),
+                    TrackerEventType.SUnitOwnerChangeEvent => GetSUnitOwnerChangeEvent(eventDic, trackerEvent),
+                    TrackerEventType.SUnitPositionsEvent => GetSUnitPositionsEvent(eventDic, trackerEvent),
+                    TrackerEventType.SUnitTypeChangeEvent => GetSUnitTypeChangeEvent(eventDic, trackerEvent),
+                    TrackerEventType.SUpgradeEvent => GetSUpgradeEvent(eventDic, trackerEvent),
+                    TrackerEventType.SUnitInitEvent => GetSUnitInitEvent(eventDic, trackerEvent),
+                    TrackerEventType.SUnitDoneEvent => GetSUnitDoneEvent(eventDic, trackerEvent),
+                    _ => GetUnknownEvent(eventDic, trackerEvent)
+                };
+                trackerevents.Add(detailEvent);
             }
         }
 
-        //SUnitInitEvent = 9,
-
-        return new TrackerEvents(
-            SPlayerSetupEvents.ToArray(),
-            SPlayerStatsEvents.ToArray(),
-            SUnitBornEvents.ToArray(),
-            SUnitDiedEvents.ToArray(),
-            SUnitOwnerChangeEvents.ToArray(),
-            SUnitPositionsEvents.ToArray(),
-            SUnitTypeChangeEvents.ToArray(),
-            SUpgradeEvents.ToArray(),
-            SUnitInitEvents.ToArray(),
-            SUnitDoneEvents.ToArray()
+        var events = new TrackerEvents(
+            trackerevents.OfType<SPlayerSetupEvent>().ToArray(),
+            trackerevents.OfType<SPlayerStatsEvent>().ToArray(),
+            trackerevents.OfType<SUnitBornEvent>().ToArray(),
+            trackerevents.OfType<SUnitDiedEvent>().ToArray(),
+            trackerevents.OfType<SUnitOwnerChangeEvent>().ToArray(),
+            trackerevents.OfType<SUnitPositionsEvent>().ToArray(),
+            trackerevents.OfType<SUnitTypeChangeEvent>().ToArray(),
+            trackerevents.OfType<SUpgradeEvent>().ToArray(),
+            trackerevents.OfType<SUnitInitEvent>().ToArray(),
+            trackerevents.OfType<SUnitDoneEvent>().ToArray()
         );
+
+
+
+        return events;
     }
 
-    private static SUnitDoneEvent GetSUnitDoneEvent(PythonDictionary pydic, TrackerEvent trackerEvent)
+    internal static void SetTrackerEventsUnitConnections(TrackerEvents trackerEvents)
     {
-        int unitTagIndex = GetInt(pydic, "m_unitTagIndex");
-        int unitTagRecycle = GetInt(pydic, "m_unitTagRecycle");
-        return new SUnitDoneEvent(trackerEvent, unitTagIndex, unitTagRecycle);
+        trackerEvents.SUnitBornEvents.ToList().ForEach(x => x.SUnitDiedEvent = trackerEvents.SUnitDiedEvents.FirstOrDefault(f => f.UnitIndex == x.UnitIndex));
+        trackerEvents.SUnitInitEvents.ToList().ForEach(x => x.SUnitDiedEvent = trackerEvents.SUnitDiedEvents.FirstOrDefault(f => f.UnitIndex == x.UnitIndex));
+        trackerEvents.SUnitInitEvents.ToList().ForEach(x => x.SUnitDoneEvent = trackerEvents.SUnitDoneEvents.FirstOrDefault(f => f.UnitIndex == x.UnitIndex));
+        trackerEvents.SUnitDiedEvents.ToList().ForEach(x => x.KillerUnitBornEvent = trackerEvents.SUnitBornEvents.FirstOrDefault(f => f.UnitTagIndex == x.KillerUnitTagIndex && f.UnitTagRecycle == x.KillerUnitTagRecycle));
+        trackerEvents.SUnitDiedEvents.ToList().ForEach(x => x.KillerUnitInitEvent = trackerEvents.SUnitInitEvents.FirstOrDefault(f => f.UnitTagIndex == x.KillerUnitTagIndex && f.UnitTagRecycle == x.KillerUnitTagRecycle));
     }
 
     private static TrackerEvent GetTrackerEvent(PythonDictionary pydic)
@@ -103,6 +68,20 @@ internal partial class Parse
         int gameloop = GetInt(pydic, "_gameloop");
         return new TrackerEvent(playerId, eventId, type, bits, gameloop);
     }
+
+    private static TrackerEvent GetUnknownEvent(PythonDictionary pydic, TrackerEvent trackerEvent)
+    {
+        ReplayDecoder.logger.DecodeWarning($"Game event type unknown: {GetString(pydic, "_event")}");
+        return trackerEvent;
+    }
+
+    private static SUnitDoneEvent GetSUnitDoneEvent(PythonDictionary pydic, TrackerEvent trackerEvent)
+    {
+        int unitTagIndex = GetInt(pydic, "m_unitTagIndex");
+        int unitTagRecycle = GetInt(pydic, "m_unitTagRecycle");
+        return new SUnitDoneEvent(trackerEvent, unitTagIndex, unitTagRecycle);
+    }
+
 
     private static SUnitInitEvent GetSUnitInitEvent(PythonDictionary pydic, TrackerEvent trackerEvent)
     {
@@ -134,11 +113,10 @@ internal partial class Parse
     private static SUnitPositionsEvent GetSUnitPositionsEvent(PythonDictionary pydic, TrackerEvent trackerEvent)
     {
         int firstUnitIndex = GetInt(pydic, "m_firstUnitIndex");
-        List<int> items = new List<int>();
+        List<int> items = new();
         if (pydic.ContainsKey("m_items"))
         {
-            var nums = pydic["m_items"] as ICollection<object>;
-            if (nums != null)
+            if (pydic["m_items"] is ICollection<object> nums)
             {
                 foreach (var num in nums)
                 {
@@ -162,142 +140,6 @@ internal partial class Parse
         return new SUnitOwnerChangeEvent(trackerEvent, unitTagIndex, unitTagRecycle, controlPlayerId, upkeepPlayerId);
     }
 
-    private static SPlayerStatsEvent GetSPlayerStatsEvent(PythonDictionary pydic, TrackerEvent trackerEvent)
-    {
-        if (pydic.ContainsKey("m_stats"))
-        {
-            PythonDictionary? statsDic = pydic["m_stats"] as PythonDictionary;
-            if (statsDic != null)
-            {
-                int scoreValueVespeneUsedCurrentTechnology = GetInt(statsDic, "m_scoreValueVespeneUsedCurrentTechnology");
-                int scoreValueVespeneFriendlyFireArmy = GetInt(statsDic, "m_scoreValueVespeneFriendlyFireArmy");
-                int scoreValueMineralsFriendlyFireTechnology = GetInt(statsDic, "m_scoreValueMineralsFriendlyFireTechnology");
-                int scoreValueMineralsUsedCurrentEconomy = GetInt(statsDic, "m_scoreValueMineralsUsedCurrentEconomy");
-                int scoreValueVespeneLostEconomy = GetInt(statsDic, "m_scoreValueVespeneLostEconomy");
-                int scoreValueMineralsUsedCurrentArmy = GetInt(statsDic, "m_scoreValueMineralsUsedCurrentArmy");
-                int scoreValueVespeneUsedInProgressArmy = GetInt(statsDic, "m_scoreValueVespeneUsedInProgressArmy");
-                int scoreValueVespeneCollectionRate = GetInt(statsDic, "m_scoreValueVespeneCollectionRate");
-                int scoreValueMineralsUsedInProgressTechnology = GetInt(statsDic, "m_scoreValueMineralsUsedInProgressTechnology");
-                int scoreValueMineralsCollectionRate = GetInt(statsDic, "m_scoreValueMineralsCollectionRate");
-                int scoreValueWorkersActiveCount = GetInt(statsDic, "m_scoreValueWorkersActiveCount");
-                int scoreValueMineralsUsedInProgressArmy = GetInt(statsDic, "m_scoreValueMineralsUsedInProgressArmy");
-                int scoreValueVespeneLostArmy = GetInt(statsDic, "m_scoreValueVespeneLostArmy");
-                int scoreValueMineralsKilledEconomy = GetInt(statsDic, "m_scoreValueMineralsKilledEconomy");
-                int scoreValueMineralsUsedCurrentTechnology = GetInt(statsDic, "m_scoreValueMineralsUsedCurrentTechnology");
-                int scoreValueMineralsKilledArmy = GetInt(statsDic, "m_scoreValueMineralsKilledArmy");
-                int scoreValueMineralsLostEconomy = GetInt(statsDic, "m_scoreValueMineralsLostEconomy");
-                int scoreValueMineralsCurrent = GetInt(statsDic, "m_scoreValueMineralsCurrent");
-                int scoreValueMineralsLostArmy = GetInt(statsDic, "m_scoreValueMineralsLostArmy");
-                int scoreValueVespeneKilledArmy = GetInt(statsDic, "m_scoreValueVespeneKilledArmy");
-                int scoreValueVespeneKilledTechnology = GetInt(statsDic, "m_scoreValueVespeneKilledTechnology");
-                int scoreValueVespeneKilledEconomy = GetInt(statsDic, "m_scoreValueVespeneKilledEconomy");
-                int scoreValueMineralsUsedActiveForces = GetInt(statsDic, "m_scoreValueMineralsUsedActiveForces");
-                int scoreValueVespeneUsedCurrentArmy = GetInt(statsDic, "m_scoreValueVespeneUsedCurrentArmy");
-                int scoreValueMineralsFriendlyFireArmy = GetInt(statsDic, "m_scoreValueMineralsFriendlyFireArmy");
-                int scoreValueVespeneUsedActiveForces = GetInt(statsDic, "m_scoreValueVespeneUsedActiveForces");
-                int scoreValueVespeneCurrent = GetInt(statsDic, "m_scoreValueVespeneCurrent");
-                int scoreValueMineralsLostTechnology = GetInt(statsDic, "m_scoreValueMineralsLostTechnology");
-                int scoreValueMineralsUsedInProgressEconomy = GetInt(statsDic, "m_scoreValueMineralsUsedInProgressEconomy");
-                int scoreValueMineralsFriendlyFireEconomy = GetInt(statsDic, "m_scoreValueMineralsFriendlyFireEconomy");
-                int scoreValueVespeneUsedInProgressTechnology = GetInt(statsDic, "m_scoreValueVespeneUsedInProgressTechnology");
-                int scoreValueFoodMade = GetInt(statsDic, "m_scoreValueFoodMade");
-                int scoreValueMineralsKilledTechnology = GetInt(statsDic, "m_scoreValueMineralsKilledTechnology");
-                int scoreValueVespeneLostTechnology = GetInt(statsDic, "m_scoreValueVespeneLostTechnology");
-                int scoreValueVespeneFriendlyFireEconomy = GetInt(statsDic, "m_scoreValueVespeneFriendlyFireEconomy");
-                int scoreValueVespeneUsedInProgressEconomy = GetInt(statsDic, "m_scoreValueVespeneUsedInProgressEconomy");
-                int scoreValueVespeneUsedCurrentEconomy = GetInt(statsDic, "m_scoreValueVespeneUsedCurrentEconomy");
-                int scoreValueVespeneFriendlyFireTechnology = GetInt(statsDic, "m_scoreValueVespeneFriendlyFireTechnology");
-                int scoreValueFoodUsed = GetInt(statsDic, "m_scoreValueFoodUsed");
-                return new SPlayerStatsEvent
-                    (
-                        trackerEvent,
-                        scoreValueVespeneUsedCurrentTechnology,
-                        scoreValueVespeneFriendlyFireArmy,
-                        scoreValueMineralsFriendlyFireTechnology,
-                        scoreValueMineralsUsedCurrentEconomy,
-                        scoreValueVespeneLostEconomy,
-                        scoreValueMineralsUsedCurrentArmy,
-                        scoreValueVespeneUsedInProgressArmy,
-                        scoreValueVespeneCollectionRate,
-                        scoreValueMineralsUsedInProgressTechnology,
-                        scoreValueMineralsCollectionRate,
-                        scoreValueWorkersActiveCount,
-                        scoreValueMineralsUsedInProgressArmy,
-                        scoreValueVespeneLostArmy,
-                        scoreValueMineralsKilledEconomy,
-                        scoreValueMineralsUsedCurrentTechnology,
-                        scoreValueMineralsKilledArmy,
-                        scoreValueMineralsLostEconomy,
-                        scoreValueMineralsCurrent,
-                        scoreValueMineralsLostArmy,
-                        scoreValueVespeneKilledArmy,
-                        scoreValueVespeneKilledTechnology,
-                        scoreValueVespeneKilledEconomy,
-                        scoreValueMineralsUsedActiveForces,
-                        scoreValueVespeneUsedCurrentArmy,
-                        scoreValueMineralsFriendlyFireArmy,
-                        scoreValueVespeneUsedActiveForces,
-                        scoreValueVespeneCurrent,
-                        scoreValueMineralsLostTechnology,
-                        scoreValueMineralsUsedInProgressEconomy,
-                        scoreValueMineralsFriendlyFireEconomy,
-                        scoreValueVespeneUsedInProgressTechnology,
-                        scoreValueFoodMade,
-                        scoreValueMineralsKilledTechnology,
-                        scoreValueVespeneLostTechnology,
-                        scoreValueVespeneFriendlyFireEconomy,
-                        scoreValueVespeneUsedInProgressEconomy,
-                        scoreValueVespeneUsedCurrentEconomy,
-                        scoreValueVespeneFriendlyFireTechnology,
-                        scoreValueFoodUsed
-                    );
-            }
-        }
-        return new SPlayerStatsEvent
-            (
-                trackerEvent,
-                0,
-                0,
-                0,
-                0,
-                0,
-                0,
-                0,
-                0,
-                0,
-                0,
-                0,
-                0,
-                0,
-                0,
-                0,
-                0,
-                0,
-                0,
-                0,
-                0,
-                0,
-                0,
-                0,
-                0,
-                0,
-                0,
-                0,
-                0,
-                0,
-                0,
-                0,
-                0,
-                0,
-                0,
-                0,
-                0,
-                0,
-                0,
-                0
-            );
-    }
-
     private static SUnitDiedEvent GetSUnitDiedEvent(PythonDictionary pydic, TrackerEvent trackerEvent)
     {
         int unitTagIndex = GetInt(pydic, "m_unitTagIndex");
@@ -315,14 +157,14 @@ internal partial class Parse
         int unitTagIndex = GetInt(pydic, "m_unitTagIndex");
         int unitTagRecycle = GetInt(pydic, "m_unitTagRecycle");
         string? creatorAbilityName = GetNullableString(pydic, "m_creatorAbilityName");
-        string? creatorUnitTagRecylce = GetNullableString(pydic, "m_creatorUnitTagRecycle");
+        int? creatorUnitTagRecylce = GetNullableInt(pydic, "m_creatorUnitTagRecycle");
         int controlPlayerId = GetInt(pydic, "m_controlPlayerId");
         int x = GetInt(pydic, "m_x");
         int y = GetInt(pydic, "m_y");
         int upkeepPlayerId = GetInt(pydic, "m_upkeepPlayerId");
         string unitTypeName = GetString(pydic, "m_unitTypeName");
         int? creatorUnitTagIndex = GetNullableInt(pydic, "m_creatorUnitTagIndex");
-        return new SUnitBornEvent(trackerEvent, unitTagIndex, unitTagRecycle, creatorAbilityName, creatorUnitTagIndex, controlPlayerId, x, y, upkeepPlayerId, unitTypeName, creatorUnitTagIndex);
+        return new SUnitBornEvent(trackerEvent, unitTagIndex, unitTagRecycle, creatorAbilityName, creatorUnitTagRecylce, controlPlayerId, x, y, upkeepPlayerId, unitTypeName, creatorUnitTagIndex);
     }
 
     private static SPlayerSetupEvent GetSPlayerSetupEvent(PythonDictionary pydic, TrackerEvent trackerEvent)

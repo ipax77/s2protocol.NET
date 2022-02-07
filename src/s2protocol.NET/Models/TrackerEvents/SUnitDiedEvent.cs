@@ -7,6 +7,7 @@ public record SUnitDiedEvent : TrackerEvent
 {
     /// <summary>Record <c>SUnitDiedEvent</c> constructor</summary>
     /// <comment>You may receive a SUnitDiedEvent after either a UnitInit or UnitBorn event for the corresponding unit tag.</comment>
+    /// <comment>There's a known issue where revived units are not tracked, and placeholder units track death but not birth.</comment>
     /// 
     public SUnitDiedEvent(TrackerEvent trackerEvent,
                           int unitTagIndex,
@@ -35,7 +36,10 @@ public record SUnitDiedEvent : TrackerEvent
     {
 
     }
-
+    /// <summary>Event UnitIndex</summary>
+    /// <comment>Convert unit tag index, recycle pairs into unit tags (as seen in game events) with protocol.unit_tag(index, recycle)</comment>
+    /// 
+    public int UnitIndex { get; internal set; }
     /// <summary>Event UnitTagIndex</summary>
     ///
     public int UnitTagIndex { get; init; }
@@ -57,4 +61,11 @@ public record SUnitDiedEvent : TrackerEvent
     /// <summary>Event KillerUnitTagIndex</summary>
     ///
     public int? KillerUnitTagIndex { get; init; }
+    /// <summary>Event KillerUnitEvent - either SUnitBorn- or SUnitInitEvent</summary>
+    ///
+    public SUnitInitEvent? KillerUnitInitEvent { get; internal set; }
+    /// <summary>Event KillerUnitEvent - either SUnitBorn- or SUnitInitEvent</summary>
+    ///
+    public SUnitBornEvent? KillerUnitBornEvent { get; internal set; }
+
 }

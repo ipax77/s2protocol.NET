@@ -29,7 +29,10 @@ public record SUnitOwnerChangeEvent : TrackerEvent
     {
 
     }
-
+    /// <summary>Event UnitIndex</summary>
+    /// <comment>Convert unit tag index, recycle pairs into unit tags (as seen in game events) with protocol.unit_tag(index, recycle)</comment>
+    /// 
+    public int UnitIndex { get; internal set; }
     /// <summary>Event UnitTagIndex</summary>
     ///
     public int UnitTagIndex { get; init; }

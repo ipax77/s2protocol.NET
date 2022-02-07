@@ -27,11 +27,10 @@ internal partial class Parse
 
     private static List<DetailsPlayer> GetDetailsPlayers(PythonDictionary pydic)
     {
-        List<DetailsPlayer> players = new List<DetailsPlayer>();
+        List<DetailsPlayer> players = new();
         if (pydic.ContainsKey("m_playerList"))
         {
-            var plDics = pydic["m_playerList"] as ICollection<object>;
-            if (plDics != null)
+            if (pydic["m_playerList"] is ICollection<object> plDics)
             {
                 foreach (PythonDictionary plDic in plDics)
                 {
@@ -61,8 +60,7 @@ internal partial class Parse
     {
         if (pydic.ContainsKey("m_toon"))
         {
-            var toonDic = pydic["m_toon"] as PythonDictionary;
-            if (toonDic != null)
+            if (pydic["m_toon"] is PythonDictionary toonDic)
             {
                 return new Toon(GetInt(toonDic, "m_id"), GetString(toonDic, "m_programId"), GetInt(toonDic, "m_realm"), GetInt(toonDic, "m_region"));
             }
@@ -74,8 +72,7 @@ internal partial class Parse
     {
         if (pydic.ContainsKey("m_color"))
         {
-            var colDic = pydic["m_color"] as PythonDictionary;
-            if (colDic != null)
+            if (pydic["m_color"] is PythonDictionary colDic)
             {
                 return new PlayerColor(GetInt(colDic, "m_a"), GetInt(colDic, "m_b"), GetInt(colDic, "m_g"), GetInt(colDic, "m_r"));
             }
