@@ -6,6 +6,7 @@ namespace s2protocol.NET.Models;
 public record SUnitInitEvent : TrackerEvent
 {
     /// <summary>Record <c>SUnitInitEvent</c> constructor</summary>
+    /// <comment>NNet.Replay.Tracker.SUnitInitEvent events appear for units under construction. When complete you'll see a NNet.Replay.Tracker.SUnitDoneEvent with the same unit tag.</comment>
     ///
     public SUnitInitEvent(TrackerEvent trackerEvent,
                           int unitTagIndex,
@@ -34,7 +35,10 @@ public record SUnitInitEvent : TrackerEvent
     {
 
     }
-
+    /// <summary>Event UnitIndex</summary>
+    /// <comment>Convert unit tag index, recycle pairs into unit tags (as seen in game events) with protocol.unit_tag(index, recycle)</comment>
+    /// 
+    public int UnitIndex { get; internal set; }
     /// <summary>Event UnitTagIndex</summary>
     ///
     public int UnitTagIndex { get; init; }
@@ -56,4 +60,10 @@ public record SUnitInitEvent : TrackerEvent
     /// <summary>Event UnitTypeName</summary>
     ///
     public string UnitTypeName { get; init; }
+    /// <summary>Event SUnitDoneEvent</summary>
+    ///
+    public SUnitDoneEvent? SUnitDoneEvent { get; internal set; }
+    /// <summary>Event SUnitDiedEvent</summary>
+    ///
+    public SUnitDiedEvent? SUnitDiedEvent { get; internal set; }
 }

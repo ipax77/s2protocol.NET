@@ -14,11 +14,13 @@ public record SUnitPositionsEvent : TrackerEvent
         int[] items) : base(trackerEvent)
     {
         FirstUnitIndex = firstUnitIndex;
+        int unitIndex = FirstUnitIndex;
         List<UnitPosition> units = new List<UnitPosition>();
         if (items != null && items.Length >= 3 && items.Length % 3 == 0)
         {
             for (int i = 0; i < items.Length; i += 3)
             {
+                unitIndex += items[i];
                 units.Add(new UnitPosition()
                 {
                     UnitIndex = items[i],
@@ -27,7 +29,13 @@ public record SUnitPositionsEvent : TrackerEvent
                 });
             }
         }
+        UnitIndex = unitIndex;
         UnitPositions = units.ToArray();
+        if (units.Any())
+        {
+            X = units.Last().X;
+            Y = units.Last().Y;
+        }
     }
 
     [JsonConstructor]
@@ -46,6 +54,15 @@ public record SUnitPositionsEvent : TrackerEvent
     /// <summary>Event Items</summary>
     ///
     public ICollection<UnitPosition> UnitPositions { get; init; }
+    /// <summary>Event UnitIndex</summary>
+    ///
+    public int UnitIndex { get; init; }
+    /// <summary>Event X</summary>
+    ///
+    public int X { get; init; }
+    /// <summary>Event Y</summary>
+    ///
+    public int Y { get; init; }
 }
 
 /// <summary>Record <c>UnitPosition</c> SUnitPositionsEvent UnitPosition</summary>

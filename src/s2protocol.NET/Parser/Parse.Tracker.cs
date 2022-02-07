@@ -32,7 +32,7 @@ internal partial class Parse
             }
         }
 
-        return new TrackerEvents(
+        var events = new TrackerEvents(
             trackerevents.OfType<SPlayerSetupEvent>().ToArray(),
             trackerevents.OfType<SPlayerStatsEvent>().ToArray(),
             trackerevents.OfType<SUnitBornEvent>().ToArray(),
@@ -44,6 +44,19 @@ internal partial class Parse
             trackerevents.OfType<SUnitInitEvent>().ToArray(),
             trackerevents.OfType<SUnitDoneEvent>().ToArray()
         );
+
+
+
+        return events;
+    }
+
+    internal static void SetTrackerEventsUnitConnections(TrackerEvents trackerEvents)
+    {
+        trackerEvents.SUnitBornEvents.ToList().ForEach(x => x.SUnitDiedEvent = trackerEvents.SUnitDiedEvents.FirstOrDefault(f => f.UnitIndex == x.UnitIndex));
+        trackerEvents.SUnitInitEvents.ToList().ForEach(x => x.SUnitDiedEvent = trackerEvents.SUnitDiedEvents.FirstOrDefault(f => f.UnitIndex == x.UnitIndex));
+        trackerEvents.SUnitInitEvents.ToList().ForEach(x => x.SUnitDoneEvent = trackerEvents.SUnitDoneEvents.FirstOrDefault(f => f.UnitIndex == x.UnitIndex));
+        trackerEvents.SUnitDiedEvents.ToList().ForEach(x => x.KillerUnitBornEvent = trackerEvents.SUnitBornEvents.FirstOrDefault(f => f.UnitTagIndex == x.KillerUnitTagIndex && f.UnitTagRecycle == x.KillerUnitTagRecycle));
+        trackerEvents.SUnitDiedEvents.ToList().ForEach(x => x.KillerUnitInitEvent = trackerEvents.SUnitInitEvents.FirstOrDefault(f => f.UnitTagIndex == x.KillerUnitTagIndex && f.UnitTagRecycle == x.KillerUnitTagRecycle));
     }
 
     private static TrackerEvent GetTrackerEvent(PythonDictionary pydic)

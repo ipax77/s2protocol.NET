@@ -72,6 +72,8 @@ SControlGroupUpdateEvent => no mask
 
 >- GameEvents
 >- AttributeEvents
+>- Tracker-Unit-Events mapping (Born -> Died ...)
+>- Tracker-Unit-Events UnitIndex from ```protocol.unit_tag(index, recycle)```
 
 </details>
 

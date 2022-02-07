@@ -267,6 +267,15 @@ public sealed class ReplayDecoder : IDisposable
                 throw new DecodeException($"could not get replay TrackerEvents {replayPath}");
             }
             replay.TrackerEvents = Parse.Tracker(trackerEvents);
+            if (replay.TrackerEvents != null)
+            {
+                replay.TrackerEvents.SUnitBornEvents.ToList().ForEach(f => f.UnitIndex = GetUnitIndex(protocol, f.UnitTagIndex, f.UnitTagRecycle));
+                replay.TrackerEvents.SUnitInitEvents.ToList().ForEach(f => f.UnitIndex = GetUnitIndex(protocol, f.UnitTagIndex, f.UnitTagRecycle));
+                replay.TrackerEvents.SUnitDiedEvents.ToList().ForEach(f => f.UnitIndex = GetUnitIndex(protocol, f.UnitTagIndex, f.UnitTagRecycle));
+                replay.TrackerEvents.SUnitDoneEvents.ToList().ForEach(f => f.UnitIndex = GetUnitIndex(protocol, f.UnitTagIndex, f.UnitTagRecycle));
+                replay.TrackerEvents.SUnitOwnerChangeEvents.ToList().ForEach(f => f.UnitIndex = GetUnitIndex(protocol, f.UnitTagIndex, f.UnitTagRecycle));
+                Parse.SetTrackerEventsUnitConnections(replay.TrackerEvents);
+            }
         }
 
         if (options.GameEvents)
@@ -294,6 +303,11 @@ public sealed class ReplayDecoder : IDisposable
         }
 
         return replay;
+    }
+
+    private static int GetUnitIndex(dynamic protocol, int unitTagIndex, int unitTagRecyle)
+    {
+        return protocol.unit_tag(unitTagIndex, unitTagRecyle);
     }
 
     private static async Task<dynamic?> GetAttributeEventsAsync(dynamic archive, dynamic protocol, CancellationToken token)

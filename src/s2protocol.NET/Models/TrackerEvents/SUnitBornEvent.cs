@@ -2,6 +2,7 @@
 
 namespace s2protocol.NET.Models;
 /// <summary>Record <c>SUnitBornEvent</c> SUnitBornEvent</summary>
+/// <comment>NNet.Replay.Tracker.SUnitBornEvent events appear for units that are created fully constructed.</comment>
 ///
 public record SUnitBornEvent : TrackerEvent
 {
@@ -40,7 +41,10 @@ public record SUnitBornEvent : TrackerEvent
     {
 
     }
-
+    /// <summary>Event UnitIndex </summary>
+    /// <comment>Convert unit tag index, recycle pairs into unit tags (as seen in game events) with protocol.unit_tag(index, recycle)</comment>
+    ///
+    public int UnitIndex { get; internal set; }
     /// <summary>Event UnitTagIndex</summary>
     ///
     public int UnitTagIndex { get; init; }
@@ -71,4 +75,7 @@ public record SUnitBornEvent : TrackerEvent
     /// <summary>Event CreatorUnitTagIndex</summary>
     ///
     public int? CreatorUnitTagIndex { get; init; }
+    /// <summary>Event SUnitDiedEvent</summary>
+    ///
+    public SUnitDiedEvent? SUnitDiedEvent { get; internal set; }
 }
