@@ -22,7 +22,21 @@ internal partial class Parse
         var title = GetString(details, "m_title");
         var players = GetDetailsPlayers(details);
 
-        return new Details(campaignIndex, defaultDiff, desc, diff, disableRec, speed, image, isBlizzard, mapName, mini, restart, offset, time, title, players);
+        return new Details(campaignIndex,
+                           defaultDiff,
+                           desc,
+                           diff,
+                           disableRec,
+                           speed,
+                           image,
+                           isBlizzard,
+                           mapName,
+                           mini,
+                           restart,
+                           offset,
+                           time,
+                           title,
+                           players);
     }
 
     private static List<DetailsPlayer> GetDetailsPlayers(PythonDictionary pydic)
@@ -47,7 +61,17 @@ internal partial class Parse
                         var team = GetInt(plDic, "m_teamId");
                         var toon = GetToon(plDic);
                         var slot = GetInt(plDic, "m_workingSetSlotId");
-                        players.Add(new DetailsPlayer(color, control, handicap, hero, name, observe, race, result, team, toon, slot));
+                        players.Add(new DetailsPlayer(color,
+                                                      control,
+                                                      handicap,
+                                                      hero,
+                                                      name,
+                                                      observe,
+                                                      race,
+                                                      result,
+                                                      team,
+                                                      toon,
+                                                      slot));
                     }
                 }
             }

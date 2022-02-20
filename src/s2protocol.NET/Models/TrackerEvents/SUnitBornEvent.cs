@@ -77,5 +77,6 @@ public record SUnitBornEvent : TrackerEvent
     public int? CreatorUnitTagIndex { get; init; }
     /// <summary>Event SUnitDiedEvent</summary>
     ///
+    [JsonIgnore]
     public SUnitDiedEvent? SUnitDiedEvent { get; internal set; }
 }
