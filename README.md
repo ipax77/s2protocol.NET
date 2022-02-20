@@ -8,7 +8,7 @@ using IronPython (2.7)
 dotnet 6
 ## Installation
 ```
-dotnet add package IronPython.StdLib --version 2.7.11
+dotnet add package IronPython.StdLib --version 2.7.12
 dotnet add package s2protocol.NET
 ```
 ## Usage
@@ -68,7 +68,14 @@ SControlGroupUpdateEvent => no mask
 
 # ChangeLog
 
-<details open="open"><summary>v0.6.2</summary>
+<details open="open"><summary>v0.6.3</summary>
+
+>- Python.StdLib to version 2.7.12
+>- JsonIgnore on UnitBorn <-> UnitDied cycles
+
+</details>
+
+<details><summary>v0.6.2</summary>
 
 >- GameEvents
 >- AttributeEvents

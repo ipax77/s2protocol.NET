@@ -75,6 +75,7 @@ public sealed record DetailsPlayer
     ///
     public int Observe { get; init; }
     /// <summary>Player Race</summary>
+    /// <comment>language specific!</comment>
     ///
     public string Race { get; init; }
     /// <summary>Player Result</summary>

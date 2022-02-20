@@ -17,7 +17,7 @@ if (assemblyPath == null)
 else
 {
     string replayPath = Path.Combine(assemblyPath, @"..\..\..\..\..\s2protocol.NET.tests\replays");
-    string replayFilePath = Path.Combine(replayPath, "test3.SC2Replay");
+    string replayFilePath = Path.Combine(replayPath, "test2.SC2Replay");
 
     // replayPath = @"C:\Users\pax77\Documents\StarCraft II\Accounts\107095918\2-S2-1-226401\Replays\Multiplayer";
     // replayFilePath = Path.Combine(replayPath, "Direct Strike (2923).SC2Replay");
@@ -44,40 +44,48 @@ else
 
     if (replay != null && replay.Details != null && replay.TrackerEvents != null)
     {
-       Console.WriteLine($"replay dateTime: {replay.Details.DateTimeUTC}");
+        var json = JsonSerializer.Serialize(replay);
+        System.IO.File.WriteAllText("/data/ds/test/bab.json", json);
 
-       foreach (var unit in replay.TrackerEvents.SUnitBornEvents)
-       {
-           if (unit.Gameloop == 0) continue;
-           if (unit.ControlPlayerId != 1) continue;
-           Console.WriteLine($"{unit.Gameloop} unit born: {unit.UnitTypeName} {unit.X}|{unit.Y}  control {unit.ControlPlayerId}");
-           if (unit.SUnitDiedEvent != null)
-           {
-               Console.WriteLine($"\t{unit.SUnitDiedEvent.Gameloop} died at {unit.SUnitDiedEvent.X}|{unit.SUnitDiedEvent.Y} by {unit.SUnitDiedEvent.KillerPlayerId}");
-               if (unit.SUnitDiedEvent.KillerUnitBornEvent != null)
-               {
-                   Console.WriteLine($"\t\t{unit.SUnitDiedEvent.KillerUnitBornEvent.Gameloop} born killer: {unit.SUnitDiedEvent.KillerUnitBornEvent.UnitTypeName} control {unit.SUnitDiedEvent.KillerUnitBornEvent.ControlPlayerId}");
-               }
-               if (unit.SUnitDiedEvent.KillerUnitInitEvent != null)
-               {
-                   Console.WriteLine($"\t\t{unit.SUnitDiedEvent.KillerUnitInitEvent.Gameloop} init killer: {unit.SUnitDiedEvent.KillerUnitInitEvent.UnitTypeName} control {unit.SUnitDiedEvent.KillerUnitInitEvent.ControlPlayerId}");
-               }
-           }
-       }
+        Console.WriteLine($"replay dateTime: {replay.Details.DateTimeUTC}");
+
+        foreach (var player in replay.Details.Players)
+        {
+            Console.WriteLine($"player {player.Name}({player.ClanName}) pos {player.WorkingSetSlotId} race {player.Race}");
+        }
+
+        foreach (var unit in replay.TrackerEvents.SUnitBornEvents)
+        {
+            if (unit.Gameloop == 0) continue;
+            if (unit.ControlPlayerId != 1) continue;
+            Console.WriteLine($"{unit.Gameloop} unit born: {unit.UnitTypeName} {unit.X}|{unit.Y}  control {unit.ControlPlayerId}");
+            if (unit.SUnitDiedEvent != null)
+            {
+                Console.WriteLine($"\t{unit.SUnitDiedEvent.Gameloop} died at {unit.SUnitDiedEvent.X}|{unit.SUnitDiedEvent.Y} by {unit.SUnitDiedEvent.KillerPlayerId}");
+                if (unit.SUnitDiedEvent.KillerUnitBornEvent != null)
+                {
+                    Console.WriteLine($"\t\t{unit.SUnitDiedEvent.KillerUnitBornEvent.Gameloop} born killer: {unit.SUnitDiedEvent.KillerUnitBornEvent.UnitTypeName} control {unit.SUnitDiedEvent.KillerUnitBornEvent.ControlPlayerId}");
+                }
+                if (unit.SUnitDiedEvent.KillerUnitInitEvent != null)
+                {
+                    Console.WriteLine($"\t\t{unit.SUnitDiedEvent.KillerUnitInitEvent.Gameloop} init killer: {unit.SUnitDiedEvent.KillerUnitInitEvent.UnitTypeName} control {unit.SUnitDiedEvent.KillerUnitInitEvent.ControlPlayerId}");
+                }
+            }
+        }
 
 
     }
 
     int i = 0;
 
-    await foreach (var rep in decoder.DecodeParallel(replayFilePaths, 16, options))
-    {
-        i++;
-        if (rep != null && rep.Details != null)
-        {
-            Console.WriteLine($"replay {rep.Details.DateTimeUTC} {rep.FileName}");
-        }
-    }
+    // await foreach (var rep in decoder.DecodeParallel(replayFilePaths, 16, options))
+    // {
+    //     i++;
+    //     if (rep != null && rep.Details != null)
+    //     {
+    //         Console.WriteLine($"replay {rep.Details.DateTimeUTC} {rep.FileName}");
+    //     }
+    // }
 
     sw.Stop();
     Console.WriteLine($"done decoding {i} replays in {sw.ElapsedMilliseconds}ms");

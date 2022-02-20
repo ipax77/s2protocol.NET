@@ -66,6 +66,7 @@ public record SUnitDiedEvent : TrackerEvent
     public SUnitInitEvent? KillerUnitInitEvent { get; internal set; }
     /// <summary>Event KillerUnitEvent - either SUnitBorn- or SUnitInitEvent</summary>
     ///
+    [JsonIgnore]
     public SUnitBornEvent? KillerUnitBornEvent { get; internal set; }
 
 }
