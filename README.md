@@ -68,7 +68,13 @@ SControlGroupUpdateEvent => no mask
 
 # ChangeLog
 
-<details open="open"><summary>v0.6.3</summary>
+<details open="open"><summary>v0.6.4</summary>
+
+>- Patch 5.0.9 - Protocol 87702
+
+</details>
+
+<details><summary>v0.6.3</summary>
 
 >- Python.StdLib to version 2.7.12
 >- JsonIgnore on UnitBorn <-> UnitDied cycles
