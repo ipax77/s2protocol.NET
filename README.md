@@ -68,7 +68,13 @@ SControlGroupUpdateEvent => no mask
 
 # ChangeLog
 
-<details open="open"><summary>v0.6.4</summary>
+<details open="open"><summary>v0.6.5</summary>
+
+>- Save full path in FileName
+
+</details>
+
+<details><summary>v0.6.4</summary>
 
 >- Patch 5.0.9 - Protocol 87702
 
