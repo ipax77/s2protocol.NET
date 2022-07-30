@@ -465,12 +465,13 @@ public sealed class ReplayDecoder : IDisposable
 
 
 
-    /// <summary>Shutting down Python engine</summary>
+    /// <summary>Shutting down Python engine and call GC.Collect()</summary>
     ///
     public void Dispose()
     {
         GC.SuppressFinalize(this);
         semaphoreSlim.Dispose();
         scriptScope.Engine.Runtime.Shutdown();
+        GC.Collect();
     }
 }
