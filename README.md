@@ -68,7 +68,15 @@ SControlGroupUpdateEvent => no mask
 
 # ChangeLog
 
-<details open="open"><summary>v0.6.5</summary>
+<details open="open"><summary>v0.6.6</summary>
+
+>- Call GC.Collect() in dispose to release file locks
+>- Disabled default console-logging
+>- Added Test for protocol 88500 (5.0.10)
+
+</details>
+
+<details><summary>v0.6.5</summary>
 
 >- Save full path in FileName
 

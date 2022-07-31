@@ -25,11 +25,13 @@ public sealed class ReplayDecoder : IDisposable
     /// <summary>Creates the decoder</summary>
     /// <param name="appPath">The path to the executing assembly</param>
     /// <example>Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location</example>
-    /// <param name="logLevel"> Optional loglevel. Default = LogLevel.Warning</param>
-    /// 
-    public ReplayDecoder(string appPath, LogLevel logLevel = LogLevel.Warning)
+    /// <param name="logLevel">Optional LogLevel</param>
+    public ReplayDecoder(string appPath, LogLevel? logLevel = null)
     {
-        logger = CreateLogger(logLevel);
+        if (logLevel != null)
+        {
+            logger = CreateLogger(logLevel.Value);
+        }
         scriptScope = LoadEngine(appPath);
     }
 
