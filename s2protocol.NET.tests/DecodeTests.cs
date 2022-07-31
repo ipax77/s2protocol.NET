@@ -17,6 +17,7 @@ public class DecodeTests
     [InlineData("test3.SC2Replay")]
     [InlineData("test4.SC2Replay")]
     [InlineData("test5.SC2Replay")]
+    [InlineData("test6.SC2Replay")]
     public async Task HeaderTestAsync(string replayFile)
     {
         Assert.True(assemblyPath != null, "Could not get ExecutionAssembly path");
@@ -52,6 +53,7 @@ public class DecodeTests
     [InlineData("test3.SC2Replay")]
     [InlineData("test4.SC2Replay")]
     [InlineData("test5.SC2Replay")]
+    [InlineData("test6.SC2Replay")]
     public async Task DetailsTestAsync(string replayFile)
     {
         Assert.True(assemblyPath != null, "Could not get ExecutionAssembly path");
@@ -94,6 +96,7 @@ public class DecodeTests
     [InlineData("test3.SC2Replay")]
     [InlineData("test4.SC2Replay")]
     [InlineData("test5.SC2Replay")]
+    [InlineData("test6.SC2Replay")]
     public async Task MetadataTestAsync(string replayFile)
     {
         Assert.True(assemblyPath != null, "Could not get ExecutionAssembly path");
@@ -174,6 +177,7 @@ public class DecodeTests
     [InlineData("test3.SC2Replay")]
     [InlineData("test4.SC2Replay")]
     [InlineData("test5.SC2Replay")]
+    [InlineData("test6.SC2Replay")]
     public async Task TrackerTestAsync(string replayFile)
     {
         Assert.True(assemblyPath != null, "Could not get ExecutionAssembly path");
@@ -216,6 +220,7 @@ public class DecodeTests
     [InlineData("test3.SC2Replay")]
     [InlineData("test4.SC2Replay")]
     [InlineData("test5.SC2Replay")]
+    [InlineData("test6.SC2Replay")]
     public async Task InitdataTestAsync(string replayFile)
     {
         Assert.True(assemblyPath != null, "Could not get ExecutionAssembly path");
@@ -256,6 +261,7 @@ public class DecodeTests
     [InlineData("test3.SC2Replay")]
     [InlineData("test4.SC2Replay")]
     [InlineData("test5.SC2Replay")]
+    [InlineData("test6.SC2Replay")]
     public async Task GameventsTestAsync(string replayFile)
     {
         Assert.True(assemblyPath != null, "Could not get ExecutionAssembly path");
@@ -296,6 +302,7 @@ public class DecodeTests
     [InlineData("test3.SC2Replay")]
     [InlineData("test4.SC2Replay")]
     [InlineData("test5.SC2Replay")]
+    [InlineData("test6.SC2Replay")]
     public async Task AttributeEventsTestAsync(string replayFile)
     {
         Assert.True(assemblyPath != null, "Could not get ExecutionAssembly path");
