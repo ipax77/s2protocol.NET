@@ -15,6 +15,8 @@ dotnet add package s2protocol.NET
 ```
 ## Usage
 
+IronPyhton has a known memory leak [Issue](https://github.com/IronLanguages/ironpython2/issues/322) - try initializing the ReplayDecoder just once and reusing it.
+
 ```csharp
 public static readonly string? assemblyPath = Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location);
 ```
@@ -70,7 +72,14 @@ SControlGroupUpdateEvent => no mask
 
 # ChangeLog
 
-<details open="open"><summary>v0.6.6</summary>
+<details open="open"><summary>v0.6.7</summary>
+
+>- Catch Currupted Trackerevents
+>- Protocoll 88500 fix
+
+</details>
+
+<details><summary>v0.6.6</summary>
 
 >- Call GC.Collect() in dispose to release file locks
 >- Disabled default console-logging
