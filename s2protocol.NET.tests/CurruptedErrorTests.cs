@@ -33,8 +33,53 @@ public class CurruptedErrorTests
             GameEvents = false,
             AttributeEvents = false,
         };
-        var replay = await decoder.DecodeAsync(Path.Combine(assemblyPath, "replays", replayFile), options).ConfigureAwait(false);
-        Assert.True(replay == null, "Sc2Replay was not null");
+
+        bool exception = false;
+        try
+        {
+            var replay = await decoder.DecodeAsync(Path.Combine(assemblyPath, "replays", replayFile), options).ConfigureAwait(false);
+        }
+        catch (Exception ex)
+        {
+            exception = ex.Message == "CorruptedError";
+        }
+        Assert.True(exception);
+
         decoder.Dispose();
     }
+
+    [Theory]
+    [InlineData("testError2.SC2Replay")]
+    public async Task CurruptedTestsAsync(string replayFile)
+    {
+        Assert.True(assemblyPath != null, "Could not get ExecutionAssembly path");
+        if (assemblyPath == null)
+        {
+            return;
+        }
+        ReplayDecoder decoder = new(assemblyPath);
+        ReplayDecoderOptions options = new ReplayDecoderOptions()
+        {
+            Initdata = false,
+            Details = false,
+            Metadata = false,
+            MessageEvents = false,
+            TrackerEvents = true,
+            GameEvents = false,
+            AttributeEvents = false,
+        };
+
+        bool exception = false;
+        try
+        {
+            var replay = await decoder.DecodeAsync(Path.Combine(assemblyPath, "replays", replayFile), options).ConfigureAwait(false);
+        }
+        catch (DecodeException ex)
+        {
+            exception = ex.Message == "Could not generate MPQ archive";
+        }
+        Assert.True(exception);
+
+        decoder.Dispose();
+    }  
 }

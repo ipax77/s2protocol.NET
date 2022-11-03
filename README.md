@@ -38,7 +38,7 @@ ReplayDecoderOptions options = new ReplayDecoderOptions()
     MessageEvents = false,
     TrackerEvents = true,
     GameEvents = false,
-    AttributeEvets = false
+    AttributeEvents = false
 };
 
 CancellationTokenSource cts = new();
@@ -56,11 +56,20 @@ ReplayDecoderOptions options = new ReplayDecoderOptions() { TrackerEvents = fals
 int threads = 8;
 CancellationTokenSource cts = new();
 
-int i = 0;
-await foreach (var sc2rep in decoder.DecodeParallel(replays, threads, options, cts.Token))
+int decoded = 0;
+int errors = 0;
+await foreach (DecodeParallelResult decodeResult in decoder.DecodeParallelWithErrorReport(replays, 2, options, cts.Token))
 {
-    i++;
-    Console.WriteLine($"{i} {sc2rep.Details.DateTimeUTC}");
+    if (decodeResult.Sc2Replay == null)
+    {
+        Console.WriteLine($"failed decoding replay {decodeResult.ReplayPath}: {decodeResult.Exception}");
+        errors++;
+    }
+    else
+    {
+        Console.WriteLine($"{decoded} {decodeResult.Sc2Replay.Details?.DateTimeUTC}");
+        decoded++;
+    }
 }
 ```
 
@@ -72,7 +81,15 @@ SControlGroupUpdateEvent => no mask
 
 # ChangeLog
 
-<details open="open"><summary>v0.6.7</summary>
+<details open="open"><summary>v0.6.8</summary>
+
+>- Catch UnitIndex BigInteger
+>- New parallel decoding with ErrorReport: decoder.DecodeParallelWithErrorReport
+>- Parallel decoding tests
+
+</details>
+
+<details><summary>v0.6.7</summary>
 
 >- Catch Currupted Trackerevents
 >- Protocoll 88500 fix

@@ -9,6 +9,7 @@ using System.Runtime.CompilerServices;
 using System.Text;
 using System.Text.Json;
 using System.Threading.Channels;
+using System.Text.RegularExpressions;
 
 namespace s2protocol.NET;
 
@@ -18,8 +19,10 @@ public sealed class ReplayDecoder : IDisposable
 {
     private readonly ScriptScope scriptScope;
     private dynamic? versions;
-    private readonly List<int> intVersions = new List<int>();
-    private readonly SemaphoreSlim semaphoreSlim = new SemaphoreSlim(1, 1);
+    private readonly List<int> intVersions = new();
+    private readonly SemaphoreSlim semaphoreSlim = new(1, 1);
+    private readonly Regex versionRx = new(@"^protocol(\d+)");
+
     internal static ILogger<ReplayDecoder> logger = NullLoggerFactory.Instance.CreateLogger<ReplayDecoder>();
 
     /// <summary>Creates the decoder</summary>
@@ -75,9 +78,13 @@ public sealed class ReplayDecoder : IDisposable
             engine.Execute("from s2protocol import versions", scope);
             versions = scope.GetVariable("versions");
             List pyVersions = versions.list_all();
-            foreach (string v in pyVersions.OrderBy(o => o))
+            foreach (string v in pyVersions.OrderBy(o => o).Cast<string>())
             {
-                intVersions.Add(int.Parse(v.Substring(8, 5), CultureInfo.InvariantCulture));
+                var match = versionRx.Match(v);
+                if (match.Success)
+                {
+                    intVersions.Add(int.Parse(match.Groups[1].Value, CultureInfo.InvariantCulture));
+                }
             }
             logger.EngineStarted("Python engine started");
             return scope;
@@ -89,7 +96,9 @@ public sealed class ReplayDecoder : IDisposable
         }
     }
 
-    /// <summary>Decode Starcraft2 replay</summary>
+    /// <summary>Decode Starcraft2 replays
+    /// Replays replays will be skipped
+    /// </summary>
     /// <param name="replayPaths">The paths to the Starcraft2 replays</param>
     /// /// <param name="threads">Number of parallelism</param>
     /// <param name="options">Optional decoding options</param>
@@ -109,9 +118,30 @@ public sealed class ReplayDecoder : IDisposable
         }
     }
 
+    /// <summary>Decode Starcraft2 replays and report potential errors
+    /// </summary>
+    /// <param name="replayPaths">The paths to the Starcraft2 replays</param>
+    /// /// <param name="threads">Number of parallelism</param>
+    /// <param name="options">Optional decoding options</param>
+    /// <param name="token">Optional CancellationToken</param>
+    public async IAsyncEnumerable<DecodeParallelResult> DecodeParallelWithErrorReport(ICollection<string> replayPaths, int threads, ReplayDecoderOptions? options = null, [EnumeratorCancellation] CancellationToken token = default)
+    {
+        Channel<DecodeParallelResult> replayResultChannel = Channel.CreateUnbounded<DecodeParallelResult>();
+
+        _ = ProduceResults(replayResultChannel, replayPaths, threads, options, token);
+
+        while (await replayResultChannel.Reader.WaitToReadAsync(token).ConfigureAwait(false))
+        {
+            if (replayResultChannel.Reader.TryRead(out var replayResult))
+            {
+                yield return replayResult;
+            }
+        }
+    }
+
     private async Task Produce(Channel<Sc2Replay> channel, ICollection<string> replayPaths, int threads, ReplayDecoderOptions? options, CancellationToken token)
     {
-        ParallelOptions parallelOptions = new ParallelOptions()
+        ParallelOptions parallelOptions = new()
         {
             CancellationToken = token,
             MaxDegreeOfParallelism = threads
@@ -121,15 +151,76 @@ public sealed class ReplayDecoder : IDisposable
         {
             await Parallel.ForEachAsync(replayPaths, parallelOptions, async (replayPath, token) =>
             {
-                var replay = await DecodeAsync(replayPath, options, token).ConfigureAwait(false);
+                try
+                {
+                    var replay = await DecodeAsync(replayPath, options, token).ConfigureAwait(false);
 
-                if (replay != null)
-                {
-                    channel.Writer.TryWrite(replay);
+                    if (replay != null)
+                    {
+                        channel.Writer.TryWrite(replay);
+                    }
+                    else
+                    {
+                        logger.DecodeWarning($"failed decoding replay {replayPath}");
+                    }
                 }
-                else
+                catch (OperationCanceledException) { }
+                catch (Exception ex)
                 {
-                    logger.DecodeWarning($"failed decoding replay {replayPath}");
+                    logger.DecodeError($"failed decoding replay {replayPath}: {ex.Message}");
+                }
+            }).ConfigureAwait(false);
+        }
+        catch (OperationCanceledException) { }
+        catch (Exception ex)
+        {
+            logger.DecodeError($"failed decoding replays: {ex.Message}");
+            throw new DecodeException($"failed decoding replays: {ex.Message}");
+        }
+        finally
+        {
+            channel.Writer.Complete();
+        }
+    }
+
+    private async Task ProduceResults(Channel<DecodeParallelResult> channel, ICollection<string> replayPaths, int threads, ReplayDecoderOptions? options, CancellationToken token)
+    {
+        ParallelOptions parallelOptions = new()
+        {
+            CancellationToken = token,
+            MaxDegreeOfParallelism = threads
+        };
+
+        try
+        {
+            await Parallel.ForEachAsync(replayPaths, parallelOptions, async (replayPath, token) =>
+            {
+                try
+                {
+                    var replay = await DecodeAsync(replayPath, options, token).ConfigureAwait(false);
+
+                    if (replay != null)
+                    {
+                        channel.Writer.TryWrite(new DecodeParallelResult()
+                        {
+                            Sc2Replay = replay,
+                            ReplayPath = replayPath
+                        });
+                    }
+                    else
+                    {
+                        logger.DecodeWarning($"failed decoding replay {replayPath}");
+                    }
+                }
+                catch (OperationCanceledException) { }
+                catch (Exception ex)
+                {
+                    channel.Writer.TryWrite(new DecodeParallelResult()
+                    {
+                        ReplayPath = replayPath,
+                        Exception = ex.Message
+                    });
+                    logger.DecodeError($"failed decoding replay {replayPath}: {ex.Message}");
                 }
             }).ConfigureAwait(false);
         }
@@ -167,13 +258,21 @@ public sealed class ReplayDecoder : IDisposable
         }
 
         dynamic MPQArchive = scriptScope.GetVariable("MPQArchive");
-        var archive = MPQArchive(replayPath);
+        dynamic? archive;
+        try
+        {
+            archive = MPQArchive(replayPath);
+        }
+        catch (Exception ex)
+        {
+            throw new DecodeException("Could not generate MPQ archive", ex);
+        }
 
         var header = await GetHeaderAsync(archive, versions, token);
         if (header == null)
         {
             if (token.IsCancellationRequested)
-                return null;
+                throw new OperationCanceledException();
             throw new DecodeException($"could not get replay header {replayPath}");
         }
 
@@ -203,116 +302,117 @@ public sealed class ReplayDecoder : IDisposable
         if (protocol == null)
         {
             if (token.IsCancellationRequested)
-                return null;
+                throw new OperationCanceledException();
             throw new DecodeException($"could not get replay protocol {replayPath} {baseBuild}");
         }
 
-        Sc2Replay replay = new Sc2Replay(header, replayPath);
+        Sc2Replay replay = new(header, replayPath);
 
-        try
+        if (options.Initdata)
         {
-            if (options.Initdata)
-            {
-                var init = await GetInitdataAsync(archive, protocol, token);
+            var init = await GetInitdataAsync(archive, protocol, token);
 
-                if (init == null)
-                {
-                    if (token.IsCancellationRequested)
-                        return null;
-                    throw new DecodeException($"could not get replay initdata {replayPath}");
-                }
-                replay.Initdata = Parse.InitData(init);
+            if (init == null)
+            {
+                if (token.IsCancellationRequested)
+                    throw new OperationCanceledException();
+                throw new DecodeException($"could not get replay initdata {replayPath}");
+            }
+            replay.Initdata = Parse.InitData(init);
+        }
+
+        if (options.Details)
+        {
+            var details = await GetDetailsAsync(archive, protocol, token);
+
+            if (details == null)
+            {
+                if (token.IsCancellationRequested)
+                    throw new OperationCanceledException();
+            }
+            replay.Details = Parse.Datails(details);
+        }
+
+        if (options.Metadata)
+        {
+            var metadata = await GetMetadataAsync(archive, token);
+            if (metadata == null)
+            {
+                if (token.IsCancellationRequested)
+                    throw new OperationCanceledException();
+            }
+            replay.Metadata = metadata;
+        }
+
+        if (options.MessageEvents)
+        {
+            var messages = await GetMessagesAsync(archive, protocol, token);
+            if (messages == null)
+            {
+                if (token.IsCancellationRequested)
+                    return null;
+            }
+            replay.ChatMessages = Parse.Messages(messages);
+        }
+
+        if (options.TrackerEvents)
+        {
+            var trackerEvents = await GetTrackereventsAsync(archive, protocol, token);
+            if (trackerEvents == null)
+            {
+                if (token.IsCancellationRequested)
+                    return null;
             }
 
-            if (options.Details)
+            replay.TrackerEvents = Parse.Tracker(trackerEvents);
+
+            if (replay.TrackerEvents != null)
             {
-                var details = await GetDetailsAsync(archive, protocol, token);
-
-                if (details == null)
-                {
-                    if (token.IsCancellationRequested)
-                        return null;
-                }
-                replay.Details = Parse.Datails(details);
-            }
-
-            if (options.Metadata)
-            {
-                var metadata = await GetMetadataAsync(archive, token);
-                if (metadata == null)
-                {
-                    if (token.IsCancellationRequested)
-                        return null;
-                }
-                replay.Metadata = metadata;
-            }
-
-            if (options.MessageEvents)
-            {
-                var messages = await GetMessagesAsync(archive, protocol, token);
-                if (messages == null)
-                {
-                    if (token.IsCancellationRequested)
-                        return null;
-                }
-                replay.ChatMessages = Parse.Messages(messages);
-            }
-
-            if (options.TrackerEvents)
-            {
-                var trackerEvents = await GetTrackereventsAsync(archive, protocol, token);
-                if (trackerEvents == null)
-                {
-                    if (token.IsCancellationRequested)
-                        return null;
-                }
-
-                replay.TrackerEvents = Parse.Tracker(trackerEvents);
-
-                if (replay.TrackerEvents != null)
-                {
-                    replay.TrackerEvents.SUnitBornEvents.ToList().ForEach(f => f.UnitIndex = GetUnitIndex(protocol, f.UnitTagIndex, f.UnitTagRecycle));
-                    replay.TrackerEvents.SUnitInitEvents.ToList().ForEach(f => f.UnitIndex = GetUnitIndex(protocol, f.UnitTagIndex, f.UnitTagRecycle));
-                    replay.TrackerEvents.SUnitDiedEvents.ToList().ForEach(f => f.UnitIndex = GetUnitIndex(protocol, f.UnitTagIndex, f.UnitTagRecycle));
-                    replay.TrackerEvents.SUnitDoneEvents.ToList().ForEach(f => f.UnitIndex = GetUnitIndex(protocol, f.UnitTagIndex, f.UnitTagRecycle));
-                    replay.TrackerEvents.SUnitOwnerChangeEvents.ToList().ForEach(f => f.UnitIndex = GetUnitIndex(protocol, f.UnitTagIndex, f.UnitTagRecycle));
-                    Parse.SetTrackerEventsUnitConnections(replay.TrackerEvents);
-                }
-            }
-
-            if (options.GameEvents)
-            {
-                var gameEvents = await GetGameEventsAsync(archive, protocol, token);
-                if (gameEvents == null)
-                {
-                    if (token.IsCancellationRequested)
-                        return null;
-                }
-                replay.GameEvents = Parse.GameEvents(gameEvents);
-            }
-
-            if (options.AttributeEvents)
-            {
-                var attributeEvents = await GetAttributeEventsAsync(archive, protocol, token);
-                if (attributeEvents == null)
-                {
-                    if (token.IsCancellationRequested)
-                        return null;
-                }
-                replay.AttributeEvents = Parse.GetAttributeEvents(attributeEvents);
+                replay.TrackerEvents.SUnitBornEvents.ToList().ForEach(f => f.UnitIndex = GetUnitIndex(protocol, f.UnitTagIndex, f.UnitTagRecycle));
+                replay.TrackerEvents.SUnitInitEvents.ToList().ForEach(f => f.UnitIndex = GetUnitIndex(protocol, f.UnitTagIndex, f.UnitTagRecycle));
+                replay.TrackerEvents.SUnitDiedEvents.ToList().ForEach(f => f.UnitIndex = GetUnitIndex(protocol, f.UnitTagIndex, f.UnitTagRecycle));
+                replay.TrackerEvents.SUnitDoneEvents.ToList().ForEach(f => f.UnitIndex = GetUnitIndex(protocol, f.UnitTagIndex, f.UnitTagRecycle));
+                replay.TrackerEvents.SUnitOwnerChangeEvents.ToList().ForEach(f => f.UnitIndex = GetUnitIndex(protocol, f.UnitTagIndex, f.UnitTagRecycle));
+                Parse.SetTrackerEventsUnitConnections(replay.TrackerEvents);
             }
         }
-        catch (Exception ex)
+
+        if (options.GameEvents)
         {
-            logger.DecodeError($"failed decoding replay parts: {ex.Message}");
-            return null;
+            var gameEvents = await GetGameEventsAsync(archive, protocol, token);
+            if (gameEvents == null)
+            {
+                if (token.IsCancellationRequested)
+                    return null;
+            }
+            replay.GameEvents = Parse.GameEvents(gameEvents);
+        }
+
+        if (options.AttributeEvents)
+        {
+            var attributeEvents = await GetAttributeEventsAsync(archive, protocol, token);
+            if (attributeEvents == null)
+            {
+                if (token.IsCancellationRequested)
+                    return null;
+            }
+            replay.AttributeEvents = Parse.GetAttributeEvents(attributeEvents);
         }
         return replay;
     }
 
     private static int GetUnitIndex(dynamic protocol, int unitTagIndex, int unitTagRecyle)
     {
-        return protocol.unit_tag(unitTagIndex, unitTagRecyle);
+        // todo: can be BitInterger
+        var unitTag = protocol.unit_tag(unitTagIndex, unitTagRecyle);
+        if (unitTag is int intUnitTag)
+        {
+            return intUnitTag;
+        }
+        else
+        {
+            return 0;
+        }
     }
 
     private static async Task<dynamic?> GetAttributeEventsAsync(dynamic archive, dynamic protocol, CancellationToken token)
