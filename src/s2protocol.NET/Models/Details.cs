@@ -39,7 +39,7 @@ public sealed record Details
         TimeUTC = timeUTC;
         Title = title;
         Players = players;
-        DateTimeUTC = DateTime.FromFileTime(timeUTC);
+        DateTimeUTC = DateTime.FromFileTimeUtc(timeUTC);
     }
 
     [JsonConstructor]

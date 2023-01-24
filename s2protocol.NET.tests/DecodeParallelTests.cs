@@ -32,7 +32,7 @@ public class DecodeParallelTests
         };
 
         var replays = Directory.GetFiles(Path.Combine(assemblyPath, "replays"), "*.SC2Replay", SearchOption.TopDirectoryOnly);
-        replays = replays.Where(x => !x.Contains("Error")).ToArray();
+        replays = replays.Where(x => !x.Contains("Error", System.StringComparison.OrdinalIgnoreCase)).ToArray();
 
         CancellationTokenSource cts = new();
 
@@ -72,7 +72,7 @@ public class DecodeParallelTests
         };
 
         var replays = Directory.GetFiles(Path.Combine(assemblyPath, "replays"), "*.SC2Replay", SearchOption.TopDirectoryOnly);
-        int errorReplays = replays.Where(x => x.Contains("Error")).Count();
+        int errorReplays = replays.Where(x => x.Contains("Error", System.StringComparison.OrdinalIgnoreCase)).Count();
 
         CancellationTokenSource cts = new();
 
@@ -112,7 +112,7 @@ public class DecodeParallelTests
         };
 
         var replays = Directory.GetFiles(Path.Combine(assemblyPath, "replays"), "*.SC2Replay", SearchOption.TopDirectoryOnly);
-        int errorReplays = replays.Where(x => x.Contains("Error")).Count();
+        int errorReplays = replays.Where(x => x.Contains("Error", System.StringComparison.OrdinalIgnoreCase)).Count();
 
         CancellationTokenSource cts = new();
 

@@ -81,7 +81,14 @@ SControlGroupUpdateEvent => no mask
 
 # ChangeLog
 
-<details open="open"><summary>v0.6.8</summary>
+<details open="open"><summary>v0.6.9</summary>
+
+>- Protocol 89634
+>- Fix Gametime to UTC
+
+</details>
+
+<details><summary>v0.6.8</summary>
 
 >- Catch UnitIndex BigInteger
 >- New parallel decoding with ErrorReport: decoder.DecodeParallelWithErrorReport

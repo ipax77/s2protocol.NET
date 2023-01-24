@@ -74,7 +74,7 @@ public class CurruptedErrorTests
         {
             var replay = await decoder.DecodeAsync(Path.Combine(assemblyPath, "replays", replayFile), options).ConfigureAwait(false);
         }
-        catch (DecodeException ex)
+        catch (Exception ex)
         {
             exception = ex.Message == "Could not generate MPQ archive";
         }
