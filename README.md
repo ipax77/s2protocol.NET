@@ -81,7 +81,13 @@ SControlGroupUpdateEvent => no mask
 
 # ChangeLog
 
-<details open="open"><summary>v0.6.9</summary>
+<details open="open"><summary>v0.6.10</summary>
+
+>- Protocol 89720
+
+</details>
+
+<details><summary>v0.6.9</summary>
 
 >- Protocol 89634
 >- Fix Gametime to UTC
