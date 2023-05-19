@@ -78,14 +78,14 @@ else
 
     int i = 0;
 
-    // await foreach (var rep in decoder.DecodeParallel(replayFilePaths, 16, options))
-    // {
-    //     i++;
-    //     if (rep != null && rep.Details != null)
-    //     {
-    //         Console.WriteLine($"replay {rep.Details.DateTimeUTC} {rep.FileName}");
-    //     }
-    // }
+    await foreach (var rep in decoder.DecodeParallel(replayFilePaths, 16, options))
+    {
+        i++;
+        if (rep != null && rep.Details != null)
+        {
+            Console.WriteLine($"replay {rep.Details.DateTimeUTC} {rep.FileName}");
+        }
+    }
 
     sw.Stop();
     Console.WriteLine($"done decoding {i} replays in {sw.ElapsedMilliseconds}ms");

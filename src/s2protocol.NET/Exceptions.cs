@@ -1,10 +1,7 @@
-﻿using System.Runtime.Serialization;
-
-namespace s2protocol.NET;
+﻿namespace s2protocol.NET;
 
 /// <summary>Engine startup Exception</summary>
 ///
-[Serializable]
 public class EngineException : Exception
 {
     /// <summary>Engine startup Exception</summary>
@@ -22,16 +19,10 @@ public class EngineException : Exception
     public EngineException(string message, Exception innerExeption) : base(message, innerExeption)
     {
     }
-    /// <summary>Engine startup Exception</summary>
-    ///
-    protected EngineException(SerializationInfo info, StreamingContext context) : base(info, context)
-    {
-    }
 }
 
 /// <summary>Engine startup Exception</summary>
 ///
-[Serializable]
 public class DecodeException : Exception
 {
     /// <summary>decode exception</summary>
@@ -47,11 +38,6 @@ public class DecodeException : Exception
     /// <summary>decode exception</summary>
     ///
     public DecodeException(string message, Exception innerExeption) : base(message, innerExeption)
-    {
-    }
-    /// <summary>decode exception</summary>
-    ///
-    protected DecodeException(SerializationInfo info, StreamingContext context) : base(info, context)
     {
     }
 }

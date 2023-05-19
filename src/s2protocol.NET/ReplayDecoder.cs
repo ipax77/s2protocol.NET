@@ -271,8 +271,7 @@ public sealed class ReplayDecoder : IDisposable
         var header = await GetHeaderAsync(archive, versions, token);
         if (header == null)
         {
-            if (token.IsCancellationRequested)
-                throw new OperationCanceledException();
+            token.ThrowIfCancellationRequested();
             throw new DecodeException($"could not get replay header {replayPath}");
         }
 
@@ -301,8 +300,7 @@ public sealed class ReplayDecoder : IDisposable
         }
         if (protocol == null)
         {
-            if (token.IsCancellationRequested)
-                throw new OperationCanceledException();
+            token.ThrowIfCancellationRequested();
             throw new DecodeException($"could not get replay protocol {replayPath} {baseBuild}");
         }
 
@@ -314,8 +312,7 @@ public sealed class ReplayDecoder : IDisposable
 
             if (init == null)
             {
-                if (token.IsCancellationRequested)
-                    throw new OperationCanceledException();
+                token.ThrowIfCancellationRequested();
                 throw new DecodeException($"could not get replay initdata {replayPath}");
             }
             replay.Initdata = Parse.InitData(init);
@@ -327,8 +324,7 @@ public sealed class ReplayDecoder : IDisposable
 
             if (details == null)
             {
-                if (token.IsCancellationRequested)
-                    throw new OperationCanceledException();
+                token.ThrowIfCancellationRequested();
             }
             replay.Details = Parse.Datails(details);
         }
@@ -338,8 +334,7 @@ public sealed class ReplayDecoder : IDisposable
             var metadata = await GetMetadataAsync(archive, token);
             if (metadata == null)
             {
-                if (token.IsCancellationRequested)
-                    throw new OperationCanceledException();
+                token.ThrowIfCancellationRequested();
             }
             replay.Metadata = metadata;
         }
