@@ -37,7 +37,7 @@ public class CurruptedErrorTests
         bool exception = false;
         try
         {
-            var replay = await decoder.DecodeAsync(Path.Combine(assemblyPath, "replays", replayFile), options).ConfigureAwait(false);
+            var replay = await decoder.DecodeAsync(Path.Combine(assemblyPath, "replays", replayFile), options);
         }
         catch (Exception ex)
         {
@@ -72,7 +72,7 @@ public class CurruptedErrorTests
         bool exception = false;
         try
         {
-            var replay = await decoder.DecodeAsync(Path.Combine(assemblyPath, "replays", replayFile), options).ConfigureAwait(false);
+            var replay = await decoder.DecodeAsync(Path.Combine(assemblyPath, "replays", replayFile), options);
         }
         catch (Exception ex)
         {

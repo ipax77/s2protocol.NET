@@ -81,7 +81,13 @@ SControlGroupUpdateEvent => no mask
 
 # ChangeLog
 
-<details open="open"><summary>v0.6.11</summary>
+<details open="open"><summary>v0.6.12</summary>
+
+>- Protocol 91115
+
+</details>
+
+<details><summary>v0.6.11</summary>
 
 >- Protocol 90136
 

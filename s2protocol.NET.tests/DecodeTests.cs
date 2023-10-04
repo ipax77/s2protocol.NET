@@ -37,7 +37,7 @@ public class DecodeTests
             GameEvents = false,
             AttributeEvents = false,
         };
-        var replay = await decoder.DecodeAsync(Path.Combine(assemblyPath, "replays", replayFile), options).ConfigureAwait(false);
+        var replay = await decoder.DecodeAsync(Path.Combine(assemblyPath, "replays", replayFile), options);
         Assert.True(replay != null, "Sc2Replay was null");
         if (replay == null)
         {
@@ -74,7 +74,7 @@ public class DecodeTests
             GameEvents = false,
             AttributeEvents = false,
         };
-        var replay = await decoder.DecodeAsync(Path.Combine(assemblyPath, "replays", replayFile), options).ConfigureAwait(false);
+        var replay = await decoder.DecodeAsync(Path.Combine(assemblyPath, "replays", replayFile), options);
         Assert.True(replay != null, "Sc2Replay was null");
         if (replay == null)
         {
@@ -118,7 +118,7 @@ public class DecodeTests
             GameEvents = false,
             AttributeEvents = false,
         };
-        var replay = await decoder.DecodeAsync(Path.Combine(assemblyPath, "replays", replayFile), options).ConfigureAwait(false);
+        var replay = await decoder.DecodeAsync(Path.Combine(assemblyPath, "replays", replayFile), options);
         Assert.True(replay != null, "Sc2Replay was null");
         if (replay == null)
         {
@@ -131,7 +131,7 @@ public class DecodeTests
             decoder.Dispose();
             return;
         }
-        Assert.True(replay.Metadata.BaseBuild.Any(), "Could not get replay.Metadata BaseBuild");
+        Assert.True(replay.Metadata.BaseBuild.Length > 0, "Could not get replay.Metadata BaseBuild");
 
         decoder.Dispose();
     }
@@ -156,7 +156,7 @@ public class DecodeTests
             GameEvents = false,
             AttributeEvents = false,
         };
-        var replay = await decoder.DecodeAsync(Path.Combine(assemblyPath, "replays", replayFile), options).ConfigureAwait(false);
+        var replay = await decoder.DecodeAsync(Path.Combine(assemblyPath, "replays", replayFile), options);
         Assert.True(replay != null, "Sc2Replay was null");
         if (replay == null)
         {
@@ -169,7 +169,7 @@ public class DecodeTests
             decoder.Dispose();
             return;
         }
-        Assert.True(replay.ChatMessages.Any(), "Could not get replay.ChatMessages");
+        Assert.True(replay.ChatMessages.Count > 0, "Could not get replay.ChatMessages");
 
         decoder.Dispose();
     }
@@ -182,6 +182,7 @@ public class DecodeTests
     [InlineData("test5.SC2Replay")]
     [InlineData("test6.SC2Replay")]
     [InlineData("test7.SC2Replay")]
+    [InlineData("test8.SC2Replay")]
     public async Task TrackerTestAsync(string replayFile)
     {
         Assert.True(assemblyPath != null, "Could not get ExecutionAssembly path");
@@ -200,7 +201,7 @@ public class DecodeTests
             GameEvents = false,
             AttributeEvents = false,
         };
-        var replay = await decoder.DecodeAsync(Path.Combine(assemblyPath, "replays", replayFile), options).ConfigureAwait(false);
+        var replay = await decoder.DecodeAsync(Path.Combine(assemblyPath, "replays", replayFile), options);
         Assert.True(replay != null, "Sc2Replay was null");
         if (replay == null)
         {
@@ -213,7 +214,7 @@ public class DecodeTests
             decoder.Dispose();
             return;
         }
-        Assert.True(replay.TrackerEvents.SUnitBornEvents.Any(), "Could not get replay.TrackerEvents SUnitBornEvents");
+        Assert.True(replay.TrackerEvents.SUnitBornEvents.Count > 0, "Could not get replay.TrackerEvents SUnitBornEvents");
 
         decoder.Dispose();
     }
@@ -226,6 +227,7 @@ public class DecodeTests
     [InlineData("test5.SC2Replay")]
     [InlineData("test6.SC2Replay")]
     [InlineData("test7.SC2Replay")]
+    [InlineData("test8.SC2Replay")]
     public async Task InitdataTestAsync(string replayFile)
     {
         Assert.True(assemblyPath != null, "Could not get ExecutionAssembly path");
@@ -244,7 +246,7 @@ public class DecodeTests
             GameEvents = false,
             AttributeEvents = false,
         };
-        var replay = await decoder.DecodeAsync(Path.Combine(assemblyPath, "replays", replayFile), options).ConfigureAwait(false);
+        var replay = await decoder.DecodeAsync(Path.Combine(assemblyPath, "replays", replayFile), options);
         Assert.True(replay != null, "Sc2Replay was null");
         if (replay == null)
         {
@@ -268,6 +270,7 @@ public class DecodeTests
     [InlineData("test5.SC2Replay")]
     [InlineData("test6.SC2Replay")]
     [InlineData("test7.SC2Replay")]
+    [InlineData("test8.SC2Replay")]
     public async Task GameventsTestAsync(string replayFile)
     {
         Assert.True(assemblyPath != null, "Could not get ExecutionAssembly path");
@@ -286,7 +289,7 @@ public class DecodeTests
             GameEvents = true,
             AttributeEvents = false,
         };
-        var replay = await decoder.DecodeAsync(Path.Combine(assemblyPath, "replays", replayFile), options).ConfigureAwait(false);
+        var replay = await decoder.DecodeAsync(Path.Combine(assemblyPath, "replays", replayFile), options);
         Assert.True(replay != null, "Sc2Replay was null");
         if (replay == null)
         {
@@ -310,6 +313,7 @@ public class DecodeTests
     [InlineData("test5.SC2Replay")]
     [InlineData("test6.SC2Replay")]
     [InlineData("test7.SC2Replay")]
+    [InlineData("test8.SC2Replay")]
     public async Task AttributeEventsTestAsync(string replayFile)
     {
         Assert.True(assemblyPath != null, "Could not get ExecutionAssembly path");
@@ -328,7 +332,7 @@ public class DecodeTests
             GameEvents = false,
             AttributeEvents = true,
         };
-        var replay = await decoder.DecodeAsync(Path.Combine(assemblyPath, "replays", replayFile), options).ConfigureAwait(false);
+        var replay = await decoder.DecodeAsync(Path.Combine(assemblyPath, "replays", replayFile), options);
         Assert.True(replay != null, "Sc2Replay was null");
         if (replay == null)
         {
