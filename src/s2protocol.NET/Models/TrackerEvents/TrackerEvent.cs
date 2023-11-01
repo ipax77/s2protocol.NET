@@ -36,10 +36,7 @@ public record TrackerEvent
 
     public TrackerEvent(TrackerEvent trackerEvent)
     {
-        if (trackerEvent == null)
-        {
-            throw new ArgumentNullException(nameof(trackerEvent));
-        }
+        ArgumentNullException.ThrowIfNull(trackerEvent);
         PlayerId = trackerEvent.PlayerId;
         EventId = trackerEvent.EventId;
         Bits = trackerEvent.Bits;

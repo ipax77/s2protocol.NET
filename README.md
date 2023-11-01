@@ -2,17 +2,25 @@
 
 # Introduction
 
-dotnet 6 wrapper for [Blizzards s2protocol](https://github.com/Blizzard/s2protocol) for decoding/parsing StarCraft II replays (*.SC2Replay)
+dotnet wrapper for [Blizzards s2protocol](https://github.com/Blizzard/s2protocol) for decoding/parsing StarCraft II replays (*.SC2Replay)
 using IronPython (2.7)
 
 # Getting started
-## Prerequisites
-dotnet 6
+
 ## Installation
+
+* dotnet 8:
 ```
 dotnet add package IronPython.StdLib --version 2.7.12
 dotnet add package s2protocol.NET
 ```
+
+* dotnet 6/7: 
+```
+dotnet add package IronPython.StdLib --version 2.7.12
+dotnet add package s2protocol.NET --version 0.6.12
+```
+
 ## Usage
 
 IronPyhton has a known memory leak [Issue](https://github.com/IronLanguages/ironpython2/issues/322) - try initializing the ReplayDecoder just once and reusing it.
@@ -81,7 +89,16 @@ SControlGroupUpdateEvent => no mask
 
 # ChangeLog
 
-<details open="open"><summary>v0.6.12</summary>
+<details open="open"><summary>v0.8.0-rc1.0</summary>
+
+**Breaking Changes**
+>- dotnet 8
+>- removed logging
+>- improved error handling
+
+</details>
+
+<details><summary>v0.6.12</summary>
 
 >- Protocol 91115
 
