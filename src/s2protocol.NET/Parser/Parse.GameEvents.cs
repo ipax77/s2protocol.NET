@@ -87,7 +87,6 @@ internal partial class Parse
 
     private static UnknownGameEvent GetUnknownEvent(PythonDictionary pydic, GameEvent gameEvent)
     {
-        ReplayDecoder.logger.DecodeInformation($"Game event type unknown: {GetString(pydic, "_event")}");
         return new UnknownGameEvent(gameEvent, GetString(pydic, "_event"));
         // return gameEvent;
     }

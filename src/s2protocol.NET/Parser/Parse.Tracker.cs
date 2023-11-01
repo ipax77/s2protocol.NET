@@ -71,7 +71,6 @@ internal partial class Parse
 
     private static TrackerEvent GetUnknownEvent(PythonDictionary pydic, TrackerEvent trackerEvent)
     {
-        ReplayDecoder.logger.DecodeWarning($"Game event type unknown: {GetString(pydic, "_event")}");
         return trackerEvent;
     }
 

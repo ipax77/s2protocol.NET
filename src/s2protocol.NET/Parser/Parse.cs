@@ -61,7 +61,6 @@ internal partial class Parse
             }
             else
             {
-                ReplayDecoder.logger.DecodeWarning($"{property} was no Int32: {value?.GetType()} {value?.ToString()}");
                 return 0;
             }
         }
@@ -91,7 +90,6 @@ internal partial class Parse
             {
                 if (value != null)
                 {
-                    ReplayDecoder.logger.DecodeWarning($"{property} was no nullable Int32: {value.GetType()} {value}");
                 }
                 return null;
             }
@@ -118,7 +116,6 @@ internal partial class Parse
                 }
                 else
                 {
-                    ReplayDecoder.logger.DecodeWarning($"{property} was no BigInteger or Int32: {value.GetType()} {value}");
                     return 0;
                 }
             }
@@ -149,7 +146,6 @@ internal partial class Parse
                 }
                 else
                 {
-                    ReplayDecoder.logger.DecodeWarning($"{property} was no nullable BigInteger or Int32: {value.GetType()} {value}");
                     return null;
                 }
             }
@@ -182,7 +178,6 @@ internal partial class Parse
             }
             else
             {
-                ReplayDecoder.logger.DecodeWarning($"{property} was no bool: {value?.GetType()} {value?.ToString()}");
                 return false;
             }
         }
@@ -203,7 +198,6 @@ internal partial class Parse
             }
             else
             {
-                ReplayDecoder.logger.DecodeWarning($"{property} was no ascii string: {value?.GetType()} {value?.ToString()}");
                 return value?.ToString() ?? "";
             }
         }
@@ -220,7 +214,6 @@ internal partial class Parse
             }
             else
             {
-                ReplayDecoder.logger.DecodeWarning($"{property} was no double: {value?.GetType()} {value?.ToString()}");
                 return 0;
             }
         }
@@ -246,7 +239,6 @@ internal partial class Parse
             }
             else
             {
-                ReplayDecoder.logger.DecodeWarning($"{property} was no int list: {value?.GetType()} {value?.ToString()}");
             }
         }
         return intList;
@@ -271,7 +263,6 @@ internal partial class Parse
             }
             else
             {
-                ReplayDecoder.logger.DecodeWarning($"{property} was no long list: {value?.GetType()} {value?.ToString()}");
             }
         }
         return longList;
@@ -307,13 +298,11 @@ internal partial class Parse
                     }
                     else
                     {
-                        ReplayDecoder.logger.DecodeWarning($"{property} value was no PythonTuple Int32 or BigInteger: {tuple[1]?.GetType()} {tuple[1]}");
                     }
                 }
             }
             else
             {
-                ReplayDecoder.logger.DecodeWarning($"{property} was no PythonTuple: {value?.GetType()} {value?.ToString()}");
             }
         }
         return new KeyValuePair<int, BigInteger>(intEnt, bigEnt);
@@ -337,7 +326,6 @@ internal partial class Parse
             }
             else
             {
-                ReplayDecoder.logger.DecodeWarning($"{property} was no string list: {value?.GetType()} {value?.ToString()}");
             }
         }
         return stringList;
