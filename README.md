@@ -89,7 +89,16 @@ SControlGroupUpdateEvent => no mask
 
 # ChangeLog
 
-<details open="open"><summary>v0.8.0-rc1.0</summary>
+<details open="open"><summary>v0.8.0</summary>
+
+**Breaking Changes**
+>- dotnet 8
+>- SC2 Patch 5.0.13 - s2protocol 92028
+>- PingMessageEvents
+
+</details>
+
+<details><summary>v0.8.0-rc1.0</summary>
 
 **Breaking Changes**
 >- dotnet 8
