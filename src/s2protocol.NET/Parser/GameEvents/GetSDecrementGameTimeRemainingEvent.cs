@@ -2,7 +2,7 @@
 using s2protocol.NET.Models;
 
 namespace s2protocol.NET.Parser;
-internal partial class Parse
+internal static partial class Parse
 {
     private static SDecrementGameTimeRemainingEvent GetSDecrementGameTimeRemainingEvent(PythonDictionary pydic, GameEvent gameEvent)
     {

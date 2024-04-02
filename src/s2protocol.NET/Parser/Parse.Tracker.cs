@@ -2,7 +2,7 @@
 using s2protocol.NET.Models;
 
 namespace s2protocol.NET.Parser;
-internal partial class Parse
+internal static partial class Parse
 {
     internal static TrackerEvents Tracker(dynamic pydic)
     {
@@ -71,7 +71,6 @@ internal partial class Parse
 
     private static TrackerEvent GetUnknownEvent(PythonDictionary pydic, TrackerEvent trackerEvent)
     {
-        ReplayDecoder.logger.DecodeWarning($"Game event type unknown: {GetString(pydic, "_event")}");
         return trackerEvent;
     }
 

@@ -43,11 +43,15 @@ public record Sc2Replay
     /// <summary>Replay metadata infos</summary>
     ///
     [JsonInclude]
-    public Metadata? Metadata { get; internal set; }
+    public ReplayMetadata? Metadata { get; internal set; }
     /// <summary>Replay chat messages</summary>
     ///
     [JsonInclude]
     public ICollection<ChatMessageEvent>? ChatMessages { get; internal set; }
+    /// <summary>Replay ping messages</summary>
+    ///
+    [JsonInclude]
+    public ICollection<PingMessageEvent>? PingMessages { get; internal set; }
     /// <summary>Replay TrackerEvents</summary>
     ///
     [JsonInclude]

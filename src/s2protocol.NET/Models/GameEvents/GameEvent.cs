@@ -61,10 +61,7 @@ public record GameEvent
     /// 
     public GameEvent(GameEvent gameEvent)
     {
-        if (gameEvent == null)
-        {
-            throw new ArgumentNullException(nameof(gameEvent));
-        }
+        ArgumentNullException.ThrowIfNull(gameEvent);
         UserId = gameEvent.UserId;
         EventId = gameEvent.EventId;
         Bits = gameEvent.Bits;

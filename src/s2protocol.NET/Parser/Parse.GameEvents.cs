@@ -1,9 +1,7 @@
 ﻿using IronPython.Runtime;
 using s2protocol.NET.Models;
 
-namespace s2protocol.NET.Parser;
-
-internal partial class Parse
+namespace s2protocol.NET.Parser;internal static partial class Parse
 {
     public static GameEvents GameEvents(dynamic pydic)
     {
@@ -87,7 +85,6 @@ internal partial class Parse
 
     private static UnknownGameEvent GetUnknownEvent(PythonDictionary pydic, GameEvent gameEvent)
     {
-        ReplayDecoder.logger.DecodeInformation($"Game event type unknown: {GetString(pydic, "_event")}");
         return new UnknownGameEvent(gameEvent, GetString(pydic, "_event"));
         // return gameEvent;
     }

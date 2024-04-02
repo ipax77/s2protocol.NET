@@ -4,12 +4,12 @@ namespace s2protocol.NET.Models;
 
 /// <summary>Record <c>Metadata</c> Parsed replay metadata infos</summary>
 ///
-public sealed record Metadata
+public sealed record ReplayMetadata
 {
     [JsonConstructor]
 #pragma warning disable CS1591 // Missing XML comment for publicly visible type or member
 #pragma warning disable CS8618 // Non-nullable field must contain a non-null value when exiting constructor. Consider declaring as nullable.
-    public Metadata()
+    public ReplayMetadata()
 #pragma warning restore CS8618 // Non-nullable field must contain a non-null value when exiting constructor. Consider declaring as nullable.
 #pragma warning restore CS1591 // Missing XML comment for publicly visible type or member
     {
@@ -18,7 +18,7 @@ public sealed record Metadata
 
     /// <summary>Record <c>Metadata</c> constructor</summary>
     ///
-    public Metadata(
+    public ReplayMetadata(
         string baseBuild,
         string dataBuild,
         string dataVersion,

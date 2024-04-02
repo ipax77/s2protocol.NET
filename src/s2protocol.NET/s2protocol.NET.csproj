@@ -1,19 +1,19 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
-    <TargetFramework>net6.0</TargetFramework>
+    <TargetFramework>net8.0</TargetFramework>
     <ImplicitUsings>enable</ImplicitUsings>
     <Nullable>enable</Nullable>
-    <Description>C# dotnet 6 wrapper for Blizzards s2protocol for decoding SC2Replays</Description>
+    <Description>C# dotnet 8 wrapper for Blizzards s2protocol for decoding SC2Replays</Description>
     <PackageProjectUrl>https://github.com/ipax77/s2protocol.NET</PackageProjectUrl>
     <PackageReadmeFile>README.md</PackageReadmeFile>
     <RepositoryUrl>https://github.com/ipax77/s2protocol.NET</RepositoryUrl>
     <PackageTags>Starcraft2;Blizzard;s2protocol;IronPython;Replay;Replays;Decoder;Wrapper</PackageTags>
-    <AssemblyVersion>0.6.12.0</AssemblyVersion>
+    <AssemblyVersion>0.8.0.0</AssemblyVersion>
     <Owners>Philipp Hetzner</Owners>
     <Authors>Philipp Hetzner</Authors>
-    <Version>0.6.12</Version>
-	  <FileVersion>0.6.12.0</FileVersion>    
+    <Version>0.8.0</Version>
+	  <FileVersion>0.8.0.0</FileVersion>    
     <PackageLicenseExpression>MIT</PackageLicenseExpression>
     <EnforceCodeStyleInBuild>true</EnforceCodeStyleInBuild>
     <EnableNETAnalyzers>true</EnableNETAnalyzers>
@@ -41,16 +41,21 @@
   <ItemGroup>
     <PackageReference Include="IronPython" Version="2.7.12" />
     <PackageReference Include="IronPython.StdLib" Version="2.7.12" />
-    <PackageReference Include="Microsoft.Extensions.Logging" Version="6.0.0" />
-    <PackageReference Include="Microsoft.Extensions.Logging.Console" Version="6.0.0" />
   </ItemGroup>
-<ItemGroup>
-  <None Include="libs2\**">
-          <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-          <Pack>true</Pack>
-          <PackageCopyToOutput>true</PackageCopyToOutput>
-          <PackageFlatten>false</PackageFlatten>
-          <PackagePath>contentFiles\any\any\libs2;;</PackagePath>
-  </None>
-</ItemGroup>
+
+  <ItemGroup>
+    <None Include="libs2\**">
+            <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+            <Pack>true</Pack>
+            <PackageCopyToOutput>true</PackageCopyToOutput>
+            <PackageFlatten>false</PackageFlatten>
+            <PackagePath>contentFiles\any\any\libs2;;</PackagePath>
+    </None>
+  </ItemGroup>
+  
+  <ItemGroup>
+    <AssemblyAttribute Include="System.CLSCompliantAttribute">
+        <_Parameter1>false</_Parameter1>
+    </AssemblyAttribute>
+  </ItemGroup>
 </Project>

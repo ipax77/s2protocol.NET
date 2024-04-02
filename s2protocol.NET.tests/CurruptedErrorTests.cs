@@ -1,9 +1,6 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.IO;
-using System.Linq;
 using System.Reflection;
-using System.Text;
 using System.Threading.Tasks;
 using Xunit;
 
@@ -34,16 +31,14 @@ public class CurruptedErrorTests
             AttributeEvents = false,
         };
 
-        bool exception = false;
         try
         {
             var replay = await decoder.DecodeAsync(Path.Combine(assemblyPath, "replays", replayFile), options);
         }
         catch (Exception ex)
         {
-            exception = ex.Message == "CorruptedError";
+            Assert.Equal("CorruptedError", ex.Message);
         }
-        Assert.True(exception);
 
         decoder.Dispose();
     }
@@ -69,16 +64,14 @@ public class CurruptedErrorTests
             AttributeEvents = false,
         };
 
-        bool exception = false;
         try
         {
             var replay = await decoder.DecodeAsync(Path.Combine(assemblyPath, "replays", replayFile), options);
         }
         catch (Exception ex)
         {
-            exception = ex.Message == "Could not generate MPQ archive";
+            Assert.Equal("Value cannot be null. (Parameter 'trackerEvents')", ex.Message);
         }
-        Assert.True(exception);
 
         decoder.Dispose();
     }  

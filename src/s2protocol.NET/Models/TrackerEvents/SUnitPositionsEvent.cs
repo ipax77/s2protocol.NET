@@ -31,7 +31,7 @@ public record SUnitPositionsEvent : TrackerEvent
         }
         UnitIndex = unitIndex;
         UnitPositions = units.ToArray();
-        if (units.Any())
+        if (units.Count != 0)
         {
             X = units.Last().X;
             Y = units.Last().Y;

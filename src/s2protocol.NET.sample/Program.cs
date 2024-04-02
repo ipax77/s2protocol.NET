@@ -1,6 +1,5 @@
 ﻿// See https://aka.ms/new-console-template for more information
 using s2protocol.NET;
-using s2protocol.NET.Models;
 using System.Diagnostics;
 using System.Reflection;
 using System.Text.Json;
@@ -26,7 +25,7 @@ else
 
     Console.WriteLine($"Found {replayFilePaths.Count} replays");
 
-    ReplayDecoder decoder = new(assemblyPath, Microsoft.Extensions.Logging.LogLevel.Debug);
+    ReplayDecoder decoder = new(assemblyPath);
 
     ReplayDecoderOptions options = new ReplayDecoderOptions()
     {
