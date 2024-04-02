@@ -3,7 +3,7 @@ using System.Numerics;
 using System.Text;
 
 namespace s2protocol.NET.Parser;
-internal partial class Parse
+internal static partial class Parse
 {
     internal static string GetString(PythonDictionary pydic, string property)
     {

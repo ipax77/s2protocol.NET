@@ -1,9 +1,7 @@
 ﻿using IronPython.Runtime;
 using s2protocol.NET.Models;
 
-namespace s2protocol.NET.Parser;
-
-internal partial class Parse
+namespace s2protocol.NET.Parser;internal static partial class Parse
 {
     private static SCmdUpdateTargetUnitEvent GetSCmdUpdateTargetUnitEvent(PythonDictionary pydic, GameEvent gameEvent)
     {

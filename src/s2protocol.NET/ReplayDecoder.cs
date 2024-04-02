@@ -129,6 +129,7 @@ public sealed class ReplayDecoder : IDisposable
         {
             await Parallel.ForEachAsync(replayPaths, parallelOptions, async (replayPath, token) =>
             {
+#pragma warning disable CA1031 // Do not catch general exception types - finish the loop event if some replays fail.
                 try
                 {
                     var replay = await DecodeAsync(replayPath, options, token).ConfigureAwait(false);
@@ -146,6 +147,7 @@ public sealed class ReplayDecoder : IDisposable
                 {
 
                 }
+#pragma warning restore CA1031 // Do not catch general exception types
             }).ConfigureAwait(false);
         }
         catch (OperationCanceledException) { }
@@ -171,6 +173,7 @@ public sealed class ReplayDecoder : IDisposable
         {
             await Parallel.ForEachAsync(replayPaths, parallelOptions, async (replayPath, token) =>
             {
+#pragma warning disable CA1031 // Do not catch general exception types - finish the loop event if some replays fail.
                 try
                 {
                     var replay = await DecodeAsync(replayPath, options, token).ConfigureAwait(false);
@@ -199,6 +202,7 @@ public sealed class ReplayDecoder : IDisposable
                         Exception = ex.Message
                     });
                 }
+#pragma warning restore CA1031 // Do not catch general exception types
             }).ConfigureAwait(false);
         }
         catch (OperationCanceledException) { }
@@ -434,7 +438,7 @@ public sealed class ReplayDecoder : IDisposable
         }, token).ConfigureAwait(false);
     }
 
-    private static async Task<Metadata?> GetMetadataAsync(dynamic archive, CancellationToken token)
+    private static async Task<ReplayMetadata?> GetMetadataAsync(dynamic archive, CancellationToken token)
     {
         return await Task.Run(() =>
         {
@@ -444,7 +448,7 @@ public sealed class ReplayDecoder : IDisposable
                 var meta_string = Encoding.UTF8.GetString(meta_bytes.ToArray());
                 if (meta_string != null)
                 {
-                    var data = JsonSerializer.Deserialize<Metadata>(meta_string);
+                    var data = JsonSerializer.Deserialize<ReplayMetadata>(meta_string);
                     return data;
                 }
             }

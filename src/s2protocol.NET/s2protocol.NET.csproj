@@ -42,13 +42,20 @@
     <PackageReference Include="IronPython" Version="2.7.12" />
     <PackageReference Include="IronPython.StdLib" Version="2.7.12" />
   </ItemGroup>
-<ItemGroup>
-  <None Include="libs2\**">
-          <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-          <Pack>true</Pack>
-          <PackageCopyToOutput>true</PackageCopyToOutput>
-          <PackageFlatten>false</PackageFlatten>
-          <PackagePath>contentFiles\any\any\libs2;;</PackagePath>
-  </None>
-</ItemGroup>
+
+  <ItemGroup>
+    <None Include="libs2\**">
+            <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+            <Pack>true</Pack>
+            <PackageCopyToOutput>true</PackageCopyToOutput>
+            <PackageFlatten>false</PackageFlatten>
+            <PackagePath>contentFiles\any\any\libs2;;</PackagePath>
+    </None>
+  </ItemGroup>
+  
+  <ItemGroup>
+    <AssemblyAttribute Include="System.CLSCompliantAttribute">
+        <_Parameter1>false</_Parameter1>
+    </AssemblyAttribute>
+  </ItemGroup>
 </Project>
