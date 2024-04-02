@@ -48,6 +48,10 @@ public record Sc2Replay
     ///
     [JsonInclude]
     public ICollection<ChatMessageEvent>? ChatMessages { get; internal set; }
+    /// <summary>Replay ping messages</summary>
+    ///
+    [JsonInclude]
+    public ICollection<PingMessageEvent>? PingMessages { get; internal set; }
     /// <summary>Replay TrackerEvents</summary>
     ///
     [JsonInclude]

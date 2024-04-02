@@ -298,7 +298,7 @@ public sealed class ReplayDecoder : IDisposable
                 var messages = await GetMessagesAsync(archive, protocol, token);
                 ArgumentNullException.ThrowIfNull((object?)messages, nameof(messages));
 
-                replay.ChatMessages = Parse.Messages(messages);
+                Parse.SetMessages(messages, replay);
             }
 
             if (options.TrackerEvents)
