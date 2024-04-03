@@ -19,7 +19,7 @@ public class CurruptedErrorTests
         {
             return;
         }
-        ReplayDecoder decoder = new(assemblyPath);
+        using ReplayDecoder decoder = new(assemblyPath);
         ReplayDecoderOptions options = new ReplayDecoderOptions()
         {
             Initdata = false,
@@ -35,7 +35,7 @@ public class CurruptedErrorTests
         {
             var replay = await decoder.DecodeAsync(Path.Combine(assemblyPath, "replays", replayFile), options);
         }
-        catch (Exception ex)
+        catch (DecodeException ex)
         {
             Assert.Equal("CorruptedError", ex.Message);
         }
@@ -52,7 +52,7 @@ public class CurruptedErrorTests
         {
             return;
         }
-        ReplayDecoder decoder = new(assemblyPath);
+        using ReplayDecoder decoder = new(assemblyPath);
         ReplayDecoderOptions options = new ReplayDecoderOptions()
         {
             Initdata = false,
@@ -68,7 +68,7 @@ public class CurruptedErrorTests
         {
             var replay = await decoder.DecodeAsync(Path.Combine(assemblyPath, "replays", replayFile), options);
         }
-        catch (Exception ex)
+        catch (DecodeException ex)
         {
             Assert.Equal("Value cannot be null. (Parameter 'trackerEvents')", ex.Message);
         }

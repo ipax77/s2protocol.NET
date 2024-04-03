@@ -16,7 +16,7 @@
 	<LangVersion>latest</LangVersion>
 	<WarningsNotAsErrors></WarningsNotAsErrors>
 	<DisabledWarnings></DisabledWarnings>
-	<NoWarn>1591</NoWarn>
+	<NoWarn>1591, CA2007</NoWarn>
 	<IsPackable>false</IsPackable>
   </PropertyGroup>
 

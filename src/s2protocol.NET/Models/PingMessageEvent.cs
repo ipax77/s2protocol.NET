@@ -7,7 +7,7 @@ public sealed record PingMessageEvent
 {
     /// <summary>Record <c>PingMessageEvent</c> constructor</summary>
     ///
-    public PingMessageEvent(int recipient, int userId, int gameloop, int x, int y)
+    public PingMessageEvent(int recipient, int userId, int gameloop, long x, long y)
     {
         Recipient = recipient;
         UserId = userId;
@@ -33,11 +33,11 @@ public sealed record PingMessageEvent
     /// <summary>
     /// X coordinate
     /// </summary>
-    public int X { get; init; }
+    public long X { get; init; }
     /// <summary>
     /// Y coordinate
     /// </summary>
-    public int Y { get; init; }
+    public long Y { get; init; }
     /// <summary>Message Gameloop</summary>
     ///
     public int Gameloop { get; init; }

@@ -19,7 +19,7 @@ public class DecodeParallelTests
         {
             return;
         }
-        ReplayDecoder decoder = new(assemblyPath);
+        using ReplayDecoder decoder = new(assemblyPath);
         ReplayDecoderOptions options = new()
         {
             Initdata = false,
@@ -46,7 +46,7 @@ public class DecodeParallelTests
         }
         Assert.Equal(replays.Length, decoded);
 
-        cts.Cancel();
+        await cts.CancelAsync();
         cts.Dispose();
         decoder.Dispose();
     }
@@ -59,7 +59,7 @@ public class DecodeParallelTests
         {
             return;
         }
-        ReplayDecoder decoder = new(assemblyPath);
+        using ReplayDecoder decoder = new(assemblyPath);
         ReplayDecoderOptions options = new()
         {
             Initdata = false,
@@ -86,7 +86,7 @@ public class DecodeParallelTests
         }
         Assert.Equal(replays.Length - errorReplays, decoded);
 
-        cts.Cancel();
+        await cts.CancelAsync();
         cts.Dispose();
         decoder.Dispose();
     }
@@ -99,7 +99,7 @@ public class DecodeParallelTests
         {
             return;
         }
-        ReplayDecoder decoder = new(assemblyPath);
+        using ReplayDecoder decoder = new(assemblyPath);
         ReplayDecoderOptions options = new()
         {
             Initdata = false,
@@ -132,7 +132,7 @@ public class DecodeParallelTests
         Assert.Equal(replays.Length - errorReplays, decoded);
         Assert.Equal(errorReplays, errors);
 
-        cts.Cancel();
+        await cts.CancelAsync();
         cts.Dispose();
         decoder.Dispose();
     }

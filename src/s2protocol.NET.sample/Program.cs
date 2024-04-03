@@ -25,7 +25,7 @@ else
 
     Console.WriteLine($"Found {replayFilePaths.Count} replays");
 
-    ReplayDecoder decoder = new(assemblyPath);
+    using ReplayDecoder decoder = new(assemblyPath);
 
     ReplayDecoderOptions options = new ReplayDecoderOptions()
     {

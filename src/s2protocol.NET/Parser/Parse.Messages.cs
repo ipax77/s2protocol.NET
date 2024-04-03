@@ -26,7 +26,7 @@ internal static partial class Parse
                 var id = GetChatMessageId(pydic);
                 var loop = GetInt(pydic, "_gameloop");
                 (var x, var y) = GetXYCoords(pydic);
-                pings.Add(new(recipient, id, x, y, loop));
+                pings.Add(new(recipient, id, loop, x, y));
             }
         }
         replay.ChatMessages = messages;
@@ -45,14 +45,14 @@ internal static partial class Parse
         return 0;
     }
 
-    private static (int, int) GetXYCoords(PythonDictionary pydic)
+    private static (long, long) GetXYCoords(PythonDictionary pydic)
     {
         if (pydic.ContainsKey("m_point"))
         {
             if (pydic["m_point"] is PythonDictionary coorddic)
             {
-                var x = GetInt(coorddic, "x");
-                var y = GetInt(coorddic, "y");
+                var x = GetBigInt(coorddic, "x");
+                var y = GetBigInt(coorddic, "y");
                 return (x, y);
             }
         }
