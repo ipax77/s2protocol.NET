@@ -9,8 +9,10 @@ using IronPython (2.7)
 
 ## Installation
 
+```bash
 dotnet add package IronPython.StdLib --version 2.7.12
 dotnet add package s2protocol.NET
+```
 
 ## Usage
 
