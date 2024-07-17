@@ -9,17 +9,8 @@ using IronPython (2.7)
 
 ## Installation
 
-* dotnet 8:
-```
 dotnet add package IronPython.StdLib --version 2.7.12
 dotnet add package s2protocol.NET
-```
-
-* dotnet 6/7: 
-```
-dotnet add package IronPython.StdLib --version 2.7.12
-dotnet add package s2protocol.NET --version 0.6.12
-```
 
 ## Usage
 
@@ -89,7 +80,13 @@ SControlGroupUpdateEvent => no mask
 
 # ChangeLog
 
-<details open="open"><summary>v0.8.0</summary>
+<details open="open"><summary>v0.8.2</summary>
+
+>- s2protocol v5.0.13.92440.0
+
+</details>
+
+<details><summary>v0.8.0</summary>
 
 **Breaking Changes**
 >- dotnet 8

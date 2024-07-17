@@ -18,9 +18,6 @@ else
     string replayPath = Path.Combine(assemblyPath, @"..\..\..\..\..\s2protocol.NET.tests\replays");
     string replayFilePath = Path.Combine(replayPath, "test2.SC2Replay");
 
-    // replayPath = @"C:\Users\pax77\Documents\StarCraft II\Accounts\107095918\2-S2-1-226401\Replays\Multiplayer";
-    // replayFilePath = Path.Combine(replayPath, "Direct Strike (2923).SC2Replay");
-
     List<string> replayFilePaths = Directory.GetFiles(replayPath, "*.SC2Replay").Take(1000).ToList();
 
     Console.WriteLine($"Found {replayFilePaths.Count} replays");
