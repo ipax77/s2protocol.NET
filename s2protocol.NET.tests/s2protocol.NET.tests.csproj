@@ -6,23 +6,23 @@
 	<EnforceCodeStyleInBuild>true</EnforceCodeStyleInBuild>
 	<EnableNETAnalyzers>true</EnableNETAnalyzers>
 	<AnalysisMode>All</AnalysisMode>
-	<AnalysisLevel>latest</AnalysisLevel>
+	<AnalysisLevel>8</AnalysisLevel>
 	<RunAnalyzersDuringBuild>true</RunAnalyzersDuringBuild>
 	<RunAnalyzersDuringLiveAnalysis>true</RunAnalyzersDuringLiveAnalysis>
 	<CodeAnalysisTreatWarningsAsErrors>false</CodeAnalysisTreatWarningsAsErrors>
 	<TreatWarningsAsErrors>true</TreatWarningsAsErrors>
 	<GenerateDocumentationFile>true</GenerateDocumentationFile>
 	<WarningsAsErrors>nullable</WarningsAsErrors>
-	<LangVersion>latest</LangVersion>
+	<LangVersion>12.0</LangVersion>
 	<WarningsNotAsErrors></WarningsNotAsErrors>
 	<DisabledWarnings></DisabledWarnings>
-	<NoWarn>1591, CA2007</NoWarn>
+	<NoWarn>1591,CA1014,CA2007</NoWarn>
 	<IsPackable>false</IsPackable>
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="Microsoft.NET.Test.Sdk" Version="17.10.0" />
-    <PackageReference Include="xunit" Version="2.9.0" />
+    <PackageReference Include="Microsoft.NET.Test.Sdk" Version="17.12.0" />
+    <PackageReference Include="xunit" Version="2.9.2" />
     <PackageReference Include="xunit.runner.visualstudio" Version="2.8.2">
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
       <PrivateAssets>all</PrivateAssets>
