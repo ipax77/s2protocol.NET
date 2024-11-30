@@ -82,7 +82,13 @@ SControlGroupUpdateEvent => no mask
 
 # ChangeLog
 
-<details open="open"><summary>v0.8.2</summary>
+<details open="open"><summary>v0.8.3</summary>
+
+>- s2protocol v 5.0.14.93272.0
+
+</details>
+
+<details><summary>v0.8.2</summary>
 
 >- s2protocol v5.0.13.92440.0
 
