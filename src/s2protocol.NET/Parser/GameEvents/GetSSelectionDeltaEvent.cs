@@ -1,20 +1,19 @@
-﻿using IronPython.Runtime;
-using s2protocol.NET.Models;
+﻿using s2protocol.NET.Models;
 
 namespace s2protocol.NET.Parser;internal static partial class Parse
 {
-    private static SSelectionDeltaEvent GetSSelectionDeltaEvent(PythonDictionary gameDic, GameEvent gameEvent)
+    private static SSelectionDeltaEvent GetSSelectionDeltaEvent(Dictionary<string, object> gameDic, GameEvent gameEvent)
     {
         var delta = GetSelectionDeltaEventDelta(gameDic);
         int controlGroupId = GetInt(gameDic, "m_controlGroupId");
         return new SSelectionDeltaEvent(gameEvent, delta, controlGroupId);
     }
 
-    private static SelectionDeltaEventDelta GetSelectionDeltaEventDelta(PythonDictionary pydic)
+    private static SelectionDeltaEventDelta GetSelectionDeltaEventDelta(Dictionary<string, object> pydic)
     {
         if (pydic.ContainsKey("m_delta"))
         {
-            if (pydic["m_delta"] is PythonDictionary deltaDic)
+            if (pydic["m_delta"] is Dictionary<string, object> deltaDic)
             {
 
                 List<int> addUnitTags = GetIntList(deltaDic, "m_addUnitTags");
@@ -25,13 +24,13 @@ namespace s2protocol.NET.Parser;internal static partial class Parse
                 {
                     if (subGroups != null)
                     {
-                        if (subGroups is List subGroupList)
+                        if (subGroups is List<object> subGroupList)
                         {
 
 
                             foreach (var ent in subGroupList)
                             {
-                                if (ent is PythonDictionary subDic)
+                                if (ent is Dictionary<string, object> subDic)
                                 {
                                     subgroups.Add(new SelectionDeltaEventDeltaSubGroup(
                                         GetInt(subDic, "m_unitLink"),
@@ -47,7 +46,7 @@ namespace s2protocol.NET.Parser;internal static partial class Parse
 
                 if (deltaDic.TryGetValue("m_removeMask", out object? removeMask))
                 {
-                    if (removeMask is PythonDictionary removeDic)
+                    if (removeMask is Dictionary<string, object> removeDic)
                     {
                         zeroIndices = GetIntList(removeDic, "ZeroIndices");
                     }

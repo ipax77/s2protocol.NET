@@ -1,11 +1,10 @@
-﻿using IronPython.Runtime;
-using s2protocol.NET.Models;
+﻿using s2protocol.NET.Models;
 
-namespace s2protocol.NET.Parser;internal static partial class Parse
+namespace s2protocol.NET.Parser; internal static partial class Parse
 {
     internal static AttributeEvents GetAttributeEvents(dynamic pydic)
     {
-        if (pydic is PythonDictionary attrDic)
+        if (pydic is Dictionary<string, object> attrDic)
         {
             int source = GetInt(attrDic, "source");
             int mapNameSpace = GetInt(attrDic, "mapNamespace");
@@ -15,18 +14,18 @@ namespace s2protocol.NET.Parser;internal static partial class Parse
         return new AttributeEvents(0, 0, new List<AttributeEventScope>());
     }
 
-    private static List<AttributeEventScope> GetAttributeScopes(PythonDictionary attrDic)
+    private static List<AttributeEventScope> GetAttributeScopes(Dictionary<string, object> attrDic)
     {
         List<AttributeEventScope> scopesList = new List<AttributeEventScope>();
 
         if (attrDic.TryGetValue("scopes", out object? scopes))
         {
-            if (scopes is PythonDictionary scopesDic)
+            if (scopes is Dictionary<object, object> scopesDic)
             {
                 foreach (var scopeEnt in scopesDic)
                 {
                     int? scope = scopeEnt.Key as int?;
-                    if (scope != null && scopeEnt.Value is PythonDictionary scopeDic)
+                    if (scope != null && scopeEnt.Value is Dictionary<string, object> scopeDic)
                     {
                         scopesList.AddRange(GetAttributeScopes(scope.Value, scopeDic));
                     }
@@ -37,22 +36,25 @@ namespace s2protocol.NET.Parser;internal static partial class Parse
         return scopesList;
     }
 
-    private static List<AttributeEventScope> GetAttributeScopes(int scope, PythonDictionary scopeDic)
+    private static List<AttributeEventScope> GetAttributeScopes(int scope, Dictionary<string, object> scopeDic)
     {
         List<AttributeEventScope> scopes = new();
         foreach (var ent in scopeDic)
         {
-            int? scopeId = ent.Key as int?;
-            if (scopeId != null && ent.Value is List scopeList)
+            if (!int.TryParse(ent.Key, out int scopeId) && scopeId == 0)
+            {
+                continue;
+            }
+            if (ent.Value is List<object> scopeList)
             {
                 foreach (var listEnt in scopeList)
                 {
-                    if (listEnt is PythonDictionary entDic)
+                    if (listEnt is Dictionary<string, object> entDic)
                     {
                         int @namespace = GetInt(entDic, "namespace");
                         int attrid = GetInt(entDic, "attrid");
                         string value = GetString(entDic, "value");
-                        scopes.Add(new AttributeEventScope(scope, scopeId.Value, @namespace, attrid, value));
+                        scopes.Add(new AttributeEventScope(scope, scopeId, @namespace, attrid, value));
                     }
                 }
             }

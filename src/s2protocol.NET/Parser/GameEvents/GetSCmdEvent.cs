@@ -1,9 +1,8 @@
-﻿using IronPython.Runtime;
-using s2protocol.NET.Models;
+﻿using s2protocol.NET.Models;
 
 namespace s2protocol.NET.Parser;internal static partial class Parse
 {
-    private static SCmdEvent GetSCmdEvent(PythonDictionary gameDic, GameEvent gameEvent)
+    private static SCmdEvent GetSCmdEvent(Dictionary<string, object> gameDic, GameEvent gameEvent)
     {
         int? unitGroup = GetNullableInt(gameDic, "m_unitGroup");
         (int abilLink, int abilCmdIndex, string? abilCmdData) = GetAbil(gameDic);
@@ -14,7 +13,7 @@ namespace s2protocol.NET.Parser;internal static partial class Parse
         return new SCmdEvent(gameEvent, unitGroup, abilLink, abilCmdIndex, abilCmdData, targetX, targetY, targetZ, cmdFalgs, sequence, otherUnit);
     }
 
-    private static (long?, long?, long?) GetSCmdEventTarget(PythonDictionary pydic)
+    private static (long?, long?, long?) GetSCmdEventTarget(Dictionary<string, object> pydic)
     {
         if (pydic.TryGetValue("m_data", out object? data))
         {
@@ -24,7 +23,7 @@ namespace s2protocol.NET.Parser;internal static partial class Parse
                 {
                     if (target != null)
                     {
-                        if (target is PythonDictionary targetDic)
+                        if (target is Dictionary<string, object> targetDic)
                         {
                             long x = GetBigInt(targetDic, "x");
                             long y = GetBigInt(targetDic, "y");
@@ -38,11 +37,11 @@ namespace s2protocol.NET.Parser;internal static partial class Parse
         return (null, null, null);
     }
 
-    private static (int, int, string?) GetAbil(PythonDictionary pydic)
+    private static (int, int, string?) GetAbil(Dictionary<string, object> pydic)
     {
         if (pydic.ContainsKey("m_abil"))
         {
-            if (pydic["m_abil"] is PythonDictionary abilDic)
+            if (pydic["m_abil"] is Dictionary<string, object> abilDic)
             {
                 int link = GetInt(abilDic, "m_abilLink");
                 int cmdIndex = GetInt(abilDic, "m_abilCmdIndex");

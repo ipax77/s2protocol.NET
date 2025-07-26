@@ -1,5 +1,4 @@
-﻿using IronPython.Runtime;
-using s2protocol.NET.Models;
+﻿using s2protocol.NET.Models;
 
 namespace s2protocol.NET.Parser;internal static partial class Parse
 {
@@ -9,7 +8,7 @@ namespace s2protocol.NET.Parser;internal static partial class Parse
 
         foreach (var ent in pydic)
         {
-            if (ent is PythonDictionary gameDic)
+            if (ent is Dictionary<string, object> gameDic)
             {
                 GameEvent gameEvent = GetGameEvent(gameDic);
 
@@ -61,7 +60,7 @@ namespace s2protocol.NET.Parser;internal static partial class Parse
         return new GameEvents(gameevents);
     }
 
-    private static GameEvent GetGameEvent(PythonDictionary pydic)
+    private static GameEvent GetGameEvent(Dictionary<string, object> pydic)
     {
         int userId = GetUserId(pydic);
         int eventId = GetInt(pydic, "_eventid");
@@ -71,11 +70,11 @@ namespace s2protocol.NET.Parser;internal static partial class Parse
         return new GameEvent(userId, eventId, type, bits, gameloop);
     }
 
-    private static int GetUserId(PythonDictionary pydic)
+    private static int GetUserId(Dictionary<string, object> pydic)
     {
         if (pydic.ContainsKey("_userid"))
         {
-            if (pydic["_userid"] is PythonDictionary userDic)
+            if (pydic["_userid"] is Dictionary<string, object> userDic)
             {
                 return GetInt(userDic, "m_userId");
             }
@@ -83,13 +82,13 @@ namespace s2protocol.NET.Parser;internal static partial class Parse
         return 0;
     }
 
-    private static UnknownGameEvent GetUnknownEvent(PythonDictionary pydic, GameEvent gameEvent)
+    private static UnknownGameEvent GetUnknownEvent(Dictionary<string, object> pydic, GameEvent gameEvent)
     {
         return new UnknownGameEvent(gameEvent, GetString(pydic, "_event"));
         // return gameEvent;
     }
 
-    private static STriggerDialogControlEvent GetSTriggerDialogControlEvent(PythonDictionary gameDic, GameEvent gameEvent)
+    private static STriggerDialogControlEvent GetSTriggerDialogControlEvent(Dictionary<string, object> gameDic, GameEvent gameEvent)
     {
         long m_controlId = GetBigInt(gameDic, "m_controlId");
         int? mouseButton = GetMouseButton(gameDic);
@@ -98,11 +97,11 @@ namespace s2protocol.NET.Parser;internal static partial class Parse
         return new STriggerDialogControlEvent(gameEvent, m_controlId, mouseButton, textChanged, m_eventType);
     }
 
-    private static int? GetMouseButton(PythonDictionary pydic)
+    private static int? GetMouseButton(Dictionary<string, object> pydic)
     {
         if (pydic.ContainsKey("m_eventData"))
         {
-            if (pydic["m_eventData"] is PythonDictionary mouseDic)
+            if (pydic["m_eventData"] is Dictionary<string, object> mouseDic)
             {
                 return GetNullableInt(mouseDic, "MouseButton");
             }
@@ -110,11 +109,11 @@ namespace s2protocol.NET.Parser;internal static partial class Parse
         return null;
     }
 
-    private static string? GetTextChanged(PythonDictionary pydic)
+    private static string? GetTextChanged(Dictionary<string, object> pydic)
     {
         if (pydic.ContainsKey("m_eventData"))
         {
-            if (pydic["m_eventData"] is PythonDictionary mouseDic)
+            if (pydic["m_eventData"] is Dictionary<string, object> mouseDic)
             {
                 return GetNullableString(mouseDic, "TextChanged");
             }
@@ -122,45 +121,45 @@ namespace s2protocol.NET.Parser;internal static partial class Parse
         return null;
     }
 
-    private static SSetSyncPlayingTimeEvent GetSSetSyncPlayingTimeEvent(PythonDictionary gameDic, GameEvent gameEvent)
+    private static SSetSyncPlayingTimeEvent GetSSetSyncPlayingTimeEvent(Dictionary<string, object> gameDic, GameEvent gameEvent)
     {
         int m_syncTime = GetInt(gameDic, "m_syncTime");
         return new SSetSyncPlayingTimeEvent(gameEvent, m_syncTime);
     }
 
-    private static SSetSyncLoadingTimeEvent GetSSetSyncLoadingTimeEvent(PythonDictionary gameDic, GameEvent gameEvent)
+    private static SSetSyncLoadingTimeEvent GetSSetSyncLoadingTimeEvent(Dictionary<string, object> gameDic, GameEvent gameEvent)
     {
         int m_syncTime = GetInt(gameDic, "m_syncTime");
         return new SSetSyncLoadingTimeEvent(gameEvent, m_syncTime);
     }
 
-    private static SGameUserLeaveEvent GetSGameUserLeaveEvent(PythonDictionary gameDic, GameEvent gameEvent)
+    private static SGameUserLeaveEvent GetSGameUserLeaveEvent(Dictionary<string, object> gameDic, GameEvent gameEvent)
     {
         int leaveReason = GetInt(gameDic, "m_leaveReason");
         return new SGameUserLeaveEvent(gameEvent, leaveReason);
     }
 
-    private static SControlGroupUpdateEvent GetSControlGroupUpdateEvent(PythonDictionary gameDic, GameEvent gameEvent)
+    private static SControlGroupUpdateEvent GetSControlGroupUpdateEvent(Dictionary<string, object> gameDic, GameEvent gameEvent)
     {
         int controlGroupUpdate = GetInt(gameDic, "m_controlGroupUpdate");
         return new SControlGroupUpdateEvent(gameEvent, controlGroupUpdate);
     }
 
-    private static SCommandManagerStateEvent GetSCommandManagerStateEvent(PythonDictionary gameDic, GameEvent gameEvent)
+    private static SCommandManagerStateEvent GetSCommandManagerStateEvent(Dictionary<string, object> gameDic, GameEvent gameEvent)
     {
         int state = GetInt(gameDic, "m_state");
         int? sequence = GetNullableInt(gameDic, "m_sequence");
         return new SCommandManagerStateEvent(gameEvent, state, sequence);
     }
 
-    private static SCmdUpdateTargetPointEvent GetSCmdUpdateTargetPointEvent(PythonDictionary gameDic, GameEvent gameEvent)
+    private static SCmdUpdateTargetPointEvent GetSCmdUpdateTargetPointEvent(Dictionary<string, object> gameDic, GameEvent gameEvent)
     {
         long x = 0;
         long y = 0;
         long z = 0;
         if (gameDic.TryGetValue("m_target", out object? target))
         {
-            if (target is PythonDictionary targetDic)
+            if (target is Dictionary<string, object> targetDic)
             {
                 x = GetBigInt(targetDic, "x");
                 y = GetBigInt(targetDic, "y");
@@ -170,7 +169,7 @@ namespace s2protocol.NET.Parser;internal static partial class Parse
         return new SCmdUpdateTargetPointEvent(gameEvent, x, y, z);
     }
 
-    private static SBankValueEvent GetSBankValueEvent(PythonDictionary gameDic, GameEvent gameEvent)
+    private static SBankValueEvent GetSBankValueEvent(Dictionary<string, object> gameDic, GameEvent gameEvent)
     {
         string data = GetString(gameDic, "m_data");
         string name = GetString(gameDic, "m_name");
@@ -178,20 +177,20 @@ namespace s2protocol.NET.Parser;internal static partial class Parse
         return new SBankValueEvent(gameEvent, name, data, type);
     }
 
-    private static SBankSignatureEvent GetSBankSignatureEvent(PythonDictionary gameDic, GameEvent gameEvent)
+    private static SBankSignatureEvent GetSBankSignatureEvent(Dictionary<string, object> gameDic, GameEvent gameEvent)
     {
         string toonHandle = GetString(gameDic, "m_toonHandle");
         var signature = GetIntList(gameDic, "m_signature");
         return new SBankSignatureEvent(gameEvent, toonHandle, signature);
     }
 
-    private static SBankSectionEvent GetSBankSectionEvent(PythonDictionary gameDic, GameEvent gameEvent)
+    private static SBankSectionEvent GetSBankSectionEvent(Dictionary<string, object> gameDic, GameEvent gameEvent)
     {
         string name = GetString(gameDic, "m_name");
         return new SBankSectionEvent(gameEvent, name);
     }
 
-    private static SBankKeyEvent GetSBankKeyEvent(PythonDictionary pydic, GameEvent gameEvent)
+    private static SBankKeyEvent GetSBankKeyEvent(Dictionary<string, object> pydic, GameEvent gameEvent)
     {
         string data = GetString(pydic, "m_data");
         string name = GetString(pydic, "m_name");
@@ -199,7 +198,7 @@ namespace s2protocol.NET.Parser;internal static partial class Parse
         return new SBankKeyEvent(gameEvent, name, data, type);
     }
 
-    private static SBankFileEvent GetSBankFileEvent(PythonDictionary pydic, GameEvent gameEvent)
+    private static SBankFileEvent GetSBankFileEvent(Dictionary<string, object> pydic, GameEvent gameEvent)
     {
         string name = GetString(pydic, "m_name");
         return new SBankFileEvent(gameEvent, name);

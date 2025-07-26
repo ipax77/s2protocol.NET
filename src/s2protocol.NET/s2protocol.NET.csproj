@@ -9,11 +9,11 @@
     <PackageReadmeFile>README.md</PackageReadmeFile>
     <RepositoryUrl>https://github.com/ipax77/s2protocol.NET</RepositoryUrl>
     <PackageTags>Starcraft2;Blizzard;s2protocol;IronPython;Replay;Replays;Decoder;Wrapper</PackageTags>
-    <AssemblyVersion>0.8.4.0</AssemblyVersion>
+    <AssemblyVersion>0.9.0.0</AssemblyVersion>
     <Owners>Philipp Hetzner</Owners>
     <Authors>Philipp Hetzner</Authors>
-    <Version>0.8.4</Version>
-	  <FileVersion>0.8.4.0</FileVersion>    
+    <Version>0.9.0</Version>
+	  <FileVersion>0.9.0.0</FileVersion>    
     <PackageLicenseExpression>MIT</PackageLicenseExpression>
     <EnforceCodeStyleInBuild>true</EnforceCodeStyleInBuild>
     <EnableNETAnalyzers>true</EnableNETAnalyzers>
@@ -45,18 +45,15 @@
   </ItemGroup>
 
   <ItemGroup>
-    <PackageReference Include="System.Drawing.Common" Version="4.7.3" /> 
-    <PackageReference Include="IronPython" Version="2.7.12" />
-    <PackageReference Include="IronPython.StdLib" Version="2.7.12" />
+    <PackageReference Include="SharpZipLib" Version="1.4.2" />
   </ItemGroup>
 
   <ItemGroup>
-    <None Include="libs2\**">
-            <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-            <Pack>true</Pack>
-            <PackageCopyToOutput>true</PackageCopyToOutput>
-            <PackageFlatten>false</PackageFlatten>
-            <PackagePath>contentFiles\any\any\libs2;;</PackagePath>
-    </None>
+    <None Remove="Resources/versions/**/*" />
   </ItemGroup>
+
+  <ItemGroup>
+	  <EmbeddedResource  Include="Resources/versions/**/*.py" />
+  </ItemGroup>
+
 </Project>
