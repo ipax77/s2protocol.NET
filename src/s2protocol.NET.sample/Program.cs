@@ -41,7 +41,7 @@ else
     if (replay != null && replay.Details != null && replay.TrackerEvents != null)
     {
         var json = JsonSerializer.Serialize(replay);
-        System.IO.File.WriteAllText("/data/ds/test/bab.json", json);
+        File.WriteAllText("/data/ds/test/bab.json", json);
 
         Console.WriteLine($"replay dateTime: {replay.Details.DateTimeUTC}");
 
@@ -74,14 +74,14 @@ else
 
     int i = 0;
 
-    // await foreach (var rep in decoder.DecodeParallel(replayFilePaths, 16, options))
-    // {
-    //     i++;
-    //     if (rep != null && rep.Details != null)
-    //     {
-    //         Console.WriteLine($"replay {rep.Details.DateTimeUTC} {rep.FileName}");
-    //     }
-    // }
+    await foreach (var rep in decoder.DecodeParallel(replayFilePaths, 16, options))
+    {
+        i++;
+        if (rep != null && rep.Details != null)
+        {
+            Console.WriteLine($"replay {rep.Details.DateTimeUTC} {rep.FileName}");
+        }
+    }
 
     sw.Stop();
     Console.WriteLine($"done decoding {i} replays in {sw.ElapsedMilliseconds}ms");
