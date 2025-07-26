@@ -2,7 +2,7 @@ using System.Reflection;
 
 namespace s2protocol.NET.S2Protocol;
 
-internal class BitPackedDecoder : S2ProtocolDecoder
+internal sealed class BitPackedDecoder : S2ProtocolDecoder
 {
     private readonly BitPackedBuffer _buffer;
     private readonly List<S2TypeInfo> _typeInfos;
@@ -34,7 +34,7 @@ internal class BitPackedDecoder : S2ProtocolDecoder
     private long ReadInt(BoundsParameter bounds)
         => bounds.Min + _buffer.ReadBits((int)bounds.Max);
 
-    private object? _array(IDecodeParameter[] parameters)
+    private List<object?> _array(IDecodeParameter[] parameters)
     {
         if (parameters is [BoundsParameter bounds, TypeIdParameter type])
         {
@@ -57,7 +57,7 @@ internal class BitPackedDecoder : S2ProtocolDecoder
         throw new ArgumentException("Invalid parameters for _bitarray");
     }
 
-    private object? _blob(IDecodeParameter[] parameters)
+    private byte[] _blob(IDecodeParameter[] parameters)
     {
         if (parameters is [BoundsParameter bounds])
         {
@@ -69,7 +69,7 @@ internal class BitPackedDecoder : S2ProtocolDecoder
 
     private bool _bool(IDecodeParameter[] _) => ReadInt(new BoundsParameter(0, 1)) != 0;
 
-    private object? _choice(IDecodeParameter[] parameters)
+    private Dictionary<string, object?> _choice(IDecodeParameter[] parameters)
     {
         if (parameters is [BoundsParameter bounds, ChoiceParameter choices])
         {
@@ -85,7 +85,7 @@ internal class BitPackedDecoder : S2ProtocolDecoder
         throw new ArgumentException("Invalid parameters for _choice");
     }
 
-    private object? _fourcc(IDecodeParameter[] _) => _buffer.ReadUnalignedBytes(4);
+    private byte[] _fourcc(IDecodeParameter[] _) => _buffer.ReadUnalignedBytes(4);
 
     private long _int(IDecodeParameter[] parameters)
     {
@@ -94,7 +94,7 @@ internal class BitPackedDecoder : S2ProtocolDecoder
         throw new ArgumentException("Invalid parameters for _int");
     }
 
-    private object? _null(IDecodeParameter[] _) => null;
+    private static object? _null(IDecodeParameter[] _) => null;
 
     private object? _optional(IDecodeParameter[] parameters)
     {

@@ -104,6 +104,8 @@ public sealed partial class MPQArchive
 
         return result;
     }
+    
+#pragma warning disable CA1303 // Do not pass literals as localized parameters
 
     /// <summary>
     /// Prints the contents of the hash table to the console in a formatted table.
@@ -153,3 +155,4 @@ public sealed partial class MPQArchive
         Console.WriteLine();
     }
 }
+#pragma warning restore CA1303 // Do not pass literals as localized parameters

@@ -2,7 +2,7 @@ using System.Reflection;
 
 namespace s2protocol.NET.S2Protocol;
 
-internal class VersionedDecoder : S2ProtocolDecoder
+internal sealed class VersionedDecoder : S2ProtocolDecoder
 {
     private BitPackedBuffer _buffer;
     private List<S2TypeInfo> _typeInfos;
@@ -108,13 +108,12 @@ internal class VersionedDecoder : S2ProtocolDecoder
 
             _expect_skip(3);
             long tag = _vint();
-            if (!choiceParam.Choices.ContainsKey(tag))
+            if (!choiceParam.Choices.TryGetValue(tag, out DecodeChoice? field))
             {
                 _skip_instance();
-                return new Dictionary<string, object?>();
+                return [];
             }
 
-            var field = choiceParam.Choices[tag];
             return new Dictionary<string, object?> { { field.Name, Instance(field.TypeId) } };
         }
         return [];
@@ -132,7 +131,7 @@ internal class VersionedDecoder : S2ProtocolDecoder
         return _vint();
     }
 
-    private object? _null(IDecodeParameter[] decodeParameters) => null;
+    private static object? _null(IDecodeParameter[] decodeParameters) => null;
 
     private object? _optional(IDecodeParameter[] decodeParameters)
     {

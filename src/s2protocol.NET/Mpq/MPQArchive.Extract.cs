@@ -28,6 +28,8 @@ public sealed partial class MPQArchive
         }
         return result;
     }
+    private static readonly string[] separatorArray1 = new[] { "\r\n", "\n" };
+    private static readonly string[] separatorArray0 = new[] { "\r\n", "\n" };
     private static readonly string[] separator = new[] { "\r\n", "\n" };
 
     /// <summary>
@@ -47,7 +49,7 @@ public sealed partial class MPQArchive
 
         Directory.CreateDirectory(outputDir);
         var text = System.Text.Encoding.UTF8.GetString(_files);
-        var fileNames = text.Split(new[] { "\r\n", "\n" }, StringSplitOptions.RemoveEmptyEntries);
+        var fileNames = text.Split(separatorArray0, StringSplitOptions.RemoveEmptyEntries);
         foreach (var file in fileNames)
         {
             byte[]? data = ReadFile(file);
@@ -94,12 +96,13 @@ public sealed partial class MPQArchive
     /// <exception cref="FileNotFoundException">Thrown if any of the specified <paramref name="filenames"/> do not exist in the archive.</exception>
     public Dictionary<string, byte[]> ExtractFiles(params string[] filenames)
     {
+        ArgumentNullException.ThrowIfNull(filenames);
         if (_files == null || _files.Length == 0)
             throw new InvalidOperationException("Cannot extract archive without a listfile.");
 
         var result = new Dictionary<string, byte[]>();
         var text = System.Text.Encoding.UTF8.GetString(_files);
-        var availableFileNames = text.Split(new[] { "\r\n", "\n" }, StringSplitOptions.RemoveEmptyEntries).ToHashSet();
+        var availableFileNames = text.Split(separatorArray1, StringSplitOptions.RemoveEmptyEntries).ToHashSet();
         foreach (var file in filenames)
         {
             if (!availableFileNames.Contains(file))

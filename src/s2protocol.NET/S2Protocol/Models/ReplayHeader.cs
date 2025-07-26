@@ -1,6 +1,6 @@
 ﻿namespace s2protocol.NET.S2Protocol.Models;
 
-internal class ReplayHeader
+internal sealed class ReplayHeader
 {
     public string Signature { get; set; } = "";
     public ReplayVersion Version { get; set; } = new();
@@ -13,7 +13,7 @@ internal class ReplayHeader
     public bool NgdpRootKeyIsDevData { get; set; }
 }
 
-internal class ReplayVersion
+internal sealed class ReplayVersion
 {
     public int Flags { get; set; }
     public int Major { get; set; }
@@ -23,7 +23,7 @@ internal class ReplayVersion
     public int BaseBuild { get; set; }
 }
 
-internal class BinaryData
+internal sealed class BinaryData
 {
     public byte[] Data { get; set; } = Array.Empty<byte>();
 
@@ -34,14 +34,14 @@ internal class BinaryData
             var str = System.Text.Encoding.UTF8.GetString(Data);
             return str.All(c => c >= 0x20 && c <= 0x7E) ? str : Convert.ToBase64String(Data);
         }
-        catch
+        catch (System.Text.DecoderFallbackException)
         {
             return Convert.ToBase64String(Data);
         }
     }
 }
 
-internal class ReplayDetails
+internal sealed class ReplayDetails
 {
     public List<Player> PlayerList { get; set; } = [];
     public string Title { get; set; } = string.Empty;
@@ -64,7 +64,7 @@ internal class ReplayDetails
     public DateTime GameTimeUtc { get { return DateTime.FromFileTimeUtc(TimeUTC); } }
 }
 
-internal class Player
+internal sealed class Player
 {
     public string Name { get; set; } = string.Empty;
     public Toon Toon { get; set; } = new();
@@ -79,7 +79,7 @@ internal class Player
     public string Hero { get; set; } = string.Empty;
 }
 
-internal class Toon
+internal sealed class Toon
 {
     public int Region { get; set; }
     public string ProgramId { get; set; } = string.Empty;
@@ -87,7 +87,7 @@ internal class Toon
     public long Id { get; set; }
 }
 
-internal class Color
+internal sealed class Color
 {
     public byte A { get; set; }
     public byte R { get; set; }
@@ -95,7 +95,7 @@ internal class Color
     public byte B { get; set; }
 }
 
-internal class Thumbnail
+internal sealed class Thumbnail
 {
     public string File { get; set; } = string.Empty;
 }
@@ -159,7 +159,7 @@ internal static class S2ModelMapper
             MiniSave = TryGet(dict, "m_miniSave", false),
             GameSpeed = (int)TryGet<long>(dict, "m_gameSpeed", 0),
             DefaultDifficulty = (int)TryGet<long>(dict, "m_defaultDifficulty", 0),
-            ModPaths = dict.ContainsKey("m_modPaths") ? dict["m_modPaths"] : null,
+            ModPaths = dict.TryGetValue("m_modPaths", out object? value) ? value : null,
             CampaignIndex = (int)TryGet<long>(dict, "m_campaignIndex", 0),
             RestartAsTransitionMap = TryGet(dict, "m_restartAsTransitionMap", false),
             DisableRecoverGame = TryGet(dict, "m_disableRecoverGame", false)
@@ -222,7 +222,7 @@ internal static class S2ModelMapper
         {
             return System.Text.Encoding.UTF8.GetString(bytes);
         }
-        catch
+        catch (System.Text.DecoderFallbackException)
         {
             return Convert.ToBase64String(bytes);
         }
@@ -240,7 +240,11 @@ internal static class S2ModelMapper
         // Skip 8 bytes: "s2ma" (4) + metadata (3) + extra byte (1)
         var hashBytes = bytes[8..];
 
-        var hashHex = BitConverter.ToString(hashBytes).Replace("-", "").ToLowerInvariant();
+#pragma warning disable CA1308 // Normalize strings to uppercase
+        var hashHex = BitConverter.ToString(hashBytes)
+            .Replace("-", "", StringComparison.Ordinal)
+            .ToLowerInvariant();
+#pragma warning restore CA1308 // Normalize strings to uppercase
 
         return $"http://eu.depot.battle.net:1119/{hashHex}.s2ma";
     }

@@ -150,7 +150,6 @@ public sealed partial class MPQArchive
     {
         if (_files is null)
         {
-            Console.WriteLine("No files found.");
             return;
         }
         var text = System.Text.Encoding.UTF8.GetString(_files);

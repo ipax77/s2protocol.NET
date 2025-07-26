@@ -25,7 +25,7 @@ public sealed class ReplayDecoder : IDisposable
     /// /// <param name="threads">Number of parallelism</param>
     /// <param name="options">Optional decoding options</param>
     /// <param name="token">Optional CancellationToken</param>
-    public async IAsyncEnumerable<Sc2Replay> DecodeParallel(ICollection<string> replayPaths, int threads, ReplayDecoderOptions? options = null, [EnumeratorCancellation] CancellationToken token = default)
+    public static async IAsyncEnumerable<Sc2Replay> DecodeParallel(ICollection<string> replayPaths, int threads, ReplayDecoderOptions? options = null, [EnumeratorCancellation] CancellationToken token = default)
     {
         Channel<Sc2Replay> replayChannel = Channel.CreateUnbounded<Sc2Replay>();
 
@@ -46,7 +46,7 @@ public sealed class ReplayDecoder : IDisposable
     /// /// <param name="threads">Number of parallelism</param>
     /// <param name="options">Optional decoding options</param>
     /// <param name="token">Optional CancellationToken</param>
-    public async IAsyncEnumerable<DecodeParallelResult> DecodeParallelWithErrorReport(ICollection<string> replayPaths, int threads, ReplayDecoderOptions? options = null, [EnumeratorCancellation] CancellationToken token = default)
+    public static async IAsyncEnumerable<DecodeParallelResult> DecodeParallelWithErrorReport(ICollection<string> replayPaths, int threads, ReplayDecoderOptions? options = null, [EnumeratorCancellation] CancellationToken token = default)
     {
         Channel<DecodeParallelResult> replayResultChannel = Channel.CreateUnbounded<DecodeParallelResult>(
             new UnboundedChannelOptions()
@@ -67,7 +67,7 @@ public sealed class ReplayDecoder : IDisposable
         }
     }
 
-    private async Task Produce(Channel<Sc2Replay> channel, ICollection<string> replayPaths, int threads, ReplayDecoderOptions? options, CancellationToken token)
+    private static async Task Produce(Channel<Sc2Replay> channel, ICollection<string> replayPaths, int threads, ReplayDecoderOptions? options, CancellationToken token)
     {
         ParallelOptions parallelOptions = new()
         {
@@ -111,7 +111,7 @@ public sealed class ReplayDecoder : IDisposable
         }
     }
 
-    private async Task ProduceResults(Channel<DecodeParallelResult> channel, ICollection<string> replayPaths, int threads, ReplayDecoderOptions? options, CancellationToken token)
+    private static async Task ProduceResults(Channel<DecodeParallelResult> channel, ICollection<string> replayPaths, int threads, ReplayDecoderOptions? options, CancellationToken token)
     {
         ParallelOptions parallelOptions = new()
         {
@@ -170,7 +170,7 @@ public sealed class ReplayDecoder : IDisposable
     /// <param name="replayPath">The path to the Starcraft2 replay</param>
     /// <param name="options">Optional decoding options</param>
     /// <param name="token">Optional CancellationToken</param>
-    public async Task<Sc2Replay?> DecodeAsync(string replayPath, ReplayDecoderOptions? options = null, CancellationToken token = default)
+    public static async Task<Sc2Replay?> DecodeAsync(string replayPath, ReplayDecoderOptions? options = null, CancellationToken token = default)
     {
         if (!File.Exists(replayPath))
         {
@@ -208,7 +208,7 @@ public sealed class ReplayDecoder : IDisposable
 
             if (options.Initdata)
             {
-                var init = await GetInitdataAsync(MPQArchive, s2protocol, token);
+                var init = await GetInitdataAsync(MPQArchive, s2protocol, token).ConfigureAwait(false);
                 ArgumentNullException.ThrowIfNull((object?)init, nameof(init));
 
                 replay.Initdata = Parse.InitData(init);
@@ -216,7 +216,7 @@ public sealed class ReplayDecoder : IDisposable
 
             if (options.Details)
             {
-                var details = await GetDetailsAsync(MPQArchive, s2protocol, token);
+                var details = await GetDetailsAsync(MPQArchive, s2protocol, token).ConfigureAwait(false);
                 ArgumentNullException.ThrowIfNull((object?)details, nameof(details));
                 if (details is not Dictionary<string, object> detailsDict)
                 {
@@ -227,7 +227,7 @@ public sealed class ReplayDecoder : IDisposable
 
             if (options.Metadata)
             {
-                var metadata = await GetMetadataAsync(MPQArchive, token);
+                var metadata = await GetMetadataAsync(MPQArchive, token).ConfigureAwait(false);
                 ArgumentNullException.ThrowIfNull((object?)metadata, nameof(metadata));
 
                 replay.Metadata = metadata;
@@ -235,14 +235,14 @@ public sealed class ReplayDecoder : IDisposable
 
             if (options.MessageEvents)
             {
-                var messages = await GetMessagesAsync(MPQArchive, s2protocol, token);
+                var messages = await GetMessagesAsync(MPQArchive, s2protocol, token).ConfigureAwait(false);
                 ArgumentNullException.ThrowIfNull((object?)messages, nameof(messages));
                 Parse.SetMessages(messages, replay);
             }
 
             if (options.TrackerEvents)
             {
-                var trackerEvents = await GetTrackereventsAsync(MPQArchive, s2protocol, token);
+                var trackerEvents = await GetTrackereventsAsync(MPQArchive, s2protocol, token).ConfigureAwait(false);
                 ArgumentNullException.ThrowIfNull((object?)trackerEvents, nameof(trackerEvents));
 
                 replay.TrackerEvents = Parse.Tracker(trackerEvents);
@@ -260,7 +260,7 @@ public sealed class ReplayDecoder : IDisposable
 
             if (options.GameEvents)
             {
-                var gameEvents = await GetGameEventsAsync(MPQArchive, s2protocol, token);
+                var gameEvents = await GetGameEventsAsync(MPQArchive, s2protocol, token).ConfigureAwait(false);
                 ArgumentNullException.ThrowIfNull((object?)gameEvents, nameof(gameEvents));
 
                 replay.GameEvents = Parse.GameEvents(gameEvents);
@@ -268,7 +268,7 @@ public sealed class ReplayDecoder : IDisposable
 
             if (options.AttributeEvents)
             {
-                var attributeEvents = await GetAttributeEventsAsync(MPQArchive, s2protocol, token);
+                var attributeEvents = await GetAttributeEventsAsync(MPQArchive, token).ConfigureAwait(false);
                 ArgumentNullException.ThrowIfNull((object?)attributeEvents, nameof(attributeEvents));
 
                 replay.AttributeEvents = Parse.GetAttributeEvents(attributeEvents);
@@ -299,14 +299,14 @@ public sealed class ReplayDecoder : IDisposable
         }
     }
 
-    private static async Task<object?> GetAttributeEventsAsync(MPQArchive archive, S2ProtocolVersion protocol, CancellationToken token)
+    private static async Task<object?> GetAttributeEventsAsync(MPQArchive archive, CancellationToken token)
     {
         return await Task.Run(() =>
         {
             var game_enc = archive.ReadFile("replay.attributes.events");
             if (game_enc != null)
             {
-                return protocol.DecodeReplayAttributeEventsRaw(game_enc);
+                return S2ProtocolVersion.DecodeReplayAttributeEventsRaw(game_enc);
             }
             return null;
         }, token).ConfigureAwait(false);

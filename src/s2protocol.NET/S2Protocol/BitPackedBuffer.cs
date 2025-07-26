@@ -2,7 +2,7 @@ using System.Globalization;
 
 namespace s2protocol.NET.S2Protocol;
 
-internal class BitPackedBuffer
+internal sealed class BitPackedBuffer
 {
     private readonly byte[] _data;
     private long _used;
@@ -145,7 +145,7 @@ internal class BitPackedBuffer
         {
             var val = ReadBits(8);
             if (val < 0 || val > 255)
-                throw new Exception("Invalid byte value");
+                throw new DecodeException("Invalid byte value");
             result[i] = (byte)val;
         }
         return result;

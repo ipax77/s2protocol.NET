@@ -3,7 +3,7 @@ using System.Globalization;
 
 namespace s2protocol.NET.S2Protocol;
 
-internal record S2ProtocolVersion
+internal sealed record S2ProtocolVersion
 {
     public int Version { get; set; }
     public List<S2TypeInfo> TypeInfos { get; set; } = [];
@@ -78,7 +78,7 @@ internal record S2ProtocolVersion
         return decoder.Instance(ReplayInitDataTypeId ?? 73);
     }
 
-    public Dictionary<string, object> DecodeReplayAttributeEventsRaw(byte[] content)
+    public static Dictionary<string, object> DecodeReplayAttributeEventsRaw(byte[] content)
     {
         var buffer = new BitPackedBuffer(content, "little");
         var attributes = new Dictionary<string, object>();
@@ -114,13 +114,19 @@ internal record S2ProtocolVersion
             value["value"] = cleanedValue;
 
             // Ensure the scope exists
-            if (!scopes.ContainsKey(scope))
+            if (!scopes.TryGetValue(scope, out var scopeDict))
             {
-                scopes[scope] = new Dictionary<uint, List<Dictionary<string, object>>>();
+                scopeDict = new Dictionary<uint, List<Dictionary<string, object>>>();
+                scopes[scope] = scopeDict;
+            }
+            // Ensure the attribute ID list exists
+            if (!scopeDict.TryGetValue((uint)attrid, out var attrList))
+            {
+                attrList = new List<Dictionary<string, object>>();
+                scopeDict[(uint)attrid] = attrList;
             }
 
-            // Ensure the attribute ID list exists
-            if (!scopes[scope].ContainsKey((uint)attrid))
+            attrList.Add(value);
             {
                 scopes[scope][(uint)attrid] = new List<Dictionary<string, object>>();
             }

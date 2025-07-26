@@ -36,7 +36,7 @@ public sealed partial class MPQArchive
         }
         else
         {
-            throw new Exception("Invalid MPQ header.");
+            throw new DecodeException("Invalid MPQ header.");
         }
 
         _reader.BaseStream.Seek(headerOffset, SeekOrigin.Begin);
@@ -77,6 +77,7 @@ public sealed partial class MPQArchive
     /// clarity.</remarks>
     public void PrintHeaders()
     {
+#pragma warning disable CA1303 // Do not pass literals as localized parameters
         Console.WriteLine("MPQ archive header");
         Console.WriteLine("------------------");
 
@@ -93,7 +94,7 @@ public sealed partial class MPQArchive
         Console.WriteLine();
     }
 
-    private void PrintObjectProperties<T>(T obj)
+    private static void PrintObjectProperties<T>(T obj)
     {
         var props = typeof(T).GetProperties();
         foreach (var prop in props)
@@ -110,7 +111,7 @@ public sealed partial class MPQArchive
         }
     }
 
-    private void PrintFormattedField(string name, object? value)
+    private static void PrintFormattedField(string name, object? value)
     {
         if (value is byte[] byteArray)
         {
@@ -127,3 +128,4 @@ public sealed partial class MPQArchive
         }
     }
 }
+#pragma warning restore CA1303 // Do not pass literals as localized parameters
