@@ -215,7 +215,7 @@ public sealed class ReplayDecoder : IDisposable
 
             if (options.Initdata)
             {
-                var init = await GetInitdataAsync(MPQArchive, s2protocol, token).ConfigureAwait(false);
+                var init = await GetInitDataAsync(MPQArchive, s2protocol, token).ConfigureAwait(false);
                 ArgumentNullException.ThrowIfNull((object?)init, nameof(init));
 
                 replay.Initdata = Parse.InitData(init);
@@ -306,7 +306,7 @@ public sealed class ReplayDecoder : IDisposable
         }
     }
 
-    private static async Task<object?> GetAttributeEventsAsync(MPQArchive archive, CancellationToken token)
+    private static async Task<Dictionary<string, object>?> GetAttributeEventsAsync(MPQArchive archive, CancellationToken token)
     {
         return await Task.Run(() =>
         {
@@ -319,20 +319,25 @@ public sealed class ReplayDecoder : IDisposable
         }, token).ConfigureAwait(false);
     }
 
-    private static async Task<object?> GetGameEventsAsync(MPQArchive archive, S2ProtocolVersion protocol, CancellationToken token)
+    private static async Task<List<object>?> GetGameEventsAsync(MPQArchive archive, S2ProtocolVersion protocol, CancellationToken token)
     {
         return await Task.Run(() =>
         {
+            List<object> gameEvents = [];
             var game_enc = archive.ReadFile("replay.game.events");
             if (game_enc != null)
             {
-                return protocol.DecodeReplayGameEvents(game_enc);
+                foreach (var gameEvent in protocol.DecodeReplayGameEvents(game_enc))
+                {
+                    gameEvents.Add(gameEvent);
+                }
+                return gameEvents;
             }
             return null;
         }, token).ConfigureAwait(false);
     }
 
-    private static async Task<object?> GetInitdataAsync(MPQArchive archive, S2ProtocolVersion protocol, CancellationToken token)
+    private static async Task<object?> GetInitDataAsync(MPQArchive archive, S2ProtocolVersion protocol, CancellationToken token)
     {
         return await Task.Run(() =>
         {
@@ -345,7 +350,7 @@ public sealed class ReplayDecoder : IDisposable
         }, token).ConfigureAwait(false);
     }
 
-    private static async Task<object?> GetTrackereventsAsync(MPQArchive archive, S2ProtocolVersion protocol, CancellationToken token)
+    private static async Task<List<object>?> GetTrackereventsAsync(MPQArchive archive, S2ProtocolVersion protocol, CancellationToken token)
     {
         return await Task.Run(() =>
         {
@@ -363,7 +368,7 @@ public sealed class ReplayDecoder : IDisposable
         }, token).ConfigureAwait(false);
     }
 
-    private static async Task<object?> GetMessagesAsync(MPQArchive archive, S2ProtocolVersion protocol, CancellationToken token)
+    private static async Task<List<object>?> GetMessagesAsync(MPQArchive archive, S2ProtocolVersion protocol, CancellationToken token)
     {
         return await Task.Run(() =>
         {

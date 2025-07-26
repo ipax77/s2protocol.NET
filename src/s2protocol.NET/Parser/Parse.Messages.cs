@@ -3,13 +3,8 @@
 namespace s2protocol.NET.Parser;
 internal static partial class Parse
 {
-    public static void SetMessages(object generator, Sc2Replay replay)
+    public static void SetMessages(List<object> genDict, Sc2Replay replay)
     {
-        if (generator is not List<object> genDict)
-        {
-            throw new ArgumentException("Generator must be a Dictionary<string, object>.", nameof(generator));
-        }
-
         List<ChatMessageEvent> messages = [];
         List<PingMessageEvent> pings = [];
 

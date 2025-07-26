@@ -3,13 +3,9 @@
 namespace s2protocol.NET.Parser;
 internal static partial class Parse
 {
-    internal static TrackerEvents Tracker(object pydic)
+    internal static TrackerEvents Tracker(List<object> trackerEvents)
     {
-        if (pydic is not List<object> trackerEvents)
-        {
-            throw new DecodeException("trackerEvents are not a list.");
-        }
-        List<TrackerEvent> trackerevents = new();
+        List<TrackerEvent> parsedEvents = new();
 
         foreach (var ent in trackerEvents)
         {
@@ -31,21 +27,21 @@ internal static partial class Parse
                     TrackerEventType.SUnitDoneEvent => GetSUnitDoneEvent(eventDic, trackerEvent),
                     _ => GetUnknownEvent(eventDic, trackerEvent)
                 };
-                trackerevents.Add(detailEvent);
+                parsedEvents.Add(detailEvent);
             }
         }
 
         var events = new TrackerEvents(
-            trackerevents.OfType<SPlayerSetupEvent>().ToArray(),
-            trackerevents.OfType<SPlayerStatsEvent>().ToArray(),
-            trackerevents.OfType<SUnitBornEvent>().ToArray(),
-            trackerevents.OfType<SUnitDiedEvent>().ToArray(),
-            trackerevents.OfType<SUnitOwnerChangeEvent>().ToArray(),
-            trackerevents.OfType<SUnitPositionsEvent>().ToArray(),
-            trackerevents.OfType<SUnitTypeChangeEvent>().ToArray(),
-            trackerevents.OfType<SUpgradeEvent>().ToArray(),
-            trackerevents.OfType<SUnitInitEvent>().ToArray(),
-            trackerevents.OfType<SUnitDoneEvent>().ToArray()
+            parsedEvents.OfType<SPlayerSetupEvent>().ToArray(),
+            parsedEvents.OfType<SPlayerStatsEvent>().ToArray(),
+            parsedEvents.OfType<SUnitBornEvent>().ToArray(),
+            parsedEvents.OfType<SUnitDiedEvent>().ToArray(),
+            parsedEvents.OfType<SUnitOwnerChangeEvent>().ToArray(),
+            parsedEvents.OfType<SUnitPositionsEvent>().ToArray(),
+            parsedEvents.OfType<SUnitTypeChangeEvent>().ToArray(),
+            parsedEvents.OfType<SUpgradeEvent>().ToArray(),
+            parsedEvents.OfType<SUnitInitEvent>().ToArray(),
+            parsedEvents.OfType<SUnitDoneEvent>().ToArray()
         );
 
 

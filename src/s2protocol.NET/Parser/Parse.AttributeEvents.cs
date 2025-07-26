@@ -2,16 +2,12 @@
 
 namespace s2protocol.NET.Parser; internal static partial class Parse
 {
-    internal static AttributeEvents GetAttributeEvents(dynamic pydic)
+    internal static AttributeEvents GetAttributeEvents(Dictionary<string, object> attrDic)
     {
-        if (pydic is Dictionary<string, object> attrDic)
-        {
-            int source = GetInt(attrDic, "source");
-            int mapNameSpace = GetInt(attrDic, "mapNamespace");
-            List<AttributeEventScope> scopes = GetAttributeScopes(attrDic);
-            return new AttributeEvents(source, mapNameSpace, scopes);
-        }
-        return new AttributeEvents(0, 0, new List<AttributeEventScope>());
+        int source = GetInt(attrDic, "source");
+        int mapNameSpace = GetInt(attrDic, "mapNamespace");
+        List<AttributeEventScope> scopes = GetAttributeScopes(attrDic);
+        return new AttributeEvents(source, mapNameSpace, scopes);
     }
 
     private static List<AttributeEventScope> GetAttributeScopes(Dictionary<string, object> attrDic)

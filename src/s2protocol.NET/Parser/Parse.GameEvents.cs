@@ -2,7 +2,7 @@
 
 namespace s2protocol.NET.Parser;internal static partial class Parse
 {
-    public static GameEvents GameEvents(dynamic pydic)
+    public static GameEvents GameEvents(List<object> pydic)
     {
         List<GameEvent> gameevents = new();
 
