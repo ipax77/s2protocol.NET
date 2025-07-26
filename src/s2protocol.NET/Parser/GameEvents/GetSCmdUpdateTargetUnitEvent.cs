@@ -1,6 +1,6 @@
 ﻿using s2protocol.NET.Models;
 
-namespace s2protocol.NET.Parser;internal static partial class Parse
+namespace s2protocol.NET.Parser; internal static partial class Parse
 {
     private static SCmdUpdateTargetUnitEvent GetSCmdUpdateTargetUnitEvent(Dictionary<string, object> pydic, GameEvent gameEvent)
     {

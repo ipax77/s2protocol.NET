@@ -1,6 +1,5 @@
 namespace s2protocol.NET.S2Protocol;
 
-using System;
 using System.Collections.Generic;
 
 internal abstract class S2ProtocolDecoder

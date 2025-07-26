@@ -9,5 +9,5 @@ public record DecodeParallelResult
     /// <summary>ReplayPath</summary>
     public string ReplayPath { get; init; } = null!;
     /// <summary>Exception</summary>
-    public string? Exception { get; init; } 
+    public string? Exception { get; init; }
 }

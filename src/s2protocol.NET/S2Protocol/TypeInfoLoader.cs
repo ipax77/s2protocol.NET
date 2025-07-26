@@ -48,7 +48,7 @@ public static class TypeInfoLoader
         }
     }
 
-    private static string[] GetPythonVersionLines(int version)
+    private static string[] GetPythonVersionLines(int version, out int usedVersion)
     {
         Initialize();
 
@@ -61,6 +61,8 @@ public static class TypeInfoLoader
         {
             throw new DecodeException("No python protocol found.");
         }
+
+        usedVersion = matchingVersion;
 
         var resourceName = _protocolResourceMap[matchingVersion];
 
@@ -121,8 +123,12 @@ public static class TypeInfoLoader
     /// <returns></returns>
     public static S2ProtocolVersion LoadTypeInfos(int protocolVersion)
     {
-        var lines = GetPythonVersionLines(protocolVersion);
-        S2ProtocolVersion version = new();
+        var usedVersion = protocolVersion;
+        var lines = GetPythonVersionLines(protocolVersion, out usedVersion);
+        S2ProtocolVersion version = new()
+        {
+            Version = usedVersion
+        };
         bool inTypeInfos = false;
         bool inGameEventTypes = false;
         bool inMessageEventTypes = false;

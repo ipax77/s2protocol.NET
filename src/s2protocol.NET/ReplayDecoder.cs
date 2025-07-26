@@ -1,11 +1,11 @@
 ﻿using s2protocol.NET.Models;
+using s2protocol.NET.Mpq;
 using s2protocol.NET.Parser;
+using s2protocol.NET.S2Protocol;
 using System.Runtime.CompilerServices;
 using System.Text;
 using System.Text.Json;
 using System.Threading.Channels;
-using s2protocol.NET.Mpq;
-using s2protocol.NET.S2Protocol;
 
 namespace s2protocol.NET;
 

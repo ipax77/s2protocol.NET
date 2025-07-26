@@ -1,4 +1,3 @@
-using s2protocol.NET.S2Protocol.Models;
 using System.Globalization;
 
 namespace s2protocol.NET.S2Protocol;
