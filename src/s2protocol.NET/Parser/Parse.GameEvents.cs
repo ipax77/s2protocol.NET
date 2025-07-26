@@ -60,6 +60,53 @@ namespace s2protocol.NET.Parser; internal static partial class Parse
         return new GameEvents(gameevents);
     }
 
+    internal static GameEvent GetGameEventTyped(Dictionary<string, object> gameDic)
+    {
+        GameEvent gameEvent = GetGameEvent(gameDic);
+        return gameEvent.EventType switch
+        {
+            GameEventType.SBankFileEvent => GetSBankFileEvent(gameDic, gameEvent),
+            GameEventType.SBankKeyEvent => GetSBankKeyEvent(gameDic, gameEvent),
+            GameEventType.SBankSectionEvent => GetSBankSectionEvent(gameDic, gameEvent),
+            GameEventType.SBankSignatureEvent => GetSBankSignatureEvent(gameDic, gameEvent),
+            GameEventType.SBankValueEvent => GetSBankValueEvent(gameDic, gameEvent),
+            GameEventType.SCameraUpdateEvent => GetSCameraUpdateEvent(gameDic, gameEvent),
+            GameEventType.SCmdEvent => GetSCmdEvent(gameDic, gameEvent),
+            GameEventType.SCmdUpdateTargetPointEvent => GetSCmdUpdateTargetPointEvent(gameDic, gameEvent),
+            GameEventType.SCommandManagerStateEvent => GetSCommandManagerStateEvent(gameDic, gameEvent),
+            GameEventType.SControlGroupUpdateEvent => GetSControlGroupUpdateEvent(gameDic, gameEvent),
+            GameEventType.SGameUserLeaveEvent => GetSGameUserLeaveEvent(gameDic, gameEvent),
+            GameEventType.SSelectionDeltaEvent => GetSSelectionDeltaEvent(gameDic, gameEvent),
+            GameEventType.SSetSyncLoadingTimeEvent => GetSSetSyncLoadingTimeEvent(gameDic, gameEvent),
+            GameEventType.SSetSyncPlayingTimeEvent => GetSSetSyncPlayingTimeEvent(gameDic, gameEvent),
+            GameEventType.STriggerDialogControlEvent => GetSTriggerDialogControlEvent(gameDic, gameEvent),
+            GameEventType.STriggerPingEvent => GetSTriggerPingEvent(gameDic, gameEvent),
+            GameEventType.STriggerSoundLengthSyncEvent => new STriggerSoundLengthSyncEvent(gameEvent),
+            GameEventType.SUserFinishedLoadingSyncEvent => new SUserFinishedLoadingSyncEvent(gameEvent),
+            GameEventType.SUserOptionsEvent => GetSUserOptionsEvent(gameDic, gameEvent),
+            GameEventType.SCmdUpdateTargetUnitEvents => GetSCmdUpdateTargetUnitEvent(gameDic, gameEvent),
+            GameEventType.STriggerKeyPressedEvent => GetSTriggerKeyPressedEvent(gameDic, gameEvent),
+            GameEventType.SUnitClickEvent => GetSUnitClickEvent(gameDic, gameEvent),
+            GameEventType.SDecrementGameTimeRemainingEvent => GetSDecrementGameTimeRemainingEvent(gameDic, gameEvent),
+            GameEventType.STriggerChatMessageEvent => GetSTriggerChatMessageEvent(gameDic, gameEvent),
+            GameEventType.STriggerMouseClickedEvent => GetSTriggerMouseClickedEvent(gameDic, gameEvent),
+            GameEventType.STriggerSoundtrackDoneEvent => GetSTriggerSoundtrackDoneEvent(gameDic, gameEvent),
+            GameEventType.SCameraSaveEvent => GetSCameraSaveEvent(gameDic, gameEvent),
+            GameEventType.STriggerCutsceneBookmarkFiredEvent => GetSTriggerCutsceneBookmarkFiredEvent(gameDic, gameEvent),
+            GameEventType.STriggerCutsceneEndSceneFiredEvent => GetSTriggerCutsceneEndSceneFiredEvent(gameDic, gameEvent),
+            GameEventType.STriggerSoundLengthQueryEvent => GetSTriggerSoundLengthQueryEvent(gameDic, gameEvent),
+            GameEventType.STriggerSoundOffsetEvent => GetSTriggerSoundOffsetEvent(gameDic, gameEvent),
+            GameEventType.STriggerTargetModeUpdateEvent => GetSTriggerTargetModeUpdateEvent(gameDic, gameEvent),
+            GameEventType.STriggerTransmissionCompleteEvent => GetSTriggerTransmissionCompleteEvent(gameDic, gameEvent),
+            GameEventType.SAchievementAwardedEvent => GetSAchievementAwardedEvent(gameDic, gameEvent),
+            GameEventType.STriggerTransmissionOffsetEvent => GetSTriggerTransmissionOffsetEvent(gameDic, gameEvent),
+            GameEventType.STriggerButtonPressedEvent => GetSTriggerButtonPressedEvent(gameDic, gameEvent),
+            GameEventType.STriggerGameMenuItemSelectedEvent => GetSTriggerGameMenuItemSelectedEvent(gameDic, gameEvent),
+            GameEventType.STriggerMouseMovedEvent => GetSTriggerMouseMovedEvent(gameDic, gameEvent),
+            _ => GetUnknownEvent(gameDic, gameEvent)
+        };
+    }
+
     private static GameEvent GetGameEvent(Dictionary<string, object> pydic)
     {
         int userId = GetUserId(pydic);

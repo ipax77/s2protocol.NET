@@ -2,6 +2,7 @@
 using s2protocol.NET.Mpq;
 using s2protocol.NET.Parser;
 using s2protocol.NET.S2Protocol;
+using System.Net.NetworkInformation;
 using System.Runtime.CompilerServices;
 using System.Text;
 using System.Text.Json;
@@ -132,7 +133,7 @@ public sealed class ReplayDecoder : IDisposable
                 try
                 {
                     var replay = await DecodeAsync(replayPath, options, token).ConfigureAwait(false);
-                    ArgumentNullException.ThrowIfNull((object?)replay, nameof(replay));
+                    ArgumentNullException.ThrowIfNull(replay, nameof(replay));
 
                     if (!channel.Writer.TryWrite(new DecodeParallelResult()
                     {
@@ -182,11 +183,6 @@ public sealed class ReplayDecoder : IDisposable
         if (!File.Exists(replayPath))
         {
             throw new ArgumentNullException(nameof(replayPath), "Replay not found.");
-        }
-        List<int> versions = [];
-        if (versions == null)
-        {
-            throw new DecodeException("No Versions found.");
         }
 
         if (options == null)
@@ -255,28 +251,12 @@ public sealed class ReplayDecoder : IDisposable
 
             if (options.TrackerEvents)
             {
-                var trackerEvents = await GetTrackereventsAsync(MPQArchive, s2protocol, token).ConfigureAwait(false);
-                ArgumentNullException.ThrowIfNull((object?)trackerEvents, nameof(trackerEvents));
-
-                replay.TrackerEvents = Parse.Tracker(trackerEvents);
-
-                if (replay.TrackerEvents != null)
-                {
-                    replay.TrackerEvents.SUnitBornEvents.ToList().ForEach(f => f.UnitIndex = GetUnitIndex(f.UnitTagIndex, f.UnitTagRecycle));
-                    replay.TrackerEvents.SUnitInitEvents.ToList().ForEach(f => f.UnitIndex = GetUnitIndex(f.UnitTagIndex, f.UnitTagRecycle));
-                    replay.TrackerEvents.SUnitDiedEvents.ToList().ForEach(f => f.UnitIndex = GetUnitIndex(f.UnitTagIndex, f.UnitTagRecycle));
-                    replay.TrackerEvents.SUnitDoneEvents.ToList().ForEach(f => f.UnitIndex = GetUnitIndex(f.UnitTagIndex, f.UnitTagRecycle));
-                    replay.TrackerEvents.SUnitOwnerChangeEvents.ToList().ForEach(f => f.UnitIndex = GetUnitIndex(f.UnitTagIndex, f.UnitTagRecycle));
-                    Parse.SetTrackerEventsUnitConnections(replay.TrackerEvents);
-                }
+                await SetTrackereventsAsync(MPQArchive, s2protocol, replay, token).ConfigureAwait(false);
             }
 
             if (options.GameEvents)
             {
-                var gameEvents = await GetGameEventsAsync(MPQArchive, s2protocol, token).ConfigureAwait(false);
-                ArgumentNullException.ThrowIfNull((object?)gameEvents, nameof(gameEvents));
-
-                replay.GameEvents = Parse.GameEvents(gameEvents);
+                await SetGameEventsAsync(MPQArchive, s2protocol, replay, token).ConfigureAwait(false);
             }
 
             if (options.AttributeEvents)
@@ -325,21 +305,24 @@ public sealed class ReplayDecoder : IDisposable
         }, token).ConfigureAwait(false);
     }
 
-    private static async Task<List<object>?> GetGameEventsAsync(MPQArchive archive, S2ProtocolVersion protocol, CancellationToken token)
+    private static async Task SetGameEventsAsync(MPQArchive archive, S2ProtocolVersion protocol, Sc2Replay replay, CancellationToken token)
     {
-        return await Task.Run(() =>
+        await Task.Run(() =>
         {
-            List<object> gameEvents = [];
             var game_enc = archive.ReadFile("replay.game.events");
-            if (game_enc != null)
+            ArgumentNullException.ThrowIfNull(game_enc);
+            replay.GameEvents = new GameEvents()
             {
-                foreach (var gameEvent in protocol.DecodeReplayGameEvents(game_enc))
+                BaseGameEvents = new List<GameEvent>(),
+            };
+            foreach (var gameEvent in protocol.DecodeReplayGameEvents(game_enc))
+            {
+                if (gameEvent is Dictionary<string, object> gameEventDict)
                 {
-                    gameEvents.Add(gameEvent);
+                    var gameEventType = Parse.GetGameEventTyped(gameEventDict as Dictionary<string, object>);
+                    replay.GameEvents.BaseGameEvents.Add(gameEventType);
                 }
-                return gameEvents;
             }
-            return null;
         }, token).ConfigureAwait(false);
     }
 
@@ -356,21 +339,76 @@ public sealed class ReplayDecoder : IDisposable
         }, token).ConfigureAwait(false);
     }
 
-    private static async Task<List<object>?> GetTrackereventsAsync(MPQArchive archive, S2ProtocolVersion protocol, CancellationToken token)
+    private static async Task SetTrackereventsAsync(MPQArchive archive, S2ProtocolVersion protocol, Sc2Replay replay, CancellationToken token)
     {
-        return await Task.Run(() =>
+        await Task.Run(() =>
         {
-            List<object> trackerEvents = [];
             var tracker_dec = archive.ReadFile("replay.tracker.events");
-            if (tracker_dec != null)
+            ArgumentNullException.ThrowIfNull(tracker_dec);
+            replay.TrackerEvents = new TrackerEvents()
             {
-                foreach (var trackerEvent in protocol.DecodeReplayTrackerEvents(tracker_dec))
+                SPlayerSetupEvents = new List<SPlayerSetupEvent>(),
+                SPlayerStatsEvents = new List<SPlayerStatsEvent>(),
+                SUnitBornEvents = new List<SUnitBornEvent>(),
+                SUnitDiedEvents = new List<SUnitDiedEvent>(),
+                SUnitOwnerChangeEvents = new List<SUnitOwnerChangeEvent>(),
+                SUnitPositionsEvents = new List<SUnitPositionsEvent>(),
+                SUnitTypeChangeEvents = new List<SUnitTypeChangeEvent>(),
+                SUpgradeEvents = new List<SUpgradeEvent>(),
+                SUnitInitEvents = new List<SUnitInitEvent>(),
+                SUnitDoneEvents = new List<SUnitDoneEvent>()
+            };
+            foreach (var trackerEvent in protocol.DecodeReplayTrackerEvents(tracker_dec))
+            {
+                if (trackerEvent is Dictionary<string, object> trackerEventDict)
                 {
-                    trackerEvents.Add(trackerEvent);
+                    var tracerEventType = Parse.GetTrackerEventTyped(trackerEventDict as Dictionary<string, object>);
+                    if (tracerEventType != null)
+                    {
+                        switch (tracerEventType)
+                        {
+                            case SPlayerSetupEvent playerSetupEvent:
+                                replay.TrackerEvents.SPlayerSetupEvents.Add(playerSetupEvent);
+                                break;
+                            case SPlayerStatsEvent playerStatsEvent:
+                                replay.TrackerEvents.SPlayerStatsEvents.Add(playerStatsEvent);
+                                break;
+                            case SUnitBornEvent bornEvent:
+                                bornEvent.UnitIndex = GetUnitIndex(bornEvent.UnitTagIndex, bornEvent.UnitTagRecycle);
+                                replay.TrackerEvents.SUnitBornEvents.Add(bornEvent);
+                                break;
+                            case SUnitDiedEvent diedEvent:
+                                diedEvent.UnitIndex = GetUnitIndex(diedEvent.UnitTagIndex, diedEvent.UnitTagRecycle);
+                                replay.TrackerEvents.SUnitDiedEvents.Add(diedEvent);
+                                break;
+                            case SUnitOwnerChangeEvent ownerChangeEvent:
+                                ownerChangeEvent.UnitIndex = GetUnitIndex(ownerChangeEvent.UnitTagIndex, ownerChangeEvent.UnitTagRecycle);
+                                replay.TrackerEvents.SUnitOwnerChangeEvents.Add(ownerChangeEvent);
+                                break;
+                            case SUnitPositionsEvent positionsEvent:
+                                replay.TrackerEvents.SUnitPositionsEvents.Add(positionsEvent);
+                                break;
+                            case SUnitTypeChangeEvent typeChangeEvent:
+                                replay.TrackerEvents.SUnitTypeChangeEvents.Add(typeChangeEvent);
+                                break;
+                            case SUpgradeEvent sUpgradeEvent:
+                                replay.TrackerEvents.SUpgradeEvents.Add(sUpgradeEvent);
+                                break;
+                            case SUnitInitEvent initEvent:
+                                initEvent.UnitIndex = GetUnitIndex(initEvent.UnitTagIndex, initEvent.UnitTagRecycle);
+                                replay.TrackerEvents.SUnitInitEvents.Add(initEvent);
+                                break;
+                            case SUnitDoneEvent doneEvent:
+                                doneEvent.UnitIndex = GetUnitIndex(doneEvent.UnitTagIndex, doneEvent.UnitTagRecycle);
+                                replay.TrackerEvents.SUnitDoneEvents.Add(doneEvent);
+                                break;
+                            default:
+                                break;
+                        }
+                    }
                 }
-                return trackerEvents;
             }
-            return null;
+            Parse.SetTrackerEventsUnitConnections(replay.TrackerEvents);
         }, token).ConfigureAwait(false);
     }
 

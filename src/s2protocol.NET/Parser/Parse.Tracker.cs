@@ -44,10 +44,28 @@ internal static partial class Parse
             parsedEvents.OfType<SUnitDoneEvent>().ToArray()
         );
 
-
-
         return events;
     }
+
+    internal static TrackerEvent GetTrackerEventTyped(Dictionary<string, object> eventDic)
+    {
+        var trackerEvent = GetTrackerEvent(eventDic);
+        return trackerEvent.EventType switch
+        {
+            TrackerEventType.SPlayerSetupEvent => GetSPlayerSetupEvent(eventDic, trackerEvent),
+            TrackerEventType.SPlayerStatsEvent => GetSPlayerStatsEvent(eventDic, trackerEvent),
+            TrackerEventType.SUnitBornEvent => GetSUnitBornEvent(eventDic, trackerEvent),
+            TrackerEventType.SUnitDiedEvent => GetSUnitDiedEvent(eventDic, trackerEvent),
+            TrackerEventType.SUnitOwnerChangeEvent => GetSUnitOwnerChangeEvent(eventDic, trackerEvent),
+            TrackerEventType.SUnitPositionsEvent => GetSUnitPositionsEvent(eventDic, trackerEvent),
+            TrackerEventType.SUnitTypeChangeEvent => GetSUnitTypeChangeEvent(eventDic, trackerEvent),
+            TrackerEventType.SUpgradeEvent => GetSUpgradeEvent(eventDic, trackerEvent),
+            TrackerEventType.SUnitInitEvent => GetSUnitInitEvent(eventDic, trackerEvent),
+            TrackerEventType.SUnitDoneEvent => GetSUnitDoneEvent(eventDic, trackerEvent),
+            _ => GetUnknownEvent(eventDic, trackerEvent)
+        };
+    }
+
 
     internal static void SetTrackerEventsUnitConnections(TrackerEvents trackerEvents)
     {
