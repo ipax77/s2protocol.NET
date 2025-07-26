@@ -1,4 +1,6 @@
+using System.Globalization;
 using System.Runtime.InteropServices;
+using System.Text;
 
 namespace s2protocol.NET.Mpq;
 
@@ -104,55 +106,61 @@ public sealed partial class MPQArchive
 
         return result;
     }
-    
+
 #pragma warning disable CA1303 // Do not pass literals as localized parameters
 
     /// <summary>
-    /// Prints the contents of the hash table to the console in a formatted table.
+    /// Returns the contents of the hash table in a formatted table.
     /// </summary>
     /// <remarks>The output includes the hash values, locale, platform, and block index for each entry in the
     /// hash table. This method is intended for debugging or informational purposes and writes directly to the
     /// console.</remarks>
-    public void PrintHashTable()
+    public string PrintHashTable()
     {
-        Console.WriteLine("MPQ archive hash table");
-        Console.WriteLine("----------------------");
-        Console.WriteLine(" Hash A   Hash B  Locl Plat BlockIdx");
+        StringBuilder sb = new();
+        sb.AppendLine("MPQ archive hash table");
+        sb.AppendLine("----------------------");
+        sb.AppendLine(" Hash A   Hash B  Locl Plat BlockIdx");
 
         foreach (var entry in _hashTable)
         {
-            Console.WriteLine("{0:X8} {1:X8} {2:X4} {3:X4} {4:X8}",
+            sb.AppendFormat(CultureInfo.InvariantCulture, "{0:X8} {1:X8} {2:X4} {3:X4} {4:X8}",
                 entry.NameHashA,
                 entry.NameHashB,
                 entry.Locale,
                 entry.Platform,
                 entry.BlockIndex);
+            sb.AppendLine();
         }
-        Console.WriteLine();
+        sb.AppendLine();
+        return sb.ToString();
     }
 
     /// <summary>
-    /// Prints the contents of the MPQ archive block table to the console.
+    /// Returns the contents of the MPQ archive block table.
     /// </summary>
     /// <remarks>The output includes the file offset, compressed size, real size, and flags for each entry in
     /// the block table. This method is intended for diagnostic or debugging purposes to inspect the structure of the
     /// block table.</remarks>
-    public void PrintBlockTable()
+    public string PrintBlockTable()
     {
-        Console.WriteLine("MPQ archive block table");
-        Console.WriteLine("----------------------");
-        Console.WriteLine("FileOffset ArchSize RealSize Flags");
+        StringBuilder sb = new();
+        sb.AppendLine("MPQ archive block table");
+        sb.AppendLine("----------------------");
+        sb.AppendLine("FileOffset ArchSize RealSize Flags");
 
         foreach (var entry in _blockTable)
         {
-            Console.WriteLine("{0:X8} {1} {2} {3:X4}",
+            sb.AppendFormat(CultureInfo.InvariantCulture, "{0:X8} {1} {2} {3:X4}",
                 entry.FileOffset,
                 entry.CompressedSize,
                 entry.FileSize,
                 entry.Flags
                 );
+            sb.AppendLine();
         }
-        Console.WriteLine();
+        sb.AppendLine();
+        return sb.ToString();
     }
 }
 #pragma warning restore CA1303 // Do not pass literals as localized parameters

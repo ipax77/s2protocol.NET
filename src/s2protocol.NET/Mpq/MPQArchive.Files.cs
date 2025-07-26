@@ -1,4 +1,5 @@
 using System.IO.Compression;
+using System.Text;
 
 namespace s2protocol.NET.Mpq;
 
@@ -141,22 +142,24 @@ public sealed partial class MPQArchive
     }
 
     /// <summary>
-    /// Prints the contents of the files stored in the internal buffer to the console.
+    /// Returns the contents of the files stored in the internal buffer.
     /// </summary>
     /// <remarks>If no files are available, a message indicating "No files found." is displayed. The method
     /// assumes the file contents are encoded in UTF-8 and splits the text into lines based on newline characters before
     /// printing each line to the console.</remarks>
-    public void PrintFiles()
+    public string PrintFiles()
     {
         if (_files is null)
         {
-            return;
+            return string.Empty;
         }
+        StringBuilder sb = new();
         var text = System.Text.Encoding.UTF8.GetString(_files);
         var lines = text.Split(separatorArray, StringSplitOptions.RemoveEmptyEntries);
         foreach (var line in lines)
         {
-            Console.WriteLine(line);
+            sb.AppendLine(line);
         }
+        return sb.ToString();
     }
 }

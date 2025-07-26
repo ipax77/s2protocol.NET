@@ -3,7 +3,10 @@ using System.Text.RegularExpressions;
 
 namespace s2protocol.NET.S2Protocol;
 
-internal static class TypeInfoLoader
+/// <summary>
+/// TypeInfoLoader - loading s2protocol versions
+/// </summary>
+public static class TypeInfoLoader
 {
     private static readonly Dictionary<int, string> _protocolResourceMap = new();
     private static readonly Dictionary<string, string[]> _resourceContents = new();
@@ -93,6 +96,11 @@ internal static class TypeInfoLoader
         return content.Split(["\r\n", "\n"], StringSplitOptions.RemoveEmptyEntries);
     }
 
+    /// <summary>
+    /// GetLatestVersion
+    /// </summary>
+    /// <returns></returns>
+    /// <exception cref="DecodeException"></exception>
     public static S2ProtocolVersion GetLatestVersion()
     {
         Initialize();
@@ -106,6 +114,11 @@ internal static class TypeInfoLoader
         return LoadTypeInfos(latestVersion);
     }
 
+    /// <summary>
+    /// Load latest appropriate version
+    /// </summary>
+    /// <param name="protocolVersion"></param>
+    /// <returns></returns>
     public static S2ProtocolVersion LoadTypeInfos(int protocolVersion)
     {
         var lines = GetPythonVersionLines(protocolVersion);

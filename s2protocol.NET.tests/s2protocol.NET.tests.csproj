@@ -38,6 +38,9 @@
   </ItemGroup>
 
   <ItemGroup>
+	<None Update="replays\test.SC2Replay">
+	  <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+	</None>
     <None Update="replays\test1.SC2Replay">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>

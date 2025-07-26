@@ -48,45 +48,45 @@ internal sealed class BitPackedBuffer
         return result;
     }
 
-    public long ReadBits_(int bits)
-    {
-        if (bits < 0 || bits > 64)
-            throw new ArgumentOutOfRangeException(nameof(bits), "Can only read 0 to 64 bits.");
+    //public long ReadBits_(int bits)
+    //{
+    //    if (bits < 0 || bits > 64)
+    //        throw new ArgumentOutOfRangeException(nameof(bits), "Can only read 0 to 64 bits.");
 
-        long result = 0;
-        int resultBits = 0;
+    //    long result = 0;
+    //    int resultBits = 0;
 
-        while (resultBits != bits)
-        {
-            if (_nextBits == 0)
-            {
-                if (Done())
-                    throw new DecodeException(nameof(BitPackedDecoder));
-                _next = _data[_used];
-                _used += 1;
-                _nextBits = 8;
-            }
+    //    while (resultBits != bits)
+    //    {
+    //        if (_nextBits == 0)
+    //        {
+    //            if (Done())
+    //                throw new DecodeException(nameof(BitPackedDecoder));
+    //            _next = _data[_used];
+    //            _used += 1;
+    //            _nextBits = 8;
+    //        }
 
-            int copyBits = Math.Min(bits - resultBits, _nextBits);
-            int mask = (1 << copyBits) - 1;
-            int copy = _next & mask;
+    //        int copyBits = Math.Min(bits - resultBits, _nextBits);
+    //        int mask = (1 << copyBits) - 1;
+    //        int copy = _next & mask;
 
-            if (_bigEndian)
-            {
-                result |= ((long)copy << (bits - resultBits - copyBits));
-            }
-            else
-            {
-                result |= ((long)copy << resultBits);
-            }
+    //        if (_bigEndian)
+    //        {
+    //            result |= ((long)copy << (bits - resultBits - copyBits));
+    //        }
+    //        else
+    //        {
+    //            result |= ((long)copy << resultBits);
+    //        }
 
-            _next >>= copyBits;
-            _nextBits -= copyBits;
-            resultBits += copyBits;
-        }
+    //        _next >>= copyBits;
+    //        _nextBits -= copyBits;
+    //        resultBits += copyBits;
+    //    }
 
-        return result;
-    }
+    //    return result;
+    //}
 
     public long ReadBits(int bits)
     {

@@ -204,12 +204,18 @@ public sealed class ReplayDecoder : IDisposable
             var latestVersion = TypeInfoLoader.GetLatestVersion();
             var header = latestVersion.DecodeReplayHeader(headerContent);
             ArgumentNullException.ThrowIfNull(header);
-
-            int baseBuild = header.Version.BaseBuild;
-            var s2protocol = TypeInfoLoader.LoadTypeInfos(baseBuild);
+            if (header is not Dictionary<string, object> headerDict
+                || !headerDict.TryGetValue("m_version", out object? value)
+                || value is not Dictionary<string, object> headerVersionDict
+                || !headerVersionDict.TryGetValue("m_baseBuild", out object? baseBuildValue)
+                || baseBuildValue is not long baseBuild)
+            {
+                throw new DecodeException("Header is not as expected.");
+            }
+            var s2protocol = TypeInfoLoader.LoadTypeInfos((int)baseBuild);
             ArgumentNullException.ThrowIfNull(s2protocol, nameof(s2protocol));
 
-            var headerRaw = latestVersion.DecodeReplayHeaderRaw(headerContent);
+            var headerRaw = latestVersion.DecodeReplayHeader(headerContent);
             ArgumentNullException.ThrowIfNull(headerRaw, nameof(headerRaw));
             Sc2Replay replay = new(headerRaw, replayPath);
 
@@ -411,7 +417,7 @@ public sealed class ReplayDecoder : IDisposable
             var details_enc = archive.ReadFile("replay.details");
             if (details_enc != null)
             {
-                return protocol.DecodeReplayDetailsRaw(details_enc);
+                return protocol.DecodeReplayDetails(details_enc);
             }
             return null;
         }, token).ConfigureAwait(false);

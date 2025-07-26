@@ -3,13 +3,17 @@ using System.Globalization;
 
 namespace s2protocol.NET.S2Protocol;
 
-internal sealed record S2ProtocolVersion
+/// <summary>
+/// S2ProtocolVersion
+/// </summary>
+public sealed record S2ProtocolVersion
 {
+#pragma warning disable CS1591 // Missing XML comment for publicly visible type or member
     public int Version { get; set; }
-    public List<S2TypeInfo> TypeInfos { get; set; } = [];
-    public Dictionary<int, S2EventType> GameEvents = [];
-    public Dictionary<int, S2EventType> MessageEvents { get; set; } = [];
-    public Dictionary<int, S2EventType> TrackerEvents { get; set; } = [];
+    internal List<S2TypeInfo> TypeInfos { get; set; } = [];
+    internal Dictionary<int, S2EventType> GameEvents = [];
+    internal Dictionary<int, S2EventType> MessageEvents { get; set; } = [];
+    internal Dictionary<int, S2EventType> TrackerEvents { get; set; } = [];
     public int? GameEventIdTypeId { get; set; }
     public int? MessageEventIdTypeId { get; set; }
     public int? TrackerEventIdTypeId { get; set; }
@@ -19,17 +23,10 @@ internal sealed record S2ProtocolVersion
     public int? GameDetailsTypeId { get; set; }
     public int? ReplayInitDataTypeId { get; set; }
 
-    public object? DecodeReplayHeaderRaw(byte[] content)
+    public object? DecodeReplayHeader(byte[] content)
     {
         var decoder = new VersionedDecoder(content, TypeInfos);
         return decoder.Instance(ReplayHeaderTypeId ?? 18);
-    }
-
-    public ReplayHeader? DecodeReplayHeader(byte[] content)
-    {
-        var decoder = new VersionedDecoder(content, TypeInfos);
-        var header = decoder.Instance(ReplayHeaderTypeId ?? 18);
-        return S2ModelMapper.MapToReplayHeader(header);
     }
 
     public IEnumerable<Dictionary<string, object?>> DecodeReplayGameEvents(byte[] content)
@@ -59,14 +56,7 @@ internal sealed record S2ProtocolVersion
         }
     }
 
-    public ReplayDetails? DecodeReplayDetails(byte[] content)
-    {
-        var decoder = new VersionedDecoder(content, TypeInfos);
-        var details = decoder.Instance(GameDetailsTypeId ?? 40);
-        return S2ModelMapper.MapToReplayDetails(details);
-    }
-
-    public object? DecodeReplayDetailsRaw(byte[] content)
+    public object? DecodeReplayDetails(byte[] content)
     {
         var decoder = new VersionedDecoder(content, TypeInfos);
         return decoder.Instance(GameDetailsTypeId ?? 40);
@@ -230,3 +220,4 @@ internal sealed record S2ProtocolVersion
         return unitTag & 0x0003FFFF;
     }
 }
+#pragma warning restore CS1591 // Missing XML comment for publicly visible type or member
