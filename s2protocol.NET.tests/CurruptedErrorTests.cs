@@ -70,7 +70,7 @@ public class CurruptedErrorTests
         }
         catch (DecodeException ex)
         {
-            Assert.Equal("Value cannot be null. (Parameter 'tracker_dec')", ex.Message);
+            Assert.Equal("Value cannot be null. (Parameter 'trackerEvents')", ex.Message);
         }
 
         decoder.Dispose();

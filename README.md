@@ -3,34 +3,26 @@
 # Introduction
 
 dotnet wrapper for [Blizzards s2protocol](https://github.com/Blizzard/s2protocol) for decoding/parsing StarCraft II replays (*.SC2Replay)
-using IronPython (2.7)
 
 # Getting started
 
 ## Installation
 
 ```bash
-dotnet add package IronPython.StdLib --version 2.7.12
 dotnet add package s2protocol.NET
 ```
 
 ## Usage
 
-IronPyhton has a known memory leak [Issue](https://github.com/IronLanguages/ironpython2/issues/322) - try initializing the ReplayDecoder just once and reusing it.
-
 ```csharp
-public static readonly string? assemblyPath = Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location);
-```
-
-```csharp
-ReplayDecoder decoder = new(assemblyPath);
+ReplayDecoder decoder = new();
 Sc2Replay? replay = await decoder.DecodeAsync(pathToSC2Replay);
 Console.WriteLine(replay.Header.BaseBuild);
 ```
 
 Optional options:
 ```csharp
-ReplayDecoder decoder = new(assemblyPath);
+ReplayDecoder decoder = new();
 
 ReplayDecoderOptions options = new ReplayDecoderOptions()
 {
@@ -50,7 +42,7 @@ Console.WriteLine(replay.TrackerEvents.SUnitBornEvents.FirstOrDefault());
 
 Multiple replays:
 ```csharp
-ReplayDecoder decoder = new(assemblyPath);
+ReplayDecoder decoder = new();
 var folder = "path_to_replay_folder";
 List<string> replays = Directory.GetFiles(folder, "*.SC2Replay").ToList();
 ReplayDecoderOptions options = new ReplayDecoderOptions() { TrackerEvents = false };
@@ -79,10 +71,18 @@ await foreach (DecodeParallelResult decodeResult in decoder.DecodeParallelWithEr
 ## GameEvents
 STriggerSoundLengthSyncEvent => no data
 SControlGroupUpdateEvent => no mask
+No BigInteger support
 
 # ChangeLog
 
-<details open="open"><summary>v0.8.4</summary>
+<details open="open"><summary>v0.9.0</summary>
+
+>- **Breaking Changes**
+>- removed requirement for IronPython
+
+</details>
+
+<details><summary>v0.8.4</summary>
 
 >- s2protocol v5.0.14.93333.0
 

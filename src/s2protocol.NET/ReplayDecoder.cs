@@ -272,6 +272,7 @@ public sealed class ReplayDecoder : IDisposable
                 var gameEventsRaw = await GetGameEventsAsync(MPQArchive, s2protocol, token).ConfigureAwait(false);
                 ArgumentNullException.ThrowIfNull((object?)gameEventsRaw, nameof(gameEventsRaw));
                 var gameEvents = Parse.GameEvents(gameEventsRaw);
+                replay.GameEvents = gameEvents;
             }
 
             if (options.AttributeEvents)
