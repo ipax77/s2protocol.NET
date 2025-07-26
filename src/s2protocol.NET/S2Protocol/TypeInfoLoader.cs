@@ -6,36 +6,43 @@ namespace s2protocol.NET.S2Protocol;
 internal static class TypeInfoLoader
 {
     private static readonly Dictionary<int, string> _protocolResourceMap = new();
-    private static Dictionary<string, string[]> _resourceContents = [];
-    private static bool _initialized;
+    private static readonly Dictionary<string, string[]> _resourceContents = new();
+    private static readonly object _initLock = new();
+    private static volatile bool _initialized;
 
     private static void Initialize()
     {
         if (_initialized)
             return;
 
-        var assembly = typeof(TypeInfoLoader).Assembly;
-        var resourceNames = assembly.GetManifestResourceNames();
-
-        if (resourceNames.Length == 0)
+        lock (_initLock)
         {
-            throw new DecodeException("No embedded resource files found.");
-        }
+            if (_initialized)
+                return;
 
-        foreach (var name in resourceNames)
-        {
-            if (name.StartsWith("s2protocol.NET.Resources.versions.protocol", StringComparison.Ordinal)
-                && name.EndsWith(".py", StringComparison.Ordinal))
+            var assembly = typeof(TypeInfoLoader).Assembly;
+            var resourceNames = assembly.GetManifestResourceNames();
+
+            if (resourceNames.Length == 0)
             {
-                var version = ExtractVersionNumber(name);
-                if (version > 0 && !_protocolResourceMap.ContainsKey(version))
+                throw new DecodeException("No embedded resource files found.");
+            }
+
+            foreach (var name in resourceNames)
+            {
+                if (name.StartsWith("s2protocol.NET.Resources.versions.protocol", StringComparison.Ordinal)
+                    && name.EndsWith(".py", StringComparison.Ordinal))
                 {
-                    _protocolResourceMap[version] = name;
+                    var version = ExtractVersionNumber(name);
+                    if (version > 0 && !_protocolResourceMap.ContainsKey(version))
+                    {
+                        _protocolResourceMap[version] = name;
+                    }
                 }
             }
-        }
 
-        _initialized = true;
+            _initialized = true;
+        }
     }
 
     private static string[] GetPythonVersionLines(int version)
@@ -46,6 +53,7 @@ internal static class TypeInfoLoader
             .Where(v => v <= version)
             .OrderByDescending(v => v)
             .FirstOrDefault();
+
         if (matchingVersion == 0)
         {
             throw new DecodeException("No python protocol found.");
@@ -53,11 +61,16 @@ internal static class TypeInfoLoader
 
         var resourceName = _protocolResourceMap[matchingVersion];
 
-        if (!_resourceContents.TryGetValue(resourceName, out var lines))
+        lock (_resourceContents)
         {
-            lines = _resourceContents[resourceName] = LoadResourceContent(resourceName);
+            if (!_resourceContents.TryGetValue(resourceName, out var lines))
+            {
+                lines = LoadResourceContent(resourceName);
+                _resourceContents[resourceName] = lines;
+            }
+
+            return lines;
         }
-        return lines;
     }
 
     private static int ExtractVersionNumber(string resourceName)
@@ -69,25 +82,26 @@ internal static class TypeInfoLoader
     private static string[] LoadResourceContent(string resourceName)
     {
         var assembly = typeof(TypeInfoLoader).Assembly;
-        using (var stream = assembly.GetManifestResourceStream(resourceName))
+        using var stream = assembly.GetManifestResourceStream(resourceName);
+        if (stream == null)
         {
-            if (stream == null)
-            {
-                throw new DecodeException("resource stream was null.");
-            }
-            using var reader = new StreamReader(stream);
-            string content = reader.ReadToEnd();
-            return content.Split(["\r\n", "\n"], StringSplitOptions.RemoveEmptyEntries);
+            throw new DecodeException("resource stream was null.");
         }
+
+        using var reader = new StreamReader(stream);
+        string content = reader.ReadToEnd();
+        return content.Split(["\r\n", "\n"], StringSplitOptions.RemoveEmptyEntries);
     }
 
     public static S2ProtocolVersion GetLatestVersion()
     {
         Initialize();
+
         if (_protocolResourceMap.Count == 0)
         {
             throw new DecodeException("No protocol versions found.");
         }
+
         var latestVersion = _protocolResourceMap.Keys.Max();
         return LoadTypeInfos(latestVersion);
     }

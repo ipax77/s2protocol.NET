@@ -5,7 +5,7 @@ internal static partial class Parse
 {
     public static void SetMessages(object generator, Sc2Replay replay)
     {
-        if (generator is not List<object> getList)
+        if (generator is not List<object> genDict)
         {
             throw new ArgumentException("Generator must be a Dictionary<string, object>.", nameof(generator));
         }
@@ -13,7 +13,7 @@ internal static partial class Parse
         List<ChatMessageEvent> messages = [];
         List<PingMessageEvent> pings = [];
 
-        foreach (var ent in getList)
+        foreach (var ent in genDict)
         {
             if (ent is not Dictionary<string, object> pydic)
             {

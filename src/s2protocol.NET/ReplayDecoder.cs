@@ -237,7 +237,6 @@ public sealed class ReplayDecoder : IDisposable
             {
                 var messages = await GetMessagesAsync(MPQArchive, s2protocol, token);
                 ArgumentNullException.ThrowIfNull((object?)messages, nameof(messages));
-
                 Parse.SetMessages(messages, replay);
             }
 
@@ -343,10 +342,15 @@ public sealed class ReplayDecoder : IDisposable
     {
         return await Task.Run(() =>
         {
+            List<object> trackerEvents = [];
             var tracker_dec = archive.ReadFile("replay.tracker.events");
             if (tracker_dec != null)
             {
-                return protocol.DecodeReplayTrackerEvents(tracker_dec);
+                foreach (var trackerEvent in protocol.DecodeReplayTrackerEvents(tracker_dec))
+                {
+                    trackerEvents.Add(trackerEvent);
+                }
+                return trackerEvents;
             }
             return null;
         }, token).ConfigureAwait(false);
@@ -356,10 +360,15 @@ public sealed class ReplayDecoder : IDisposable
     {
         return await Task.Run(() =>
         {
+            List<object> messageEvents = [];
             var msg_enc = archive.ReadFile("replay.message.events");
             if (msg_enc != null)
             {
-                return protocol.DecodeReplayMessageEvents(msg_enc);
+                foreach (var messageEvent in protocol.DecodeReplayMessageEvents(msg_enc))
+                {
+                    messageEvents.Add(messageEvent);
+                }
+                return messageEvents;
             }
             return null;
         }, token).ConfigureAwait(false);

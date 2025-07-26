@@ -58,6 +58,10 @@ internal static partial class Parse
                     return 0;
                 }
             }
+            else if (value != null && value.GetType() == typeof(Int64))
+            {
+                return (int)(long)value;
+            }
             else
             {
                 return 0;
@@ -110,6 +114,14 @@ internal static partial class Parse
                     return (long)(BigInteger)value;
                 }
                 else if (value.GetType() == typeof(Int32))
+                {
+                    return (int)value;
+                }
+                else if (value.GetType() == typeof(Int64))
+                {
+                    return (long)value;
+                }
+                else if (value.GetType() == typeof(int))
                 {
                     return (int)value;
                 }

@@ -19,7 +19,7 @@ public class DecodeParallelTests
         {
             return;
         }
-        using ReplayDecoder decoder = new(assemblyPath);
+        using ReplayDecoder decoder = new();
         ReplayDecoderOptions options = new()
         {
             Initdata = false,
@@ -59,7 +59,7 @@ public class DecodeParallelTests
         {
             return;
         }
-        using ReplayDecoder decoder = new(assemblyPath);
+        using ReplayDecoder decoder = new();
         ReplayDecoderOptions options = new()
         {
             Initdata = false,
@@ -99,7 +99,7 @@ public class DecodeParallelTests
         {
             return;
         }
-        using ReplayDecoder decoder = new(assemblyPath);
+        using ReplayDecoder decoder = new();
         ReplayDecoderOptions options = new()
         {
             Initdata = false,

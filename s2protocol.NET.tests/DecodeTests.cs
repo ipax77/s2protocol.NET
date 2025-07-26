@@ -25,7 +25,7 @@ public class DecodeTests
         {
             return;
         }
-        using ReplayDecoder decoder = new(assemblyPath);
+        using ReplayDecoder decoder = new();
         ReplayDecoderOptions options = new ReplayDecoderOptions()
         {
             Initdata = false,
@@ -62,7 +62,7 @@ public class DecodeTests
         {
             return;
         }
-        using ReplayDecoder decoder = new(assemblyPath);
+        using ReplayDecoder decoder = new();
         ReplayDecoderOptions options = new ReplayDecoderOptions()
         {
             Initdata = false,
@@ -106,7 +106,7 @@ public class DecodeTests
         {
             return;
         }
-        using ReplayDecoder decoder = new(assemblyPath);
+        using ReplayDecoder decoder = new();
         ReplayDecoderOptions options = new ReplayDecoderOptions()
         {
             Initdata = false,
@@ -144,7 +144,7 @@ public class DecodeTests
         {
             return;
         }
-        using ReplayDecoder decoder = new(assemblyPath);
+        using ReplayDecoder decoder = new();
         ReplayDecoderOptions options = new ReplayDecoderOptions()
         {
             Initdata = false,
@@ -189,7 +189,7 @@ public class DecodeTests
         {
             return;
         }
-        using ReplayDecoder decoder = new(assemblyPath);
+        using ReplayDecoder decoder = new();
         ReplayDecoderOptions options = new ReplayDecoderOptions()
         {
             Initdata = false,
@@ -234,7 +234,7 @@ public class DecodeTests
         {
             return;
         }
-        using ReplayDecoder decoder = new(assemblyPath);
+        using ReplayDecoder decoder = new();
         ReplayDecoderOptions options = new ReplayDecoderOptions()
         {
             Initdata = true,
@@ -277,7 +277,7 @@ public class DecodeTests
         {
             return;
         }
-        using ReplayDecoder decoder = new(assemblyPath);
+        using ReplayDecoder decoder = new();
         ReplayDecoderOptions options = new ReplayDecoderOptions()
         {
             Initdata = false,
@@ -320,7 +320,7 @@ public class DecodeTests
         {
             return;
         }
-        using ReplayDecoder decoder = new(assemblyPath);
+        using ReplayDecoder decoder = new();
         ReplayDecoderOptions options = new ReplayDecoderOptions()
         {
             Initdata = false,

@@ -21,7 +21,7 @@ public class PingMessagesTests
         {
             return;
         }
-        using ReplayDecoder decoder = new(assemblyPath);
+        using ReplayDecoder decoder = new();
         ReplayDecoderOptions options = new ReplayDecoderOptions()
         {
             Initdata = false,
