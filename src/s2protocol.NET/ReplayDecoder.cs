@@ -2,7 +2,6 @@
 using s2protocol.NET.Mpq;
 using s2protocol.NET.Parser;
 using s2protocol.NET.S2Protocol;
-using System.Net.NetworkInformation;
 using System.Runtime.CompilerServices;
 using System.Text;
 using System.Text.Json;
