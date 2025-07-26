@@ -9,8 +9,13 @@ using s2protocol.NET.S2Protocol;
 
 namespace s2protocol.NET;
 
-/// <summary>Class <c>ReplayDecoder</c> Starcraft II replay decoding</summary>
-///
+/// <summary>
+/// Provides functionality to decode Starcraft II replay files, supporting parallel processing and optional error
+/// reporting.
+/// </summary>
+/// <remarks>The <see cref="ReplayDecoder"/> class is designed to process Starcraft II replay files efficiently,
+/// with support for parallel decoding and customizable decoding options. It also provides methods to handle decoding
+/// errors and report them alongside the decoded results.</remarks>
 public sealed class ReplayDecoder : IDisposable
 {
     /// <summary>Creates the decoder</summary>
@@ -25,7 +30,7 @@ public sealed class ReplayDecoder : IDisposable
     /// /// <param name="threads">Number of parallelism</param>
     /// <param name="options">Optional decoding options</param>
     /// <param name="token">Optional CancellationToken</param>
-    public static async IAsyncEnumerable<Sc2Replay> DecodeParallel(ICollection<string> replayPaths, int threads, ReplayDecoderOptions? options = null, [EnumeratorCancellation] CancellationToken token = default)
+    public async IAsyncEnumerable<Sc2Replay> DecodeParallel(ICollection<string> replayPaths, int threads, ReplayDecoderOptions? options = null, [EnumeratorCancellation] CancellationToken token = default)
     {
         Channel<Sc2Replay> replayChannel = Channel.CreateUnbounded<Sc2Replay>();
 
@@ -46,7 +51,7 @@ public sealed class ReplayDecoder : IDisposable
     /// /// <param name="threads">Number of parallelism</param>
     /// <param name="options">Optional decoding options</param>
     /// <param name="token">Optional CancellationToken</param>
-    public static async IAsyncEnumerable<DecodeParallelResult> DecodeParallelWithErrorReport(ICollection<string> replayPaths, int threads, ReplayDecoderOptions? options = null, [EnumeratorCancellation] CancellationToken token = default)
+    public async IAsyncEnumerable<DecodeParallelResult> DecodeParallelWithErrorReport(ICollection<string> replayPaths, int threads, ReplayDecoderOptions? options = null, [EnumeratorCancellation] CancellationToken token = default)
     {
         Channel<DecodeParallelResult> replayResultChannel = Channel.CreateUnbounded<DecodeParallelResult>(
             new UnboundedChannelOptions()
@@ -67,7 +72,7 @@ public sealed class ReplayDecoder : IDisposable
         }
     }
 
-    private static async Task Produce(Channel<Sc2Replay> channel, ICollection<string> replayPaths, int threads, ReplayDecoderOptions? options, CancellationToken token)
+    private async Task Produce(Channel<Sc2Replay> channel, ICollection<string> replayPaths, int threads, ReplayDecoderOptions? options, CancellationToken token)
     {
         ParallelOptions parallelOptions = new()
         {
@@ -111,7 +116,7 @@ public sealed class ReplayDecoder : IDisposable
         }
     }
 
-    private static async Task ProduceResults(Channel<DecodeParallelResult> channel, ICollection<string> replayPaths, int threads, ReplayDecoderOptions? options, CancellationToken token)
+    private async Task ProduceResults(Channel<DecodeParallelResult> channel, ICollection<string> replayPaths, int threads, ReplayDecoderOptions? options, CancellationToken token)
     {
         ParallelOptions parallelOptions = new()
         {
@@ -170,7 +175,9 @@ public sealed class ReplayDecoder : IDisposable
     /// <param name="replayPath">The path to the Starcraft2 replay</param>
     /// <param name="options">Optional decoding options</param>
     /// <param name="token">Optional CancellationToken</param>
-    public static async Task<Sc2Replay?> DecodeAsync(string replayPath, ReplayDecoderOptions? options = null, CancellationToken token = default)
+#pragma warning disable CA1822 // Mark members as static
+    public async Task<Sc2Replay?> DecodeAsync(string replayPath, ReplayDecoderOptions? options = null, CancellationToken token = default)
+#pragma warning restore CA1822 // Mark members as static
     {
         if (!File.Exists(replayPath))
         {

@@ -94,7 +94,9 @@ internal sealed class BitPackedDecoder : S2ProtocolDecoder
         throw new ArgumentException("Invalid parameters for _int");
     }
 
-    private static object? _null(IDecodeParameter[] _) => null;
+#pragma warning disable CA1822 // Mark members as static
+    private object? _null(IDecodeParameter[] _) => null;
+#pragma warning restore CA1822 // Mark members as static
 
     private object? _optional(IDecodeParameter[] parameters)
     {
