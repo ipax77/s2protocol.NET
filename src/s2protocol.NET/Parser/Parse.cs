@@ -89,6 +89,14 @@ internal static partial class Parse
                     return null;
                 }
             }
+            else if (value != null && value.GetType() == typeof(Int64))
+            {
+                return (int)(long)value;
+            }
+            else if (value != null && value.GetType() == typeof(BigInteger))
+            {
+                return (int)(BigInteger)value;
+            }
             else
             {
                 if (value != null)
@@ -154,6 +162,14 @@ internal static partial class Parse
                 else if (value.GetType() == typeof(int))
                 {
                     return (int)value;
+                }
+                else if (value.GetType() == typeof(Int32))
+                {
+                    return (int)value;
+                }
+                else if (value.GetType() == typeof(Int64))
+                {
+                    return (long)value;
                 }
                 else
                 {
@@ -223,6 +239,18 @@ internal static partial class Parse
             {
                 return (double)value;
             }
+            else if (value != null && value.GetType() == typeof(float))
+            {
+                return (float)value;
+            }
+            else if (value != null && value.GetType() == typeof(int))
+            {
+                return (int)value;
+            }
+            else if (value != null && value.GetType() == typeof(long))
+            {
+                return (long)value;
+            }
             else
             {
                 return 0;
@@ -241,10 +269,21 @@ internal static partial class Parse
                 List<object> list = (List<object>)value;
                 foreach (var item in list)
                 {
-                    int? i = item as int?;
-                    if (i != null)
+                    if (item is int i)
                     {
-                        intList.Add(i.Value);
+                        intList.Add(i);
+                    }
+                    else if (item is long l)
+                    {
+                        intList.Add((int)l);
+                    }
+                    else if (item is BigInteger bi)
+                    {
+                        intList.Add((int)bi);
+                    }
+                    else if (item is double d)
+                    {
+                        intList.Add((int)d);
                     }
                 }
             }
@@ -265,10 +304,21 @@ internal static partial class Parse
                 List<object> list = (List<object>)value;
                 foreach (var item in list)
                 {
-                    long? i = item as long?;
-                    if (i != null)
+                    if (item is int i)
                     {
-                        longList.Add(i.Value);
+                        longList.Add(i);
+                    }
+                    else if (item is long l)
+                    {
+                        longList.Add(l);
+                    }
+                    else if (item is BigInteger bi)
+                    {
+                        longList.Add((long)bi);
+                    }
+                    else if (item is double d)
+                    {
+                        longList.Add((long)d);
                     }
                 }
             }
