@@ -1,14 +1,17 @@
-﻿using IronPython.Runtime;
-using s2protocol.NET.Models;
+﻿using s2protocol.NET.Models;
 
 namespace s2protocol.NET.Parser;
 internal static partial class Parse
 {
-    internal static Initdata? InitData(dynamic pydic)
+    internal static Initdata? InitData(object pydic)
     {
-        if (pydic.ContainsKey("m_syncLobbyState"))
+        if (pydic is not Dictionary<string, object> dic)
         {
-            if (pydic["m_syncLobbyState"] is PythonDictionary initDic)
+            throw new DecodeException("Initdata is not a Dictionary<string, object>");
+        }
+        if (dic.ContainsKey("m_syncLobbyState"))
+        {
+            if (dic["m_syncLobbyState"] is Dictionary<string, object> initDic)
             {
                 List<UserInitialData> userInitialDatas = GetUserInitialData(initDic);
                 LobbyState lobbyState = GetLobbyState(initDic);
@@ -19,11 +22,11 @@ internal static partial class Parse
         return null;
     }
 
-    private static GameDescription GetGameDescription(PythonDictionary pydic)
+    private static GameDescription GetGameDescription(Dictionary<string, object> pydic)
     {
         if (pydic.ContainsKey("m_gameDescription"))
         {
-            if (pydic["m_gameDescription"] is PythonDictionary descDic)
+            if (pydic["m_gameDescription"] is Dictionary<string, object> descDic)
             {
                 int maxRaces = GetInt(descDic, "m_maxRaces");
                 int maxTeams = GetInt(descDic, "m_maxTeams");
@@ -88,11 +91,11 @@ internal static partial class Parse
         return new GameDescription(0, 0, false, 0, false, GetGameOptions(pydic), 0, false, "", 0, 0, false, 0, 0, false, 0, 0, 0, 0, new List<string>(), 0, 0, "", "", new List<SlotDescription>(), 0, 0, false);
     }
 
-    private static GameOptions GetGameOptions(PythonDictionary pydic)
+    private static GameOptions GetGameOptions(Dictionary<string, object> pydic)
     {
         if (pydic.ContainsKey("m_gameOptions"))
         {
-            if (pydic["m_gameOptions"] is PythonDictionary optDic)
+            if (pydic["m_gameOptions"] is Dictionary<string, object> optDic)
             {
                 bool competitive = GetBool(optDic, "m_competitive");
                 bool practice = GetBool(optDic, "m_practice");
@@ -133,16 +136,16 @@ internal static partial class Parse
         return new GameOptions(false, false, false, false, false, 0, false, false, 0, false, false, 0, 0, false, false, false);
     }
 
-    private static List<SlotDescription> GetSlotDescriptions(PythonDictionary pydic)
+    private static List<SlotDescription> GetSlotDescriptions(Dictionary<string, object> pydic)
     {
         List<SlotDescription> slotDescscitions = new();
         if (pydic.ContainsKey("m_slotDescriptions"))
         {
-            if (pydic["m_slotDescriptions"] is List slotDescs)
+            if (pydic["m_slotDescriptions"] is List<object> slotDescs)
             {
                 foreach (var slotDesc in slotDescs)
                 {
-                    if (slotDesc is PythonDictionary slotDic)
+                    if (slotDesc is Dictionary<string, object> slotDic)
                     {
                         var allowedRaces = GetIntBigTuple(slotDic, "m_allowedRaces");
                         var allowedColors = GetIntBigTuple(slotDic, "m_allowedColors");
@@ -165,11 +168,11 @@ internal static partial class Parse
         return slotDescscitions;
     }
 
-    private static LobbyState GetLobbyState(PythonDictionary pydic)
+    private static LobbyState GetLobbyState(Dictionary<string, object> pydic)
     {
         if (pydic.ContainsKey("m_lobbyState"))
         {
-            if (pydic["m_lobbyState"] is PythonDictionary lobbyDic)
+            if (pydic["m_lobbyState"] is Dictionary<string, object> lobbyDic)
             {
                 int maxUser = GetInt(lobbyDic, "m_maxUsers");
                 List<Slot> slots = GetSlots(lobbyDic);
@@ -198,16 +201,16 @@ internal static partial class Parse
         return new LobbyState(0, new List<Slot>(), 0, false, 0, 0, 0, 0, 0, 0, 0);
     }
 
-    private static List<Slot> GetSlots(PythonDictionary pydic)
+    private static List<Slot> GetSlots(Dictionary<string, object> pydic)
     {
         List<Slot> slots = new();
         if (pydic.ContainsKey("m_slots"))
         {
-            if (pydic["m_slots"] is List slotList)
+            if (pydic["m_slots"] is List<object> slotList)
             {
                 foreach (var item in slotList)
                 {
-                    if (item is PythonDictionary slotDic)
+                    if (item is Dictionary<string, object> slotDic)
                     {
                         int aCEnemyRace = GetInt(slotDic, "m_aCEnemyRace");
                         string toonHandle = GetString(slotDic, "m_toonHandle");
@@ -280,16 +283,16 @@ internal static partial class Parse
         return slots;
     }
 
-    private static List<UserInitialData> GetUserInitialData(PythonDictionary pydic)
+    private static List<UserInitialData> GetUserInitialData(Dictionary<string, object> pydic)
     {
         List<UserInitialData> initDatas = new();
         if (pydic.ContainsKey("m_userInitialData"))
         {
-            if (pydic["m_userInitialData"] is List userInitalDatas)
+            if (pydic["m_userInitialData"] is List<object> userInitalDatas)
             {
                 foreach (var userInitalData in userInitalDatas)
                 {
-                    if (userInitalData is PythonDictionary initDic)
+                    if (userInitalData is Dictionary<string, object> initDic)
                     {
                         string mount = GetString(initDic, "m_mount");
                         string skin = GetString(initDic, "m_skin");
@@ -337,11 +340,11 @@ internal static partial class Parse
         return initDatas;
     }
 
-    private static int? GetTeamPreference(PythonDictionary pydic)
+    private static int? GetTeamPreference(Dictionary<string, object> pydic)
     {
         if (pydic.ContainsKey("m_teamPreference"))
         {
-            if (pydic["m_teamPreference"] is PythonDictionary teamDic)
+            if (pydic["m_teamPreference"] is Dictionary<string, object> teamDic)
             {
                 return GetNullableInt(teamDic, "m_team");
             }
@@ -349,22 +352,22 @@ internal static partial class Parse
         return null;
     }
 
-    private static int? GetRacePreference(PythonDictionary pydic, string property = "m_racePreference")
+    private static int? GetRacePreference(Dictionary<string, object> pydic, string property = "m_racePreference")
     {
         if (pydic.ContainsKey(property))
         {
-            if (pydic[property] is PythonDictionary raceDic)
+            if (pydic[property] is Dictionary<string, object> raceDic)
             {
                 return GetNullableInt(raceDic, "m_race");
             }
         }
         return null;
     }
-    private static int? GetColorPreference(PythonDictionary pydic)
+    private static int? GetColorPreference(Dictionary<string, object> pydic)
     {
         if (pydic.ContainsKey("m_colorPref"))
         {
-            if (pydic["m_colorPref"] is PythonDictionary colDic)
+            if (pydic["m_colorPref"] is Dictionary<string, object> colDic)
             {
                 return GetNullableInt(colDic, "m_color");
             }

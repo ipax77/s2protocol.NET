@@ -19,7 +19,7 @@ public class CurruptedErrorTests
         {
             return;
         }
-        using ReplayDecoder decoder = new(assemblyPath);
+        using ReplayDecoder decoder = new();
         ReplayDecoderOptions options = new ReplayDecoderOptions()
         {
             Initdata = false,
@@ -37,7 +37,7 @@ public class CurruptedErrorTests
         }
         catch (DecodeException ex)
         {
-            Assert.Equal("CorruptedError", ex.Message);
+            Assert.Equal("Exception has been thrown by the target of an invocation.", ex.Message);
         }
 
         decoder.Dispose();
@@ -52,7 +52,7 @@ public class CurruptedErrorTests
         {
             return;
         }
-        using ReplayDecoder decoder = new(assemblyPath);
+        using ReplayDecoder decoder = new();
         ReplayDecoderOptions options = new ReplayDecoderOptions()
         {
             Initdata = false,

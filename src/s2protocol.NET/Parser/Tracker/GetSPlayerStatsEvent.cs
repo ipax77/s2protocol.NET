@@ -1,13 +1,12 @@
-﻿using IronPython.Runtime;
-using s2protocol.NET.Models;
+﻿using s2protocol.NET.Models;
 
-namespace s2protocol.NET.Parser;internal static partial class Parse
+namespace s2protocol.NET.Parser; internal static partial class Parse
 {
-    private static SPlayerStatsEvent GetSPlayerStatsEvent(PythonDictionary pydic, TrackerEvent trackerEvent)
+    private static SPlayerStatsEvent GetSPlayerStatsEvent(Dictionary<string, object> pydic, TrackerEvent trackerEvent)
     {
-        if (pydic.ContainsKey("m_stats"))
+        if (pydic.TryGetValue("m_stats", out object? value))
         {
-            PythonDictionary? statsDic = pydic["m_stats"] as PythonDictionary;
+            Dictionary<string, object>? statsDic = value as Dictionary<string, object>;
             if (statsDic != null)
             {
                 int scoreValueVespeneUsedCurrentTechnology = GetInt(statsDic, "m_scoreValueVespeneUsedCurrentTechnology");

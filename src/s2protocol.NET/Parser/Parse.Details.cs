@@ -1,10 +1,9 @@
-﻿using IronPython.Runtime;
-using s2protocol.NET.Models;
+﻿using s2protocol.NET.Models;
 
 namespace s2protocol.NET.Parser;
 internal static partial class Parse
 {
-    public static Details Datails(PythonDictionary details)
+    public static Details Datails(Dictionary<string, object> details)
     {
         var campaignIndex = GetInt(details, "m_campaignIndex");
         var defaultDiff = GetInt(details, "m_defaultDifficulty");
@@ -39,14 +38,14 @@ internal static partial class Parse
                            players);
     }
 
-    private static List<DetailsPlayer> GetDetailsPlayers(PythonDictionary pydic)
+    private static List<DetailsPlayer> GetDetailsPlayers(Dictionary<string, object> pydic)
     {
         List<DetailsPlayer> players = new();
         if (pydic.ContainsKey("m_playerList"))
         {
             if (pydic["m_playerList"] is ICollection<object> plDics)
             {
-                foreach (PythonDictionary plDic in plDics)
+                foreach (Dictionary<string, object> plDic in plDics)
                 {
                     if (plDic != null)
                     {
@@ -80,11 +79,11 @@ internal static partial class Parse
         return players;
     }
 
-    private static Toon GetToon(PythonDictionary pydic)
+    private static Toon GetToon(Dictionary<string, object> pydic)
     {
         if (pydic.ContainsKey("m_toon"))
         {
-            if (pydic["m_toon"] is PythonDictionary toonDic)
+            if (pydic["m_toon"] is Dictionary<string, object> toonDic)
             {
                 return new Toon(GetInt(toonDic, "m_id"), GetString(toonDic, "m_programId"), GetInt(toonDic, "m_realm"), GetInt(toonDic, "m_region"));
             }
@@ -92,11 +91,11 @@ internal static partial class Parse
         return new Toon(0, "", 0, 0);
     }
 
-    private static PlayerColor GetColor(PythonDictionary pydic)
+    private static PlayerColor GetColor(Dictionary<string, object> pydic)
     {
         if (pydic.ContainsKey("m_color"))
         {
-            if (pydic["m_color"] is PythonDictionary colDic)
+            if (pydic["m_color"] is Dictionary<string, object> colDic)
             {
                 return new PlayerColor(GetInt(colDic, "m_a"), GetInt(colDic, "m_b"), GetInt(colDic, "m_g"), GetInt(colDic, "m_r"));
             }

@@ -1,9 +1,8 @@
-﻿using IronPython.Runtime;
-using s2protocol.NET.Models;
+﻿using s2protocol.NET.Models;
 
-namespace s2protocol.NET.Parser;internal static partial class Parse
+namespace s2protocol.NET.Parser; internal static partial class Parse
 {
-    private static SUserOptionsEvent GetSUserOptionsEvent(PythonDictionary gameDic, GameEvent gameEvent)
+    private static SUserOptionsEvent GetSUserOptionsEvent(Dictionary<string, object> gameDic, GameEvent gameEvent)
     {
         bool testCheatsEnabled = GetBool(gameDic, "m_testCheatsEnabled");
         bool multiplayerCheatsEnabled = GetBool(gameDic, "m_multiplayerCheatsEnabled");

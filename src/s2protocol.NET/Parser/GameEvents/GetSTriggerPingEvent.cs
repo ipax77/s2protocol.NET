@@ -1,9 +1,8 @@
-﻿using IronPython.Runtime;
-using s2protocol.NET.Models;
+﻿using s2protocol.NET.Models;
 
-namespace s2protocol.NET.Parser;internal static partial class Parse
+namespace s2protocol.NET.Parser; internal static partial class Parse
 {
-    private static STriggerPingEvent GetSTriggerPingEvent(PythonDictionary gameDic, GameEvent gameEvent)
+    private static STriggerPingEvent GetSTriggerPingEvent(Dictionary<string, object> gameDic, GameEvent gameEvent)
     {
         bool pingedMinimap = GetBool(gameDic, "m_pingedMinimap");
         int unitLink = GetInt(gameDic, "m_unitLink");
@@ -29,11 +28,11 @@ namespace s2protocol.NET.Parser;internal static partial class Parse
                                      unitUpkeepPlayerId);
     }
 
-    private static (long, long) GetPoint(PythonDictionary pydic)
+    private static (long, long) GetPoint(Dictionary<string, object> pydic)
     {
         if (pydic.ContainsKey("m_point"))
         {
-            if (pydic["m_point"] is PythonDictionary pointDic)
+            if (pydic["m_point"] is Dictionary<string, object> pointDic)
             {
                 long x = GetBigInt(pointDic, "x");
                 long y = GetBigInt(pointDic, "y");
@@ -43,11 +42,11 @@ namespace s2protocol.NET.Parser;internal static partial class Parse
         return (0, 0);
     }
 
-    private static (long, long, long) GetUnitPosition(PythonDictionary pydic)
+    private static (long, long, long) GetUnitPosition(Dictionary<string, object> pydic)
     {
         if (pydic.ContainsKey("m_unitPosition"))
         {
-            if (pydic["m_unitPosition"] is PythonDictionary posDic)
+            if (pydic["m_unitPosition"] is Dictionary<string, object> posDic)
             {
                 long x = GetBigInt(posDic, "x");
                 long y = GetBigInt(posDic, "y");

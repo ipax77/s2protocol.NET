@@ -1,13 +1,12 @@
-﻿using IronPython.Runtime;
-using s2protocol.NET.Models;
+﻿using s2protocol.NET.Models;
 
-namespace s2protocol.NET.Parser;internal static partial class Parse
+namespace s2protocol.NET.Parser; internal static partial class Parse
 {
-    private static SCmdUpdateTargetUnitEvent GetSCmdUpdateTargetUnitEvent(PythonDictionary pydic, GameEvent gameEvent)
+    private static SCmdUpdateTargetUnitEvent GetSCmdUpdateTargetUnitEvent(Dictionary<string, object> pydic, GameEvent gameEvent)
     {
         if (pydic.TryGetValue("m_target", out object? target))
         {
-            if (target is PythonDictionary targetDic)
+            if (target is Dictionary<string, object> targetDic)
             {
                 int m_snapshotControlPlayerId = GetInt(targetDic, "m_snapshotControlPlayerId");
                 (long pointX, long pointY, long pointZ) = GetSnapshotPoint(targetDic);
@@ -40,11 +39,11 @@ namespace s2protocol.NET.Parser;internal static partial class Parse
                                      0);
     }
 
-    private static (long, long, long) GetSnapshotPoint(PythonDictionary pydic)
+    private static (long, long, long) GetSnapshotPoint(Dictionary<string, object> pydic)
     {
         if (pydic.TryGetValue("m_snapshotPoint", out object? point))
         {
-            if (point is PythonDictionary pointDic)
+            if (point is Dictionary<string, object> pointDic)
             {
                 return (GetBigInt(pointDic, "x"), GetBigInt(pointDic, "y"), GetBigInt(pointDic, "z"));
             }

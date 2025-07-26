@@ -1,18 +1,17 @@
-﻿using IronPython.Runtime;
-using System.Numerics;
+﻿using System.Numerics;
 using System.Text;
 
 namespace s2protocol.NET.Parser;
 internal static partial class Parse
 {
-    internal static string GetString(PythonDictionary pydic, string property)
+    internal static string GetString(Dictionary<string, object> pydic, string property)
     {
         if (pydic.TryGetValue(property, out object? value))
         {
-            if (value != null && value.GetType() == typeof(Bytes))
+            if (value != null && value.GetType() == typeof(byte[]))
             {
-                if (value is Bytes b)
-                    return Encoding.UTF8.GetString(b.ToArray());
+                if (value is byte[] b)
+                    return Encoding.UTF8.GetString(b);
                 else
                     return "";
             }
@@ -24,14 +23,14 @@ internal static partial class Parse
         else return "";
     }
 
-    internal static string? GetNullableString(PythonDictionary pydic, string property)
+    internal static string? GetNullableString(Dictionary<string, object> pydic, string property)
     {
         if (pydic.TryGetValue(property, out object? value))
         {
-            if (value != null && value.GetType() == typeof(Bytes))
+            if (value != null && value.GetType() == typeof(byte[]))
             {
-                if (value is Bytes b)
-                    return Encoding.UTF8.GetString(b.ToArray());
+                if (value is byte[] b)
+                    return Encoding.UTF8.GetString(b);
                 else
                     return null;
             }
@@ -43,7 +42,7 @@ internal static partial class Parse
         else return null;
     }
 
-    internal static int GetInt(PythonDictionary pydic, string property)
+    internal static int GetInt(Dictionary<string, object> pydic, string property)
     {
         if (pydic.TryGetValue(property, out object? value))
         {
@@ -59,6 +58,10 @@ internal static partial class Parse
                     return 0;
                 }
             }
+            else if (value != null && value.GetType() == typeof(Int64))
+            {
+                return (int)(long)value;
+            }
             else
             {
                 return 0;
@@ -70,7 +73,7 @@ internal static partial class Parse
         }
     }
 
-    internal static int? GetNullableInt(PythonDictionary pydic, string property)
+    internal static int? GetNullableInt(Dictionary<string, object> pydic, string property)
     {
         if (pydic.TryGetValue(property, out object? value))
         {
@@ -85,6 +88,14 @@ internal static partial class Parse
                 {
                     return null;
                 }
+            }
+            else if (value != null && value.GetType() == typeof(Int64))
+            {
+                return (int)(long)value;
+            }
+            else if (value != null && value.GetType() == typeof(BigInteger))
+            {
+                return (int)(BigInteger)value;
             }
             else
             {
@@ -100,7 +111,7 @@ internal static partial class Parse
         }
     }
 
-    internal static long GetBigInt(PythonDictionary pydic, string property)
+    internal static long GetBigInt(Dictionary<string, object> pydic, string property)
     {
         if (pydic.TryGetValue(property, out object? value))
         {
@@ -111,6 +122,14 @@ internal static partial class Parse
                     return (long)(BigInteger)value;
                 }
                 else if (value.GetType() == typeof(Int32))
+                {
+                    return (int)value;
+                }
+                else if (value.GetType() == typeof(Int64))
+                {
+                    return (long)value;
+                }
+                else if (value.GetType() == typeof(int))
                 {
                     return (int)value;
                 }
@@ -130,7 +149,7 @@ internal static partial class Parse
         }
     }
 
-    internal static long? GetNullableBigInt(PythonDictionary pydic, string property)
+    internal static long? GetNullableBigInt(Dictionary<string, object> pydic, string property)
     {
         if (pydic.TryGetValue(property, out object? value))
         {
@@ -143,6 +162,14 @@ internal static partial class Parse
                 else if (value.GetType() == typeof(int))
                 {
                     return (int)value;
+                }
+                else if (value.GetType() == typeof(Int32))
+                {
+                    return (int)value;
+                }
+                else if (value.GetType() == typeof(Int64))
+                {
+                    return (long)value;
                 }
                 else
                 {
@@ -160,7 +187,7 @@ internal static partial class Parse
         }
     }
 
-    internal static bool GetBool(PythonDictionary pydic, string property)
+    internal static bool GetBool(Dictionary<string, object> pydic, string property)
     {
         if (pydic.TryGetValue(property, out object? value))
         {
@@ -187,7 +214,7 @@ internal static partial class Parse
         }
     }
 
-    internal static string GetAsciiString(PythonDictionary pydic, string property)
+    internal static string GetAsciiString(Dictionary<string, object> pydic, string property)
     {
         if (pydic.TryGetValue(property, out object? value))
         {
@@ -204,13 +231,25 @@ internal static partial class Parse
         else return "";
     }
 
-    internal static double GetDouble(PythonDictionary pydic, string property)
+    internal static double GetDouble(Dictionary<string, object> pydic, string property)
     {
         if (pydic.TryGetValue(property, out object? value))
         {
             if (value != null && value.GetType() == typeof(double))
             {
                 return (double)value;
+            }
+            else if (value != null && value.GetType() == typeof(float))
+            {
+                return (float)value;
+            }
+            else if (value != null && value.GetType() == typeof(int))
+            {
+                return (int)value;
+            }
+            else if (value != null && value.GetType() == typeof(long))
+            {
+                return (long)value;
             }
             else
             {
@@ -220,20 +259,31 @@ internal static partial class Parse
         else return 0;
     }
 
-    internal static List<int> GetIntList(PythonDictionary pydic, string property)
+    internal static List<int> GetIntList(Dictionary<string, object> pydic, string property)
     {
         List<int> intList = new();
         if (pydic.TryGetValue(property, out object? value))
         {
-            if (value != null && value.GetType() == typeof(List))
+            if (value != null && value.GetType() == typeof(List<object>))
             {
-                List list = (List)value;
+                List<object> list = (List<object>)value;
                 foreach (var item in list)
                 {
-                    int? i = item as int?;
-                    if (i != null)
+                    if (item is int i)
                     {
-                        intList.Add(i.Value);
+                        intList.Add(i);
+                    }
+                    else if (item is long l)
+                    {
+                        intList.Add((int)l);
+                    }
+                    else if (item is BigInteger bi)
+                    {
+                        intList.Add((int)bi);
+                    }
+                    else if (item is double d)
+                    {
+                        intList.Add((int)d);
                     }
                 }
             }
@@ -244,20 +294,31 @@ internal static partial class Parse
         return intList;
     }
 
-    internal static List<long> GetLongList(PythonDictionary pydic, string property)
+    internal static List<long> GetLongList(Dictionary<string, object> pydic, string property)
     {
         List<long> longList = new();
         if (pydic.TryGetValue(property, out object? value))
         {
-            if (value != null && value.GetType() == typeof(List))
+            if (value != null && value.GetType() == typeof(List<object>))
             {
-                List list = (List)value;
+                List<object> list = (List<object>)value;
                 foreach (var item in list)
                 {
-                    long? i = item as long?;
-                    if (i != null)
+                    if (item is int i)
                     {
-                        longList.Add(i.Value);
+                        longList.Add(i);
+                    }
+                    else if (item is long l)
+                    {
+                        longList.Add(l);
+                    }
+                    else if (item is BigInteger bi)
+                    {
+                        longList.Add((long)bi);
+                    }
+                    else if (item is double d)
+                    {
+                        longList.Add((long)d);
                     }
                 }
             }
@@ -268,15 +329,15 @@ internal static partial class Parse
         return longList;
     }
 
-    internal static KeyValuePair<int, BigInteger> GetIntBigTuple(PythonDictionary pydic, string property)
+    internal static KeyValuePair<int, BigInteger> GetIntBigTuple(Dictionary<string, object> pydic, string property)
     {
         int intEnt = 0;
         BigInteger bigEnt = 0;
         if (pydic.TryGetValue(property, out object? value))
         {
-            if (value != null && value.GetType() == typeof(PythonTuple))
+            if (value != null && value.GetType() == typeof(object[]))
             {
-                if (value is PythonTuple tuple)
+                if (value is object[] tuple)
                 {
                     int? tKey = tuple[0] as int?;
                     if (tKey != null)
@@ -308,14 +369,14 @@ internal static partial class Parse
         return new KeyValuePair<int, BigInteger>(intEnt, bigEnt);
     }
 
-    internal static List<string> GetStringList(PythonDictionary pydic, string property)
+    internal static List<string> GetStringList(Dictionary<string, object> pydic, string property)
     {
         List<string> stringList = new();
         if (pydic.TryGetValue(property, out object? value))
         {
-            if (value != null && value.GetType() == typeof(List))
+            if (value != null && value.GetType() == typeof(List<object>))
             {
-                List list = (List)value;
+                List<object> list = (List<object>)value;
                 foreach (var item in list)
                 {
                     if (item is string i)

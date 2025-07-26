@@ -10,7 +10,7 @@ public record Sc2Replay
 {
     /// <summary>Record <c>Sc2Replay</c> constructor</summary>
     ///
-    public Sc2Replay(dynamic header, string fileName)
+    public Sc2Replay(object header, string fileName)
     {
         FileName = fileName;
         Header = Parser.Parse.Header(header);

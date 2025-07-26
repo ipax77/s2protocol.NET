@@ -1,16 +1,20 @@
-﻿using IronPython.Runtime;
-using s2protocol.NET.Models;
+﻿using s2protocol.NET.Models;
 
 namespace s2protocol.NET.Parser;
 internal static partial class Parse
 {
-    public static void SetMessages(dynamic generator, Sc2Replay replay)
+    public static void SetMessages(List<object> genDict, Sc2Replay replay)
     {
         List<ChatMessageEvent> messages = [];
         List<PingMessageEvent> pings = [];
 
-        foreach (PythonDictionary pydic in generator)
+        foreach (var ent in genDict)
         {
+            if (ent is not Dictionary<string, object> pydic)
+            {
+                continue;
+            }
+
             var _event = GetString(pydic, "_event");
             if (_event == "NNet.Game.SChatMessage")
             {
@@ -33,11 +37,11 @@ internal static partial class Parse
         replay.PingMessages = pings;
     }
 
-    private static int GetChatMessageId(PythonDictionary pydic)
+    private static int GetChatMessageId(Dictionary<string, object> pydic)
     {
         if (pydic.ContainsKey("_userid"))
         {
-            if (pydic["_userid"] is PythonDictionary usrdic)
+            if (pydic["_userid"] is Dictionary<string, object> usrdic)
             {
                 return GetInt(usrdic, "m_userId");
             }
@@ -45,11 +49,11 @@ internal static partial class Parse
         return 0;
     }
 
-    private static (long, long) GetXYCoords(PythonDictionary pydic)
+    private static (long, long) GetXYCoords(Dictionary<string, object> pydic)
     {
         if (pydic.ContainsKey("m_point"))
         {
-            if (pydic["m_point"] is PythonDictionary coorddic)
+            if (pydic["m_point"] is Dictionary<string, object> coorddic)
             {
                 var x = GetBigInt(coorddic, "x");
                 var y = GetBigInt(coorddic, "y");
