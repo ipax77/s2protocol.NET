@@ -2,14 +2,15 @@
 
 namespace s2protocol.NET.Parser; internal static partial class Parse
 {
-    public static GameEvents GameEvents(List<object> pydic)
+    public static GameEvents GameEvents(List<Dictionary<string, object?>> pydic)
     {
         List<GameEvent> gameevents = new();
 
         foreach (var ent in pydic)
         {
-            if (ent is Dictionary<string, object> gameDic)
+            if (ent is Dictionary<string, object> gameDicRaw)
             {
+                var gameDic = gameDicRaw as Dictionary<string, object>;
                 GameEvent gameEvent = GetGameEvent(gameDic);
 
                 GameEvent detailEvent = gameEvent.EventType switch

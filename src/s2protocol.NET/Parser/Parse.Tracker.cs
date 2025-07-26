@@ -3,7 +3,7 @@
 namespace s2protocol.NET.Parser;
 internal static partial class Parse
 {
-    internal static TrackerEvents Tracker(List<object> trackerEvents)
+    internal static TrackerEvents Tracker(List<Dictionary<string, object?>> trackerEvents)
     {
         List<TrackerEvent> parsedEvents = new();
 
@@ -11,21 +11,22 @@ internal static partial class Parse
         {
             if (ent is Dictionary<string, object> eventDic)
             {
-                TrackerEvent trackerEvent = GetTrackerEvent(eventDic);
+                var cleanEventDic = eventDic as Dictionary<string, object>;
+                TrackerEvent trackerEvent = GetTrackerEvent(cleanEventDic);
 
                 TrackerEvent detailEvent = trackerEvent.EventType switch
                 {
-                    TrackerEventType.SPlayerSetupEvent => GetSPlayerSetupEvent(eventDic, trackerEvent),
-                    TrackerEventType.SPlayerStatsEvent => GetSPlayerStatsEvent(eventDic, trackerEvent),
-                    TrackerEventType.SUnitBornEvent => GetSUnitBornEvent(eventDic, trackerEvent),
-                    TrackerEventType.SUnitDiedEvent => GetSUnitDiedEvent(eventDic, trackerEvent),
-                    TrackerEventType.SUnitOwnerChangeEvent => GetSUnitOwnerChangeEvent(eventDic, trackerEvent),
-                    TrackerEventType.SUnitPositionsEvent => GetSUnitPositionsEvent(eventDic, trackerEvent),
-                    TrackerEventType.SUnitTypeChangeEvent => GetSUnitTypeChangeEvent(eventDic, trackerEvent),
-                    TrackerEventType.SUpgradeEvent => GetSUpgradeEvent(eventDic, trackerEvent),
-                    TrackerEventType.SUnitInitEvent => GetSUnitInitEvent(eventDic, trackerEvent),
-                    TrackerEventType.SUnitDoneEvent => GetSUnitDoneEvent(eventDic, trackerEvent),
-                    _ => GetUnknownEvent(eventDic, trackerEvent)
+                    TrackerEventType.SPlayerSetupEvent => GetSPlayerSetupEvent(cleanEventDic, trackerEvent),
+                    TrackerEventType.SPlayerStatsEvent => GetSPlayerStatsEvent(cleanEventDic, trackerEvent),
+                    TrackerEventType.SUnitBornEvent => GetSUnitBornEvent(cleanEventDic, trackerEvent),
+                    TrackerEventType.SUnitDiedEvent => GetSUnitDiedEvent(cleanEventDic, trackerEvent),
+                    TrackerEventType.SUnitOwnerChangeEvent => GetSUnitOwnerChangeEvent(cleanEventDic, trackerEvent),
+                    TrackerEventType.SUnitPositionsEvent => GetSUnitPositionsEvent(cleanEventDic, trackerEvent),
+                    TrackerEventType.SUnitTypeChangeEvent => GetSUnitTypeChangeEvent(cleanEventDic, trackerEvent),
+                    TrackerEventType.SUpgradeEvent => GetSUpgradeEvent(cleanEventDic, trackerEvent),
+                    TrackerEventType.SUnitInitEvent => GetSUnitInitEvent(cleanEventDic, trackerEvent),
+                    TrackerEventType.SUnitDoneEvent => GetSUnitDoneEvent(cleanEventDic, trackerEvent),
+                    _ => GetUnknownEvent(cleanEventDic, trackerEvent)
                 };
                 parsedEvents.Add(detailEvent);
             }
