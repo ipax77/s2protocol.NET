@@ -67,9 +67,9 @@ function Get-Stats {
     $avg = ($times | Measure-Object -Average).Average
     Write-Host "`n📈 $label stats:"
     Write-Host "  Count: $($times.Count)"
-    Write-Host "  Avg:   {0:N2} ms" -f $avg
-    Write-Host "  Min:   {0:N2} ms" -f $min
-    Write-Host "  Max:   {0:N2} ms" -f $max
+    Write-Host ("  Avg:   {0:N2} ms" -f $avg)
+    Write-Host ("  Min:   {0:N2} ms" -f $min)
+    Write-Host ("  Max:   {0:N2} ms" -f $max)
 }
 
 Write-Host "`n🎉 Benchmark complete!"
