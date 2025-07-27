@@ -12,6 +12,7 @@
     <Authors>Philipp Hetzner</Authors>
     <Description>CLI tool for decoding SC2 replays using s2protocol.NET (emulating Blizzards s2protocol s2_cli.exe)</Description>
     <RepositoryUrl>https://github.com/ipax77/s2protocol.NET</RepositoryUrl>
+    <PackageReadmeFile>README.md</PackageReadmeFile>
     <PackageLicenseExpression>MIT</PackageLicenseExpression>
     <EnforceCodeStyleInBuild>true</EnforceCodeStyleInBuild>
     <EnableNETAnalyzers>true</EnableNETAnalyzers>
@@ -32,6 +33,13 @@
   <ItemGroup>
     <PackageReference Include="s2protocol.NET" Version="0.9.0" />
     <PackageReference Include="System.CommandLine" Version="2.0.0-*" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <None Include="..\..\README.md">
+      <Pack>True</Pack>
+      <PackagePath>.</PackagePath>
+    </None>
   </ItemGroup>
 
   <ItemGroup>
