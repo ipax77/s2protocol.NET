@@ -73,6 +73,45 @@ STriggerSoundLengthSyncEvent => no data
 SControlGroupUpdateEvent => no mask
 No BigInteger support
 
+# s2cli
+
+A .NET global tool that emulates Blizzard's `s2_cli.exe`, powered by [s2protocol.NET](https://www.nuget.org/packages/s2protocol.NET).  
+It decodes `.SC2Replay` files and prints structured JSON output.
+
+> ⚙️ Built with .NET 8 and System.CommandLine.  
+> 🔍 Output is always JSON or NDJSON.  
+---
+
+## Installation
+
+```bash
+dotnet tool install -g s2cli
+```
+
+## Usage
+```bash
+s2cli --replay path/to/game.SC2Replay [options]
+```
+| Option           | Description                              |
+| ---------------- | ---------------------------------------- |
+| `-r`, `--replay` | **(Required)** Path to `.SC2Replay` file |
+
+| Option                     | Description                               |
+| -------------------------- | ----------------------------------------- |
+| `--header`                 | Print protocol header                     |
+| `-md`, `--metadata`        | Print game metadata                       |
+| `-d`, `--details`          | Print protocol details                    |
+| `-db`, `--details_backup`  | Print anonymized details                  |
+| `-id`, `--initdata`        | Print protocol initdata                   |
+| `-ge`, `--gameevents`      | Print game events                         |
+| `-me`, `--messageevents`   | Print message events                      |
+| `-te`, `--trackerevents`   | Print tracker events                      |
+| `-at`, `--attributeevents` | Print attribute events                    |
+| `-a`, `--all`              | Print all available data                  |
+| `-nd`, `--ndjson`          | Output as NDJSON (newline-delimited JSON) |
+| `--versions`               | Show supported protocol versions          |
+
+
 # ChangeLog
 
 <details open="open"><summary>v0.9.0</summary>
