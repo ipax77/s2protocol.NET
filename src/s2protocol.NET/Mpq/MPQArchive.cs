@@ -39,6 +39,23 @@ public sealed partial class MPQArchive : IDisposable
         _files = ReadFile("(listfile)");
     }
 
+
+    /// <summary>
+    /// Initializes a new instance of the <see cref="MPQArchive"/> class, providing access to the contents of the
+    /// specified MPQ archive.
+    /// </summary>
+    /// <param name="fileStream">Archive File Stream</param>
+    public MPQArchive(FileStream fileStream)
+    {
+        _archivePath = string.Empty;
+        _fileStream = fileStream;
+        _reader = new BinaryReader(_fileStream);
+        (_header, _userDataHeader, _headerOffset) = ReadHeader();
+        _hashTable = ReadTable<MPQHashTableEntry>("hash").ToArray();
+        _blockTable = ReadTable<MPQBlockTableEntry>("block").ToArray();
+        _files = ReadFile("(listfile)");
+    }
+
     /// <summary>
     /// Releases all resources used by the current instance of the class.
     /// </summary>
