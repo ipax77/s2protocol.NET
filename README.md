@@ -2,7 +2,7 @@
 
 # Introduction
 
-dotnet wrapper for [Blizzards s2protocol](https://github.com/Blizzard/s2protocol) for decoding/parsing StarCraft II replays (*.SC2Replay)
+dotnet/C# implementation of [Blizzards s2protocol](https://github.com/Blizzard/s2protocol) for decoding/parsing StarCraft II replays (*.SC2Replay)
 
 # Getting started
 
@@ -111,6 +111,17 @@ s2cli --replay path/to/game.SC2Replay [options]
 | `-nd`, `--ndjson`          | Output as NDJSON (newline-delimited JSON) |
 | `--versions`               | Show supported protocol versions          |
 
+## Benchmark
+Performance comparison between s2cli (.NET 8, C#) and the original s2_cli.exe (Python):
+
+| Metric       | C# / .NET | Python        | Winner               |
+| ------------ | --------- | ------------- | -------------------- |
+| Avg Time     | 1,598 ms  | 10,766 ms     | ✅ C# (\~6.7× faster) |
+| Min Time     | 333 ms    | 970 ms        | ✅ C#                 |
+| Max Time     | 3,911 ms  | 31,603 ms (!) | ✅ C#                 |
+| Success Rate | ✅ 23/23   | ✅ 23/23       | 🎉 Tie               |
+
+⏱ Benchmarked on 23 real StarCraft II replays across multiple match types with option '--all'.
 
 # ChangeLog
 
