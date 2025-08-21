@@ -172,12 +172,12 @@ public sealed class ReplayDecoder : IDisposable
     }
 
     /// <summary>Decode Starcraft2 replay</summary>
-    /// <param name="fileStream">The file stream of the Starcraft2 replay</param>
+    /// <param name="stream">The stream of the Starcraft2 replay</param>
     /// <param name="options">Optional decoding options</param>
     /// <param name="token">Optional CancellationToken</param>
-    public async Task<Sc2Replay?> DecodeAsync(FileStream fileStream, ReplayDecoderOptions? options = null, CancellationToken token = default)
+    public async Task<Sc2Replay?> DecodeAsync(Stream stream, ReplayDecoderOptions? options = null, CancellationToken token = default)
     {
-        MPQArchive archive = new MPQArchive(fileStream);
+        MPQArchive archive = new(stream);
         var replay = await DecodeAsync(archive, string.Empty, options, token)
             .ConfigureAwait(false);
         archive.Dispose();

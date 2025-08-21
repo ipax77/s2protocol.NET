@@ -33,7 +33,7 @@ public sealed partial class MPQArchive
             return null;
 
         int offset = (int)(blockEntry.FileOffset + _headerOffset);
-        _fileStream.Seek(offset, SeekOrigin.Begin);
+         _reader.BaseStream.Seek(offset, SeekOrigin.Begin);
         byte[] rawData = _reader.ReadBytes((int)blockEntry.CompressedSize);
 
         // Encrypted?
