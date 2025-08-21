@@ -172,17 +172,40 @@ public sealed class ReplayDecoder : IDisposable
     }
 
     /// <summary>Decode Starcraft2 replay</summary>
+    /// <param name="fileStream">The file stream of the Starcraft2 replay</param>
+    /// <param name="options">Optional decoding options</param>
+    /// <param name="token">Optional CancellationToken</param>
+    public async Task<Sc2Replay?> DecodeAsync(FileStream fileStream, ReplayDecoderOptions? options = null, CancellationToken token = default)
+    {
+        MPQArchive archive = new MPQArchive(fileStream);
+        var replay = await DecodeAsync(archive, string.Empty, options, token)
+            .ConfigureAwait(false);
+        archive.Dispose();
+        return replay;
+    }
+
+    /// <summary>Decode Starcraft2 replay</summary>
     /// <param name="replayPath">The path to the Starcraft2 replay</param>
     /// <param name="options">Optional decoding options</param>
     /// <param name="token">Optional CancellationToken</param>
-#pragma warning disable CA1822 // Mark members as static
     public async Task<Sc2Replay?> DecodeAsync(string replayPath, ReplayDecoderOptions? options = null, CancellationToken token = default)
-#pragma warning restore CA1822 // Mark members as static
     {
         if (!File.Exists(replayPath))
         {
             throw new ArgumentNullException(nameof(replayPath), "Replay not found.");
         }
+        MPQArchive archive = new MPQArchive(replayPath);
+        var replay = await DecodeAsync(archive, replayPath, options, token)
+            .ConfigureAwait(false);
+        archive.Dispose();
+        return replay;
+    }
+
+#pragma warning disable CA1822 // Mark members as static
+    private async Task<Sc2Replay?> DecodeAsync(MPQArchive MPQArchive, string replayPath, ReplayDecoderOptions? options = null, CancellationToken token = default)
+#pragma warning restore CA1822 // Mark members as static
+    {
+
 
         if (options == null)
         {
@@ -191,8 +214,6 @@ public sealed class ReplayDecoder : IDisposable
 
         try
         {
-            using var MPQArchive = new MPQArchive(replayPath);
-
             var headerContent = MPQArchive.GetUserDataHeaderContent();
             ArgumentNullException.ThrowIfNull(headerContent);
 

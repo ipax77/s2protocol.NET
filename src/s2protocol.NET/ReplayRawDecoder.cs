@@ -88,13 +88,13 @@ public static class ReplayRawDecoder
         Array.Copy(handleData, hashOffset, hash, 0, 32);
 
 #pragma warning disable CA1308 // Normalize strings to uppercase
-        string hexHash = BitConverter.ToString(hash).Replace("-", "", StringComparison.Ordinal).ToLowerInvariant();
+        string hexHash = Convert.ToHexStringLower(hash);
 #pragma warning restore CA1308 // Normalize strings to uppercase
         return string.Format(CultureInfo.InvariantCulture, prefix, region, hexHash);
     }
 }
 
-internal class Utf8ByteArrayConverter : JsonConverter<byte[]>
+internal sealed class Utf8ByteArrayConverter : JsonConverter<byte[]>
 {
     public override byte[] Read(ref Utf8JsonReader reader, Type typeToConvert, JsonSerializerOptions options)
     {
@@ -113,7 +113,7 @@ internal class Utf8ByteArrayConverter : JsonConverter<byte[]>
     }
 }
 
-internal class CacheHandleListConverter : JsonConverter<List<byte[]>>
+internal sealed class CacheHandleListConverter : JsonConverter<List<byte[]>>
 {
     public override List<byte[]> Read(ref Utf8JsonReader reader, Type typeToConvert, JsonSerializerOptions options)
         => throw new NotImplementedException();
