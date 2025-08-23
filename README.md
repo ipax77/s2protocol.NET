@@ -125,6 +125,13 @@ Performance comparison between s2cli (.NET 8, C#) and the original s2_cli.exe (P
 
 # ChangeLog
 
+<details open="open"><summary>v0.9.1</summary>
+
+>- dotnet 10 rc7
+>- add stream
+
+</details>
+
 <details open="open"><summary>v0.9.0</summary>
 
 >- **Breaking Changes**

@@ -30,7 +30,10 @@ public sealed class ReplayDecoder : IDisposable
     /// /// <param name="threads">Number of parallelism</param>
     /// <param name="options">Optional decoding options</param>
     /// <param name="token">Optional CancellationToken</param>
-    public async IAsyncEnumerable<Sc2Replay> DecodeParallel(ICollection<string> replayPaths, int threads, ReplayDecoderOptions? options = null, [EnumeratorCancellation] CancellationToken token = default)
+    public async IAsyncEnumerable<Sc2Replay> DecodeParallel(ICollection<string> replayPaths,
+                                                            int threads,
+                                                            ReplayDecoderOptions? options = null,
+                                                            [EnumeratorCancellation] CancellationToken token = default)
     {
         Channel<Sc2Replay> replayChannel = Channel.CreateUnbounded<Sc2Replay>();
 
@@ -51,7 +54,10 @@ public sealed class ReplayDecoder : IDisposable
     /// /// <param name="threads">Number of parallelism</param>
     /// <param name="options">Optional decoding options</param>
     /// <param name="token">Optional CancellationToken</param>
-    public async IAsyncEnumerable<DecodeParallelResult> DecodeParallelWithErrorReport(ICollection<string> replayPaths, int threads, ReplayDecoderOptions? options = null, [EnumeratorCancellation] CancellationToken token = default)
+    public async IAsyncEnumerable<DecodeParallelResult> DecodeParallelWithErrorReport(ICollection<string> replayPaths,
+                                                                                      int threads,
+                                                                                      ReplayDecoderOptions? options = null,
+                                                                                      [EnumeratorCancellation] CancellationToken token = default)
     {
         Channel<DecodeParallelResult> replayResultChannel = Channel.CreateUnbounded<DecodeParallelResult>(
             new UnboundedChannelOptions()
@@ -72,7 +78,11 @@ public sealed class ReplayDecoder : IDisposable
         }
     }
 
-    private async Task Produce(Channel<Sc2Replay> channel, ICollection<string> replayPaths, int threads, ReplayDecoderOptions? options, CancellationToken token)
+    private async Task Produce(Channel<Sc2Replay> channel,
+                               ICollection<string> replayPaths,
+                               int threads,
+                               ReplayDecoderOptions? options,
+                               CancellationToken token)
     {
         ParallelOptions parallelOptions = new()
         {
@@ -116,7 +126,11 @@ public sealed class ReplayDecoder : IDisposable
         }
     }
 
-    private async Task ProduceResults(Channel<DecodeParallelResult> channel, ICollection<string> replayPaths, int threads, ReplayDecoderOptions? options, CancellationToken token)
+    private async Task ProduceResults(Channel<DecodeParallelResult> channel,
+                                      ICollection<string> replayPaths,
+                                      int threads,
+                                      ReplayDecoderOptions? options,
+                                      CancellationToken token)
     {
         ParallelOptions parallelOptions = new()
         {
@@ -175,9 +189,11 @@ public sealed class ReplayDecoder : IDisposable
     /// <param name="stream">The stream of the Starcraft2 replay</param>
     /// <param name="options">Optional decoding options</param>
     /// <param name="token">Optional CancellationToken</param>
-    public async Task<Sc2Replay?> DecodeAsync(Stream stream, ReplayDecoderOptions? options = null, CancellationToken token = default)
+    public async Task<Sc2Replay?> DecodeAsync(Stream stream,
+                                              ReplayDecoderOptions? options = null,
+                                              CancellationToken token = default)
     {
-        MPQArchive archive = new(stream);
+        MPQArchive archive = new(stream, false);
         var replay = await DecodeAsync(archive, string.Empty, options, token)
             .ConfigureAwait(false);
         archive.Dispose();
@@ -188,13 +204,15 @@ public sealed class ReplayDecoder : IDisposable
     /// <param name="replayPath">The path to the Starcraft2 replay</param>
     /// <param name="options">Optional decoding options</param>
     /// <param name="token">Optional CancellationToken</param>
-    public async Task<Sc2Replay?> DecodeAsync(string replayPath, ReplayDecoderOptions? options = null, CancellationToken token = default)
+    public async Task<Sc2Replay?> DecodeAsync(string replayPath,
+                                              ReplayDecoderOptions? options = null,
+                                              CancellationToken token = default)
     {
         if (!File.Exists(replayPath))
         {
             throw new ArgumentNullException(nameof(replayPath), "Replay not found.");
         }
-        MPQArchive archive = new MPQArchive(replayPath);
+        MPQArchive archive = new(replayPath, false);
         var replay = await DecodeAsync(archive, replayPath, options, token)
             .ConfigureAwait(false);
         archive.Dispose();
@@ -202,7 +220,10 @@ public sealed class ReplayDecoder : IDisposable
     }
 
 #pragma warning disable CA1822 // Mark members as static
-    private async Task<Sc2Replay?> DecodeAsync(MPQArchive MPQArchive, string replayPath, ReplayDecoderOptions? options = null, CancellationToken token = default)
+    private async Task<Sc2Replay?> DecodeAsync(MPQArchive MPQArchive,
+                                               string replayPath,
+                                               ReplayDecoderOptions? options = null,
+                                               CancellationToken token = default)
 #pragma warning restore CA1822 // Mark members as static
     {
 
@@ -331,116 +352,95 @@ public sealed class ReplayDecoder : IDisposable
 
     private static async Task<Dictionary<string, object>?> GetAttributeEventsAsync(MPQArchive archive, CancellationToken token)
     {
-        return await Task.Run(() =>
+        var game_enc = await archive.ReadFileAsync("replay.attributes.events", false, token).ConfigureAwait(false);
+        if (game_enc != null)
         {
-            var game_enc = archive.ReadFile("replay.attributes.events");
-            if (game_enc != null)
-            {
-                return S2ProtocolVersion.DecodeReplayAttributeEventsRaw(game_enc);
-            }
-            return null;
-        }, token).ConfigureAwait(false);
+            return S2ProtocolVersion.DecodeReplayAttributeEventsRaw(game_enc);
+        }
+        return null;
     }
 
     private static async Task<List<Dictionary<string, object?>>?> GetGameEventsAsync(MPQArchive archive, S2ProtocolVersion protocol, CancellationToken token)
     {
-        return await Task.Run(() =>
+        var game_enc = await archive.ReadFileAsync("replay.game.events", false, token).ConfigureAwait(false);
+        if (game_enc != null)
         {
-            var game_enc = archive.ReadFile("replay.game.events");
-            if (game_enc != null)
+            List<Dictionary<string, object?>> gameEvents = [];
+            foreach (var gameEvent in protocol.DecodeReplayGameEvents(game_enc))
             {
-                List<Dictionary<string, object?>> gameEvents = [];
-                foreach (var gameEvent in protocol.DecodeReplayGameEvents(game_enc))
-                {
-                    gameEvents.Add(gameEvent);
-                }
-                return gameEvents;
+                gameEvents.Add(gameEvent);
             }
-            return null;
-        }, token).ConfigureAwait(false);
+            return gameEvents;
+        }
+        return null;
     }
 
     private static async Task<object?> GetInitDataAsync(MPQArchive archive, S2ProtocolVersion protocol, CancellationToken token)
     {
-        return await Task.Run(() =>
+        var init_enc = await archive.ReadFileAsync("replay.initData", false, token).ConfigureAwait(false);
+        if (init_enc != null)
         {
-            var init_enc = archive.ReadFile("replay.initData");
-            if (init_enc != null)
-            {
-                return protocol.DecodeReplayInitDataRaw(init_enc);
-            }
-            return null;
-        }, token).ConfigureAwait(false);
+            return protocol.DecodeReplayInitDataRaw(init_enc);
+        }
+        return null;
     }
 
     private static async Task<List<Dictionary<string, object?>>?> GetTrackereventsAsync(MPQArchive archive, S2ProtocolVersion protocol, CancellationToken token)
     {
-        return await Task.Run(() =>
+        var tracker_dec = await archive.ReadFileAsync("replay.tracker.events", false, token).ConfigureAwait(false);
+        if (tracker_dec != null)
         {
-            var tracker_dec = archive.ReadFile("replay.tracker.events");
-            if (tracker_dec != null)
+            List<Dictionary<string, object?>> trackerEvents = [];
+            foreach (var trackerEvent in protocol.DecodeReplayTrackerEvents(tracker_dec))
             {
-                List<Dictionary<string, object?>> trackerEvents = [];
-                foreach (var trackerEvent in protocol.DecodeReplayTrackerEvents(tracker_dec))
-                {
-                    trackerEvents.Add(trackerEvent);
-                }
-                return trackerEvents;
+                trackerEvents.Add(trackerEvent);
             }
-            return null;
-        }, token).ConfigureAwait(false);
+            return trackerEvents;
+        }
+        return null;
     }
 
     private static async Task<List<object>?> GetMessagesAsync(MPQArchive archive, S2ProtocolVersion protocol, CancellationToken token)
     {
-        return await Task.Run(() =>
+        List<object> messageEvents = [];
+        var msg_enc = await archive.ReadFileAsync("replay.message.events", false, token).ConfigureAwait(false);
+        if (msg_enc != null)
         {
-            List<object> messageEvents = [];
-            var msg_enc = archive.ReadFile("replay.message.events");
-            if (msg_enc != null)
+            foreach (var messageEvent in protocol.DecodeReplayMessageEvents(msg_enc))
             {
-                foreach (var messageEvent in protocol.DecodeReplayMessageEvents(msg_enc))
-                {
-                    messageEvents.Add(messageEvent);
-                }
-                return messageEvents;
+                messageEvents.Add(messageEvent);
             }
-            return null;
-        }, token).ConfigureAwait(false);
+            return messageEvents;
+        }
+        return null;
     }
 
     private static async Task<ReplayMetadata?> GetMetadataAsync(MPQArchive archive, CancellationToken token)
     {
-        return await Task.Run(() =>
+        var meta_bytes = await archive.ReadFileAsync("replay.gamemetadata.json", false, token).ConfigureAwait(false);
+        if (meta_bytes != null)
         {
-            var meta_bytes = archive.ReadFile("replay.gamemetadata.json");
-            if (meta_bytes != null)
+            var meta_string = Encoding.UTF8.GetString(meta_bytes.ToArray());
+            if (meta_string != null)
             {
-                var meta_string = Encoding.UTF8.GetString(meta_bytes.ToArray());
-                if (meta_string != null)
-                {
-                    var data = JsonSerializer.Deserialize<ReplayMetadata>(meta_string);
-                    return data;
-                }
+                var data = JsonSerializer.Deserialize<ReplayMetadata>(meta_string);
+                return data;
             }
-            return null;
-        }, token).ConfigureAwait(false);
+        }
+        return null;
     }
 
     private static async Task<object?> GetDetailsAsync(MPQArchive archive, S2ProtocolVersion protocol, CancellationToken token)
     {
-        return await Task.Run(() =>
+        var details_enc = await archive.ReadFileAsync("replay.details", false, token).ConfigureAwait(false);
+        if (details_enc != null)
         {
-            var details_enc = archive.ReadFile("replay.details");
-            if (details_enc != null)
-            {
-                return protocol.DecodeReplayDetails(details_enc);
-            }
-            return null;
-        }, token).ConfigureAwait(false);
+            return protocol.DecodeReplayDetails(details_enc);
+        }
+        return null;
     }
 
-    /// <summary>Shutting down Python engine and call GC.Collect()</summary>
+    /// <summary>SGC.Collect()</summary>
     ///
     public void Dispose()
     {

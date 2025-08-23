@@ -16,10 +16,11 @@ public sealed partial class MPQArchive
     /// <param name="forceDecompress">A value indicating whether to force decompression of the file, even if it is stored in a compressed format
     /// smaller than its uncompressed size. If <see langword="true"/>, the file will always be decompressed if it is
     /// compressed.</param>
+    /// <param name="cancellationToken"></param>
     /// <returns>A byte array containing the file's contents, or <see langword="null"/> if the file does not exist or cannot be
     /// read.</returns>
     /// <exception cref="NotSupportedException">Thrown if the file is encrypted, as encrypted files are not supported.</exception>
-    public byte[]? ReadFile(string filename, bool forceDecompress = false)
+    public byte[]? ReadFile(string filename, bool forceDecompress = false, CancellationToken cancellationToken = default)
     {
         var hashEntry = GetHashTableEntry(filename);
         if (hashEntry == null)
@@ -33,7 +34,7 @@ public sealed partial class MPQArchive
             return null;
 
         int offset = (int)(blockEntry.FileOffset + _headerOffset);
-         _reader.BaseStream.Seek(offset, SeekOrigin.Begin);
+        _reader.BaseStream.Seek(offset, SeekOrigin.Begin);
         byte[] rawData = _reader.ReadBytes((int)blockEntry.CompressedSize);
 
         // Encrypted?
@@ -71,6 +72,8 @@ public sealed partial class MPQArchive
 
         for (int i = 0; i < sectorCount; i++)
         {
+            cancellationToken.ThrowIfCancellationRequested();
+
             int start = positions[i];
             int end = positions[i + 1];
             int length = end - start;
@@ -94,7 +97,8 @@ public sealed partial class MPQArchive
 
         return result;
     }
-    private static readonly string[] separatorArray = new[] { "\r\n", "\n" };
+
+    private static readonly string[] separatorArray = ["\r\n", "\n"];
 
     private MPQHashTableEntry? GetHashTableEntry(string filename)
     {
@@ -140,6 +144,140 @@ public sealed partial class MPQArchive
                 throw new NotSupportedException($"Unsupported compression type: {compressionType}");
         }
     }
+
+    /// <summary>
+    /// Reads the contents of a file from the archive.
+    /// </summary>
+    /// <param name="filename"></param>
+    /// <param name="forceDecompress"></param>
+    /// <param name="cancellationToken"></param>
+    /// <returns></returns>
+    /// <exception cref="EndOfStreamException"></exception>
+    /// <exception cref="NotSupportedException"></exception>
+    public async Task<byte[]?> ReadFileAsync(string filename,
+                                             bool forceDecompress = false,
+                                             CancellationToken cancellationToken = default)
+    {
+        var hashEntry = GetHashTableEntry(filename);
+        if (hashEntry == null)
+            return null;
+
+        var blockEntry = _blockTable[hashEntry.Value.BlockIndex];
+        if ((blockEntry.Flags & 0x80000000) == 0) // MPQ_FILE_EXISTS
+            return null;
+
+        if (blockEntry.CompressedSize == 0)
+            return null;
+
+        int offset = (int)(blockEntry.FileOffset + _headerOffset);
+        _reader.BaseStream.Seek(offset, SeekOrigin.Begin);
+
+        // Read raw compressed bytes
+        byte[] rawData = new byte[blockEntry.CompressedSize];
+        int read = await _reader.BaseStream.ReadAsync(rawData, cancellationToken).ConfigureAwait(false);
+        if (read != rawData.Length)
+            throw new EndOfStreamException("Could not read entire block.");
+
+        // Encrypted?
+        if ((blockEntry.Flags & 0x00010000) != 0) // MPQ_FILE_ENCRYPTED
+            throw new NotSupportedException("Encrypted files are not supported yet.");
+
+        // Single unit file (one chunk, maybe compressed)
+        if ((blockEntry.Flags & 0x01000000) != 0) // MPQ_FILE_SINGLE_UNIT
+        {
+            if ((blockEntry.Flags & 0x00000200) != 0 && // MPQ_FILE_COMPRESS
+                (forceDecompress || blockEntry.CompressedSize < blockEntry.FileSize))
+            {
+                return await DecompressAsync(rawData, cancellationToken).ConfigureAwait(false);
+            }
+
+            return rawData;
+        }
+
+        // Multi-sector file
+        int sectorSize = 512 << _header.SectorSizeShift;
+        int sectorCount = (int)Math.Ceiling(blockEntry.FileSize / (double)sectorSize);
+        bool hasSectorChecksum = (blockEntry.Flags & 0x00000100) != 0; // MPQ_FILE_SECTOR_CRC
+
+        int tableEntries = sectorCount + 1 + (hasSectorChecksum ? 1 : 0);
+        int[] positions = new int[tableEntries];
+
+        using var ms = new MemoryStream(rawData, writable: false);
+        using var br = new BinaryReader(ms);
+
+        for (int i = 0; i < tableEntries; i++)
+        {
+            cancellationToken.ThrowIfCancellationRequested();
+            positions[i] = br.ReadInt32();
+        }
+
+        byte[] result = new byte[blockEntry.FileSize];
+        int bytesCopied = 0;
+
+        for (int i = 0; i < sectorCount; i++)
+        {
+            cancellationToken.ThrowIfCancellationRequested();
+
+            int start = positions[i];
+            int end = positions[i + 1];
+            int length = end - start;
+
+            ms.Seek(start, SeekOrigin.Begin);
+            byte[] sector = new byte[length];
+            int sectorRead = await ms.ReadAsync(sector.AsMemory(0, length), cancellationToken).ConfigureAwait(false);
+            if (sectorRead != length)
+                throw new EndOfStreamException("Sector read mismatch.");
+
+            if ((blockEntry.Flags & 0x00000200) != 0 &&
+                (forceDecompress || sector.Length < sectorSize))
+            {
+                byte[] decompressed = await DecompressAsync(sector, cancellationToken).ConfigureAwait(false);
+                Array.Copy(decompressed, 0, result, bytesCopied, decompressed.Length);
+                bytesCopied += decompressed.Length;
+            }
+            else
+            {
+                Array.Copy(sector, 0, result, bytesCopied, sector.Length);
+                bytesCopied += sector.Length;
+            }
+        }
+
+        return result;
+    }
+
+    private static async Task<byte[]> DecompressAsync(byte[] data, CancellationToken cancellationToken)
+    {
+        byte compressionType = data[0];
+
+        switch (compressionType)
+        {
+            case 0: // No compression
+                return data;
+
+            case 2: // zlib/deflate
+                using (var input = new MemoryStream(data, 1, data.Length - 1))
+                using (var deflate = new DeflateStream(input, CompressionMode.Decompress))
+                using (var output = new MemoryStream())
+                {
+                    await deflate.CopyToAsync(output, 81920, cancellationToken).ConfigureAwait(false);
+                    return output.ToArray();
+                }
+
+            case 16: // BZip2 (requires SharpZipLib or similar)
+                using (var input = new MemoryStream(data, 1, data.Length - 1))
+                using (var bzip = new ICSharpCode.SharpZipLib.BZip2.BZip2InputStream(input))
+                using (var output = new MemoryStream())
+                {
+                    await bzip.CopyToAsync(output, 81920, cancellationToken).ConfigureAwait(false);
+                    return output.ToArray();
+                }
+
+            default:
+                throw new NotSupportedException($"Unsupported compression type: {compressionType}");
+        }
+    }
+
+
 
     /// <summary>
     /// Returns the contents of the files stored in the internal buffer.

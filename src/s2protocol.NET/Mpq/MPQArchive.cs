@@ -21,8 +21,8 @@ public sealed partial class MPQArchive : IDisposable
     /// <summary>
     /// Initializes a new instance of the <see cref="MPQArchive"/> class from a file path.
     /// </summary>
-    public MPQArchive(string archivePath)
-        : this(new FileStream(archivePath, FileMode.Open, FileAccess.Read, FileShare.Read), archivePath)
+    public MPQArchive(string archivePath, bool readFiles = true)
+        : this(new FileStream(archivePath, FileMode.Open, FileAccess.Read, FileShare.Read), archivePath, readFiles)
     {
     }
 
@@ -30,15 +30,16 @@ public sealed partial class MPQArchive : IDisposable
     /// Initializes a new instance of the <see cref="MPQArchive"/> class from a stream.
     /// </summary>
     /// <param name="stream">Archive stream. Must be readable and seekable.</param>
-    public MPQArchive(Stream stream)
-        : this(stream, string.Empty)
+    /// <param name="readFiles"></param>
+    public MPQArchive(Stream stream, bool readFiles = true)
+        : this(stream, string.Empty, readFiles)
     {
     }
 
     /// <summary>
     /// Core constructor that accepts a stream and optional archive path.
     /// </summary>
-    private MPQArchive(Stream stream, string archivePath)
+    private MPQArchive(Stream stream, string archivePath, bool readFiles)
     {
         _archivePath = archivePath;
         _reader = new BinaryReader(stream);
@@ -46,7 +47,10 @@ public sealed partial class MPQArchive : IDisposable
         (_header, _userDataHeader, _headerOffset) = ReadHeader();
         _hashTable = ReadTable<MPQHashTableEntry>("hash").ToArray();
         _blockTable = ReadTable<MPQBlockTableEntry>("block").ToArray();
-        _files = ReadFile("(listfile)");
+        if (readFiles)
+        {
+            _files = ReadFile("(listfile)");
+        }
     }
 
     /// <summary>
