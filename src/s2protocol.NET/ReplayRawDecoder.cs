@@ -94,7 +94,7 @@ public static class ReplayRawDecoder
     }
 }
 
-internal class Utf8ByteArrayConverter : JsonConverter<byte[]>
+internal sealed class Utf8ByteArrayConverter : JsonConverter<byte[]>
 {
     public override byte[] Read(ref Utf8JsonReader reader, Type typeToConvert, JsonSerializerOptions options)
     {
@@ -113,7 +113,7 @@ internal class Utf8ByteArrayConverter : JsonConverter<byte[]>
     }
 }
 
-internal class CacheHandleListConverter : JsonConverter<List<byte[]>>
+internal sealed class CacheHandleListConverter : JsonConverter<List<byte[]>>
 {
     public override List<byte[]> Read(ref Utf8JsonReader reader, Type typeToConvert, JsonSerializerOptions options)
         => throw new NotImplementedException();

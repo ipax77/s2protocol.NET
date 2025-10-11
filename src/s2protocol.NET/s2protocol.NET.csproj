@@ -4,16 +4,17 @@
     <TargetFramework>net8.0</TargetFramework>
     <ImplicitUsings>enable</ImplicitUsings>
     <Nullable>enable</Nullable>
-    <Description>C# dotnet 8 wrapper for Blizzards s2protocol for decoding SC2Replays</Description>
+    <Description>C# dotnet port of Blizzards s2protocol for decoding Starcraft II Replays</Description>
     <PackageProjectUrl>https://github.com/ipax77/s2protocol.NET</PackageProjectUrl>
     <PackageReadmeFile>README.md</PackageReadmeFile>
     <RepositoryUrl>https://github.com/ipax77/s2protocol.NET</RepositoryUrl>
-    <PackageTags>Starcraft2;Blizzard;s2protocol;IronPython;Replay;Replays;Decoder;Wrapper</PackageTags>
-    <AssemblyVersion>0.9.0.0</AssemblyVersion>
+    <PackageTags>Starcraft2;Blizzard;s2protocol;Replay;Replays;Decoder;C#;Dotnet;Library;Parser</PackageTags>
+    <AssemblyVersion>0.9.0.1</AssemblyVersion>
     <Owners>Philipp Hetzner</Owners>
     <Authors>Philipp Hetzner</Authors>
-    <Version>0.9.0</Version>
-	  <FileVersion>0.9.0.0</FileVersion>    
+    <Version>0.9.0.1</Version>
+	  <FileVersion>0.9.0.1</FileVersion>    
+    <PackageVersion>0.9.0.1</PackageVersion>
     <PackageLicenseExpression>MIT</PackageLicenseExpression>
     <EnforceCodeStyleInBuild>true</EnforceCodeStyleInBuild>
     <EnableNETAnalyzers>true</EnableNETAnalyzers>
