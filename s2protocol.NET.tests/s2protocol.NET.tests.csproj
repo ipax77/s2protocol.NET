@@ -64,7 +64,10 @@
     </None>    
     <None Update="replays\test8.SC2Replay">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </None>        
+    </None>     
+    <None Update="replays\test9.SC2Replay">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>       
     <None Update="replays\testError.SC2Replay">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>    
