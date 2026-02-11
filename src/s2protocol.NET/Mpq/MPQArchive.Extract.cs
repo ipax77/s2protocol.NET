@@ -28,9 +28,10 @@ public sealed partial class MPQArchive
         }
         return result;
     }
-    private static readonly string[] separatorArray1 = new[] { "\r\n", "\n" };
-    private static readonly string[] separatorArray0 = new[] { "\r\n", "\n" };
-    private static readonly string[] separator = new[] { "\r\n", "\n" };
+    
+    private static readonly string[] separatorArray1 = ["\r\n", "\n"];
+    private static readonly string[] separatorArray0 = ["\r\n", "\n"];
+    private static readonly string[] separator = ["\r\n", "\n"];
 
     /// <summary>
     /// Extracts the contents of the archive to a directory on disk.

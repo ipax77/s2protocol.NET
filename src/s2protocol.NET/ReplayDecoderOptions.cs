@@ -1,6 +1,6 @@
 ﻿namespace s2protocol.NET;
 
-/// <summary>Decodeing Options</summary>
+/// <summary>Decoding Options</summary>
 /// 
 public record ReplayDecoderOptions
 {
@@ -25,5 +25,4 @@ public record ReplayDecoderOptions
     /// <summary>Decode AttributeEvents</summary>
     /// 
     public bool AttributeEvents { get; set; } = true;
-
 }

@@ -9,7 +9,6 @@ namespace s2protocol.NET.Mpq;
 public sealed partial class MPQArchive : IDisposable
 {
     private readonly string _archivePath;
-    private readonly FileStream _fileStream;
     private readonly BinaryReader _reader;
 
     private MPQHeader _header;
@@ -20,40 +19,38 @@ public sealed partial class MPQArchive : IDisposable
     private byte[]? _files;
 
     /// <summary>
-    /// Initializes a new instance of the <see cref="MPQArchive"/> class, providing access to the contents of the
-    /// specified MPQ archive.
+    /// Initializes a new instance of the <see cref="MPQArchive"/> class from a file path.
     /// </summary>
-    /// <remarks>This constructor opens the specified MPQ archive for reading and initializes the necessary
-    /// structures to access its contents. The archive is expected to conform to the MPQ format. If the archive is
-    /// invalid or corrupted, subsequent operations may fail.  The caller is responsible for ensuring that the file at
-    /// <paramref name="archivePath"/> exists and is accessible.</remarks>
-    /// <param name="archivePath">The file path to the MPQ archive to be opened. Must be a valid, readable file path.</param>
-    public MPQArchive(string archivePath)
+    public MPQArchive(string archivePath, bool readFiles = true)
+        : this(new FileStream(archivePath, FileMode.Open, FileAccess.Read, FileShare.Read), archivePath, readFiles)
     {
-        _archivePath = archivePath;
-        _fileStream = new FileStream(_archivePath, FileMode.Open, FileAccess.Read);
-        _reader = new BinaryReader(_fileStream);
-        (_header, _userDataHeader, _headerOffset) = ReadHeader();
-        _hashTable = ReadTable<MPQHashTableEntry>("hash").ToArray();
-        _blockTable = ReadTable<MPQBlockTableEntry>("block").ToArray();
-        _files = ReadFile("(listfile)");
     }
 
+    /// <summary>
+    /// Initializes a new instance of the <see cref="MPQArchive"/> class from a stream.
+    /// </summary>
+    /// <param name="stream">Archive stream. Must be readable and seekable.</param>
+    /// <param name="readFiles"></param>
+    public MPQArchive(Stream stream, bool readFiles = true)
+        : this(stream, string.Empty, readFiles)
+    {
+    }
 
     /// <summary>
-    /// Initializes a new instance of the <see cref="MPQArchive"/> class, providing access to the contents of the
-    /// specified MPQ archive.
+    /// Core constructor that accepts a stream and optional archive path.
     /// </summary>
-    /// <param name="fileStream">Archive File Stream</param>
-    public MPQArchive(FileStream fileStream)
+    private MPQArchive(Stream stream, string archivePath, bool readFiles)
     {
-        _archivePath = string.Empty;
-        _fileStream = fileStream;
-        _reader = new BinaryReader(_fileStream);
+        _archivePath = archivePath;
+        _reader = new BinaryReader(stream);
+
         (_header, _userDataHeader, _headerOffset) = ReadHeader();
         _hashTable = ReadTable<MPQHashTableEntry>("hash").ToArray();
         _blockTable = ReadTable<MPQBlockTableEntry>("block").ToArray();
-        _files = ReadFile("(listfile)");
+        if (readFiles)
+        {
+            _files = ReadFile("(listfile)");
+        }
     }
 
     /// <summary>
@@ -64,6 +61,5 @@ public sealed partial class MPQArchive : IDisposable
     public void Dispose()
     {
         _reader?.Dispose();
-        _fileStream?.Dispose();
     }
 }

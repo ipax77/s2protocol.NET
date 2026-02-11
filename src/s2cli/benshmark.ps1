@@ -1,6 +1,6 @@
 param(
     [string]$ReplaysDir = "C:\data\ds\testreplays",
-    [string]$DotNetExe = "C:\Users\pax77\source\repos\s2protocol.NET\src\s2cli\bin\Release\net8.0\s2cli.exe",
+    [string]$DotNetExe = "C:\Users\pax77\source\repos\s2protocol.NET\src\s2cli\bin\Release\net10.0\s2cli.exe",
     [string]$PythonExe = "C:\Python27\Scripts\s2_cli.exe"
 )
 

@@ -29,7 +29,7 @@ public sealed partial class MPQArchive
         uint key = Hash($"({tableType} table)", "TABLE");
 
         long tableSize = tableEntries * 16;
-        _fileStream.Seek(tableOffset + _headerOffset, SeekOrigin.Begin);
+        _reader.BaseStream.Seek(tableOffset + _headerOffset, SeekOrigin.Begin);
         byte[] encryptedData = _reader.ReadBytes((int)tableSize);
         byte[] decryptedData = DecryptTable(encryptedData, key);
 
