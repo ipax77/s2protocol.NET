@@ -226,8 +226,6 @@ public sealed class ReplayDecoder : IDisposable
                                                CancellationToken token = default)
 #pragma warning restore CA1822 // Mark members as static
     {
-
-
         if (options == null)
         {
             options = new ReplayDecoderOptions();
@@ -310,7 +308,6 @@ public sealed class ReplayDecoder : IDisposable
 
             if (options.GameEvents)
             {
-                // await SetGameEventsAsync(MPQArchive, s2protocol, replay, token).ConfigureAwait(false);
                 var gameEventsRaw = await GetGameEventsAsync(MPQArchive, s2protocol, token).ConfigureAwait(false);
                 ArgumentNullException.ThrowIfNull((object?)gameEventsRaw, nameof(gameEventsRaw));
                 var gameEvents = Parse.GameEvents(gameEventsRaw);

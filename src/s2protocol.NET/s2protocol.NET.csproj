@@ -14,7 +14,7 @@
     <Authors>Philipp Hetzner</Authors>
     <Version>0.9.1</Version>
 	  <FileVersion>0.9.1.1</FileVersion>   
-    <PackageVersion>0.9.1-rc2</PackageVersion> 
+    <PackageVersion>0.9.1.1</PackageVersion> 
     <PackageLicenseExpression>MIT</PackageLicenseExpression>
     <EnforceCodeStyleInBuild>true</EnforceCodeStyleInBuild>
     <EnableNETAnalyzers>true</EnableNETAnalyzers>
