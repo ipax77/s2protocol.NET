@@ -13,11 +13,22 @@ dotnet add package s2protocol.NET
 ```
 
 ## Usage
-
+Decode from file path
 ```csharp
 ReplayDecoder decoder = new();
 Sc2Replay? replay = await decoder.DecodeAsync(pathToSC2Replay);
-Console.WriteLine(replay.Header.BaseBuild);
+Console.WriteLine(replay?.Header.BaseBuild);
+```
+
+Decode from stream
+```csharp
+ReplayDecoder decoder = new();
+
+await using FileStream stream = File.OpenRead(pathToSC2Replay);
+
+Sc2Replay? replay = await decoder.DecodeAsync(stream);
+
+Console.WriteLine(replay?.Header.BaseBuild);
 ```
 
 Optional options:
@@ -26,11 +37,12 @@ ReplayDecoder decoder = new();
 
 ReplayDecoderOptions options = new ReplayDecoderOptions()
 {
-    Details = false,
-    Metadata = false,
+    Initdata = true,
+    Details = true,
+    Metadata = true,
+    GameEvents = false,
     MessageEvents = false,
     TrackerEvents = true,
-    GameEvents = false,
     AttributeEvents = false
 };
 
@@ -38,32 +50,6 @@ CancellationTokenSource cts = new();
 
 Sc2Replay? replay = await decoder.DecodeAsync(pathToSC2Replay, options, cts.Token);
 Console.WriteLine(replay.TrackerEvents.SUnitBornEvents.FirstOrDefault());
-```
-
-Multiple replays:
-```csharp
-ReplayDecoder decoder = new();
-var folder = "path_to_replay_folder";
-List<string> replays = Directory.GetFiles(folder, "*.SC2Replay").ToList();
-ReplayDecoderOptions options = new ReplayDecoderOptions() { TrackerEvents = false };
-int threads = 8;
-CancellationTokenSource cts = new();
-
-int decoded = 0;
-int errors = 0;
-await foreach (DecodeParallelResult decodeResult in decoder.DecodeParallelWithErrorReport(replays, 2, options, cts.Token))
-{
-    if (decodeResult.Sc2Replay == null)
-    {
-        Console.WriteLine($"failed decoding replay {decodeResult.ReplayPath}: {decodeResult.Exception}");
-        errors++;
-    }
-    else
-    {
-        Console.WriteLine($"{decoded} {decodeResult.Sc2Replay.Details?.DateTimeUTC}");
-        decoded++;
-    }
-}
 ```
 
 # Known Limitations / ToDo
@@ -78,7 +64,7 @@ No BigInteger support
 A .NET global tool that emulates Blizzard's `s2_cli.exe`, powered by [s2protocol.NET](https://www.nuget.org/packages/s2protocol.NET).  
 It decodes `.SC2Replay` files and prints structured JSON output.
 
-> ⚙️ Built with .NET 8 and System.CommandLine.  
+> ⚙️ Built with .NET 10 and System.CommandLine.  
 > 🔍 Output is always JSON or NDJSON.  
 ---
 
@@ -125,10 +111,10 @@ Performance comparison between s2cli (.NET 8, C#) and the original s2_cli.exe (P
 
 # ChangeLog
 
-<details open="open"><summary>v0.9.1</summary>
+<details open="open"><summary>v0.9.1.1</summary>
 
->- dotnet 10 rc7
->- add stream
+>- update to dotnet 10
+>- add decoding from stream
 
 </details>
 
