@@ -9,7 +9,7 @@
     <ToolCommandName>s2cli</ToolCommandName>
     <PackageId>s2cli</PackageId>
     <Version>0.2.0</Version>
-    <PackageVersion>0.2.0-rc2</PackageVersion>
+    <PackageVersion>0.2.0</PackageVersion>
     <Authors>Philipp Hetzner</Authors>
     <Description>CLI tool for decoding SC2 replays using s2protocol.NET (emulating Blizzards s2protocol s2_cli.exe)</Description>
     <RepositoryUrl>https://github.com/ipax77/s2protocol.NET</RepositoryUrl>
