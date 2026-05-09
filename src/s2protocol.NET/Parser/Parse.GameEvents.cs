@@ -10,7 +10,7 @@ namespace s2protocol.NET.Parser; internal static partial class Parse
         int Gameloop,
         string EventTypeName);
 
-    public static GameEvents GameEvents(List<Dictionary<string, object?>> pydic)
+    public static GameEvents GameEvents(IEnumerable<Dictionary<string, object?>> pydic)
     {
         List<GameEvent> gameevents = new();
 

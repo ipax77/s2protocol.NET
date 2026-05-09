@@ -250,9 +250,7 @@ public sealed class ReplayDecoder : IDisposable
             var s2protocol = TypeInfoLoader.LoadTypeInfos((int)baseBuild);
             ArgumentNullException.ThrowIfNull(s2protocol, nameof(s2protocol));
 
-            var headerRaw = latestVersion.DecodeReplayHeader(headerContent);
-            ArgumentNullException.ThrowIfNull(headerRaw, nameof(headerRaw));
-            Sc2Replay replay = new(headerRaw, replayPath);
+            Sc2Replay replay = new(header, replayPath);
 
             if (options.Initdata)
             {
@@ -381,17 +379,12 @@ public sealed class ReplayDecoder : IDisposable
         return null;
     }
 
-    private static async Task<List<Dictionary<string, object?>>?> GetGameEventsAsync(MPQArchive archive, S2ProtocolVersion protocol, CancellationToken token)
+    private static async Task<IEnumerable<Dictionary<string, object?>>?> GetGameEventsAsync(MPQArchive archive, S2ProtocolVersion protocol, CancellationToken token)
     {
         var game_enc = await archive.ReadFileAsync("replay.game.events", false, token).ConfigureAwait(false);
         if (game_enc != null)
         {
-            List<Dictionary<string, object?>> gameEvents = [];
-            foreach (var gameEvent in protocol.DecodeReplayGameEvents(game_enc))
-            {
-                gameEvents.Add(gameEvent);
-            }
-            return gameEvents;
+            return protocol.DecodeReplayGameEvents(game_enc);
         }
         return null;
     }
@@ -406,17 +399,12 @@ public sealed class ReplayDecoder : IDisposable
         return null;
     }
 
-    private static async Task<List<Dictionary<string, object?>>?> GetTrackereventsAsync(MPQArchive archive, S2ProtocolVersion protocol, CancellationToken token)
+    private static async Task<IEnumerable<Dictionary<string, object?>>?> GetTrackereventsAsync(MPQArchive archive, S2ProtocolVersion protocol, CancellationToken token)
     {
         var tracker_dec = await archive.ReadFileAsync("replay.tracker.events", false, token).ConfigureAwait(false);
         if (tracker_dec != null)
         {
-            List<Dictionary<string, object?>> trackerEvents = [];
-            foreach (var trackerEvent in protocol.DecodeReplayTrackerEvents(tracker_dec))
-            {
-                trackerEvents.Add(trackerEvent);
-            }
-            return trackerEvents;
+            return protocol.DecodeReplayTrackerEvents(tracker_dec);
         }
         return null;
     }
@@ -441,7 +429,7 @@ public sealed class ReplayDecoder : IDisposable
         var meta_bytes = await archive.ReadFileAsync("replay.gamemetadata.json", false, token).ConfigureAwait(false);
         if (meta_bytes != null)
         {
-            var meta_string = Encoding.UTF8.GetString(meta_bytes.ToArray());
+            var meta_string = Encoding.UTF8.GetString(meta_bytes);
             if (meta_string != null)
             {
                 var data = JsonSerializer.Deserialize<ReplayMetadata>(meta_string);
@@ -461,11 +449,9 @@ public sealed class ReplayDecoder : IDisposable
         return null;
     }
 
-    /// <summary>SGC.Collect()</summary>
-    ///
+    /// <summary>Suppress finalization for compatibility with <see cref="IDisposable"/>.</summary>
     public void Dispose()
     {
         GC.SuppressFinalize(this);
-        GC.Collect();
     }
 }

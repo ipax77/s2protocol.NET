@@ -45,8 +45,8 @@ public sealed partial class MPQArchive : IDisposable
         _reader = new BinaryReader(stream);
 
         (_header, _userDataHeader, _headerOffset) = ReadHeader();
-        _hashTable = ReadTable<MPQHashTableEntry>("hash").ToArray();
-        _blockTable = ReadTable<MPQBlockTableEntry>("block").ToArray();
+        _hashTable = ReadTable<MPQHashTableEntry>("hash");
+        _blockTable = ReadTable<MPQBlockTableEntry>("block");
         if (readFiles)
         {
             _files = ReadFile("(listfile)");

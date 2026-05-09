@@ -10,7 +10,10 @@ public static class TypeInfoLoader
 {
     private static readonly Dictionary<int, string> _protocolResourceMap = new();
     private static readonly Dictionary<string, string[]> _resourceContents = new();
+    private static readonly Dictionary<int, S2ProtocolVersion> _typeInfoCache = new();
     private static readonly object _initLock = new();
+    private static readonly object _typeInfoCacheLock = new();
+    private static int _latestProtocolVersion;
     private static volatile bool _initialized;
 
     private static void Initialize()
@@ -44,24 +47,21 @@ public static class TypeInfoLoader
                 }
             }
 
+            foreach (var version in _protocolResourceMap.Keys)
+            {
+                if (version > _latestProtocolVersion)
+                {
+                    _latestProtocolVersion = version;
+                }
+            }
+
             _initialized = true;
         }
     }
 
     private static string[] GetPythonVersionLines(int version, out int usedVersion)
     {
-        Initialize();
-
-        var matchingVersion = _protocolResourceMap.Keys
-            .Where(v => v <= version)
-            .OrderByDescending(v => v)
-            .FirstOrDefault();
-
-        if (matchingVersion == 0)
-        {
-            throw new DecodeException("No python protocol found.");
-        }
-
+        var matchingVersion = ResolveProtocolVersion(version);
         usedVersion = matchingVersion;
 
         var resourceName = _protocolResourceMap[matchingVersion];
@@ -107,13 +107,12 @@ public static class TypeInfoLoader
     {
         Initialize();
 
-        if (_protocolResourceMap.Count == 0)
+        if (_latestProtocolVersion == 0)
         {
             throw new DecodeException("No protocol versions found.");
         }
 
-        var latestVersion = _protocolResourceMap.Keys.Max();
-        return LoadTypeInfos(latestVersion);
+        return LoadTypeInfos(_latestProtocolVersion);
     }
 
     /// <summary>
@@ -123,7 +122,16 @@ public static class TypeInfoLoader
     /// <returns></returns>
     public static S2ProtocolVersion LoadTypeInfos(int protocolVersion)
     {
-        var usedVersion = protocolVersion;
+        var usedVersion = ResolveProtocolVersion(protocolVersion);
+
+        lock (_typeInfoCacheLock)
+        {
+            if (_typeInfoCache.TryGetValue(usedVersion, out var cachedVersion))
+            {
+                return cachedVersion;
+            }
+        }
+
         var lines = GetPythonVersionLines(protocolVersion, out usedVersion);
         S2ProtocolVersion version = new()
         {
@@ -342,7 +350,44 @@ public static class TypeInfoLoader
             }
 
         }
+
+        foreach (var typeInfo in version.TypeInfos)
+        {
+            typeInfo.BuildDecoderMetadata();
+        }
+
+        lock (_typeInfoCacheLock)
+        {
+            if (_typeInfoCache.TryGetValue(usedVersion, out var cachedVersion))
+            {
+                return cachedVersion;
+            }
+
+            _typeInfoCache[usedVersion] = version;
+        }
+
         return version;
+    }
+
+    private static int ResolveProtocolVersion(int protocolVersion)
+    {
+        Initialize();
+
+        int matchingVersion = 0;
+        foreach (var version in _protocolResourceMap.Keys)
+        {
+            if (version <= protocolVersion && version > matchingVersion)
+            {
+                matchingVersion = version;
+            }
+        }
+
+        if (matchingVersion == 0)
+        {
+            throw new DecodeException("No python protocol found.");
+        }
+
+        return matchingVersion;
     }
 
     private static void ParseEventTypeBlock(IEnumerable<string> lines, Dictionary<int, S2EventType> targetDict)

@@ -24,11 +24,38 @@ internal sealed class BitPackedDecoder : S2ProtocolDecoder
             throw new DecodeException(nameof(BitPackedDecoder));
 
         var typeInfo = _typeInfos[typeid];
-        var method = GetType().GetMethod(typeInfo.TypeName, BindingFlags.NonPublic | BindingFlags.Instance)
-                     ?? throw new DecodeException($"Unknown method: {typeInfo.TypeName}");
+        if (typeInfo.DecodeKind == S2DecodeKind.Unknown)
+        {
+            throw new DecodeException($"Unknown method: {typeInfo.TypeName}");
+        }
 
-        var parameters = PrepareParameters(typeInfo);
-        return method.Invoke(this, new object[] { parameters });
+        try
+        {
+            return typeInfo.DecodeKind switch
+            {
+                S2DecodeKind.Array => _array(typeInfo.Parameters),
+                S2DecodeKind.BitArray => _bitarray(typeInfo.Parameters),
+                S2DecodeKind.Blob => _blob(typeInfo.Parameters),
+                S2DecodeKind.Bool => _bool(typeInfo.Parameters),
+                S2DecodeKind.Choice => _choice(typeInfo.Parameters),
+                S2DecodeKind.FourCc => _fourcc(typeInfo.Parameters),
+                S2DecodeKind.Int => _int(typeInfo.Parameters),
+                S2DecodeKind.Null => _null(typeInfo.Parameters),
+                S2DecodeKind.Optional => _optional(typeInfo.Parameters),
+                S2DecodeKind.Real32 => _real32(typeInfo.Parameters),
+                S2DecodeKind.Real64 => _real64(typeInfo.Parameters),
+                S2DecodeKind.Struct => _struct(typeInfo.Parameters),
+                _ => throw new DecodeException(nameof(BitPackedDecoder)),
+            };
+        }
+        catch (TargetInvocationException)
+        {
+            throw;
+        }
+        catch (Exception ex)
+        {
+            throw new TargetInvocationException(ex);
+        }
     }
 
     private long ReadInt(BoundsParameter bounds)
@@ -146,47 +173,4 @@ internal sealed class BitPackedDecoder : S2ProtocolDecoder
         }
         throw new ArgumentException("Invalid parameters for _struct");
     }
-
-    public override IDecodeParameter[] PrepareParameters(S2TypeInfo typeInfo)
-    {
-        var parameters = new List<IDecodeParameter>();
-
-        foreach (var element in typeInfo.Elements)
-        {
-            switch (element)
-            {
-                case S2TypeInfoTypeElement bounds:
-                    if (bounds.Bounds.Max == -1)
-                    {
-                        parameters.Add(new TypeIdParameter((int)bounds.Bounds.Min));
-                    }
-                    else
-                    {
-                        parameters.Add(new BoundsParameter(bounds.Bounds.Min, bounds.Bounds.Max));
-                    }
-                    break;
-
-                case S2TypeInfoMElement mElement:
-                    parameters.Add(new FieldListParameter(
-                        mElement.Elements.Select(e =>
-                            new DecodeField(e.TypeName, (int)e.Bounds.Min, e.Bounds.Max)
-                        ).ToList()
-                    ));
-                    break;
-
-                case DsTypeInfoChoiceElemet choiceElem:
-                    var dict = new Dictionary<long, DecodeChoice>();
-                    foreach (var kv in choiceElem.Elements)
-                        dict[kv.Key] = new DecodeChoice(kv.Value.TypeName, kv.Value.Number);
-                    parameters.Add(new ChoiceParameter(dict));
-                    break;
-
-                default:
-                    throw new NotSupportedException($"Unknown element type: {element.GetType().Name}");
-            }
-        }
-
-        return parameters.ToArray();
-    }
 }
-

@@ -4,7 +4,7 @@ namespace s2protocol.NET.Parser;
 
 internal static partial class Parse
 {
-    internal static TrackerEvents Tracker(List<Dictionary<string, object?>> trackerEvents)
+    internal static TrackerEvents Tracker(IEnumerable<Dictionary<string, object?>> trackerEvents)
     {
         var playerSetupEvents = new List<SPlayerSetupEvent>();
         var playerStatsEvents = new List<SPlayerStatsEvent>();

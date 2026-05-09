@@ -57,6 +57,4 @@ internal abstract class S2ProtocolDecoder
 
         return 0;
     }
-
-    public abstract IDecodeParameter[] PrepareParameters(S2TypeInfo typeInfo);
 }
