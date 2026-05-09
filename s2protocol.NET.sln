@@ -11,6 +11,8 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "s2protocol.NET.tests", "s2p
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "s2protocol.NET.sample", "src\s2protocol.NET.sample\s2protocol.NET.sample.csproj", "{CA712BC5-85CB-495D-BA23-1F4D4C3BD519}"
 EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "s2protocol.NET.Benchmarks", "src\s2protocol.NET.Benchmarks\s2protocol.NET.Benchmarks.csproj", "{38645489-098A-4099-A61C-F59F003569CE}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -29,12 +31,17 @@ Global
 		{CA712BC5-85CB-495D-BA23-1F4D4C3BD519}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{CA712BC5-85CB-495D-BA23-1F4D4C3BD519}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{CA712BC5-85CB-495D-BA23-1F4D4C3BD519}.Release|Any CPU.Build.0 = Release|Any CPU
+		{38645489-098A-4099-A61C-F59F003569CE}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{38645489-098A-4099-A61C-F59F003569CE}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{38645489-098A-4099-A61C-F59F003569CE}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{38645489-098A-4099-A61C-F59F003569CE}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
 	EndGlobalSection
 	GlobalSection(NestedProjects) = preSolution
 		{F5519D5E-1BC5-4097-B6A9-7611A6BABF79} = {B63F12FB-3E0B-4669-B949-77590A6EBD08}
+		{38645489-098A-4099-A61C-F59F003569CE} = {B63F12FB-3E0B-4669-B949-77590A6EBD08}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {45D33E80-0A34-427D-ADA3-94B4F0C46E93}
