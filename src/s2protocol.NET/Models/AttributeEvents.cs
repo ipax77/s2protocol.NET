@@ -1,83 +1,46 @@
-﻿using System.Text.Json.Serialization;
-
-namespace s2protocol.NET.Models;
+﻿namespace s2protocol.NET.Models;
 /// <summary>Record <c>AttributeEvents</c> Parsed replay AttributeEvents</summary>
 ///
-public sealed record AttributeEvents
+/// <remarks>Record <c>AttributeEvents</c> constructor</remarks>
+///
+public sealed class AttributeEvents(int source,
+                       int mapNameSpace,
+                       ICollection<AttributeEventScope> scopes)
 {
-    /// <summary>Record <c>AttributeEvents</c> constructor</summary>
-    ///
-    public AttributeEvents(int source,
-                           int mapNameSpace,
-                           ICollection<AttributeEventScope> scopes)
-    {
-        Source = source;
-        MapNameSpace = mapNameSpace;
-        Scopes = scopes;
-    }
-
-    [JsonConstructor]
-#pragma warning disable CS1591 // Missing XML comment for publicly visible type or member
-#pragma warning disable CS8618 // Non-nullable field must contain a non-null value when exiting constructor. Consider declaring as nullable.
-    public AttributeEvents()
-#pragma warning restore CS8618 // Non-nullable field must contain a non-null value when exiting constructor. Consider declaring as nullable.
-#pragma warning restore CS1591 // Missing XML comment for publicly visible type or member
-    {
-
-    }
 
     /// <summary>AttributeEvent DataBuildNum</summary>
     ///
-    public int Source { get; init; }
+    public int Source { get; init; } = source;
     /// <summary>AttributeEvent DataBuildNum</summary>
     ///
-    public int MapNameSpace { get; init; }
+    public int MapNameSpace { get; init; } = mapNameSpace;
     /// <summary>AttributeEvent Scopes</summary>
     ///
-    public ICollection<AttributeEventScope> Scopes { get; init; }
+    public ICollection<AttributeEventScope> Scopes { get; init; } = scopes;
 }
 /// <summary>Record <c>AttributeEventScope</c> Parsed replay AttributeEvents scopes</summary>
 ///
-public sealed record AttributeEventScope
+/// <remarks>Record <c>AttributeEventScope</c> constructor</remarks>
+///
+public sealed class AttributeEventScope(int scope,
+                           int sopeId,
+                           int @namespace,
+                           int attrid,
+                           string value)
 {
-    /// <summary>Record <c>AttributeEventScope</c> constructor</summary>
-    ///
-    public AttributeEventScope(int scope,
-                               int sopeId,
-                               int @namespace,
-                               int attrid,
-                               string value)
-    {
-        Scope = scope;
-        SopeId = sopeId;
-        Namespace = @namespace;
-        Attrid = attrid;
-        Value = value;
-    }
-
-    [JsonConstructor]
-#pragma warning disable CS1591 // Missing XML comment for publicly visible type or member
-#pragma warning disable CS8618 // Non-nullable field must contain a non-null value when exiting constructor. Consider declaring as nullable.
-    public AttributeEventScope()
-#pragma warning restore CS8618 // Non-nullable field must contain a non-null value when exiting constructor. Consider declaring as nullable.
-#pragma warning restore CS1591 // Missing XML comment for publicly visible type or member
-    {
-
-    }
-
     /// <summary>AttributeEvent Scopes Scope</summary>
     ///
-    public int Scope { get; init; }
+    public int Scope { get; init; } = scope;
     /// <summary>AttributeEvent Scopes SopeId</summary>
     ///
-    public int SopeId { get; init; }
+    public int SopeId { get; init; } = sopeId;
     /// <summary>AttributeEvent Scopes Namespace</summary>
     ///
-    public int Namespace { get; init; }
+    public int Namespace { get; init; } = @namespace;
     /// <summary>AttributeEvent Scopes Attrid</summary>
     ///
-    public int Attrid { get; init; }
+    public int Attrid { get; init; } = attrid;
     /// <summary>AttributeEvent Scopes Value</summary>
     ///
-    public string Value { get; init; }
+    public string Value { get; init; } = value;
 }

@@ -1,65 +1,42 @@
-﻿using System.Text.Json.Serialization;
-
-namespace s2protocol.NET.Models;
+﻿namespace s2protocol.NET.Models;
 
 /// <summary>Record <c>Metadata</c> Parsed replay metadata infos</summary>
 ///
-public sealed record ReplayMetadata
+/// <remarks>Record <c>Metadata</c> constructor</remarks>
+///
+public sealed class ReplayMetadata(
+    string baseBuild,
+    string dataBuild,
+    string dataVersion,
+    int duration,
+    Version gameVersion,
+    bool isNotAvailable,
+    string title,
+    ICollection<MetadataPlayer> players)
 {
-    [JsonConstructor]
-#pragma warning disable CS1591 // Missing XML comment for publicly visible type or member
-#pragma warning disable CS8618 // Non-nullable field must contain a non-null value when exiting constructor. Consider declaring as nullable.
-    public ReplayMetadata()
-#pragma warning restore CS8618 // Non-nullable field must contain a non-null value when exiting constructor. Consider declaring as nullable.
-#pragma warning restore CS1591 // Missing XML comment for publicly visible type or member
-    {
-
-    }
-
-    /// <summary>Record <c>Metadata</c> constructor</summary>
-    ///
-    public ReplayMetadata(
-        string baseBuild,
-        string dataBuild,
-        string dataVersion,
-        int duration,
-        Version gameVersion,
-        bool isNotAvailable,
-        string title,
-        ICollection<MetadataPlayer> players)
-    {
-        BaseBuild = baseBuild;
-        DataBuild = dataBuild;
-        DataVersion = dataVersion;
-        Duration = duration;
-        GameVersion = gameVersion;
-        IsNotAvailable = isNotAvailable;
-        Title = title;
-        Players = players;
-    }
 
     /// <summary>Replay BaseBuild</summary>
     ///
-    public string BaseBuild { get; init; }
+    public string BaseBuild { get; init; } = baseBuild;
     /// <summary>Replay DataBuild</summary>
     ///
-    public string DataBuild { get; init; }
+    public string DataBuild { get; init; } = dataBuild;
     /// <summary>Replay DataVersion</summary>
     ///
-    public string DataVersion { get; init; }
+    public string DataVersion { get; init; } = dataVersion;
     /// <summary>Replay Duration</summary>
     ///
-    public int Duration { get; init; }
+    public int Duration { get; init; } = duration;
     /// <summary>Replay GameVersion</summary>
     ///
-    public Version GameVersion { get; init; }
+    public Version GameVersion { get; init; } = gameVersion;
     /// <summary>Replay IsNotAvailable</summary>
     ///
-    public bool IsNotAvailable { get; init; }
+    public bool IsNotAvailable { get; init; } = isNotAvailable;
     /// <summary>Replay Title</summary>
     ///
-    public string Title { get; init; }
+    public string Title { get; init; } = title;
     /// <summary>Replay MetadataPlayers</summary>
     ///
-    public ICollection<MetadataPlayer> Players { get; init; }
+    public ICollection<MetadataPlayer> Players { get; init; } = players;
 }
