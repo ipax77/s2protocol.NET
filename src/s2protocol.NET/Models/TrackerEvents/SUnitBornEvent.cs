@@ -4,77 +4,55 @@ namespace s2protocol.NET.Models;
 /// <summary>Record <c>SUnitBornEvent</c> SUnitBornEvent</summary>
 /// <comment>NNet.Replay.Tracker.SUnitBornEvent events appear for units that are created fully constructed.</comment>
 ///
-public record SUnitBornEvent : TrackerEvent
+public sealed class SUnitBornEvent(int playerId,
+                                   int eventId,
+                                   int bits,
+                                   int gameloop,
+                                   int unitTagIndex,
+                                   int unitTagRecycle,
+                                   string? creatorAbilityName,
+                                   int? creatorUnitTagRecycle,
+                                   int controlPlayerId,
+                                   int x,
+                                   int y,
+                                   int upkeepPlayerId,
+                                   string unitTypeName,
+                                   int? creatorUnitTagIndex) : TrackerEvent(playerId, eventId, TrackerEventType.SUnitBornEvent, bits, gameloop)
 {
-    /// <summary>Record <c>SUnitBornEvent</c> constructor</summary>
-    ///
-    public SUnitBornEvent(TrackerEvent trackerEvent,
-                          int unitTagIndex,
-                          int unitTagRecycle,
-                          string? creatorAbilityName,
-                          int? creatorUnitTagRecycle,
-                          int controlPlayerId,
-                          int x,
-                          int y,
-                          int upkeepPlayerId,
-                          string unitTypeName,
-                          int? creatorUnitTagIndex) : base(trackerEvent)
-    {
-        UnitTagIndex = unitTagIndex;
-        UnitTagRecycle = unitTagRecycle;
-        CreatorAbilityName = creatorAbilityName;
-        CreatorUnitTagRecycle = creatorUnitTagRecycle;
-        ControlPlayerId = controlPlayerId;
-        X = x;
-        Y = y;
-        UpkeepPlayerId = upkeepPlayerId;
-        UnitTypeName = unitTypeName;
-        CreatorUnitTagIndex = creatorUnitTagIndex;
-    }
-
-    [JsonConstructor]
-#pragma warning disable CS1591 // Missing XML comment for publicly visible type or member
-#pragma warning disable CS8618 // Non-nullable field must contain a non-null value when exiting constructor. Consider declaring as nullable.
-    public SUnitBornEvent()
-#pragma warning restore CS8618 // Non-nullable field must contain a non-null value when exiting constructor. Consider declaring as nullable.
-#pragma warning restore CS1591 // Missing XML comment for publicly visible type or member
-    {
-
-    }
     /// <summary>Event UnitIndex </summary>
     /// <comment>Convert unit tag index, recycle pairs into unit tags (as seen in game events) with protocol.unit_tag(index, recycle)</comment>
     ///
     public int UnitIndex { get; internal set; }
     /// <summary>Event UnitTagIndex</summary>
     ///
-    public int UnitTagIndex { get; init; }
+    public int UnitTagIndex { get; } = unitTagIndex;
     /// <summary>Event UnitTagRecycle</summary>
     ///
-    public int UnitTagRecycle { get; init; }
+    public int UnitTagRecycle { get; } = unitTagRecycle;
     /// <summary>Event CreatorAbilityName</summary>
     ///
-    public string? CreatorAbilityName { get; init; }
+    public string? CreatorAbilityName { get; } = creatorAbilityName;
     /// <summary>Event CreatorUnitTagRecycle</summary>
     ///
-    public int? CreatorUnitTagRecycle { get; init; }
+    public int? CreatorUnitTagRecycle { get; } = creatorUnitTagRecycle;
     /// <summary>Event ControlPlayerId</summary>
     ///
-    public int ControlPlayerId { get; init; }
+    public int ControlPlayerId { get; } = controlPlayerId;
     /// <summary>Event Y</summary>
     ///
-    public int Y { get; init; }
+    public int Y { get; } = y;
     /// <summary>Event X</summary>
     ///
-    public int X { get; init; }
+    public int X { get; } = x;
     /// <summary>Event UpkeepPlayerId</summary>
     ///
-    public int UpkeepPlayerId { get; init; }
+    public int UpkeepPlayerId { get; } = upkeepPlayerId;
     /// <summary>Event UnitTypeName</summary>
     ///
-    public string UnitTypeName { get; init; }
+    public string UnitTypeName { get; } = unitTypeName;
     /// <summary>Event CreatorUnitTagIndex</summary>
     ///
-    public int? CreatorUnitTagIndex { get; init; }
+    public int? CreatorUnitTagIndex { get; } = creatorUnitTagIndex;
     /// <summary>Event SUnitDiedEvent</summary>
     ///
     [JsonIgnore]

@@ -297,11 +297,7 @@ public sealed class ReplayDecoder : IDisposable
 
                 if (replay.TrackerEvents != null)
                 {
-                    replay.TrackerEvents.SUnitBornEvents.ToList().ForEach(f => f.UnitIndex = GetUnitIndex(f.UnitTagIndex, f.UnitTagRecycle));
-                    replay.TrackerEvents.SUnitInitEvents.ToList().ForEach(f => f.UnitIndex = GetUnitIndex(f.UnitTagIndex, f.UnitTagRecycle));
-                    replay.TrackerEvents.SUnitDiedEvents.ToList().ForEach(f => f.UnitIndex = GetUnitIndex(f.UnitTagIndex, f.UnitTagRecycle));
-                    replay.TrackerEvents.SUnitDoneEvents.ToList().ForEach(f => f.UnitIndex = GetUnitIndex(f.UnitTagIndex, f.UnitTagRecycle));
-                    replay.TrackerEvents.SUnitOwnerChangeEvents.ToList().ForEach(f => f.UnitIndex = GetUnitIndex(f.UnitTagIndex, f.UnitTagRecycle));
+                    SetTrackerEventUnitIndexes(replay.TrackerEvents);
                     Parse.SetTrackerEventsUnitConnections(replay.TrackerEvents);
                 }
             }
@@ -330,6 +326,34 @@ public sealed class ReplayDecoder : IDisposable
         catch (Exception ex)
         {
             throw new DecodeException(ex.Message);
+        }
+    }
+
+    private static void SetTrackerEventUnitIndexes(TrackerEvents trackerEvents)
+    {
+        foreach (var e in trackerEvents.SUnitBornEvents)
+        {
+            e.UnitIndex = GetUnitIndex(e.UnitTagIndex, e.UnitTagRecycle);
+        }
+
+        foreach (var e in trackerEvents.SUnitInitEvents)
+        {
+            e.UnitIndex = GetUnitIndex(e.UnitTagIndex, e.UnitTagRecycle);
+        }
+
+        foreach (var e in trackerEvents.SUnitDiedEvents)
+        {
+            e.UnitIndex = GetUnitIndex(e.UnitTagIndex, e.UnitTagRecycle);
+        }
+
+        foreach (var e in trackerEvents.SUnitDoneEvents)
+        {
+            e.UnitIndex = GetUnitIndex(e.UnitTagIndex, e.UnitTagRecycle);
+        }
+
+        foreach (var e in trackerEvents.SUnitOwnerChangeEvents)
+        {
+            e.UnitIndex = GetUnitIndex(e.UnitTagIndex, e.UnitTagRecycle);
         }
     }
 
