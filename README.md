@@ -98,7 +98,7 @@ s2cli --replay path/to/game.SC2Replay [options]
 | `--versions`               | Show supported protocol versions          |
 
 ## Benchmark
-Performance comparison between s2cli (.NET 8, C#) and the original s2_cli.exe (Python):
+Performance comparison between s2cli (.NET 10, C#) and the original s2_cli.exe (Python):
 
 | Metric       | C# / .NET | Python        | Winner               |
 | ------------ | --------- | ------------- | -------------------- |
@@ -109,16 +109,36 @@ Performance comparison between s2cli (.NET 8, C#) and the original s2_cli.exe (P
 
 ⏱ Benchmarked on 23 real StarCraft II replays across multiple match types with option '--all'.
 
+Run the BenchmarkDotNet replay benchmarks:
+
+```bash
+dotnet run -c Release --project src/s2protocol.NET.Benchmarks
+```
+
+Set `S2PROTOCOL_BENCHMARK_REPLAY_DIR` to benchmark a custom replay corpus. Optional Direct Strike stress replay tests can be enabled with `S2PROTOCOL_RUN_STRESS_TESTS=1`; they use `S2PROTOCOL_BENCHMARK_REPLAY_DIR` when set.
+
 # ChangeLog
 
-<details open="open"><summary>v0.9.1.1</summary>
+<details open="open"><summary>v0.9.2</summary>
+
+>- improved protocol decoding performance by replacing reflection-based dispatch with prebuilt decoder metadata
+>- reduced MPQ decompression allocations by passing expected output lengths
+>- optimized tracker event parsing and unit connection mapping
+>- replay metadata deserialization now uses the generated JSON serializer context
+>- refactored public replay and event models from records to sealed classes
+>- `ReplayDecoder.Dispose()` no longer forces `GC.Collect()`
+>- added BenchmarkDotNet benchmarks and optional Direct Strike stress replay tests
+
+</details>
+
+<details><summary>v0.9.1.1</summary>
 
 >- update to dotnet 10
 >- add decoding from stream
 
 </details>
 
-<details open="open"><summary>v0.9.0</summary>
+<details><summary>v0.9.0</summary>
 
 >- **Breaking Changes**
 >- removed requirement for IronPython
