@@ -1,4 +1,5 @@
 using BenchmarkDotNet.Attributes;
+using BenchmarkDotNet.Jobs;
 using BenchmarkDotNet.Running;
 using s2protocol.NET;
 
@@ -22,6 +23,7 @@ public static class Program
 }
 
 [MemoryDiagnoser]
+[ShortRunJob]
 public class SingleReplayDecodeBenchmarks
 {
     private byte[] replayBytes = [];
@@ -68,6 +70,7 @@ public class SingleReplayDecodeBenchmarks
 }
 
 [MemoryDiagnoser]
+[ShortRunJob]
 public class ParallelReplayDecodeBenchmarks
 {
     private string[] replayPaths = [];
@@ -177,8 +180,18 @@ internal static class ReplayDecodeMode
 
 internal static class ReplayBenchmarkData
 {
+    private const int MaxReplayCount = 5;
     private const string ReplaySearchPattern = "*.SC2Replay";
     private const string ReplayDirectoryEnvironmentVariable = "S2PROTOCOL_BENCHMARK_REPLAY_DIR";
+
+    private static readonly string[] PreferredReplayNames =
+    [
+        "Direct Strike (10060).SC2Replay",
+        "Direct Strike (10096).SC2Replay",
+        "Direct Strike (10124).SC2Replay",
+        "Direct Strike (10143).SC2Replay",
+        "Direct Strike TE (1904).SC2Replay",
+    ];
 
     public static string GetSingleReplayPath()
     {
@@ -192,7 +205,6 @@ internal static class ReplayBenchmarkData
         string replayDirectory = ResolveReplayDirectory();
         string[] replayPaths = Directory.GetFiles(replayDirectory, ReplaySearchPattern, SearchOption.TopDirectoryOnly)
             .Where(path => !path.Contains("Error", StringComparison.OrdinalIgnoreCase))
-            .OrderBy(path => path, StringComparer.OrdinalIgnoreCase)
             .ToArray();
 
         if (replayPaths.Length == 0)
@@ -200,7 +212,7 @@ internal static class ReplayBenchmarkData
             throw new InvalidOperationException($"No {ReplaySearchPattern} files found in '{replayDirectory}'.");
         }
 
-        return replayPaths;
+        return SelectBenchmarkReplays(replayPaths);
     }
 
     public static void PrintReplayInventory()
@@ -280,5 +292,29 @@ internal static class ReplayBenchmarkData
     private static long FileLength(string path)
     {
         return new FileInfo(path).Length;
+    }
+
+    private static string[] SelectBenchmarkReplays(string[] replayPaths)
+    {
+        Dictionary<string, string> replayByName = replayPaths.ToDictionary(
+            path => Path.GetFileName(path)!,
+            path => path,
+            StringComparer.OrdinalIgnoreCase);
+
+        string[] preferredReplayPaths = PreferredReplayNames
+            .Where(replayByName.ContainsKey)
+            .Select(replayName => replayByName[replayName])
+            .ToArray();
+
+        if (preferredReplayPaths.Length > 0)
+        {
+            return preferredReplayPaths.Take(MaxReplayCount).ToArray();
+        }
+
+        return replayPaths
+            .OrderBy(FileLength)
+            .ThenBy(path => path, StringComparer.OrdinalIgnoreCase)
+            .Take(MaxReplayCount)
+            .ToArray();
     }
 }

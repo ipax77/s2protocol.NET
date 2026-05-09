@@ -14,15 +14,19 @@ public sealed class StressReplayTests
 
     private static readonly string[] StressReplayNames =
     [
-        "Direct Strike (7586).SC2Replay",
-        "Direct Strike TE (1046).SC2Replay",
-        "Direct Strike TE (1106).SC2Replay",
+        "Direct Strike (10060).SC2Replay",
+        "Direct Strike (10096).SC2Replay",
+        "Direct Strike (10124).SC2Replay",
+        "Direct Strike (10143).SC2Replay",
+        "Direct Strike TE (1904).SC2Replay",
     ];
 
     [StressReplayTheory]
-    [InlineData("Direct Strike (7586).SC2Replay")]
-    [InlineData("Direct Strike TE (1046).SC2Replay")]
-    [InlineData("Direct Strike TE (1106).SC2Replay")]
+    [InlineData("Direct Strike (10060).SC2Replay")]
+    [InlineData("Direct Strike (10096).SC2Replay")]
+    [InlineData("Direct Strike (10124).SC2Replay")]
+    [InlineData("Direct Strike (10143).SC2Replay")]
+    [InlineData("Direct Strike TE (1904).SC2Replay")]
     public async Task DirectStrikeStressReplayCanDecode(string replayName)
     {
         string? replayDirectory = StressReplayData.TryResolveReplayDirectory();

@@ -11,6 +11,7 @@
 
   <ItemGroup>
     <PackageReference Include="BenchmarkDotNet" Version="0.15.8" />
+    <!-- <PackageReference Include="s2protocol.NET" Version="0.9.1.1" /> -->
   </ItemGroup>
 
   <ItemGroup>
@@ -18,7 +19,11 @@
   </ItemGroup>
 
   <ItemGroup Condition="Exists('..\..\..\Sc2DirectStrike\src\Sc2DirectStrike.Tests\testdata')">
-    <None Include="..\..\..\Sc2DirectStrike\src\Sc2DirectStrike.Tests\testdata\**\*.SC2Replay" Link="testdata\%(RecursiveDir)%(Filename)%(Extension)" CopyToOutputDirectory="PreserveNewest" />
+    <None Include="..\..\..\Sc2DirectStrike\src\Sc2DirectStrike.Tests\testdata\Direct Strike (10060).SC2Replay" Link="testdata\%(Filename)%(Extension)" CopyToOutputDirectory="PreserveNewest" />
+    <None Include="..\..\..\Sc2DirectStrike\src\Sc2DirectStrike.Tests\testdata\Direct Strike (10096).SC2Replay" Link="testdata\%(Filename)%(Extension)" CopyToOutputDirectory="PreserveNewest" />
+    <None Include="..\..\..\Sc2DirectStrike\src\Sc2DirectStrike.Tests\testdata\Direct Strike (10124).SC2Replay" Link="testdata\%(Filename)%(Extension)" CopyToOutputDirectory="PreserveNewest" />
+    <None Include="..\..\..\Sc2DirectStrike\src\Sc2DirectStrike.Tests\testdata\Direct Strike (10143).SC2Replay" Link="testdata\%(Filename)%(Extension)" CopyToOutputDirectory="PreserveNewest" />
+    <None Include="..\..\..\Sc2DirectStrike\src\Sc2DirectStrike.Tests\testdata\Direct Strike TE (1904).SC2Replay" Link="testdata\%(Filename)%(Extension)" CopyToOutputDirectory="PreserveNewest" />
   </ItemGroup>
 
   <ItemGroup>
