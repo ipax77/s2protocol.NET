@@ -81,7 +81,7 @@ public sealed partial class MPQArchive
         Console.WriteLine("MPQ archive header");
         Console.WriteLine("------------------");
 
-        PrintObjectProperties(_header);
+        PrintHeader(_header);
 
         if (_userDataHeader != null)
         {
@@ -89,26 +89,35 @@ public sealed partial class MPQArchive
             Console.WriteLine("MPQ user data header");
             Console.WriteLine("--------------------");
 
-            PrintObjectProperties(_userDataHeader.Value);
+            PrintUserDataHeader(_userDataHeader.Value);
         }
         Console.WriteLine();
     }
 
-    private static void PrintObjectProperties<T>(T obj)
+    private static void PrintHeader(MPQHeader header)
     {
-        var props = typeof(T).GetProperties();
-        foreach (var prop in props)
-        {
-            var value = prop.GetValue(obj, null);
-            PrintFormattedField(prop.Name, value);
-        }
+        PrintFormattedField(nameof(header.Magic), header.Magic);
+        PrintFormattedField(nameof(header.HeaderSize), header.HeaderSize);
+        PrintFormattedField(nameof(header.ArchiveSize), header.ArchiveSize);
+        PrintFormattedField(nameof(header.FormatVersion), header.FormatVersion);
+        PrintFormattedField(nameof(header.SectorSizeShift), header.SectorSizeShift);
+        PrintFormattedField(nameof(header.HashTableOffset), header.HashTableOffset);
+        PrintFormattedField(nameof(header.BlockTableOffset), header.BlockTableOffset);
+        PrintFormattedField(nameof(header.HashTableEntries), header.HashTableEntries);
+        PrintFormattedField(nameof(header.BlockTableEntries), header.BlockTableEntries);
+        PrintFormattedField(nameof(header.ExtendedBlockTableOffset), header.ExtendedBlockTableOffset);
+        PrintFormattedField(nameof(header.HashTableOffsetHigh), header.HashTableOffsetHigh);
+        PrintFormattedField(nameof(header.BlockTableOffsetHigh), header.BlockTableOffsetHigh);
+        PrintFormattedField(nameof(header.Offset), header.Offset);
+    }
 
-        var fields = typeof(T).GetFields();
-        foreach (var field in fields)
-        {
-            var value = field.GetValue(obj);
-            PrintFormattedField(field.Name, value);
-        }
+    private static void PrintUserDataHeader(MPQUserDataHeader userDataHeader)
+    {
+        PrintFormattedField(nameof(userDataHeader.Magic), userDataHeader.Magic);
+        PrintFormattedField(nameof(userDataHeader.UserDataSize), userDataHeader.UserDataSize);
+        PrintFormattedField(nameof(userDataHeader.MPQHeaderOffset), userDataHeader.MPQHeaderOffset);
+        PrintFormattedField(nameof(userDataHeader.UserDataHeaderSize), userDataHeader.UserDataHeaderSize);
+        PrintFormattedField(nameof(userDataHeader.Content), userDataHeader.Content);
     }
 
     private static void PrintFormattedField(string name, object? value)

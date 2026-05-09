@@ -21,14 +21,38 @@ internal sealed class VersionedDecoder : S2ProtocolDecoder
             throw new DecodeException(nameof(VersionedDecoder));
 
         var typeInfo = _typeInfos[typeid];
-        string methodName = typeInfo.TypeName;
+        if (typeInfo.DecodeKind == S2DecodeKind.Unknown)
+        {
+            throw new DecodeException($"Unknown method: {typeInfo.TypeName}");
+        }
 
-        var method = GetType().GetMethod(methodName, BindingFlags.NonPublic | BindingFlags.Instance);
-        if (method == null)
-            throw new DecodeException($"Unknown method: {methodName}");
-
-        IDecodeParameter[] parameters = PrepareParameters(typeInfo);
-        return method.Invoke(this, new object[] { parameters });
+        try
+        {
+            return typeInfo.DecodeKind switch
+            {
+                S2DecodeKind.Array => _array(typeInfo.Parameters),
+                S2DecodeKind.BitArray => _bitarray(typeInfo.Parameters),
+                S2DecodeKind.Blob => _blob(typeInfo.Parameters),
+                S2DecodeKind.Bool => _bool(typeInfo.Parameters),
+                S2DecodeKind.Choice => _choice(typeInfo.Parameters),
+                S2DecodeKind.FourCc => _fourcc(typeInfo.Parameters),
+                S2DecodeKind.Int => _int(typeInfo.Parameters),
+                S2DecodeKind.Null => _null(typeInfo.Parameters),
+                S2DecodeKind.Optional => _optional(typeInfo.Parameters),
+                S2DecodeKind.Real32 => _real32(typeInfo.Parameters),
+                S2DecodeKind.Real64 => _real64(typeInfo.Parameters),
+                S2DecodeKind.Struct => _struct(typeInfo.Parameters),
+                _ => throw new DecodeException(nameof(VersionedDecoder)),
+            };
+        }
+        catch (TargetInvocationException)
+        {
+            throw;
+        }
+        catch (Exception ex)
+        {
+            throw new TargetInvocationException(ex);
+        }
     }
 
     public override bool Done() => _buffer.Done();
@@ -175,8 +199,7 @@ internal sealed class VersionedDecoder : S2ProtocolDecoder
             for (long i = 0; i < length; i++)
             {
                 long tag = _vint();
-                var field = fieldListParam.Fields.FirstOrDefault(f => f.Tag == tag);
-                if (field != default)
+                if (fieldListParam.FieldsByTag.TryGetValue(tag, out var field))
                 {
                     if (field.Name == "__parent")
                     {
@@ -268,50 +291,4 @@ internal sealed class VersionedDecoder : S2ProtocolDecoder
                 throw new DecodeException(nameof(VersionedDecoder));
         }
     }
-
-    public override IDecodeParameter[] PrepareParameters(S2TypeInfo typeInfo)
-    {
-        var parameters = new List<IDecodeParameter>();
-
-        foreach (var element in typeInfo.Elements)
-        {
-            switch (element)
-            {
-                case S2TypeInfoTypeElement bounds:
-                    if (bounds.Bounds.Max == -1)
-                    {
-                        parameters.Add(new TypeIdParameter((int)bounds.Bounds.Min));
-                    }
-                    else
-                    {
-                        parameters.Add(new BoundsParameter(bounds.Bounds.Min, bounds.Bounds.Max));
-                    }
-                    break;
-
-                case S2TypeInfoMElement mElement:
-                    var fieldList = new List<DecodeField>();
-                    foreach (var m in mElement.Elements)
-                    {
-                        fieldList.Add(new(m.TypeName, (int)m.Bounds.Min, m.Bounds.Max));
-                    }
-                    parameters.Add(new FieldListParameter(fieldList));
-                    break;
-
-                case DsTypeInfoChoiceElemet choiceElement:
-                    var dict = new Dictionary<long, DecodeChoice>();
-                    foreach (var kv in choiceElement.Elements)
-                    {
-                        dict[kv.Key] = new(kv.Value.TypeName, kv.Value.Number);
-                    }
-                    parameters.Add(new ChoiceParameter(dict));
-                    break;
-
-                default:
-                    throw new NotSupportedException($"Unsupported element type: {element.GetType().Name}");
-            }
-        }
-
-        return parameters.ToArray();
-    }
-
 }

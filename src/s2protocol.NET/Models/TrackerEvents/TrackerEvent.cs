@@ -1,84 +1,42 @@
-﻿using System.Text.Json.Serialization;
-
-namespace s2protocol.NET.Models;
+﻿namespace s2protocol.NET.Models;
 /// <summary>Record <c>Event</c> Event baseclass</summary>
 ///
-public record TrackerEvent
+public abstract class TrackerEvent
 {
-    /// <summary>Record <c>Event</c> base constructor</summary>
-    /// <comment>Tracker events are new in version 2.0.8, they do not exist in replays recorded with older versions of the game.</comment>
-    /// 
-    public TrackerEvent(int playerId, int eventId, string eventType, int bits, int gameloop)
+    protected TrackerEvent(
+        int playerId,
+        int eventId,
+        TrackerEventType eventType,
+        int bits,
+        int gameloop)
     {
         PlayerId = playerId;
         EventId = eventId;
+        EventType = eventType;
         Bits = bits;
         Gameloop = gameloop;
-        EventType = eventType switch
-        {
-            "NNet.Replay.Tracker.SPlayerSetupEvent" => TrackerEventType.SPlayerSetupEvent,
-            "NNet.Replay.Tracker.SPlayerStatsEvent" => TrackerEventType.SPlayerStatsEvent,
-            "NNet.Replay.Tracker.SUnitBornEvent" => TrackerEventType.SUnitBornEvent,
-            "NNet.Replay.Tracker.SUnitDiedEvent" => TrackerEventType.SUnitDiedEvent,
-            "NNet.Replay.Tracker.SUnitOwnerChangeEvent" => TrackerEventType.SUnitOwnerChangeEvent,
-            "NNet.Replay.Tracker.SUnitPositionsEvent" => TrackerEventType.SUnitPositionsEvent,
-            "NNet.Replay.Tracker.SUnitTypeChangeEvent" => TrackerEventType.SUnitTypeChangeEvent,
-            "NNet.Replay.Tracker.SUpgradeEvent" => TrackerEventType.SUpgradeEvent,
-            "NNet.Replay.Tracker.SUnitInitEvent" => TrackerEventType.SUnitInitEvent,
-            "NNet.Replay.Tracker.SUnitDoneEvent" => TrackerEventType.SUnitDoneEvent,
-            _ => TrackerEventType.None
-        };
     }
 
-    /// <summary>Record <c>Event</c> base clone constructor</summary>
-    /// <comment>Tracker events are new in version 2.0.8, they do not exist in replays recorded with older versions of the game.</comment>
-    /// 
-
-    public TrackerEvent(TrackerEvent trackerEvent)
-    {
-        ArgumentNullException.ThrowIfNull(trackerEvent);
-        PlayerId = trackerEvent.PlayerId;
-        EventId = trackerEvent.EventId;
-        Bits = trackerEvent.Bits;
-        Gameloop = trackerEvent.Gameloop;
-        EventType = trackerEvent.EventType;
-    }
-
-    [JsonConstructor]
-#pragma warning disable CS1591 // Missing XML comment for publicly visible type or member
-#pragma warning disable CS8618 // Non-nullable field must contain a non-null value when exiting constructor. Consider declaring as nullable.
-    public TrackerEvent()
-#pragma warning restore CS8618 // Non-nullable field must contain a non-null value when exiting constructor. Consider declaring as nullable.
-#pragma warning restore CS1591 // Missing XML comment for publicly visible type or member
-    {
-
-    }
-
-    /// <summary>Event PlayerId</summary>
-    ///
-    public int PlayerId { get; init; }
-
-    /// <summary>Event EventId</summary>
-    ///
-    public int EventId { get; init; }
-    /// <summary>Event EventType</summary>
-    ///
-    public TrackerEventType EventType { get; init; }
-    /// <summary>Event Bits</summary>
-    ///
-    public int Bits { get; init; }
-    /// <summary>Event Gameloop</summary>
-    ///
-    public int Gameloop { get; init; }
-
+    public int PlayerId { get; }
+    public int EventId { get; }
+    public TrackerEventType EventType { get; }
+    public int Bits { get; }
+    public int Gameloop { get; }
 }
 
+public sealed class UnknownTrackerEvent(
+    int playerId,
+    int eventId,
+    TrackerEventType eventType,
+    int bits,
+    int gameloop) : TrackerEvent(playerId, eventId, eventType, bits, gameloop)
+{
+}
 
 /// <summary>Enum <c>EventType</c> Event type</summary>
 ///
 public enum TrackerEventType
 {
-#pragma warning disable CS1591 // Missing XML comment for publicly visible type or member
     None = 0,
     SPlayerSetupEvent = 1,
     SPlayerStatsEvent = 2,
@@ -90,5 +48,4 @@ public enum TrackerEventType
     SUpgradeEvent = 8,
     SUnitInitEvent = 9,
     SUnitDoneEvent = 10
-#pragma warning restore CS1591 // Missing XML comment for publicly visible type or member
 }

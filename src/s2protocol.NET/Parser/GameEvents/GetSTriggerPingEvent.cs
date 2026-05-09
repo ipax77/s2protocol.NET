@@ -1,8 +1,8 @@
-﻿using s2protocol.NET.Models;
+using s2protocol.NET.Models;
 
 namespace s2protocol.NET.Parser; internal static partial class Parse
 {
-    private static STriggerPingEvent GetSTriggerPingEvent(Dictionary<string, object> gameDic, GameEvent gameEvent)
+    private static STriggerPingEvent GetSTriggerPingEvent(Dictionary<string, object> gameDic, GameEventHeader gameEvent)
     {
         bool pingedMinimap = GetBool(gameDic, "m_pingedMinimap");
         int unitLink = GetInt(gameDic, "m_unitLink");
@@ -13,7 +13,7 @@ namespace s2protocol.NET.Parser; internal static partial class Parse
         int? unitControlPlayerId = GetNullableInt(gameDic, "m_unitControlPlayerId");
         (long pointX, long pointY) = GetPoint(gameDic);
         int? unitUpkeepPlayerId = GetNullableInt(gameDic, "m_unitUpkeepPlayerId");
-        return new STriggerPingEvent(gameEvent,
+        return new STriggerPingEvent(gameEvent.UserId, gameEvent.EventId, gameEvent.Bits, gameEvent.Gameloop,
                                      pingedMinimap,
                                      unitLink,
                                      unitIsUnderConstruction,

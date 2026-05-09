@@ -1,40 +1,30 @@
-﻿using System.Text.Json.Serialization;
-
 namespace s2protocol.NET.Models;
 /// <summary>Record <c>SBankValueEvent</c> SBankValueEvent</summary>
 ///
-public record SBankValueEvent : GameEvent
+public sealed class SBankValueEvent : GameEvent
 {
     /// <summary>Record <c>SBankValueEvent</c> constructor</summary>
     ///
-    public SBankValueEvent(
-        GameEvent gameEvent,
+    public SBankValueEvent(int userId,
+        int eventId,
+        int bits,
+        int gameloop,
         string name,
         string data,
-        int type) : base(gameEvent)
+        int type) : base(userId, eventId, GameEventType.SBankValueEvent, bits, gameloop)
     {
         Name = name;
         Data = data;
         Type = type;
     }
 
-    [JsonConstructor]
-#pragma warning disable CS1591 // Missing XML comment for publicly visible type or member
-#pragma warning disable CS8618 // Non-nullable field must contain a non-null value when exiting constructor. Consider declaring as nullable.
-    public SBankValueEvent()
-#pragma warning restore CS8618 // Non-nullable field must contain a non-null value when exiting constructor. Consider declaring as nullable.
-#pragma warning restore CS1591 // Missing XML comment for publicly visible type or member
-    {
-
-    }
-
     /// <summary>Event Type</summary>
     ///
-    public string Name { get; init; }
+    public string Name { get; }
     /// <summary>Event Data</summary>
     ///
-    public string Data { get; init; }
+    public string Data { get; }
     /// <summary>Event Type</summary>
     ///
-    public int Type { get; init; }
+    public int Type { get; }
 }

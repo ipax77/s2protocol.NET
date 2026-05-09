@@ -1,8 +1,8 @@
-﻿using s2protocol.NET.Models;
+using s2protocol.NET.Models;
 
 namespace s2protocol.NET.Parser; internal static partial class Parse
 {
-    private static SCmdUpdateTargetUnitEvent GetSCmdUpdateTargetUnitEvent(Dictionary<string, object> pydic, GameEvent gameEvent)
+    private static SCmdUpdateTargetUnitEvent GetSCmdUpdateTargetUnitEvent(Dictionary<string, object> pydic, GameEventHeader gameEvent)
     {
         if (pydic.TryGetValue("m_target", out object? target))
         {
@@ -15,7 +15,7 @@ namespace s2protocol.NET.Parser; internal static partial class Parse
                 int m_targetUnitFlags = GetInt(targetDic, "m_targetUnitFlags");
                 int m_snapshotUnitLink = GetInt(targetDic, "m_snapshotUnitLink");
                 int m_tag = GetInt(targetDic, "m_tag");
-                return new SCmdUpdateTargetUnitEvent(gameEvent,
+                return new SCmdUpdateTargetUnitEvent(gameEvent.UserId, gameEvent.EventId, gameEvent.Bits, gameEvent.Gameloop,
                                                      m_snapshotControlPlayerId,
                                                      pointX,
                                                      pointY,
@@ -27,7 +27,7 @@ namespace s2protocol.NET.Parser; internal static partial class Parse
                                                      m_tag);
             }
         }
-        return new SCmdUpdateTargetUnitEvent(gameEvent,
+        return new SCmdUpdateTargetUnitEvent(gameEvent.UserId, gameEvent.EventId, gameEvent.Bits, gameEvent.Gameloop,
                                      0,
                                      0,
                                      0,

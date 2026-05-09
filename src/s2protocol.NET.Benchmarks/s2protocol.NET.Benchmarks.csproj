@@ -1,0 +1,33 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <OutputType>Exe</OutputType>
+    <TargetFramework>net10.0</TargetFramework>
+    <LangVersion>latest</LangVersion>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <Nullable>enable</Nullable>
+    <IsPackable>false</IsPackable>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="BenchmarkDotNet" Version="0.15.8" />
+    <!-- <PackageReference Include="s2protocol.NET" Version="0.9.1.1" /> -->
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\s2protocol.NET\s2protocol.NET.csproj" />
+  </ItemGroup>
+
+  <ItemGroup Condition="Exists('..\..\..\Sc2DirectStrike\src\Sc2DirectStrike.Tests\testdata')">
+    <None Include="..\..\..\Sc2DirectStrike\src\Sc2DirectStrike.Tests\testdata\Direct Strike (10060).SC2Replay" Link="testdata\%(Filename)%(Extension)" CopyToOutputDirectory="PreserveNewest" />
+    <None Include="..\..\..\Sc2DirectStrike\src\Sc2DirectStrike.Tests\testdata\Direct Strike (10096).SC2Replay" Link="testdata\%(Filename)%(Extension)" CopyToOutputDirectory="PreserveNewest" />
+    <None Include="..\..\..\Sc2DirectStrike\src\Sc2DirectStrike.Tests\testdata\Direct Strike (10124).SC2Replay" Link="testdata\%(Filename)%(Extension)" CopyToOutputDirectory="PreserveNewest" />
+    <None Include="..\..\..\Sc2DirectStrike\src\Sc2DirectStrike.Tests\testdata\Direct Strike (10143).SC2Replay" Link="testdata\%(Filename)%(Extension)" CopyToOutputDirectory="PreserveNewest" />
+    <None Include="..\..\..\Sc2DirectStrike\src\Sc2DirectStrike.Tests\testdata\Direct Strike TE (1904).SC2Replay" Link="testdata\%(Filename)%(Extension)" CopyToOutputDirectory="PreserveNewest" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <None Include="..\..\s2protocol.NET.tests\replays\**\*.SC2Replay" Link="replays\%(RecursiveDir)%(Filename)%(Extension)" CopyToOutputDirectory="PreserveNewest" />
+  </ItemGroup>
+
+</Project>

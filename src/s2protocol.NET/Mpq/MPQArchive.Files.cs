@@ -47,7 +47,7 @@ public sealed partial class MPQArchive
             if ((blockEntry.Flags & 0x00000200) != 0 && // MPQ_FILE_COMPRESS
                 (forceDecompress || blockEntry.CompressedSize < blockEntry.FileSize))
             {
-                return Decompress(rawData);
+                return Decompress(rawData, (int)blockEntry.FileSize);
             }
 
             return rawData;
@@ -84,7 +84,8 @@ public sealed partial class MPQArchive
             if ((blockEntry.Flags & 0x00000200) != 0 && // MPQ_FILE_COMPRESS
                 (forceDecompress || sector.Length < sectorSize))
             {
-                byte[] decompressed = Decompress(sector);
+                int expectedSectorLength = Math.Min(sectorSize, (int)blockEntry.FileSize - bytesCopied);
+                byte[] decompressed = Decompress(sector, expectedSectorLength);
                 Array.Copy(decompressed, 0, result, bytesCopied, decompressed.Length);
                 bytesCopied += decompressed.Length;
             }
@@ -116,7 +117,7 @@ public sealed partial class MPQArchive
         return null;
     }
 
-    private static byte[] Decompress(byte[] data)
+    private static byte[] Decompress(byte[] data, int expectedLength = 0)
     {
         byte compressionType = data[0];
 
@@ -127,7 +128,7 @@ public sealed partial class MPQArchive
             case 2: // zlib/deflate
                 using (var input = new MemoryStream(data, 1, data.Length - 1))
                 using (var deflate = new DeflateStream(input, CompressionMode.Decompress))
-                using (var output = new MemoryStream())
+                using (var output = expectedLength > 0 ? new MemoryStream(expectedLength) : new MemoryStream())
                 {
                     deflate.CopyTo(output);
                     return output.ToArray();
@@ -135,7 +136,7 @@ public sealed partial class MPQArchive
             case 16: // BZip2 (requires SharpZipLib or similar)
                 using (var input = new MemoryStream(data, 1, data.Length - 1))
                 using (var bzip = new ICSharpCode.SharpZipLib.BZip2.BZip2InputStream(input))
-                using (var output = new MemoryStream())
+                using (var output = expectedLength > 0 ? new MemoryStream(expectedLength) : new MemoryStream())
                 {
                     bzip.CopyTo(output);
                     return output.ToArray();
@@ -188,7 +189,7 @@ public sealed partial class MPQArchive
             if ((blockEntry.Flags & 0x00000200) != 0 && // MPQ_FILE_COMPRESS
                 (forceDecompress || blockEntry.CompressedSize < blockEntry.FileSize))
             {
-                return await DecompressAsync(rawData, cancellationToken).ConfigureAwait(false);
+                return await DecompressAsync(rawData, (int)blockEntry.FileSize, cancellationToken).ConfigureAwait(false);
             }
 
             return rawData;
@@ -231,7 +232,8 @@ public sealed partial class MPQArchive
             if ((blockEntry.Flags & 0x00000200) != 0 &&
                 (forceDecompress || sector.Length < sectorSize))
             {
-                byte[] decompressed = await DecompressAsync(sector, cancellationToken).ConfigureAwait(false);
+                int expectedSectorLength = Math.Min(sectorSize, (int)blockEntry.FileSize - bytesCopied);
+                byte[] decompressed = await DecompressAsync(sector, expectedSectorLength, cancellationToken).ConfigureAwait(false);
                 Array.Copy(decompressed, 0, result, bytesCopied, decompressed.Length);
                 bytesCopied += decompressed.Length;
             }
@@ -245,7 +247,7 @@ public sealed partial class MPQArchive
         return result;
     }
 
-    private static async Task<byte[]> DecompressAsync(byte[] data, CancellationToken cancellationToken)
+    private static async Task<byte[]> DecompressAsync(byte[] data, int expectedLength, CancellationToken cancellationToken)
     {
         byte compressionType = data[0];
 
@@ -257,7 +259,7 @@ public sealed partial class MPQArchive
             case 2: // zlib/deflate
                 using (var input = new MemoryStream(data, 1, data.Length - 1))
                 using (var deflate = new DeflateStream(input, CompressionMode.Decompress))
-                using (var output = new MemoryStream())
+                using (var output = expectedLength > 0 ? new MemoryStream(expectedLength) : new MemoryStream())
                 {
                     await deflate.CopyToAsync(output, 81920, cancellationToken).ConfigureAwait(false);
                     return output.ToArray();
@@ -266,7 +268,7 @@ public sealed partial class MPQArchive
             case 16: // BZip2 (requires SharpZipLib or similar)
                 using (var input = new MemoryStream(data, 1, data.Length - 1))
                 using (var bzip = new ICSharpCode.SharpZipLib.BZip2.BZip2InputStream(input))
-                using (var output = new MemoryStream())
+                using (var output = expectedLength > 0 ? new MemoryStream(expectedLength) : new MemoryStream())
                 {
                     await bzip.CopyToAsync(output, 81920, cancellationToken).ConfigureAwait(false);
                     return output.ToArray();

@@ -1,10 +1,8 @@
-﻿using System.Text.Json.Serialization;
-
-namespace s2protocol.NET.Models;
+﻿namespace s2protocol.NET.Models;
 
 /// <summary>Record <c>DetailsPlayer</c> Parsed replay player infos</summary>
 ///
-public sealed record DetailsPlayer
+public sealed class DetailsPlayer
 {
     /// <summary>Record <c>DetailsPlayer</c> constructor</summary>
     ///
@@ -42,17 +40,6 @@ public sealed record DetailsPlayer
             Name = name ?? "";
         }
     }
-
-    [JsonConstructor]
-#pragma warning disable CS1591 // Missing XML comment for publicly visible type or member
-#pragma warning disable CS8618 // Non-nullable field must contain a non-null value when exiting constructor. Consider declaring as nullable.
-    public DetailsPlayer()
-#pragma warning restore CS8618 // Non-nullable field must contain a non-null value when exiting constructor. Consider declaring as nullable.
-#pragma warning restore CS1591 // Missing XML comment for publicly visible type or member
-    {
-
-    }
-
     /// <summary>Record <c>PlayerColor</c> Parsed replay player color infos</summary>
     ///
     public PlayerColor Color { get; init; }
@@ -94,66 +81,41 @@ public sealed record DetailsPlayer
 
 /// <summary>Record <c>Toon</c> Parsed replay player Toon infos</summary>
 ///
-public sealed record Toon
+/// <remarks>Record <c>Toon</c> constructor</remarks>
+///
+public sealed class Toon(int id, string programId, int realm, int region)
 {
-    /// <summary>Record <c>Toon</c> constructor</summary>
-    ///
-    public Toon(int id, string programId, int realm, int region)
-    {
-        Id = id;
-        ProgramId = programId;
-        Realm = realm;
-        Region = region;
-    }
 
     /// <summary>Toon Id</summary>
     ///
-    public int Id { get; init; }
+    public int Id { get; init; } = id;
     /// <summary>Toon ProgramId</summary>
     ///
-    public string ProgramId { get; init; }
+    public string ProgramId { get; init; } = programId;
     /// <summary>Toon Realm</summary>
     ///
-    public int Realm { get; init; }
+    public int Realm { get; init; } = realm;
     /// <summary>Toon Region</summary>
     ///
-    public int Region { get; init; }
+    public int Region { get; init; } = region;
 }
 
 /// <summary>Record <c>PlayerColor</c> Parsed replay player color infos</summary>
 ///
-public sealed record PlayerColor
+/// <remarks>Record <c>PlayerColor</c> constructor</remarks>
+///
+public sealed class PlayerColor(int a, int b, int g, int r)
 {
-    /// <summary>Record <c>PlayerColor</c> constructor</summary>
-    ///
-    public PlayerColor(int a, int b, int g, int r)
-    {
-        A = a;
-        B = b;
-        G = g;
-        R = r;
-    }
-
-    [JsonConstructor]
-#pragma warning disable CS1591 // Missing XML comment for publicly visible type or member
-#pragma warning disable CS8618 // Non-nullable field must contain a non-null value when exiting constructor. Consider declaring as nullable.
-    public PlayerColor()
-#pragma warning restore CS8618 // Non-nullable field must contain a non-null value when exiting constructor. Consider declaring as nullable.
-#pragma warning restore CS1591 // Missing XML comment for publicly visible type or member
-    {
-
-    }
-
     /// <summary>Color A</summary>
     ///
-    public int A { get; init; }
+    public int A { get; init; } = a;
     /// <summary>Color B</summary>
     ///
-    public int B { get; init; }
+    public int B { get; init; } = b;
     /// <summary>Color G</summary>
     ///
-    public int G { get; init; }
+    public int G { get; init; } = g;
     /// <summary>Color R</summary>
     ///
-    public int R { get; init; }
+    public int R { get; init; } = r;
 }

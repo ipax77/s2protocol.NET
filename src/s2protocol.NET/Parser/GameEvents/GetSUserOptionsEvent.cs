@@ -1,8 +1,8 @@
-﻿using s2protocol.NET.Models;
+using s2protocol.NET.Models;
 
 namespace s2protocol.NET.Parser; internal static partial class Parse
 {
-    private static SUserOptionsEvent GetSUserOptionsEvent(Dictionary<string, object> gameDic, GameEvent gameEvent)
+    private static SUserOptionsEvent GetSUserOptionsEvent(Dictionary<string, object> gameDic, GameEventHeader gameEvent)
     {
         bool testCheatsEnabled = GetBool(gameDic, "m_testCheatsEnabled");
         bool multiplayerCheatsEnabled = GetBool(gameDic, "m_multiplayerCheatsEnabled");
@@ -18,7 +18,7 @@ namespace s2protocol.NET.Parser; internal static partial class Parse
         bool platformMac = GetBool(gameDic, "m_platformMac");
         int baseBuildNum = GetInt(gameDic, "m_baseBuildNum");
         bool syncChecksummingEnabled = GetBool(gameDic, "m_syncChecksummingEnabled");
-        return new SUserOptionsEvent(gameEvent,
+        return new SUserOptionsEvent(gameEvent.UserId, gameEvent.EventId, gameEvent.Bits, gameEvent.Gameloop,
                                      testCheatsEnabled,
                                      multiplayerCheatsEnabled,
                                      gameFullyDownloaded,

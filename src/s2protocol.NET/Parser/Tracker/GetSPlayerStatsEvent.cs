@@ -2,7 +2,7 @@
 
 namespace s2protocol.NET.Parser; internal static partial class Parse
 {
-    private static SPlayerStatsEvent GetSPlayerStatsEvent(Dictionary<string, object> pydic, TrackerEvent trackerEvent)
+    private static SPlayerStatsEvent GetSPlayerStatsEvent(Dictionary<string, object> pydic, TrackerEventHeader header)
     {
         if (pydic.TryGetValue("m_stats", out object? value))
         {
@@ -50,7 +50,10 @@ namespace s2protocol.NET.Parser; internal static partial class Parse
                 int scoreValueFoodUsed = GetInt(statsDic, "m_scoreValueFoodUsed");
                 return new SPlayerStatsEvent
                     (
-                        trackerEvent,
+                        header.PlayerId,
+                        header.EventId,
+                        header.Bits,
+                        header.Gameloop,
                         scoreValueVespeneUsedCurrentTechnology,
                         scoreValueVespeneFriendlyFireArmy,
                         scoreValueMineralsFriendlyFireTechnology,
@@ -95,7 +98,10 @@ namespace s2protocol.NET.Parser; internal static partial class Parse
         }
         return new SPlayerStatsEvent
             (
-                trackerEvent,
+                header.PlayerId,
+                header.EventId,
+                header.Bits,
+                header.Gameloop,
                 0,
                 0,
                 0,

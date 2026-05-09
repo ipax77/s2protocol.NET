@@ -1,14 +1,15 @@
-﻿using System.Text.Json.Serialization;
-
 namespace s2protocol.NET.Models;
 /// <summary>Record <c>STriggerPingEvent</c> STriggerPingEvent</summary>
 ///
-public record STriggerPingEvent : GameEvent
+public sealed class STriggerPingEvent : GameEvent
 {
     /// <summary>Record <c>STriggerPingEvent</c> constructor</summary>
     ///
-    public STriggerPingEvent(GameEvent gameEvent,
-                             bool pingedMinimap,
+    public STriggerPingEvent(int userId,
+        int eventId,
+        int bits,
+        int gameloop,
+        bool pingedMinimap,
                              int unitLink,
                              bool unitIsUnderConstruction,
                              long option,
@@ -19,7 +20,7 @@ public record STriggerPingEvent : GameEvent
                              int? unitControlPlayerId,
                              long pointX,
                              long pointY,
-                             int? unitUpkeepPlayerId) : base(gameEvent)
+                             int? unitUpkeepPlayerId) : base(userId, eventId, GameEventType.STriggerPingEvent, bits, gameloop)
     {
         PingedMinimap = pingedMinimap;
         UnitLink = unitLink;
@@ -35,51 +36,41 @@ public record STriggerPingEvent : GameEvent
         UnitUpkeepPlayerId = unitUpkeepPlayerId;
     }
 
-    [JsonConstructor]
-#pragma warning disable CS1591 // Missing XML comment for publicly visible type or member
-#pragma warning disable CS8618 // Non-nullable field must contain a non-null value when exiting constructor. Consider declaring as nullable.
-    public STriggerPingEvent()
-#pragma warning restore CS8618 // Non-nullable field must contain a non-null value when exiting constructor. Consider declaring as nullable.
-#pragma warning restore CS1591 // Missing XML comment for publicly visible type or member
-    {
-
-    }
-
     /// <summary>Event PingedMinimap</summary>
     ///
-    public bool PingedMinimap { get; init; }
+    public bool PingedMinimap { get; }
     /// <summary>Event UnitLink</summary>
     ///    
-    public int UnitLink { get; init; }
+    public int UnitLink { get; }
     /// <summary>Event UnitIsUnderConstruction</summary>
     ///    
-    public bool UnitIsUnderConstruction { get; init; }
+    public bool UnitIsUnderConstruction { get; }
     /// <summary>Event Option</summary>
     ///    
-    public long Option { get; init; }
+    public long Option { get; }
     /// <summary>Event Unit</summary>
     ///    
-    public int Unit { get; init; }
+    public int Unit { get; }
     /// <summary>Event UnitX</summary>
     ///    
-    public long UnitX { get; init; }
+    public long UnitX { get; }
     /// <summary>Event UnitY</summary>
     ///    
-    public long UnitY { get; init; }
+    public long UnitY { get; }
     /// <summary>Event UnitZ</summary>
     ///    
-    public long UnitZ { get; init; }
+    public long UnitZ { get; }
     /// <summary>Event UnitControlPlayerId</summary>
     ///    
-    public int? UnitControlPlayerId { get; init; }
+    public int? UnitControlPlayerId { get; }
     /// <summary>Event PointX</summary>
     ///    
-    public long PointX { get; init; }
+    public long PointX { get; }
     /// <summary>Event PointY</summary>
     ///    
-    public long PointY { get; init; }
+    public long PointY { get; }
     /// <summary>Event UnitUpkeepPlayerId</summary>
     ///    
-    public int? UnitUpkeepPlayerId { get; init; }
+    public int? UnitUpkeepPlayerId { get; }
 
 }

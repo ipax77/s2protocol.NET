@@ -6,7 +6,7 @@ namespace s2protocol.NET.Mpq;
 
 public sealed partial class MPQArchive
 {
-    private List<T> ReadTable<T>(string tableType) where T : struct
+    private T[] ReadTable<T>(string tableType) where T : struct
     {
         uint tableOffset;
         uint tableEntries;
@@ -33,30 +33,13 @@ public sealed partial class MPQArchive
         byte[] encryptedData = _reader.ReadBytes((int)tableSize);
         byte[] decryptedData = DecryptTable(encryptedData, key);
 
-        List<T> entries = new();
-        for (int i = 0; i < tableEntries; i++)
+        T[] entries = new T[(int)tableEntries];
+        for (int i = 0; i < entries.Length; i++)
         {
-            byte[] entryBytes = new byte[16];
-            Array.Copy(decryptedData, i * 16, entryBytes, 0, 16);
-            T entry = ByteArrayToStructure<T>(entryBytes);
-            entries.Add(entry);
+            entries[i] = MemoryMarshal.Read<T>(decryptedData.AsSpan(i * 16, 16));
         }
 
         return entries;
-    }
-
-    private static T ByteArrayToStructure<T>(byte[] bytes) where T : struct
-    {
-        GCHandle handle = GCHandle.Alloc(bytes, GCHandleType.Pinned);
-        try
-        {
-            IntPtr ptr = handle.AddrOfPinnedObject();
-            return Marshal.PtrToStructure<T>(ptr);
-        }
-        finally
-        {
-            handle.Free();
-        }
     }
 
     private static uint Hash(string input, string hashType)

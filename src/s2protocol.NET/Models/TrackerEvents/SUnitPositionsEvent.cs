@@ -1,51 +1,52 @@
-﻿using System.Text.Json.Serialization;
-
-namespace s2protocol.NET.Models;
+﻿namespace s2protocol.NET.Models;
 /// <summary>Record <c>SUnitPositionsEvent</c> SUnitPositionsEvent</summary>
 ///
-public record SUnitPositionsEvent : TrackerEvent
+public sealed class SUnitPositionsEvent : TrackerEvent
 {
     /// <summary>Record <c>SUnitPositionsEvent</c> constructor</summary>
     /// <comment>Only units that have inflicted or taken damage are mentioned in unit position events, and they occur periodically with a limit of 256 units mentioned per event.</comment>
     /// 
-    public SUnitPositionsEvent(
-        TrackerEvent trackerEvent,
-        int firstUnitIndex,
-        int[] items) : base(trackerEvent)
+    public SUnitPositionsEvent(int playerId,
+                               int eventId,
+                               int bits,
+                               int gameloop,
+                               int firstUnitIndex,
+                               int[] items) : base(playerId, eventId, TrackerEventType.SUnitPositionsEvent, bits, gameloop)
     {
         FirstUnitIndex = firstUnitIndex;
-        int unitIndex = FirstUnitIndex;
-        List<UnitPosition> units = new List<UnitPosition>();
-        if (items != null && items.Length >= 3 && items.Length % 3 == 0)
+
+        if (items is null || items.Length < 3 || items.Length % 3 != 0)
         {
-            for (int i = 0; i < items.Length; i += 3)
-            {
-                unitIndex += items[i];
-                units.Add(new UnitPosition()
-                {
-                    UnitIndex = items[i],
-                    X = items[i + 1] * 4,
-                    Y = items[i + 2] * 4
-                });
-            }
+            UnitPositions = [];
+            UnitIndex = firstUnitIndex;
+            X = 0;
+            Y = 0;
+            return;
         }
+
+        var positions = new UnitPosition[items.Length / 3];
+
+        var unitIndex = firstUnitIndex;
+        var lastX = 0;
+        var lastY = 0;
+
+        for (var i = 0; i < items.Length; i += 3)
+        {
+            unitIndex += items[i];
+
+            lastX = items[i + 1] * 4;
+            lastY = items[i + 2] * 4;
+
+            positions[i / 3] = new UnitPosition(
+                unitIndex,
+                lastX,
+                lastY);
+        }
+
+        UnitPositions = positions;
         UnitIndex = unitIndex;
-        UnitPositions = units.ToArray();
-        if (units.Count != 0)
-        {
-            X = units.Last().X;
-            Y = units.Last().Y;
-        }
-    }
-
-    [JsonConstructor]
-#pragma warning disable CS1591 // Missing XML comment for publicly visible type or member
-#pragma warning disable CS8618 // Non-nullable field must contain a non-null value when exiting constructor. Consider declaring as nullable.
-    public SUnitPositionsEvent()
-#pragma warning restore CS8618 // Non-nullable field must contain a non-null value when exiting constructor. Consider declaring as nullable.
-#pragma warning restore CS1591 // Missing XML comment for publicly visible type or member
-    {
-
+        X = lastX;
+        Y = lastY;
     }
 
     /// <summary>Event firstUnitIndex</summary>
@@ -65,27 +66,18 @@ public record SUnitPositionsEvent : TrackerEvent
     public int Y { get; init; }
 }
 
-/// <summary>Record <c>UnitPosition</c> SUnitPositionsEvent UnitPosition</summary>
-///
-public record UnitPosition
+/// <summary>
+/// Position of a unit mentioned by <see cref="SUnitPositionsEvent"/>.
+/// </summary>
+public sealed class UnitPosition(int unitIndex, int x, int y)
 {
-    [JsonConstructor]
-#pragma warning disable CS1591 // Missing XML comment for publicly visible type or member
-#pragma warning disable CS8618 // Non-nullable field must contain a non-null value when exiting constructor. Consider declaring as nullable.
-    public UnitPosition()
-#pragma warning restore CS8618 // Non-nullable field must contain a non-null value when exiting constructor. Consider declaring as nullable.
-#pragma warning restore CS1591 // Missing XML comment for publicly visible type or member
-    {
-
-    }
-
     /// <summary>Event UnitIndex</summary>
     ///
-    public int UnitIndex { get; init; }
+    public int UnitIndex { get; } = unitIndex;
     /// <summary>Event X</summary>
     ///
-    public int X { get; init; }
+    public int X { get; } = x;
     /// <summary>Event Y</summary>
     ///
-    public int Y { get; init; }
+    public int Y { get; } = y;
 }

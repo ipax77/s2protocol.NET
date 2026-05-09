@@ -3,7 +3,10 @@
 internal interface IDecodeParameter;
 
 internal sealed record BoundsParameter(long Min, long Max) : IDecodeParameter;
-internal sealed record FieldListParameter(List<DecodeField> Fields) : IDecodeParameter;
+internal sealed record FieldListParameter(List<DecodeField> Fields) : IDecodeParameter
+{
+    public Dictionary<long, DecodeField> FieldsByTag { get; } = Fields.ToDictionary(field => field.Tag);
+}
 internal sealed record ChoiceParameter(Dictionary<long, DecodeChoice> Choices) : IDecodeParameter;
 internal sealed record TypeIdParameter(int TypeId) : IDecodeParameter;
 internal sealed record DecodeField(string Name, int TypeId, long Tag);
