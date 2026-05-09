@@ -1,13 +1,13 @@
-﻿using s2protocol.NET.Models;
+using s2protocol.NET.Models;
 
 namespace s2protocol.NET.Parser;
 internal static partial class Parse
 {
-    private static SCameraSaveEvent GetSCameraSaveEvent(Dictionary<string, object> pydic, GameEvent gameEvent)
+    private static SCameraSaveEvent GetSCameraSaveEvent(Dictionary<string, object> pydic, GameEventHeader gameEvent)
     {
         int which = GetInt(pydic, "m_which");
         (long targetX, long targetY) = SCameraSaveEventTarget(pydic);
-        return new SCameraSaveEvent(gameEvent, which, targetX, targetY);
+        return new SCameraSaveEvent(gameEvent.UserId, gameEvent.EventId, gameEvent.Bits, gameEvent.Gameloop, which, targetX, targetY);
     }
 
     private static (long targetX, long targetY) SCameraSaveEventTarget(Dictionary<string, object> pydic)

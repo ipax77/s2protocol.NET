@@ -1,11 +1,11 @@
-﻿using s2protocol.NET.Models;
+using s2protocol.NET.Models;
 
 namespace s2protocol.NET.Parser;
 internal static partial class Parse
 {
-    private static STriggerCutsceneEndSceneFiredEvent GetSTriggerCutsceneEndSceneFiredEvent(Dictionary<string, object> pydic, GameEvent gameEvent)
+    private static STriggerCutsceneEndSceneFiredEvent GetSTriggerCutsceneEndSceneFiredEvent(Dictionary<string, object> pydic, GameEventHeader gameEvent)
     {
         long m_cutsceneId = GetBigInt(pydic, "m_cutsceneId");
-        return new STriggerCutsceneEndSceneFiredEvent(gameEvent, m_cutsceneId);
+        return new STriggerCutsceneEndSceneFiredEvent(gameEvent.UserId, gameEvent.EventId, gameEvent.Bits, gameEvent.Gameloop, m_cutsceneId);
     }
 }

@@ -1,20 +1,21 @@
-﻿using System.Text.Json.Serialization;
-
 namespace s2protocol.NET.Models;
 /// <summary>Record <c>SCameraUpdateEvent</c> SCameraUpdateEvent</summary>
 ///
-public record SCameraUpdateEvent : GameEvent
+public sealed class SCameraUpdateEvent : GameEvent
 {
     /// <summary>Record <c>SCameraUpdateEvent</c> constructor</summary>
     ///
-    public SCameraUpdateEvent(GameEvent gameEvent,
-                          string? reason,
+    public SCameraUpdateEvent(int userId,
+        int eventId,
+        int bits,
+        int gameloop,
+        string? reason,
                           int? distance,
                           long? targetX,
                           long? targetY,
                           int? yaw,
                           int? pitch,
-                          bool follow) : base(gameEvent)
+                          bool follow) : base(userId, eventId, GameEventType.SCameraUpdateEvent, bits, gameloop)
     {
         Reason = reason;
         Distance = distance;
@@ -25,35 +26,25 @@ public record SCameraUpdateEvent : GameEvent
         Follow = follow;
     }
 
-    [JsonConstructor]
-#pragma warning disable CS1591 // Missing XML comment for publicly visible type or member
-#pragma warning disable CS8618 // Non-nullable field must contain a non-null value when exiting constructor. Consider declaring as nullable.
-    public SCameraUpdateEvent()
-#pragma warning restore CS8618 // Non-nullable field must contain a non-null value when exiting constructor. Consider declaring as nullable.
-#pragma warning restore CS1591 // Missing XML comment for publicly visible type or member
-    {
-
-    }
-
     /// <summary>Event Reason</summary>
     ///
-    public string? Reason { get; init; }
+    public string? Reason { get; }
     /// <summary>Event Distance</summary>
     ///
-    public int? Distance { get; init; }
+    public int? Distance { get; }
     /// <summary>Event TargetX</summary>
     ///
-    public long? TargetX { get; init; }
+    public long? TargetX { get; }
     /// <summary>Event TargetY</summary>
     ///
-    public long? TargetY { get; init; }
+    public long? TargetY { get; }
     /// <summary>Event Yaw</summary>
     ///
-    public int? Yaw { get; init; }
+    public int? Yaw { get; }
     /// <summary>Event Pitch</summary>
     ///
-    public int? Pitch { get; init; }
+    public int? Pitch { get; }
     /// <summary>Event Follow</summary>
     ///
-    public bool Follow { get; init; }
+    public bool Follow { get; }
 }

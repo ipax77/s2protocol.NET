@@ -1,15 +1,15 @@
-﻿using s2protocol.NET.Models;
+using s2protocol.NET.Models;
 
 namespace s2protocol.NET.Parser;
 internal static partial class Parse
 {
-    private static STriggerMouseClickedEvent GetSTriggerMouseClickedEvent(Dictionary<string, object> pydic, GameEvent gameEvent)
+    private static STriggerMouseClickedEvent GetSTriggerMouseClickedEvent(Dictionary<string, object> pydic, GameEventHeader gameEvent)
     {
         bool down = GetBool(pydic, "m_down");
         int button = GetInt(pydic, "m_button");
         int flags = GetInt(pydic, "m_flags");
         (long posX, long posY) = GetPosUI(pydic);
-        return new STriggerMouseClickedEvent(gameEvent, down, button, flags, posX, posY);
+        return new STriggerMouseClickedEvent(gameEvent.UserId, gameEvent.EventId, gameEvent.Bits, gameEvent.Gameloop, down, button, flags, posX, posY);
     }
 
     private static (long posX, long posY) GetPosUI(Dictionary<string, object> pydic)

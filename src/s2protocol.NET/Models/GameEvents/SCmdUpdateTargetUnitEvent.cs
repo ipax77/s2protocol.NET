@@ -1,14 +1,15 @@
-﻿using System.Text.Json.Serialization;
-
 namespace s2protocol.NET.Models;
 /// <summary>Record <c>SCmdUpdateTargetUnitEvent</c> SCmdUpdateTargetUnitEvent</summary>
 ///
-public record SCmdUpdateTargetUnitEvent : GameEvent
+public sealed class SCmdUpdateTargetUnitEvent : GameEvent
 {
     /// <summary>Record <c>SCmdUpdateTargetUnitEvent</c> constructor</summary>
     ///
-    public SCmdUpdateTargetUnitEvent(GameEvent gameEvent,
-                                     int snapshotControlPlayerId,
+    public SCmdUpdateTargetUnitEvent(int userId,
+        int eventId,
+        int bits,
+        int gameloop,
+        int snapshotControlPlayerId,
                                      long snapshotPointX,
                                      long snapshotPointY,
                                      long snapshotPointZ,
@@ -16,7 +17,7 @@ public record SCmdUpdateTargetUnitEvent : GameEvent
                                      int timer,
                                      int targetUnitFlags,
                                      int snapshotUnitLink,
-                                     int tag) : base(gameEvent)
+                                     int tag) : base(userId, eventId, GameEventType.SCmdUpdateTargetUnitEvents, bits, gameloop)
     {
         SnapshotControlPlayerId = snapshotControlPlayerId;
         SnapshotPointX = snapshotPointX;
@@ -29,41 +30,31 @@ public record SCmdUpdateTargetUnitEvent : GameEvent
         Tag = tag;
     }
 
-    [JsonConstructor]
-#pragma warning disable CS1591 // Missing XML comment for publicly visible type or member
-#pragma warning disable CS8618 // Non-nullable field must contain a non-null value when exiting constructor. Consider declaring as nullable.
-    public SCmdUpdateTargetUnitEvent()
-#pragma warning restore CS8618 // Non-nullable field must contain a non-null value when exiting constructor. Consider declaring as nullable.
-#pragma warning restore CS1591 // Missing XML comment for publicly visible type or member
-    {
-
-    }
-
     /// <summary>Event Type</summary>
     ///
-    public int SnapshotControlPlayerId { get; init; }
+    public int SnapshotControlPlayerId { get; }
     /// <summary>Event SnapshotPointX</summary>
     ///    
-    public long SnapshotPointX { get; init; }
+    public long SnapshotPointX { get; }
     /// <summary>Event SnapshotPointY</summary>
     ///    
-    public long SnapshotPointY { get; init; }
+    public long SnapshotPointY { get; }
     /// <summary>Event SnapshotPointZ</summary>
     ///    
-    public long SnapshotPointZ { get; init; }
+    public long SnapshotPointZ { get; }
     /// <summary>Event SnapshotUpkeepPlayerId</summary>
     ///    
-    public int SnapshotUpkeepPlayerId { get; init; }
+    public int SnapshotUpkeepPlayerId { get; }
     /// <summary>Event Timer</summary>
     ///    
-    public int Timer { get; init; }
+    public int Timer { get; }
     /// <summary>Event TargetUnitFlags</summary>
     ///    
-    public int TargetUnitFlags { get; init; }
+    public int TargetUnitFlags { get; }
     /// <summary>Event SnapshotUnitLink</summary>
     ///    
-    public int SnapshotUnitLink { get; init; }
+    public int SnapshotUnitLink { get; }
     /// <summary>Event Tag</summary>
     ///    
-    public int Tag { get; init; }
+    public int Tag { get; }
 }

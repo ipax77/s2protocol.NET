@@ -1,8 +1,8 @@
-﻿using s2protocol.NET.Models;
+using s2protocol.NET.Models;
 
 namespace s2protocol.NET.Parser; internal static partial class Parse
 {
-    private static SCameraUpdateEvent GetSCameraUpdateEvent(Dictionary<string, object> gameDic, GameEvent gameEvent)
+    private static SCameraUpdateEvent GetSCameraUpdateEvent(Dictionary<string, object> gameDic, GameEventHeader gameEvent)
     {
         string? reason = GetNullableString(gameDic, "m_reason");
         int? distance = GetNullableInt(gameDic, "m_distance");
@@ -10,7 +10,7 @@ namespace s2protocol.NET.Parser; internal static partial class Parse
         int? pitch = GetNullableInt(gameDic, "m_pitch");
         bool follow = GetBool(gameDic, "m_follow");
         (long? targetX, long? targetY) = GetSCameraUpdateEventTarget(gameDic);
-        return new SCameraUpdateEvent(gameEvent, reason, distance, targetX, targetY, yaw, pitch, follow);
+        return new SCameraUpdateEvent(gameEvent.UserId, gameEvent.EventId, gameEvent.Bits, gameEvent.Gameloop, reason, distance, targetX, targetY, yaw, pitch, follow);
     }
 
     private static (long?, long?) GetSCameraUpdateEventTarget(Dictionary<string, object> pydic)

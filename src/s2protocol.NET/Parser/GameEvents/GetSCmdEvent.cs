@@ -1,8 +1,8 @@
-﻿using s2protocol.NET.Models;
+using s2protocol.NET.Models;
 
 namespace s2protocol.NET.Parser; internal static partial class Parse
 {
-    private static SCmdEvent GetSCmdEvent(Dictionary<string, object> gameDic, GameEvent gameEvent)
+    private static SCmdEvent GetSCmdEvent(Dictionary<string, object> gameDic, GameEventHeader gameEvent)
     {
         int? unitGroup = GetNullableInt(gameDic, "m_unitGroup");
         (int abilLink, int abilCmdIndex, string? abilCmdData) = GetAbil(gameDic);
@@ -10,7 +10,7 @@ namespace s2protocol.NET.Parser; internal static partial class Parse
         int sequence = GetInt(gameDic, "m_sequence");
         int? otherUnit = GetNullableInt(gameDic, "m_otherUnit");
         (long? targetX, long? targetY, long? targetZ) = GetSCmdEventTarget(gameDic);
-        return new SCmdEvent(gameEvent, unitGroup, abilLink, abilCmdIndex, abilCmdData, targetX, targetY, targetZ, cmdFalgs, sequence, otherUnit);
+        return new SCmdEvent(gameEvent.UserId, gameEvent.EventId, gameEvent.Bits, gameEvent.Gameloop, unitGroup, abilLink, abilCmdIndex, abilCmdData, targetX, targetY, targetZ, cmdFalgs, sequence, otherUnit);
     }
 
     private static (long?, long?, long?) GetSCmdEventTarget(Dictionary<string, object> pydic)

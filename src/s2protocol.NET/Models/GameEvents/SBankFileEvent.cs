@@ -1,14 +1,15 @@
-﻿using System.Text.Json.Serialization;
-
 namespace s2protocol.NET.Models;
 /// <summary>Record <c>SUserOptionsEvent</c> SUserOptionsEvent</summary>
 ///
-public record SUserOptionsEvent : GameEvent
+public sealed class SUserOptionsEvent : GameEvent
 {
     /// <summary>Record <c>SUserOptionsEvent</c> constructor</summary>
     ///
-    public SUserOptionsEvent(GameEvent gameEvent,
-                             bool testCheatsEnabled,
+    public SUserOptionsEvent(int userId,
+        int eventId,
+        int bits,
+        int gameloop,
+        bool testCheatsEnabled,
                              bool multiplayerCheatsEnabled,
                              bool gameFullyDownloaded,
                              string hotkeyProfile,
@@ -21,7 +22,7 @@ public record SUserOptionsEvent : GameEvent
                              bool developmentCheatsEnabled,
                              bool platformMac,
                              int baseBuildNum,
-                             bool syncChecksummingEnabled) : base(gameEvent)
+                             bool syncChecksummingEnabled) : base(userId, eventId, GameEventType.SUserOptionsEvent, bits, gameloop)
     {
         TestCheatsEnabled = testCheatsEnabled;
         MultiplayerCheatsEnabled = multiplayerCheatsEnabled;
@@ -39,59 +40,49 @@ public record SUserOptionsEvent : GameEvent
         SyncChecksummingEnabled = syncChecksummingEnabled;
     }
 
-    [JsonConstructor]
-#pragma warning disable CS1591 // Missing XML comment for publicly visible type or member
-#pragma warning disable CS8618 // Non-nullable field must contain a non-null value when exiting constructor. Consider declaring as nullable.
-    public SUserOptionsEvent()
-#pragma warning restore CS8618 // Non-nullable field must contain a non-null value when exiting constructor. Consider declaring as nullable.
-#pragma warning restore CS1591 // Missing XML comment for publicly visible type or member
-    {
-
-    }
-
 
 
     /// <summary>Event TestCheatsEnabled</summary>
     ///
-    public bool TestCheatsEnabled { get; init; }
+    public bool TestCheatsEnabled { get; }
     /// <summary>Event MultiplayerCheatsEnabled</summary>
     ///
-    public bool MultiplayerCheatsEnabled { get; init; }
+    public bool MultiplayerCheatsEnabled { get; }
     /// <summary>Event GameFullyDownloaded</summary>
     ///
-    public bool GameFullyDownloaded { get; init; }
+    public bool GameFullyDownloaded { get; }
     /// <summary>Event HotkeyProfile</summary>
     ///
-    public string HotkeyProfile { get; init; }
+    public string HotkeyProfile { get; }
     /// <summary>Event UseGalaxyAsserts</summary>
     ///
-    public bool UseGalaxyAsserts { get; init; }
+    public bool UseGalaxyAsserts { get; }
     /// <summary>Event DebugPauseEnabled</summary>
     ///
-    public bool DebugPauseEnabled { get; init; }
+    public bool DebugPauseEnabled { get; }
     /// <summary>Event CameraFollow</summary>
     ///
-    public bool CameraFollow { get; init; }
+    public bool CameraFollow { get; }
     /// <summary>Event IsMapToMapTransition</summary>
     ///
-    public bool IsMapToMapTransition { get; init; }
+    public bool IsMapToMapTransition { get; }
     /// <summary>Event BuildNum</summary>
     ///
-    public int BuildNum { get; init; }
+    public int BuildNum { get; }
     /// <summary>Event VersionFlags</summary>
     ///
-    public int VersionFlags { get; init; }
+    public int VersionFlags { get; }
     /// <summary>Event DevelopmentCheatsEnabled</summary>
     ///
-    public bool DevelopmentCheatsEnabled { get; init; }
+    public bool DevelopmentCheatsEnabled { get; }
     /// <summary>Event PlatformMac</summary>
     ///
-    public bool PlatformMac { get; init; }
+    public bool PlatformMac { get; }
     /// <summary>Event BaseBuildNum</summary>
     ///
-    public int BaseBuildNum { get; init; }
+    public int BaseBuildNum { get; }
     /// <summary>Event SyncChecksummingEnabled</summary>
     ///
-    public bool SyncChecksummingEnabled { get; init; }
+    public bool SyncChecksummingEnabled { get; }
 
 }

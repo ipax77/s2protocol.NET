@@ -71,6 +71,31 @@ public class SingleReplayDecodeBenchmarks
 
 [MemoryDiagnoser]
 [ShortRunJob]
+public class SingleGameEventsReplayDecodeBenchmarks
+{
+    private string replayPath = string.Empty;
+
+    [GlobalSetup]
+    public void Setup()
+    {
+        replayPath = ReplayBenchmarkData.GetSingleReplayPath();
+    }
+
+    [Benchmark]
+    public async Task<ReplayDecodeSummary> DecodeSingleReplayGameEventsOnly()
+    {
+        ReplayDecoderOptions options = ReplayDecodeMode.CreateOptions(ReplayDecodeMode.GameEventsOnly);
+
+        using ReplayDecoder replayDecoder = new();
+        Sc2Replay replay = await replayDecoder.DecodeAsync(replayPath, options, CancellationToken.None).ConfigureAwait(false)
+            ?? throw new InvalidOperationException($"Could not decode replay '{replayPath}'.");
+
+        return ReplayDecodeSummary.From(replay);
+    }
+}
+
+[MemoryDiagnoser]
+[ShortRunJob]
 public class ParallelReplayDecodeBenchmarks
 {
     private string[] replayPaths = [];
@@ -144,9 +169,10 @@ internal static class ReplayDecodeMode
 {
     public const string HeaderOnly = nameof(HeaderOnly);
     public const string DirectStrikeCore = nameof(DirectStrikeCore);
+    public const string GameEventsOnly = nameof(GameEventsOnly);
     public const string Full = nameof(Full);
 
-    public static readonly string[] Names = [HeaderOnly, DirectStrikeCore, Full];
+    public static readonly string[] Names = [HeaderOnly, DirectStrikeCore, GameEventsOnly, Full];
 
     public static ReplayDecoderOptions CreateOptions(string mode)
     {
@@ -170,6 +196,16 @@ internal static class ReplayDecodeMode
                 GameEvents = false,
                 MessageEvents = false,
                 TrackerEvents = true,
+                AttributeEvents = false,
+            },
+            GameEventsOnly => new ReplayDecoderOptions
+            {
+                Details = false,
+                Initdata = false,
+                Metadata = false,
+                GameEvents = true,
+                MessageEvents = false,
+                TrackerEvents = false,
                 AttributeEvents = false,
             },
             Full => new ReplayDecoderOptions(),

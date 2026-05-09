@@ -1,12 +1,12 @@
-﻿using s2protocol.NET.Models;
+using s2protocol.NET.Models;
 
 namespace s2protocol.NET.Parser; internal static partial class Parse
 {
-    private static SSelectionDeltaEvent GetSSelectionDeltaEvent(Dictionary<string, object> gameDic, GameEvent gameEvent)
+    private static SSelectionDeltaEvent GetSSelectionDeltaEvent(Dictionary<string, object> gameDic, GameEventHeader gameEvent)
     {
         var delta = GetSelectionDeltaEventDelta(gameDic);
         int controlGroupId = GetInt(gameDic, "m_controlGroupId");
-        return new SSelectionDeltaEvent(gameEvent, delta, controlGroupId);
+        return new SSelectionDeltaEvent(gameEvent.UserId, gameEvent.EventId, gameEvent.Bits, gameEvent.Gameloop, delta, controlGroupId);
     }
 
     private static SelectionDeltaEventDelta GetSelectionDeltaEventDelta(Dictionary<string, object> pydic)

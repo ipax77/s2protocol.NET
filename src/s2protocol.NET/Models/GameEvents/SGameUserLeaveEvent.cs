@@ -1,30 +1,20 @@
-﻿using System.Text.Json.Serialization;
-
 namespace s2protocol.NET.Models;
 /// <summary>Record <c>SGameUserLeaveEvent</c> SGameUserLeaveEvent</summary>
 ///
-public record SGameUserLeaveEvent : GameEvent
+public sealed class SGameUserLeaveEvent : GameEvent
 {
     /// <summary>Record <c>SGameUserLeaveEvent</c> constructor</summary>
     ///
-    public SGameUserLeaveEvent(
-        GameEvent gameEvent,
-        int leaveReason) : base(gameEvent)
+    public SGameUserLeaveEvent(int userId,
+        int eventId,
+        int bits,
+        int gameloop,
+        int leaveReason) : base(userId, eventId, GameEventType.SGameUserLeaveEvent, bits, gameloop)
     {
         LeaveReason = leaveReason;
     }
 
-    [JsonConstructor]
-#pragma warning disable CS1591 // Missing XML comment for publicly visible type or member
-#pragma warning disable CS8618 // Non-nullable field must contain a non-null value when exiting constructor. Consider declaring as nullable.
-    public SGameUserLeaveEvent()
-#pragma warning restore CS8618 // Non-nullable field must contain a non-null value when exiting constructor. Consider declaring as nullable.
-#pragma warning restore CS1591 // Missing XML comment for publicly visible type or member
-    {
-
-    }
-
     /// <summary>Event LeaveReason</summary>
     ///
-    public int LeaveReason { get; init; }
+    public int LeaveReason { get; }
 }
