@@ -24,6 +24,7 @@
     <RunAnalyzersDuringLiveAnalysis>true</RunAnalyzersDuringLiveAnalysis>
     <CodeAnalysisTreatWarningsAsErrors>false</CodeAnalysisTreatWarningsAsErrors>
     <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
+    <IsAotCompatible>true</IsAotCompatible>
     <GenerateDocumentationFile>true</GenerateDocumentationFile>
     <WarningsAsErrors>nullable</WarningsAsErrors>
     <LangVersion>latest</LangVersion>
@@ -46,6 +47,8 @@
   </ItemGroup>
 
   <ItemGroup>
+    <!-- SharpZipLib preserves MPQ BZip2 support. It does not currently advertise AOT compatibility metadata, so
+         VerifyReferenceAotCompatibility is intentionally not enabled by default. -->
     <PackageReference Include="SharpZipLib" Version="1.4.2" />
   </ItemGroup>
 

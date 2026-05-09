@@ -3,7 +3,6 @@ using s2protocol.NET.Mpq;
 using s2protocol.NET.Parser;
 using s2protocol.NET.S2Protocol;
 using System.Runtime.CompilerServices;
-using System.Text;
 using System.Text.Json;
 using System.Threading.Channels;
 
@@ -429,12 +428,7 @@ public sealed class ReplayDecoder : IDisposable
         var meta_bytes = await archive.ReadFileAsync("replay.gamemetadata.json", false, token).ConfigureAwait(false);
         if (meta_bytes != null)
         {
-            var meta_string = Encoding.UTF8.GetString(meta_bytes);
-            if (meta_string != null)
-            {
-                var data = JsonSerializer.Deserialize<ReplayMetadata>(meta_string);
-                return data;
-            }
+            return JsonSerializer.Deserialize(meta_bytes, S2ProtocolJsonSerializerContext.Default.ReplayMetadata);
         }
         return null;
     }
