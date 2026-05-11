@@ -118,11 +118,13 @@ public class ParallelReplayDecodeBenchmarks
         int decoded = 0;
         int errors = 0;
         int trackerEvents = 0;
+#pragma warning disable CS0618 // Benchmark keeps legacy helper coverage while it remains public.
         await foreach (DecodeParallelResult result in replayDecoder.DecodeParallelWithErrorReport(
                            replayPaths,
                            Threads,
                            options,
                            CancellationToken.None).ConfigureAwait(false))
+#pragma warning restore CS0618 // Benchmark keeps legacy helper coverage while it remains public.
         {
             if (result.Sc2Replay is null)
             {

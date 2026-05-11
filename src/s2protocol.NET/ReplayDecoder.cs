@@ -2,186 +2,21 @@
 using s2protocol.NET.Mpq;
 using s2protocol.NET.Parser;
 using s2protocol.NET.S2Protocol;
-using System.Runtime.CompilerServices;
 using System.Text.Json;
-using System.Threading.Channels;
 
 namespace s2protocol.NET;
 
 /// <summary>
-/// Provides functionality to decode Starcraft II replay files, supporting parallel processing and optional error
-/// reporting.
+/// Provides functionality to decode Starcraft II replay files.
 /// </summary>
-/// <remarks>The <see cref="ReplayDecoder"/> class is designed to process Starcraft II replay files efficiently,
-/// with support for parallel decoding and customizable decoding options. It also provides methods to handle decoding
-/// errors and report them alongside the decoded results.</remarks>
-public sealed class ReplayDecoder : IDisposable
+/// <remarks>The <see cref="ReplayDecoder"/> class is designed to decode individual Starcraft II replay files with
+/// customizable decoding options. For large replay sets, prefer <see cref="DecodeAsync(string, ReplayDecoderOptions?, CancellationToken)"/>
+/// with caller-owned parallelism so the caller can control buffering, persistence, and memory use.</remarks>
+public sealed partial class ReplayDecoder : IDisposable
 {
     /// <summary>Creates the decoder</summary>
     public ReplayDecoder()
     {
-    }
-
-    /// <summary>Decode Starcraft2 replays
-    /// Replays replays will be skipped
-    /// </summary>
-    /// <param name="replayPaths">The paths to the Starcraft2 replays</param>
-    /// /// <param name="threads">Number of parallelism</param>
-    /// <param name="options">Optional decoding options</param>
-    /// <param name="token">Optional CancellationToken</param>
-    public async IAsyncEnumerable<Sc2Replay> DecodeParallel(ICollection<string> replayPaths,
-                                                            int threads,
-                                                            ReplayDecoderOptions? options = null,
-                                                            [EnumeratorCancellation] CancellationToken token = default)
-    {
-        Channel<Sc2Replay> replayChannel = Channel.CreateUnbounded<Sc2Replay>();
-
-        _ = Produce(replayChannel, replayPaths, threads, options, token);
-
-        while (await replayChannel.Reader.WaitToReadAsync(token).ConfigureAwait(false))
-        {
-            if (replayChannel.Reader.TryRead(out var replay))
-            {
-                yield return replay;
-            }
-        }
-    }
-
-    /// <summary>Decode Starcraft2 replays and report potential errors
-    /// </summary>
-    /// <param name="replayPaths">The paths to the Starcraft2 replays</param>
-    /// /// <param name="threads">Number of parallelism</param>
-    /// <param name="options">Optional decoding options</param>
-    /// <param name="token">Optional CancellationToken</param>
-    public async IAsyncEnumerable<DecodeParallelResult> DecodeParallelWithErrorReport(ICollection<string> replayPaths,
-                                                                                      int threads,
-                                                                                      ReplayDecoderOptions? options = null,
-                                                                                      [EnumeratorCancellation] CancellationToken token = default)
-    {
-        Channel<DecodeParallelResult> replayResultChannel = Channel.CreateUnbounded<DecodeParallelResult>(
-            new UnboundedChannelOptions()
-            {
-                SingleReader = true,
-                SingleWriter = false
-            }
-        );
-
-        _ = ProduceResults(replayResultChannel, replayPaths, threads, options, token);
-
-        while (await replayResultChannel.Reader.WaitToReadAsync(token).ConfigureAwait(false))
-        {
-            if (replayResultChannel.Reader.TryRead(out var replayResult))
-            {
-                yield return replayResult;
-            }
-        }
-    }
-
-    private async Task Produce(Channel<Sc2Replay> channel,
-                               ICollection<string> replayPaths,
-                               int threads,
-                               ReplayDecoderOptions? options,
-                               CancellationToken token)
-    {
-        ParallelOptions parallelOptions = new()
-        {
-            CancellationToken = token,
-            MaxDegreeOfParallelism = threads
-        };
-
-        try
-        {
-            await Parallel.ForEachAsync(replayPaths, parallelOptions, async (replayPath, token) =>
-            {
-#pragma warning disable CA1031 // Do not catch general exception types - finish the loop event if some replays fail.
-                try
-                {
-                    var replay = await DecodeAsync(replayPath, options, token).ConfigureAwait(false);
-
-                    if (replay != null)
-                    {
-                        channel.Writer.TryWrite(replay);
-                    }
-                    else
-                    {
-                    }
-                }
-                catch (OperationCanceledException) { }
-                catch (Exception)
-                {
-
-                }
-#pragma warning restore CA1031 // Do not catch general exception types
-            }).ConfigureAwait(false);
-        }
-        catch (OperationCanceledException) { }
-        catch (Exception ex)
-        {
-            throw new DecodeException($"failed decoding replays: {ex.Message}");
-        }
-        finally
-        {
-            channel.Writer.Complete();
-        }
-    }
-
-    private async Task ProduceResults(Channel<DecodeParallelResult> channel,
-                                      ICollection<string> replayPaths,
-                                      int threads,
-                                      ReplayDecoderOptions? options,
-                                      CancellationToken token)
-    {
-        ParallelOptions parallelOptions = new()
-        {
-            CancellationToken = token,
-            MaxDegreeOfParallelism = threads
-        };
-
-        try
-        {
-            await Parallel.ForEachAsync(replayPaths, parallelOptions, async (replayPath, token) =>
-            {
-#pragma warning disable CA1031 // Do not catch general exception types - finish the loop event if some replays fail.
-                try
-                {
-                    var replay = await DecodeAsync(replayPath, options, token).ConfigureAwait(false);
-                    ArgumentNullException.ThrowIfNull(replay, nameof(replay));
-
-                    if (!channel.Writer.TryWrite(new DecodeParallelResult()
-                    {
-                        Sc2Replay = replay,
-                        ReplayPath = replayPath
-                    })
-                    )
-                    {
-                        channel.Writer.TryWrite(new DecodeParallelResult()
-                        {
-                            ReplayPath = replayPath,
-                            Exception = "Failed writing to channel."
-                        });
-                    }
-                }
-                catch (OperationCanceledException) { }
-                catch (Exception ex)
-                {
-                    channel.Writer.TryWrite(new DecodeParallelResult()
-                    {
-                        ReplayPath = replayPath,
-                        Exception = ex.Message
-                    });
-                }
-#pragma warning restore CA1031 // Do not catch general exception types
-            }).ConfigureAwait(false);
-        }
-        catch (OperationCanceledException) { }
-        catch (Exception ex)
-        {
-            throw new DecodeException($"failed decoding replays: {ex.Message}");
-        }
-        finally
-        {
-            channel.Writer.Complete();
-        }
     }
 
     /// <summary>Decode Starcraft2 replay</summary>
