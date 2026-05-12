@@ -11,73 +11,12 @@ public sealed partial record S2ProtocolVersion
     public Header DecodeReplayHeader(ReadOnlyMemory<byte> content)
     {
         VersionedTypedDecoder decoder = new(content, TypeInfos);
+        HeaderReadState state = default;
 
-        bool useScaledTime = false;
-        string signature = string.Empty;
-        Version version = new();
-        int flags = 0;
-        int build = 0;
-        int baseBuild = 0;
-        int elapsed = 0;
-        int dataBuild = 0;
-        int type = 0;
+        decoder.ReadStruct(ReplayHeaderTypeId ?? 18, ref state);
 
-        decoder.ReadStruct(ReplayHeaderTypeId ?? 18, (name, typeId) =>
-        {
-            switch (name)
-            {
-                case "m_signature":
-                    signature = decoder.ReadString(typeId);
-                    return true;
-                case "m_version":
-                    decoder.ReadStruct(typeId, (versionName, versionTypeId) =>
-                    {
-                        switch (versionName)
-                        {
-                            case "m_flags":
-                                flags = decoder.ReadInt(versionTypeId);
-                                return true;
-                            case "m_major":
-                                int major = decoder.ReadInt(versionTypeId);
-                                version = new Version(major, version.Minor < 0 ? 0 : version.Minor, version.Build < 0 ? 0 : version.Build);
-                                return true;
-                            case "m_minor":
-                                int minor = decoder.ReadInt(versionTypeId);
-                                version = new Version(version.Major < 0 ? 0 : version.Major, minor, version.Build < 0 ? 0 : version.Build);
-                                return true;
-                            case "m_revision":
-                                int revision = decoder.ReadInt(versionTypeId);
-                                version = new Version(version.Major < 0 ? 0 : version.Major, version.Minor < 0 ? 0 : version.Minor, revision);
-                                return true;
-                            case "m_build":
-                                build = decoder.ReadInt(versionTypeId);
-                                return true;
-                            case "m_baseBuild":
-                                baseBuild = decoder.ReadInt(versionTypeId);
-                                return true;
-                            default:
-                                return false;
-                        }
-                    });
-                    return true;
-                case "m_type":
-                    type = decoder.ReadInt(typeId);
-                    return true;
-                case "m_elapsedGameLoops":
-                    elapsed = decoder.ReadInt(typeId);
-                    return true;
-                case "m_useScaledTime":
-                    useScaledTime = decoder.ReadBool(typeId);
-                    return true;
-                case "m_dataBuildNum":
-                    dataBuild = decoder.ReadInt(typeId);
-                    return true;
-                default:
-                    return false;
-            }
-        });
-
-        return new Header(dataBuild, elapsed, useScaledTime, version, signature, string.Empty, string.Empty, type, flags, build, baseBuild);
+        return new Header(state.DataBuild, state.Elapsed, state.UseScaledTime, state.Version ?? new Version(),
+            state.Signature ?? string.Empty, string.Empty, string.Empty, state.Type, state.Flags, state.Build, state.BaseBuild);
     }
 
     public Details DecodeReplayDetails(byte[] content) => DecodeReplayDetails((ReadOnlyMemory<byte>)content);
@@ -85,84 +24,17 @@ public sealed partial record S2ProtocolVersion
     public Details DecodeReplayDetails(ReadOnlyMemory<byte> content)
     {
         VersionedTypedDecoder decoder = new(content, TypeInfos);
-
-        int campaignIndex = 0;
-        int defaultDifficulty = 0;
-        string description = string.Empty;
-        string difficulty = string.Empty;
-        bool disableRecoverGame = false;
-        int gameSpeed = 0;
-        string imageFilePath = string.Empty;
-        bool isBlizzardMap = false;
-        string mapFileName = string.Empty;
-        bool miniSave = false;
-        bool restartAsTransitionMap = false;
-        long timeLocalOffset = 0;
-        long timeUTC = 0;
-        string title = string.Empty;
-        List<DetailsPlayer> players = [];
-
-        decoder.ReadStruct(GameDetailsTypeId ?? 40, (name, typeId) =>
+        DetailsReadState state = new()
         {
-            switch (name)
-            {
-                case "m_campaignIndex":
-                    campaignIndex = decoder.ReadInt(typeId);
-                    return true;
-                case "m_defaultDifficulty":
-                    defaultDifficulty = decoder.ReadInt(typeId);
-                    return true;
-                case "m_description":
-                    description = decoder.ReadString(typeId);
-                    return true;
-                case "m_difficulty":
-                    difficulty = decoder.ReadString(typeId);
-                    return true;
-                case "m_disableRecoverGame":
-                    disableRecoverGame = decoder.ReadBool(typeId);
-                    return true;
-                case "m_gameSpeed":
-                    gameSpeed = decoder.ReadInt(typeId);
-                    return true;
-                case "m_imageFilePath":
-                    imageFilePath = decoder.ReadString(typeId);
-                    return true;
-                case "m_isBlizzardMap":
-                    isBlizzardMap = decoder.ReadBool(typeId);
-                    return true;
-                case "m_mapFileName":
-                    mapFileName = decoder.ReadString(typeId);
-                    return true;
-                case "m_miniSave":
-                    miniSave = decoder.ReadBool(typeId);
-                    return true;
-                case "m_restartAsTransitionMap":
-                    restartAsTransitionMap = decoder.ReadBool(typeId);
-                    return true;
-                case "m_timeLocalOffset":
-                    timeLocalOffset = decoder.ReadLong(typeId);
-                    return true;
-                case "m_timeUTC":
-                    timeUTC = decoder.ReadLong(typeId);
-                    return true;
-                case "m_title":
-                    title = decoder.ReadString(typeId);
-                    return true;
-                case "m_playerList":
-                    decoder.ReadArray(typeId, itemTypeId =>
-                    {
-                        players.Add(ReadDetailsPlayer(decoder, itemTypeId));
-                        return true;
-                    });
-                    return true;
-                default:
-                    return false;
-            }
-        });
+            Players = [],
+        };
 
-        return new Details(campaignIndex, defaultDifficulty, description, difficulty, disableRecoverGame, gameSpeed,
-            imageFilePath, isBlizzardMap, mapFileName, miniSave, restartAsTransitionMap, timeLocalOffset, timeUTC,
-            title, players);
+        decoder.ReadStruct(GameDetailsTypeId ?? 40, ref state);
+
+        return new Details(state.CampaignIndex, state.DefaultDifficulty, state.Description ?? string.Empty,
+            state.Difficulty ?? string.Empty, state.DisableRecoverGame, state.GameSpeed, state.ImageFilePath ?? string.Empty,
+            state.IsBlizzardMap, state.MapFileName ?? string.Empty, state.MiniSave, state.RestartAsTransitionMap,
+            state.TimeLocalOffset, state.TimeUTC, state.Title ?? string.Empty, state.Players);
     }
 
     public Initdata? DecodeReplayInitData(byte[] content) => DecodeReplayInitData((ReadOnlyMemory<byte>)content);
@@ -170,46 +42,11 @@ public sealed partial record S2ProtocolVersion
     public Initdata? DecodeReplayInitData(ReadOnlyMemory<byte> content)
     {
         BitPackedTypedDecoder decoder = new(content, TypeInfos);
-        Initdata? initdata = null;
+        InitDataReadState state = default;
 
-        decoder.ReadStruct(ReplayInitDataTypeId ?? 73, (name, typeId) =>
-        {
-            if (name != "m_syncLobbyState")
-            {
-                return false;
-            }
+        decoder.ReadStruct(ReplayInitDataTypeId ?? 73, ref state);
 
-            List<UserInitialData> userInitialData = [];
-            LobbyState lobbyState = new(0, [], 0, false, 0, 0, 0, 0, 0, 0, 0);
-            GameDescription gameDescription = EmptyGameDescription();
-
-            decoder.ReadStruct(typeId, (syncName, syncTypeId) =>
-            {
-                switch (syncName)
-                {
-                    case "m_userInitialData":
-                        decoder.ReadArray(syncTypeId, itemTypeId =>
-                        {
-                            userInitialData.Add(ReadUserInitialData(decoder, itemTypeId));
-                            return true;
-                        });
-                        return true;
-                    case "m_lobbyState":
-                        lobbyState = ReadLobbyState(decoder, syncTypeId);
-                        return true;
-                    case "m_gameDescription":
-                        gameDescription = ReadGameDescription(decoder, syncTypeId);
-                        return true;
-                    default:
-                        return false;
-                }
-            });
-
-            initdata = new Initdata(userInitialData, lobbyState, gameDescription);
-            return true;
-        });
-
-        return initdata;
+        return state.Initdata;
     }
 
     public MessageEvents DecodeReplayMessageEvents(byte[] content) => DecodeReplayMessageEvents((ReadOnlyMemory<byte>)content);
@@ -382,121 +219,312 @@ public sealed partial record S2ProtocolVersion
         return new AttributeEvents(source, mapNamespace, scopes);
     }
 
-    private static DetailsPlayer ReadDetailsPlayer(TypedProtocolDecoder decoder, int typeId)
+    private struct HeaderReadState : IStructFieldReader
     {
-        PlayerColor color = new(0, 0, 0, 0);
-        int control = 0;
-        int handicap = 0;
-        string hero = string.Empty;
-        string nameValue = string.Empty;
-        int observe = 0;
-        string race = string.Empty;
-        int result = 0;
-        int team = 0;
-        Toon toon = new(0, string.Empty, 0, 0);
-        int slot = 0;
+        public bool UseScaledTime;
+        public string? Signature;
+        public Version? Version;
+        public int Flags;
+        public int Build;
+        public int BaseBuild;
+        public int Elapsed;
+        public int DataBuild;
+        public int Type;
 
-        decoder.ReadStruct(typeId, (name, fieldTypeId) =>
+        public bool ReadField(TypedProtocolDecoder decoder, string name, int fieldTypeId)
         {
             switch (name)
             {
-                case "m_color":
-                    color = ReadColor(decoder, fieldTypeId);
+                case "m_signature":
+                    Signature = decoder.ReadString(fieldTypeId);
                     return true;
-                case "m_control":
-                    control = decoder.ReadInt(fieldTypeId);
+                case "m_version":
+                    HeaderVersionReadState version = new(Version ?? new Version(), Flags, Build, BaseBuild);
+                    decoder.ReadStruct(fieldTypeId, ref version);
+                    Version = version.Version;
+                    Flags = version.Flags;
+                    Build = version.Build;
+                    BaseBuild = version.BaseBuild;
                     return true;
-                case "m_handicap":
-                    handicap = decoder.ReadInt(fieldTypeId);
+                case "m_type":
+                    Type = decoder.ReadInt(fieldTypeId);
                     return true;
-                case "m_hero":
-                    hero = decoder.ReadString(fieldTypeId);
+                case "m_elapsedGameLoops":
+                    Elapsed = decoder.ReadInt(fieldTypeId);
                     return true;
-                case "m_name":
-                    nameValue = decoder.ReadString(fieldTypeId);
+                case "m_useScaledTime":
+                    UseScaledTime = decoder.ReadBool(fieldTypeId);
                     return true;
-                case "m_observe":
-                    observe = decoder.ReadInt(fieldTypeId);
-                    return true;
-                case "m_race":
-                    race = decoder.ReadString(fieldTypeId);
-                    return true;
-                case "m_result":
-                    result = decoder.ReadInt(fieldTypeId);
-                    return true;
-                case "m_teamId":
-                    team = decoder.ReadInt(fieldTypeId);
-                    return true;
-                case "m_toon":
-                    toon = ReadToon(decoder, fieldTypeId);
-                    return true;
-                case "m_workingSetSlotId":
-                    slot = decoder.ReadInt(fieldTypeId);
+                case "m_dataBuildNum":
+                    DataBuild = decoder.ReadInt(fieldTypeId);
                     return true;
                 default:
                     return false;
             }
-        });
+        }
+    }
 
-        return new DetailsPlayer(color, control, handicap, hero, nameValue, observe, race, result, team, toon, slot);
+    private struct HeaderVersionReadState : IStructFieldReader
+    {
+        public HeaderVersionReadState(Version version, int flags, int build, int baseBuild)
+        {
+            Version = version;
+            Flags = flags;
+            Build = build;
+            BaseBuild = baseBuild;
+        }
+
+        public Version Version;
+        public int Flags;
+        public int Build;
+        public int BaseBuild;
+
+        public bool ReadField(TypedProtocolDecoder decoder, string name, int fieldTypeId)
+        {
+            switch (name)
+            {
+                case "m_flags":
+                    Flags = decoder.ReadInt(fieldTypeId);
+                    return true;
+                case "m_major":
+                    int major = decoder.ReadInt(fieldTypeId);
+                    Version = new Version(major, Version.Minor < 0 ? 0 : Version.Minor, Version.Build < 0 ? 0 : Version.Build);
+                    return true;
+                case "m_minor":
+                    int minor = decoder.ReadInt(fieldTypeId);
+                    Version = new Version(Version.Major < 0 ? 0 : Version.Major, minor, Version.Build < 0 ? 0 : Version.Build);
+                    return true;
+                case "m_revision":
+                    int revision = decoder.ReadInt(fieldTypeId);
+                    Version = new Version(Version.Major < 0 ? 0 : Version.Major, Version.Minor < 0 ? 0 : Version.Minor, revision);
+                    return true;
+                case "m_build":
+                    Build = decoder.ReadInt(fieldTypeId);
+                    return true;
+                case "m_baseBuild":
+                    BaseBuild = decoder.ReadInt(fieldTypeId);
+                    return true;
+                default:
+                    return false;
+            }
+        }
+    }
+
+    private struct DetailsReadState : IStructFieldReader
+    {
+        public int CampaignIndex;
+        public int DefaultDifficulty;
+        public string? Description;
+        public string? Difficulty;
+        public bool DisableRecoverGame;
+        public int GameSpeed;
+        public string? ImageFilePath;
+        public bool IsBlizzardMap;
+        public string? MapFileName;
+        public bool MiniSave;
+        public bool RestartAsTransitionMap;
+        public long TimeLocalOffset;
+        public long TimeUTC;
+        public string? Title;
+        public List<DetailsPlayer> Players;
+
+        public bool ReadField(TypedProtocolDecoder decoder, string name, int fieldTypeId)
+        {
+            switch (name)
+            {
+                case "m_campaignIndex": CampaignIndex = decoder.ReadInt(fieldTypeId); return true;
+                case "m_defaultDifficulty": DefaultDifficulty = decoder.ReadInt(fieldTypeId); return true;
+                case "m_description": Description = decoder.ReadString(fieldTypeId); return true;
+                case "m_difficulty": Difficulty = decoder.ReadString(fieldTypeId); return true;
+                case "m_disableRecoverGame": DisableRecoverGame = decoder.ReadBool(fieldTypeId); return true;
+                case "m_gameSpeed": GameSpeed = decoder.ReadInt(fieldTypeId); return true;
+                case "m_imageFilePath": ImageFilePath = decoder.ReadString(fieldTypeId); return true;
+                case "m_isBlizzardMap": IsBlizzardMap = decoder.ReadBool(fieldTypeId); return true;
+                case "m_mapFileName": MapFileName = decoder.ReadString(fieldTypeId); return true;
+                case "m_miniSave": MiniSave = decoder.ReadBool(fieldTypeId); return true;
+                case "m_restartAsTransitionMap": RestartAsTransitionMap = decoder.ReadBool(fieldTypeId); return true;
+                case "m_timeLocalOffset": TimeLocalOffset = decoder.ReadLong(fieldTypeId); return true;
+                case "m_timeUTC": TimeUTC = decoder.ReadLong(fieldTypeId); return true;
+                case "m_title": Title = decoder.ReadString(fieldTypeId); return true;
+                case "m_playerList":
+                    DetailsPlayerArrayReader reader = new(Players);
+                    decoder.ReadArray(fieldTypeId, ref reader);
+                    return true;
+                default:
+                    return false;
+            }
+        }
+    }
+
+    private readonly struct DetailsPlayerArrayReader(List<DetailsPlayer> players) : IArrayItemReader
+    {
+        public bool ReadItem(TypedProtocolDecoder decoder, int itemTypeId)
+        {
+            players.Add(ReadDetailsPlayer(decoder, itemTypeId));
+            return true;
+        }
+    }
+
+    private struct InitDataReadState : IStructFieldReader
+    {
+        public Initdata? Initdata;
+
+        public bool ReadField(TypedProtocolDecoder decoder, string name, int fieldTypeId)
+        {
+            if (name != "m_syncLobbyState")
+            {
+                return false;
+            }
+
+            SyncLobbyStateReadState state = new()
+            {
+                UserInitialData = [],
+                LobbyState = new LobbyState(0, [], 0, false, 0, 0, 0, 0, 0, 0, 0),
+                GameDescription = EmptyGameDescription(),
+            };
+
+            decoder.ReadStruct(fieldTypeId, ref state);
+            Initdata = new Initdata(state.UserInitialData, state.LobbyState, state.GameDescription);
+            return true;
+        }
+    }
+
+    private struct SyncLobbyStateReadState : IStructFieldReader
+    {
+        public List<UserInitialData> UserInitialData;
+        public LobbyState LobbyState;
+        public GameDescription GameDescription;
+
+        public bool ReadField(TypedProtocolDecoder decoder, string name, int fieldTypeId)
+        {
+            switch (name)
+            {
+                case "m_userInitialData":
+                    UserInitialDataArrayReader reader = new(UserInitialData);
+                    decoder.ReadArray(fieldTypeId, ref reader);
+                    return true;
+                case "m_lobbyState":
+                    LobbyState = ReadLobbyState(decoder, fieldTypeId);
+                    return true;
+                case "m_gameDescription":
+                    GameDescription = ReadGameDescription(decoder, fieldTypeId);
+                    return true;
+                default:
+                    return false;
+            }
+        }
+    }
+
+    private readonly struct UserInitialDataArrayReader(List<UserInitialData> userInitialData) : IArrayItemReader
+    {
+        public bool ReadItem(TypedProtocolDecoder decoder, int itemTypeId)
+        {
+            userInitialData.Add(ReadUserInitialData(decoder, itemTypeId));
+            return true;
+        }
+    }
+
+    private struct DetailsPlayerReadState : IStructFieldReader
+    {
+        public PlayerColor Color;
+        public int Control;
+        public int Handicap;
+        public string? Hero;
+        public string? NameValue;
+        public int Observe;
+        public string? Race;
+        public int Result;
+        public int Team;
+        public Toon Toon;
+        public int Slot;
+
+        public bool ReadField(TypedProtocolDecoder decoder, string name, int fieldTypeId)
+        {
+            switch (name)
+            {
+                case "m_color": Color = ReadColor(decoder, fieldTypeId); return true;
+                case "m_control": Control = decoder.ReadInt(fieldTypeId); return true;
+                case "m_handicap": Handicap = decoder.ReadInt(fieldTypeId); return true;
+                case "m_hero": Hero = decoder.ReadString(fieldTypeId); return true;
+                case "m_name": NameValue = decoder.ReadString(fieldTypeId); return true;
+                case "m_observe": Observe = decoder.ReadInt(fieldTypeId); return true;
+                case "m_race": Race = decoder.ReadString(fieldTypeId); return true;
+                case "m_result": Result = decoder.ReadInt(fieldTypeId); return true;
+                case "m_teamId": Team = decoder.ReadInt(fieldTypeId); return true;
+                case "m_toon": Toon = ReadToon(decoder, fieldTypeId); return true;
+                case "m_workingSetSlotId": Slot = decoder.ReadInt(fieldTypeId); return true;
+                default: return false;
+            }
+        }
+    }
+
+    private struct ColorReadState : IStructFieldReader
+    {
+        public int A;
+        public int B;
+        public int G;
+        public int R;
+
+        public bool ReadField(TypedProtocolDecoder decoder, string name, int fieldTypeId)
+        {
+            switch (name)
+            {
+                case "m_a": A = decoder.ReadInt(fieldTypeId); return true;
+                case "m_b": B = decoder.ReadInt(fieldTypeId); return true;
+                case "m_g": G = decoder.ReadInt(fieldTypeId); return true;
+                case "m_r": R = decoder.ReadInt(fieldTypeId); return true;
+                default: return false;
+            }
+        }
+    }
+
+    private struct ToonReadState : IStructFieldReader
+    {
+        public int Id;
+        public string? ProgramId;
+        public int Realm;
+        public int Region;
+
+        public bool ReadField(TypedProtocolDecoder decoder, string name, int fieldTypeId)
+        {
+            switch (name)
+            {
+                case "m_id": Id = decoder.ReadInt(fieldTypeId); return true;
+                case "m_programId": ProgramId = decoder.ReadString(fieldTypeId); return true;
+                case "m_realm": Realm = decoder.ReadInt(fieldTypeId); return true;
+                case "m_region": Region = decoder.ReadInt(fieldTypeId); return true;
+                default: return false;
+            }
+        }
+    }
+
+    private static DetailsPlayer ReadDetailsPlayer(TypedProtocolDecoder decoder, int typeId)
+    {
+        DetailsPlayerReadState state = new()
+        {
+            Color = new PlayerColor(0, 0, 0, 0),
+            Toon = new Toon(0, string.Empty, 0, 0),
+        };
+
+        decoder.ReadStruct(typeId, ref state);
+
+        return new DetailsPlayer(state.Color, state.Control, state.Handicap, state.Hero ?? string.Empty,
+            state.NameValue ?? string.Empty, state.Observe, state.Race ?? string.Empty, state.Result, state.Team,
+            state.Toon, state.Slot);
     }
 
     private static PlayerColor ReadColor(TypedProtocolDecoder decoder, int typeId)
     {
-        int a = 0;
-        int b = 0;
-        int g = 0;
-        int r = 0;
-        decoder.ReadStruct(typeId, (name, fieldTypeId) =>
-        {
-            switch (name)
-            {
-                case "m_a":
-                    a = decoder.ReadInt(fieldTypeId);
-                    return true;
-                case "m_b":
-                    b = decoder.ReadInt(fieldTypeId);
-                    return true;
-                case "m_g":
-                    g = decoder.ReadInt(fieldTypeId);
-                    return true;
-                case "m_r":
-                    r = decoder.ReadInt(fieldTypeId);
-                    return true;
-                default:
-                    return false;
-            }
-        });
-        return new PlayerColor(a, b, g, r);
+        ColorReadState state = default;
+        decoder.ReadStruct(typeId, ref state);
+        return new PlayerColor(state.A, state.B, state.G, state.R);
     }
 
     private static Toon ReadToon(TypedProtocolDecoder decoder, int typeId)
     {
-        int id = 0;
-        string programId = string.Empty;
-        int realm = 0;
-        int region = 0;
-        decoder.ReadStruct(typeId, (name, fieldTypeId) =>
-        {
-            switch (name)
-            {
-                case "m_id":
-                    id = decoder.ReadInt(fieldTypeId);
-                    return true;
-                case "m_programId":
-                    programId = decoder.ReadString(fieldTypeId);
-                    return true;
-                case "m_realm":
-                    realm = decoder.ReadInt(fieldTypeId);
-                    return true;
-                case "m_region":
-                    region = decoder.ReadInt(fieldTypeId);
-                    return true;
-                default:
-                    return false;
-            }
-        });
-        return new Toon(id, programId, realm, region);
+        ToonReadState state = default;
+        decoder.ReadStruct(typeId, ref state);
+        return new Toon(state.Id, state.ProgramId ?? string.Empty, state.Realm, state.Region);
     }
 
     private void DecodeEventStream(
@@ -594,317 +622,411 @@ public sealed partial record S2ProtocolVersion
     private static GameDescription EmptyGameDescription()
         => new(0, 0, false, 0, false, new GameOptions(false, false, false, false, false, 0, false, false, 0, false, false, 0, 0, false, false, false), 0, false, string.Empty, 0, 0, false, 0, 0, false, 0, 0, 0, 0, [], 0, 0, string.Empty, string.Empty, [], 0, 0, false);
 
-    private static UserInitialData ReadUserInitialData(TypedProtocolDecoder decoder, int typeId)
+    private struct UserInitialDataReadState : IStructFieldReader
     {
-        string name = string.Empty;
-        string toonHandle = string.Empty;
-        string clanTag = string.Empty;
-        string clanLogo = string.Empty;
-        string hero = string.Empty;
-        string skin = string.Empty;
-        string mount = string.Empty;
-        int observe = 0;
-        int? teamPref = null;
-        long combinedRaceLevels = 0;
-        int highestLeague = 0;
-        bool testMap = false;
-        bool testAuto = false;
-        bool examine = false;
-        int testType = 0;
-        bool customInterface = false;
-        int? racePreference = null;
-        int randomSeed = 0;
-        long? scaledRating = null;
+        public string? Name;
+        public string? ToonHandle;
+        public string? ClanTag;
+        public string? ClanLogo;
+        public string? Hero;
+        public string? Skin;
+        public string? Mount;
+        public int Observe;
+        public int? TeamPref;
+        public long CombinedRaceLevels;
+        public int HighestLeague;
+        public bool TestMap;
+        public bool TestAuto;
+        public bool Examine;
+        public int TestType;
+        public bool CustomInterface;
+        public int? RacePreference;
+        public int RandomSeed;
+        public long? ScaledRating;
 
-        decoder.ReadStruct(typeId, (field, fieldTypeId) =>
+        public bool ReadField(TypedProtocolDecoder decoder, string name, int fieldTypeId)
         {
-            switch (field)
+            switch (name)
             {
-                case "m_name": name = decoder.ReadString(fieldTypeId); return true;
-                case "m_toonHandle": toonHandle = decoder.ReadString(fieldTypeId); return true;
-                case "m_clanTag": clanTag = decoder.ReadString(fieldTypeId); return true;
-                case "m_clanLogo": clanLogo = decoder.ReadString(fieldTypeId); return true;
-                case "m_hero": hero = decoder.ReadString(fieldTypeId); return true;
-                case "m_skin": skin = decoder.ReadString(fieldTypeId); return true;
-                case "m_mount": mount = decoder.ReadString(fieldTypeId); return true;
-                case "m_observe": observe = decoder.ReadInt(fieldTypeId); return true;
-                case "m_teamPreference": teamPref = ReadSingleNullableStructInt(decoder, fieldTypeId, "m_team"); return true;
-                case "m_combinedRaceLevels": combinedRaceLevels = decoder.ReadLong(fieldTypeId); return true;
-                case "m_highestLeague": highestLeague = decoder.ReadInt(fieldTypeId); return true;
-                case "m_testMap": testMap = decoder.ReadBool(fieldTypeId); return true;
-                case "m_testAuto": testAuto = decoder.ReadBool(fieldTypeId); return true;
-                case "m_examine": examine = decoder.ReadBool(fieldTypeId); return true;
-                case "m_testType": testType = decoder.ReadInt(fieldTypeId); return true;
-                case "m_customInterface": customInterface = decoder.ReadBool(fieldTypeId); return true;
-                case "m_racePreference": racePreference = ReadSingleNullableStructInt(decoder, fieldTypeId, "m_race"); return true;
-                case "m_randomSeed": randomSeed = decoder.ReadInt(fieldTypeId); return true;
-                case "m_scaledRating": scaledRating = decoder.ReadNullableLong(fieldTypeId); return true;
+                case "m_name": Name = decoder.ReadString(fieldTypeId); return true;
+                case "m_toonHandle": ToonHandle = decoder.ReadString(fieldTypeId); return true;
+                case "m_clanTag": ClanTag = decoder.ReadString(fieldTypeId); return true;
+                case "m_clanLogo": ClanLogo = decoder.ReadString(fieldTypeId); return true;
+                case "m_hero": Hero = decoder.ReadString(fieldTypeId); return true;
+                case "m_skin": Skin = decoder.ReadString(fieldTypeId); return true;
+                case "m_mount": Mount = decoder.ReadString(fieldTypeId); return true;
+                case "m_observe": Observe = decoder.ReadInt(fieldTypeId); return true;
+                case "m_teamPreference": TeamPref = ReadSingleNullableStructInt(decoder, fieldTypeId, "m_team"); return true;
+                case "m_combinedRaceLevels": CombinedRaceLevels = decoder.ReadLong(fieldTypeId); return true;
+                case "m_highestLeague": HighestLeague = decoder.ReadInt(fieldTypeId); return true;
+                case "m_testMap": TestMap = decoder.ReadBool(fieldTypeId); return true;
+                case "m_testAuto": TestAuto = decoder.ReadBool(fieldTypeId); return true;
+                case "m_examine": Examine = decoder.ReadBool(fieldTypeId); return true;
+                case "m_testType": TestType = decoder.ReadInt(fieldTypeId); return true;
+                case "m_customInterface": CustomInterface = decoder.ReadBool(fieldTypeId); return true;
+                case "m_racePreference": RacePreference = ReadSingleNullableStructInt(decoder, fieldTypeId, "m_race"); return true;
+                case "m_randomSeed": RandomSeed = decoder.ReadInt(fieldTypeId); return true;
+                case "m_scaledRating": ScaledRating = decoder.ReadNullableLong(fieldTypeId); return true;
                 default: return false;
             }
-        });
-
-        return new UserInitialData(mount, skin, observe, teamPref, toonHandle, combinedRaceLevels, highestLeague,
-            clanTag, testMap, testAuto, examine, testType, customInterface, clanLogo, name, racePreference,
-            randomSeed, hero, scaledRating);
+        }
     }
 
-    private static LobbyState ReadLobbyState(TypedProtocolDecoder decoder, int typeId)
+    private struct LobbyStateReadState : IStructFieldReader
     {
-        int maxUsers = 0;
-        List<Slot> slots = [];
-        int defaultDifficulty = 0;
-        bool isSinglePlayer = false;
-        int phase = 0;
-        int? hostUserId = null;
-        int maxObservers = 0;
-        int defaultAIBuild = 0;
-        int pickedMapTag = 0;
-        long randomSeed = 0;
-        int gameDuration = 0;
+        public int MaxUsers;
+        public List<Slot> Slots;
+        public int DefaultDifficulty;
+        public bool IsSinglePlayer;
+        public int Phase;
+        public int? HostUserId;
+        public int MaxObservers;
+        public int DefaultAIBuild;
+        public int PickedMapTag;
+        public long RandomSeed;
+        public int GameDuration;
 
-        decoder.ReadStruct(typeId, (field, fieldTypeId) =>
+        public bool ReadField(TypedProtocolDecoder decoder, string name, int fieldTypeId)
         {
-            switch (field)
+            switch (name)
             {
-                case "m_maxUsers": maxUsers = decoder.ReadInt(fieldTypeId); return true;
+                case "m_maxUsers": MaxUsers = decoder.ReadInt(fieldTypeId); return true;
                 case "m_slots":
-                    decoder.ReadArray(fieldTypeId, itemTypeId =>
-                    {
-                        slots.Add(ReadSlot(decoder, itemTypeId));
-                        return true;
-                    });
+                    SlotArrayReader reader = new(Slots);
+                    decoder.ReadArray(fieldTypeId, ref reader);
                     return true;
-                case "m_defaultDifficulty": defaultDifficulty = decoder.ReadInt(fieldTypeId); return true;
-                case "m_isSinglePlayer": isSinglePlayer = decoder.ReadBool(fieldTypeId); return true;
-                case "m_phase": phase = decoder.ReadInt(fieldTypeId); return true;
-                case "m_hostUserId": hostUserId = decoder.ReadNullableInt(fieldTypeId); return true;
-                case "m_maxObservers": maxObservers = decoder.ReadInt(fieldTypeId); return true;
-                case "m_defaultAIBuild": defaultAIBuild = decoder.ReadInt(fieldTypeId); return true;
-                case "m_pickedMapTag": pickedMapTag = decoder.ReadInt(fieldTypeId); return true;
-                case "m_randomSeed": randomSeed = decoder.ReadLong(fieldTypeId); return true;
-                case "m_gameDuration": gameDuration = decoder.ReadInt(fieldTypeId); return true;
+                case "m_defaultDifficulty": DefaultDifficulty = decoder.ReadInt(fieldTypeId); return true;
+                case "m_isSinglePlayer": IsSinglePlayer = decoder.ReadBool(fieldTypeId); return true;
+                case "m_phase": Phase = decoder.ReadInt(fieldTypeId); return true;
+                case "m_hostUserId": HostUserId = decoder.ReadNullableInt(fieldTypeId); return true;
+                case "m_maxObservers": MaxObservers = decoder.ReadInt(fieldTypeId); return true;
+                case "m_defaultAIBuild": DefaultAIBuild = decoder.ReadInt(fieldTypeId); return true;
+                case "m_pickedMapTag": PickedMapTag = decoder.ReadInt(fieldTypeId); return true;
+                case "m_randomSeed": RandomSeed = decoder.ReadLong(fieldTypeId); return true;
+                case "m_gameDuration": GameDuration = decoder.ReadInt(fieldTypeId); return true;
                 default: return false;
             }
-        });
-
-        return new LobbyState(maxUsers, slots, defaultDifficulty, isSinglePlayer, phase, hostUserId, maxObservers,
-            defaultAIBuild, pickedMapTag, randomSeed, gameDuration);
+        }
     }
 
-    private static Slot ReadSlot(TypedProtocolDecoder decoder, int typeId)
+    private readonly struct SlotArrayReader(List<Slot> slots) : IArrayItemReader
     {
-        int aiBuild = 0;
-        int teamId = 0;
-        int difficulty = 0;
-        int handicap = 0;
-        int observe = 0;
-        int control = 0;
-        int workingSetSlotId = 0;
-        int? userId = null;
-        int? racePref = null;
-        int? colorPref = null;
-        string toonHandle = string.Empty;
-        string skin = string.Empty;
-        string hero = string.Empty;
-        string commander = string.Empty;
-        string mount = string.Empty;
-        List<int> rewards = [];
-        List<int> rewardOverrides = [];
-        List<int> licenses = [];
-        List<int> commanderMasteryTalents = [];
-        List<string> artifacts = [];
-        bool hasSilencePenalty = false;
-
-        decoder.ReadStruct(typeId, (field, fieldTypeId) =>
+        public bool ReadItem(TypedProtocolDecoder decoder, int itemTypeId)
         {
-            switch (field)
+            slots.Add(ReadSlot(decoder, itemTypeId));
+            return true;
+        }
+    }
+
+    private struct SlotReadState : IStructFieldReader
+    {
+        public int AiBuild;
+        public int TeamId;
+        public int Difficulty;
+        public int Handicap;
+        public int Observe;
+        public int Control;
+        public int WorkingSetSlotId;
+        public int? UserId;
+        public int? RacePref;
+        public int? ColorPref;
+        public string? ToonHandle;
+        public string? Skin;
+        public string? Hero;
+        public string? Commander;
+        public string? Mount;
+        public List<int> Rewards;
+        public List<int> RewardOverrides;
+        public List<int> Licenses;
+        public List<int> CommanderMasteryTalents;
+        public List<string> Artifacts;
+        public bool HasSilencePenalty;
+
+        public bool ReadField(TypedProtocolDecoder decoder, string name, int fieldTypeId)
+        {
+            switch (name)
             {
-                case "m_aiBuild": aiBuild = decoder.ReadInt(fieldTypeId); return true;
-                case "m_teamId": teamId = decoder.ReadInt(fieldTypeId); return true;
-                case "m_difficulty": difficulty = decoder.ReadInt(fieldTypeId); return true;
-                case "m_handicap": handicap = decoder.ReadInt(fieldTypeId); return true;
-                case "m_observe": observe = decoder.ReadInt(fieldTypeId); return true;
-                case "m_control": control = decoder.ReadInt(fieldTypeId); return true;
-                case "m_workingSetSlotId": workingSetSlotId = decoder.ReadInt(fieldTypeId); return true;
-                case "m_userId": userId = decoder.ReadNullableInt(fieldTypeId); return true;
-                case "m_racePref": racePref = ReadSingleNullableStructInt(decoder, fieldTypeId, "m_race"); return true;
-                case "m_colorPref": colorPref = ReadSingleNullableStructInt(decoder, fieldTypeId, "m_color"); return true;
-                case "m_toonHandle": toonHandle = decoder.ReadString(fieldTypeId); return true;
-                case "m_skin": skin = decoder.ReadString(fieldTypeId); return true;
-                case "m_hero": hero = decoder.ReadString(fieldTypeId); return true;
-                case "m_commander": commander = decoder.ReadString(fieldTypeId); return true;
-                case "m_mount": mount = decoder.ReadString(fieldTypeId); return true;
-                case "m_rewards": rewards = decoder.ReadIntList(fieldTypeId); return true;
-                case "m_rewardOverrides": rewardOverrides = decoder.ReadIntList(fieldTypeId); return true;
-                case "m_licenses": licenses = decoder.ReadIntList(fieldTypeId); return true;
-                case "m_commanderMasteryTalents": commanderMasteryTalents = decoder.ReadIntList(fieldTypeId); return true;
-                case "m_artifacts": artifacts = decoder.ReadStringList(fieldTypeId); return true;
-                case "m_hasSilencePenalty": hasSilencePenalty = decoder.ReadBool(fieldTypeId); return true;
+                case "m_aiBuild": AiBuild = decoder.ReadInt(fieldTypeId); return true;
+                case "m_teamId": TeamId = decoder.ReadInt(fieldTypeId); return true;
+                case "m_difficulty": Difficulty = decoder.ReadInt(fieldTypeId); return true;
+                case "m_handicap": Handicap = decoder.ReadInt(fieldTypeId); return true;
+                case "m_observe": Observe = decoder.ReadInt(fieldTypeId); return true;
+                case "m_control": Control = decoder.ReadInt(fieldTypeId); return true;
+                case "m_workingSetSlotId": WorkingSetSlotId = decoder.ReadInt(fieldTypeId); return true;
+                case "m_userId": UserId = decoder.ReadNullableInt(fieldTypeId); return true;
+                case "m_racePref": RacePref = ReadSingleNullableStructInt(decoder, fieldTypeId, "m_race"); return true;
+                case "m_colorPref": ColorPref = ReadSingleNullableStructInt(decoder, fieldTypeId, "m_color"); return true;
+                case "m_toonHandle": ToonHandle = decoder.ReadString(fieldTypeId); return true;
+                case "m_skin": Skin = decoder.ReadString(fieldTypeId); return true;
+                case "m_hero": Hero = decoder.ReadString(fieldTypeId); return true;
+                case "m_commander": Commander = decoder.ReadString(fieldTypeId); return true;
+                case "m_mount": Mount = decoder.ReadString(fieldTypeId); return true;
+                case "m_rewards": Rewards = decoder.ReadIntList(fieldTypeId); return true;
+                case "m_rewardOverrides": RewardOverrides = decoder.ReadIntList(fieldTypeId); return true;
+                case "m_licenses": Licenses = decoder.ReadIntList(fieldTypeId); return true;
+                case "m_commanderMasteryTalents": CommanderMasteryTalents = decoder.ReadIntList(fieldTypeId); return true;
+                case "m_artifacts": Artifacts = decoder.ReadStringList(fieldTypeId); return true;
+                case "m_hasSilencePenalty": HasSilencePenalty = decoder.ReadBool(fieldTypeId); return true;
                 default: return false;
             }
-        });
-
-        return new Slot(0, toonHandle, rewardOverrides, userId, skin, commanderMasteryTalents, aiBuild, teamId,
-            rewards, 0, 0, artifacts, difficulty, null, 0, 0, 0, racePref, null, hero, commander, mount, handicap,
-            observe, 0, control, licenses, colorPref, hasSilencePenalty, workingSetSlotId, [], 0);
+        }
     }
 
-    private static GameDescription ReadGameDescription(TypedProtocolDecoder decoder, int typeId)
+    private struct GameDescriptionReadState : IStructFieldReader
     {
-        GameOptions gameOptions = new(false, false, false, false, false, 0, false, false, 0, false, false, 0, 0, false, false, false);
-        List<string> cacheHandles = [];
-        List<SlotDescription> slotDescriptions = [];
-        int maxRaces = 0;
-        int maxTeams = 0;
-        int maxColors = 0;
-        int defaultDifficulty = 0;
-        int defaultAIBuild = 0;
-        int gameType = 0;
-        int maxObservers = 0;
-        int maxUsers = 0;
-        int maxPlayers = 0;
-        int gameSpeed = 0;
-        int maxControls = 0;
-        int mapSizeY = 0;
-        int mapSizeX = 0;
-        bool hasExtensionMod = false;
-        bool isBlizzardMap = false;
-        bool isCoopMode = false;
-        bool hasNonBlizzardExtensionMod = false;
-        bool isRealtimeMode = false;
-        bool isPremadeFFA = false;
-        string mapFileName = string.Empty;
-        string gameCacheName = string.Empty;
-        string mapAuthorName = string.Empty;
-        long randomValue = 0;
-        long modFileSyncChecksum = 0;
-        long mapFileSyncChecksum = 0;
+        public GameOptions GameOptions;
+        public List<string> CacheHandles;
+        public List<SlotDescription> SlotDescriptions;
+        public int MaxRaces;
+        public int MaxTeams;
+        public int MaxColors;
+        public int DefaultDifficulty;
+        public int DefaultAIBuild;
+        public int GameType;
+        public int MaxObservers;
+        public int MaxUsers;
+        public int MaxPlayers;
+        public int GameSpeed;
+        public int MaxControls;
+        public int MapSizeY;
+        public int MapSizeX;
+        public bool HasExtensionMod;
+        public bool IsBlizzardMap;
+        public bool IsCoopMode;
+        public bool HasNonBlizzardExtensionMod;
+        public bool IsRealtimeMode;
+        public bool IsPremadeFFA;
+        public string? MapFileName;
+        public string? GameCacheName;
+        public string? MapAuthorName;
+        public long RandomValue;
+        public long ModFileSyncChecksum;
+        public long MapFileSyncChecksum;
 
-        decoder.ReadStruct(typeId, (field, fieldTypeId) =>
+        public bool ReadField(TypedProtocolDecoder decoder, string name, int fieldTypeId)
         {
-            switch (field)
+            switch (name)
             {
-                case "m_maxRaces": maxRaces = decoder.ReadInt(fieldTypeId); return true;
-                case "m_maxTeams": maxTeams = decoder.ReadInt(fieldTypeId); return true;
-                case "m_maxColors": maxColors = decoder.ReadInt(fieldTypeId); return true;
-                case "m_defaultDifficulty": defaultDifficulty = decoder.ReadInt(fieldTypeId); return true;
-                case "m_defaultAIBuild": defaultAIBuild = decoder.ReadInt(fieldTypeId); return true;
-                case "m_gameType": gameType = decoder.ReadInt(fieldTypeId); return true;
-                case "m_maxObservers": maxObservers = decoder.ReadInt(fieldTypeId); return true;
-                case "m_maxUsers": maxUsers = decoder.ReadInt(fieldTypeId); return true;
-                case "m_maxPlayers": maxPlayers = decoder.ReadInt(fieldTypeId); return true;
-                case "m_gameSpeed": gameSpeed = decoder.ReadInt(fieldTypeId); return true;
-                case "m_maxControls": maxControls = decoder.ReadInt(fieldTypeId); return true;
-                case "m_mapSizeY": mapSizeY = decoder.ReadInt(fieldTypeId); return true;
-                case "m_mapSizeX": mapSizeX = decoder.ReadInt(fieldTypeId); return true;
-                case "m_hasExtensionMod": hasExtensionMod = decoder.ReadBool(fieldTypeId); return true;
-                case "m_isBlizzardMap": isBlizzardMap = decoder.ReadBool(fieldTypeId); return true;
-                case "m_isCoopMode": isCoopMode = decoder.ReadBool(fieldTypeId); return true;
-                case "m_hasNonBlizzardExtensionMod": hasNonBlizzardExtensionMod = decoder.ReadBool(fieldTypeId); return true;
-                case "m_isRealtimeMode": isRealtimeMode = decoder.ReadBool(fieldTypeId); return true;
-                case "m_isPremadeFFA": isPremadeFFA = decoder.ReadBool(fieldTypeId); return true;
-                case "m_mapFileName": mapFileName = decoder.ReadString(fieldTypeId); return true;
-                case "m_gameCacheName": gameCacheName = decoder.ReadString(fieldTypeId); return true;
-                case "m_mapAuthorName": mapAuthorName = decoder.ReadString(fieldTypeId); return true;
-                case "m_randomValue": randomValue = decoder.ReadLong(fieldTypeId); return true;
-                case "m_modFileSyncChecksum": modFileSyncChecksum = decoder.ReadLong(fieldTypeId); return true;
-                case "m_mapFileSyncChecksum": mapFileSyncChecksum = decoder.ReadLong(fieldTypeId); return true;
-                case "m_cacheHandles": cacheHandles = decoder.ReadStringList(fieldTypeId); return true;
-                case "m_gameOptions": gameOptions = ReadGameOptions(decoder, fieldTypeId); return true;
+                case "m_maxRaces": MaxRaces = decoder.ReadInt(fieldTypeId); return true;
+                case "m_maxTeams": MaxTeams = decoder.ReadInt(fieldTypeId); return true;
+                case "m_maxColors": MaxColors = decoder.ReadInt(fieldTypeId); return true;
+                case "m_defaultDifficulty": DefaultDifficulty = decoder.ReadInt(fieldTypeId); return true;
+                case "m_defaultAIBuild": DefaultAIBuild = decoder.ReadInt(fieldTypeId); return true;
+                case "m_gameType": GameType = decoder.ReadInt(fieldTypeId); return true;
+                case "m_maxObservers": MaxObservers = decoder.ReadInt(fieldTypeId); return true;
+                case "m_maxUsers": MaxUsers = decoder.ReadInt(fieldTypeId); return true;
+                case "m_maxPlayers": MaxPlayers = decoder.ReadInt(fieldTypeId); return true;
+                case "m_gameSpeed": GameSpeed = decoder.ReadInt(fieldTypeId); return true;
+                case "m_maxControls": MaxControls = decoder.ReadInt(fieldTypeId); return true;
+                case "m_mapSizeY": MapSizeY = decoder.ReadInt(fieldTypeId); return true;
+                case "m_mapSizeX": MapSizeX = decoder.ReadInt(fieldTypeId); return true;
+                case "m_hasExtensionMod": HasExtensionMod = decoder.ReadBool(fieldTypeId); return true;
+                case "m_isBlizzardMap": IsBlizzardMap = decoder.ReadBool(fieldTypeId); return true;
+                case "m_isCoopMode": IsCoopMode = decoder.ReadBool(fieldTypeId); return true;
+                case "m_hasNonBlizzardExtensionMod": HasNonBlizzardExtensionMod = decoder.ReadBool(fieldTypeId); return true;
+                case "m_isRealtimeMode": IsRealtimeMode = decoder.ReadBool(fieldTypeId); return true;
+                case "m_isPremadeFFA": IsPremadeFFA = decoder.ReadBool(fieldTypeId); return true;
+                case "m_mapFileName": MapFileName = decoder.ReadString(fieldTypeId); return true;
+                case "m_gameCacheName": GameCacheName = decoder.ReadString(fieldTypeId); return true;
+                case "m_mapAuthorName": MapAuthorName = decoder.ReadString(fieldTypeId); return true;
+                case "m_randomValue": RandomValue = decoder.ReadLong(fieldTypeId); return true;
+                case "m_modFileSyncChecksum": ModFileSyncChecksum = decoder.ReadLong(fieldTypeId); return true;
+                case "m_mapFileSyncChecksum": MapFileSyncChecksum = decoder.ReadLong(fieldTypeId); return true;
+                case "m_cacheHandles": CacheHandles = decoder.ReadStringList(fieldTypeId); return true;
+                case "m_gameOptions": GameOptions = ReadGameOptions(decoder, fieldTypeId); return true;
                 case "m_slotDescriptions":
-                    decoder.ReadArray(fieldTypeId, itemTypeId =>
-                    {
-                        slotDescriptions.Add(ReadSlotDescription(decoder, itemTypeId));
-                        return true;
-                    });
+                    SlotDescriptionArrayReader reader = new(SlotDescriptions);
+                    decoder.ReadArray(fieldTypeId, ref reader);
                     return true;
                 default: return false;
             }
-        });
-
-        return new GameDescription(maxRaces, maxTeams, hasExtensionMod, maxColors, isBlizzardMap, gameOptions,
-            defaultDifficulty, isCoopMode, mapFileName, defaultAIBuild, gameType, hasNonBlizzardExtensionMod,
-            randomValue, maxObservers, isRealtimeMode, maxUsers, modFileSyncChecksum, mapFileSyncChecksum,
-            maxPlayers, cacheHandles, gameSpeed, maxControls, gameCacheName, mapAuthorName, slotDescriptions,
-            mapSizeY, mapSizeX, isPremadeFFA);
+        }
     }
 
-    private static GameOptions ReadGameOptions(TypedProtocolDecoder decoder, int typeId)
+    private readonly struct SlotDescriptionArrayReader(List<SlotDescription> slotDescriptions) : IArrayItemReader
     {
-        bool competitive = false, practice = false, lockTeams = false, amm = false, battleNet = false,
-            noVictoryOrDefeat = false, heroDuplicatesAllowed = false, advancedSharedControl = false,
-            cooperative = false, teamsTogether = false, randomRaces = false, buildCoachEnabled = false;
-        int fog = 0, userDifficulty = 0, observers = 0;
-        long clientDebugFlags = 0;
-
-        decoder.ReadStruct(typeId, (field, fieldTypeId) =>
+        public bool ReadItem(TypedProtocolDecoder decoder, int itemTypeId)
         {
-            switch (field)
+            slotDescriptions.Add(ReadSlotDescription(decoder, itemTypeId));
+            return true;
+        }
+    }
+
+    private struct GameOptionsReadState : IStructFieldReader
+    {
+        public bool Competitive;
+        public bool Practice;
+        public bool LockTeams;
+        public bool Amm;
+        public bool BattleNet;
+        public bool NoVictoryOrDefeat;
+        public bool HeroDuplicatesAllowed;
+        public bool AdvancedSharedControl;
+        public bool Cooperative;
+        public bool TeamsTogether;
+        public bool RandomRaces;
+        public bool BuildCoachEnabled;
+        public int Fog;
+        public int UserDifficulty;
+        public int Observers;
+        public long ClientDebugFlags;
+
+        public bool ReadField(TypedProtocolDecoder decoder, string name, int fieldTypeId)
+        {
+            switch (name)
             {
-                case "m_competitive": competitive = decoder.ReadBool(fieldTypeId); return true;
-                case "m_practice": practice = decoder.ReadBool(fieldTypeId); return true;
-                case "m_lockTeams": lockTeams = decoder.ReadBool(fieldTypeId); return true;
-                case "m_amm": amm = decoder.ReadBool(fieldTypeId); return true;
-                case "m_battleNet": battleNet = decoder.ReadBool(fieldTypeId); return true;
-                case "m_noVictoryOrDefeat": noVictoryOrDefeat = decoder.ReadBool(fieldTypeId); return true;
-                case "m_heroDuplicatesAllowed": heroDuplicatesAllowed = decoder.ReadBool(fieldTypeId); return true;
-                case "m_advancedSharedControl": advancedSharedControl = decoder.ReadBool(fieldTypeId); return true;
-                case "m_cooperative": cooperative = decoder.ReadBool(fieldTypeId); return true;
-                case "m_teamsTogether": teamsTogether = decoder.ReadBool(fieldTypeId); return true;
-                case "m_randomRaces": randomRaces = decoder.ReadBool(fieldTypeId); return true;
-                case "m_buildCoachEnabled": buildCoachEnabled = decoder.ReadBool(fieldTypeId); return true;
-                case "m_fog": fog = decoder.ReadInt(fieldTypeId); return true;
-                case "m_userDifficulty": userDifficulty = decoder.ReadInt(fieldTypeId); return true;
-                case "m_observers": observers = decoder.ReadInt(fieldTypeId); return true;
-                case "m_clientDebugFlags": clientDebugFlags = decoder.ReadLong(fieldTypeId); return true;
+                case "m_competitive": Competitive = decoder.ReadBool(fieldTypeId); return true;
+                case "m_practice": Practice = decoder.ReadBool(fieldTypeId); return true;
+                case "m_lockTeams": LockTeams = decoder.ReadBool(fieldTypeId); return true;
+                case "m_amm": Amm = decoder.ReadBool(fieldTypeId); return true;
+                case "m_battleNet": BattleNet = decoder.ReadBool(fieldTypeId); return true;
+                case "m_noVictoryOrDefeat": NoVictoryOrDefeat = decoder.ReadBool(fieldTypeId); return true;
+                case "m_heroDuplicatesAllowed": HeroDuplicatesAllowed = decoder.ReadBool(fieldTypeId); return true;
+                case "m_advancedSharedControl": AdvancedSharedControl = decoder.ReadBool(fieldTypeId); return true;
+                case "m_cooperative": Cooperative = decoder.ReadBool(fieldTypeId); return true;
+                case "m_teamsTogether": TeamsTogether = decoder.ReadBool(fieldTypeId); return true;
+                case "m_randomRaces": RandomRaces = decoder.ReadBool(fieldTypeId); return true;
+                case "m_buildCoachEnabled": BuildCoachEnabled = decoder.ReadBool(fieldTypeId); return true;
+                case "m_fog": Fog = decoder.ReadInt(fieldTypeId); return true;
+                case "m_userDifficulty": UserDifficulty = decoder.ReadInt(fieldTypeId); return true;
+                case "m_observers": Observers = decoder.ReadInt(fieldTypeId); return true;
+                case "m_clientDebugFlags": ClientDebugFlags = decoder.ReadLong(fieldTypeId); return true;
                 default: return false;
             }
-        });
-
-        return new GameOptions(competitive, practice, lockTeams, amm, battleNet, fog, noVictoryOrDefeat,
-            heroDuplicatesAllowed, userDifficulty, advancedSharedControl, cooperative, clientDebugFlags,
-            observers, teamsTogether, randomRaces, buildCoachEnabled);
+        }
     }
 
-    private static SlotDescription ReadSlotDescription(TypedProtocolDecoder decoder, int typeId)
+    private struct SlotDescriptionReadState : IStructFieldReader
     {
-        KeyValuePair<int, BigInteger> allowedRaces = default;
-        KeyValuePair<int, BigInteger> allowedColors = default;
-        KeyValuePair<int, BigInteger> allowedAIBuilds = default;
-        KeyValuePair<int, BigInteger> allowedDifficulty = default;
-        KeyValuePair<int, BigInteger> allowedObserveTypes = default;
-        KeyValuePair<int, BigInteger> allowedControls = default;
+        public KeyValuePair<int, BigInteger> AllowedRaces;
+        public KeyValuePair<int, BigInteger> AllowedColors;
+        public KeyValuePair<int, BigInteger> AllowedAIBuilds;
+        public KeyValuePair<int, BigInteger> AllowedDifficulty;
+        public KeyValuePair<int, BigInteger> AllowedObserveTypes;
+        public KeyValuePair<int, BigInteger> AllowedControls;
 
-        decoder.ReadStruct(typeId, (field, fieldTypeId) =>
+        public bool ReadField(TypedProtocolDecoder decoder, string name, int fieldTypeId)
         {
-            switch (field)
+            switch (name)
             {
-                case "m_allowedRaces": allowedRaces = decoder.ReadBitArray(fieldTypeId); return true;
-                case "m_allowedColors": allowedColors = decoder.ReadBitArray(fieldTypeId); return true;
-                case "m_allowedAIBuilds": allowedAIBuilds = decoder.ReadBitArray(fieldTypeId); return true;
-                case "m_allowedDifficulty": allowedDifficulty = decoder.ReadBitArray(fieldTypeId); return true;
-                case "m_allowedObserveTypes": allowedObserveTypes = decoder.ReadBitArray(fieldTypeId); return true;
-                case "m_allowedControls": allowedControls = decoder.ReadBitArray(fieldTypeId); return true;
+                case "m_allowedRaces": AllowedRaces = decoder.ReadBitArray(fieldTypeId); return true;
+                case "m_allowedColors": AllowedColors = decoder.ReadBitArray(fieldTypeId); return true;
+                case "m_allowedAIBuilds": AllowedAIBuilds = decoder.ReadBitArray(fieldTypeId); return true;
+                case "m_allowedDifficulty": AllowedDifficulty = decoder.ReadBitArray(fieldTypeId); return true;
+                case "m_allowedObserveTypes": AllowedObserveTypes = decoder.ReadBitArray(fieldTypeId); return true;
+                case "m_allowedControls": AllowedControls = decoder.ReadBitArray(fieldTypeId); return true;
                 default: return false;
             }
-        });
-
-        return new SlotDescription(allowedRaces, allowedColors, allowedAIBuilds, allowedDifficulty, allowedObserveTypes, allowedControls);
+        }
     }
 
-    private static int? ReadSingleNullableStructInt(TypedProtocolDecoder decoder, int typeId, string fieldName)
+    private struct SingleNullableStructIntReadState(string fieldName) : IStructFieldReader
     {
-        int? result = null;
-        decoder.ReadStruct(typeId, (name, innerTypeId) =>
+        public int? Result;
+
+        public bool ReadField(TypedProtocolDecoder decoder, string name, int fieldTypeId)
         {
             if (name != fieldName)
             {
                 return false;
             }
 
-            result = decoder.ReadNullableInt(innerTypeId);
+            Result = decoder.ReadNullableInt(fieldTypeId);
             return true;
-        });
-        return result;
+        }
+    }
+
+    private static UserInitialData ReadUserInitialData(TypedProtocolDecoder decoder, int typeId)
+    {
+        UserInitialDataReadState state = default;
+        decoder.ReadStruct(typeId, ref state);
+
+        return new UserInitialData(state.Mount ?? string.Empty, state.Skin ?? string.Empty, state.Observe, state.TeamPref,
+            state.ToonHandle ?? string.Empty, state.CombinedRaceLevels, state.HighestLeague, state.ClanTag ?? string.Empty,
+            state.TestMap, state.TestAuto, state.Examine, state.TestType, state.CustomInterface,
+            state.ClanLogo ?? string.Empty, state.Name ?? string.Empty, state.RacePreference, state.RandomSeed,
+            state.Hero ?? string.Empty, state.ScaledRating);
+    }
+
+    private static LobbyState ReadLobbyState(TypedProtocolDecoder decoder, int typeId)
+    {
+        LobbyStateReadState state = new()
+        {
+            Slots = [],
+        };
+
+        decoder.ReadStruct(typeId, ref state);
+
+        return new LobbyState(state.MaxUsers, state.Slots, state.DefaultDifficulty, state.IsSinglePlayer, state.Phase,
+            state.HostUserId, state.MaxObservers, state.DefaultAIBuild, state.PickedMapTag, state.RandomSeed,
+            state.GameDuration);
+    }
+
+    private static Slot ReadSlot(TypedProtocolDecoder decoder, int typeId)
+    {
+        SlotReadState state = new()
+        {
+            Rewards = [],
+            RewardOverrides = [],
+            Licenses = [],
+            CommanderMasteryTalents = [],
+            Artifacts = [],
+        };
+
+        decoder.ReadStruct(typeId, ref state);
+
+        return new Slot(0, state.ToonHandle ?? string.Empty, state.RewardOverrides, state.UserId,
+            state.Skin ?? string.Empty, state.CommanderMasteryTalents, state.AiBuild, state.TeamId,
+            state.Rewards, 0, 0, state.Artifacts, state.Difficulty, null, 0, 0, 0, state.RacePref, null,
+            state.Hero ?? string.Empty, state.Commander ?? string.Empty, state.Mount ?? string.Empty, state.Handicap,
+            state.Observe, 0, state.Control, state.Licenses, state.ColorPref, state.HasSilencePenalty,
+            state.WorkingSetSlotId, [], 0);
+    }
+
+    private static GameDescription ReadGameDescription(TypedProtocolDecoder decoder, int typeId)
+    {
+        GameDescriptionReadState state = new()
+        {
+            GameOptions = new GameOptions(false, false, false, false, false, 0, false, false, 0, false, false, 0, 0, false, false, false),
+            CacheHandles = [],
+            SlotDescriptions = [],
+        };
+
+        decoder.ReadStruct(typeId, ref state);
+
+        return new GameDescription(state.MaxRaces, state.MaxTeams, state.HasExtensionMod, state.MaxColors,
+            state.IsBlizzardMap, state.GameOptions, state.DefaultDifficulty, state.IsCoopMode,
+            state.MapFileName ?? string.Empty, state.DefaultAIBuild, state.GameType, state.HasNonBlizzardExtensionMod,
+            state.RandomValue, state.MaxObservers, state.IsRealtimeMode, state.MaxUsers, state.ModFileSyncChecksum,
+            state.MapFileSyncChecksum, state.MaxPlayers, state.CacheHandles, state.GameSpeed, state.MaxControls,
+            state.GameCacheName ?? string.Empty, state.MapAuthorName ?? string.Empty, state.SlotDescriptions,
+            state.MapSizeY, state.MapSizeX, state.IsPremadeFFA);
+    }
+
+    private static GameOptions ReadGameOptions(TypedProtocolDecoder decoder, int typeId)
+    {
+        GameOptionsReadState state = default;
+        decoder.ReadStruct(typeId, ref state);
+
+        return new GameOptions(state.Competitive, state.Practice, state.LockTeams, state.Amm, state.BattleNet,
+            state.Fog, state.NoVictoryOrDefeat, state.HeroDuplicatesAllowed, state.UserDifficulty,
+            state.AdvancedSharedControl, state.Cooperative, state.ClientDebugFlags, state.Observers,
+            state.TeamsTogether, state.RandomRaces, state.BuildCoachEnabled);
+    }
+
+    private static SlotDescription ReadSlotDescription(TypedProtocolDecoder decoder, int typeId)
+    {
+        SlotDescriptionReadState state = default;
+        decoder.ReadStruct(typeId, ref state);
+
+        return new SlotDescription(state.AllowedRaces, state.AllowedColors, state.AllowedAIBuilds,
+            state.AllowedDifficulty, state.AllowedObserveTypes, state.AllowedControls);
+    }
+
+    private static int? ReadSingleNullableStructInt(TypedProtocolDecoder decoder, int typeId, string fieldName)
+    {
+        SingleNullableStructIntReadState state = new(fieldName);
+        decoder.ReadStruct(typeId, ref state);
+        return state.Result;
     }
 }
