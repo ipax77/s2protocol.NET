@@ -119,7 +119,14 @@ Set `S2PROTOCOL_BENCHMARK_REPLAY_DIR` to benchmark a custom replay corpus. Optio
 
 # ChangeLog
 
-<details open="open"><summary>v0.9.3</summary>
+<details open="open"><summary>v0.9.4</summary>
+
+>- Improved performance/momory usage
+>- MPQArchive.ReadFile(Async) now returns ReadOnlyMemory<byte> instead of byte[]
+
+</details>
+
+<details><summary>v0.9.3</summary>
 
 >- replaced runtime `protocol*.py` parsing with generated compact JSON protocol resources
 >- moved Python protocol files to the `S2ProtocolJsonGenerator` tool
