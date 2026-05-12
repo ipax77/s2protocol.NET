@@ -141,16 +141,8 @@ sealed class Program
         var protocol = TypeInfoLoader.GetLatestVersion();
         var headerContent = mpqArchive.GetUserDataHeaderContent();
         ArgumentNullException.ThrowIfNull(headerContent);
-        var headerRaw = protocol.DecodeReplayHeader(headerContent);
-        if (headerRaw is not Dictionary<string, object> headerDict
-            || !headerDict.TryGetValue("m_version", out object? value)
-            || value is not Dictionary<string, object> headerVersionDict
-            || !headerVersionDict.TryGetValue("m_baseBuild", out object? baseBuildValue)
-            || baseBuildValue is not long baseBuild)
-        {
-            throw new DecodeException("Header is not as expected.");
-        }
-        var s2protocol = TypeInfoLoader.LoadTypeInfos((int)baseBuild);
+        var headerTyped = protocol.DecodeReplayHeader(headerContent);
+        var s2protocol = TypeInfoLoader.LoadTypeInfos(headerTyped.BaseBuild);
         ArgumentNullException.ThrowIfNull(s2protocol, nameof(s2protocol));
 
         var jsonSerializerOptions = new JsonSerializerOptions(jsonSerializerOptionsBase)
@@ -162,7 +154,7 @@ sealed class Program
 
         if (header)
         {
-            sb.AppendLine(JsonSerializer.Serialize(headerRaw, jsonSerializerOptions));
+            sb.AppendLine(JsonSerializer.Serialize(headerTyped, jsonSerializerOptions));
         }
 
         if (metadata || all)
@@ -179,63 +171,57 @@ sealed class Program
         {
             var detailsContent = mpqArchive.ReadFile("replay.details");
             ArgumentNullException.ThrowIfNull(detailsContent, "No details found in replay.");
-            var detailsRaw = s2protocol.DecodeReplayDetails(detailsContent);
-            sb.AppendLine(JsonSerializer.Serialize(detailsRaw, jsonSerializerOptions));
+            var detailsTyped = s2protocol.DecodeReplayDetails(detailsContent);
+            sb.AppendLine(JsonSerializer.Serialize(detailsTyped, jsonSerializerOptions));
         }
 
         if (detailsBackup || all)
         {
             var detailsContent = mpqArchive.ReadFile("replay.details.backup");
             ArgumentNullException.ThrowIfNull(detailsContent, "No details found in replay.");
-            var detailsRaw = s2protocol.DecodeReplayDetails(detailsContent);
-            sb.AppendLine(JsonSerializer.Serialize(detailsRaw, jsonSerializerOptions));
+            var detailsTyped = s2protocol.DecodeReplayDetails(detailsContent);
+            sb.AppendLine(JsonSerializer.Serialize(detailsTyped, jsonSerializerOptions));
         }
 
         if (initData || all)
         {
             var initDataContent = mpqArchive.ReadFile("replay.initData");
             ArgumentNullException.ThrowIfNull(initDataContent, "No init data found in replay.");
-            var initDataRaw = s2protocol.DecodeReplayInitDataRaw(initDataContent);
-            ArgumentNullException.ThrowIfNull(initDataRaw, "Failed decoding initData.");
-            sb.AppendLine(JsonSerializer.Serialize(initDataRaw, jsonSerializerOptions));
+            var initDataTyped = s2protocol.DecodeReplayInitData(initDataContent);
+            ArgumentNullException.ThrowIfNull(initDataTyped, "Failed decoding initData.");
+            sb.AppendLine(JsonSerializer.Serialize(initDataTyped, jsonSerializerOptions));
         }
 
         if (gameEvents || all)
         {
             var gameContent = mpqArchive.ReadFile("replay.game.events");
             ArgumentNullException.ThrowIfNull(gameContent, "No gameEvents found in replay.");
-            foreach (var gameRaw in s2protocol.DecodeReplayGameEvents(gameContent))
-            {
-                sb.AppendLine(JsonSerializer.Serialize(gameRaw, jsonSerializerOptions));
-            }
+            var gameTyped = s2protocol.DecodeReplayGameEvents(gameContent);
+            sb.AppendLine(JsonSerializer.Serialize(gameTyped, jsonSerializerOptions));
         }
 
         if (messageEvents || all)
         {
             var messageContent = mpqArchive.ReadFile("replay.message.events");
             ArgumentNullException.ThrowIfNull(messageContent, "No message events found in replay.");
-            foreach (var messageRaw in s2protocol.DecodeReplayMessageEvents(messageContent))
-            {
-                sb.AppendLine(JsonSerializer.Serialize(messageRaw, jsonSerializerOptions));
-            }
+            var messageTyped = s2protocol.DecodeReplayMessageEvents(messageContent);
+            sb.AppendLine(JsonSerializer.Serialize(messageTyped, jsonSerializerOptions));
         }
 
         if (trackerEvents || all)
         {
             var trackerContent = mpqArchive.ReadFile("replay.tracker.events");
             ArgumentNullException.ThrowIfNull(trackerContent, "No tracker events found in replay.");
-            foreach (var trackerRaw in s2protocol.DecodeReplayTrackerEvents(trackerContent))
-            {
-                sb.AppendLine(JsonSerializer.Serialize(trackerRaw, jsonSerializerOptions));
-            }
+            var trackerTyped = s2protocol.DecodeReplayTrackerEvents(trackerContent);
+            sb.AppendLine(JsonSerializer.Serialize(trackerTyped, jsonSerializerOptions));
         }
 
         if (attributeEvents || all)
         {
             var attributeContent = mpqArchive.ReadFile("replay.attributes.events");
             ArgumentNullException.ThrowIfNull(attributeContent, "No attributeEvents found in replay.");
-            var attributesRaw = S2ProtocolVersion.DecodeReplayAttributeEventsRaw(attributeContent);
-            sb.AppendLine(JsonSerializer.Serialize(attributesRaw, jsonSerializerOptions));
+            var attributesTyped = S2ProtocolVersion.DecodeReplayAttributeEvents(attributeContent);
+            sb.AppendLine(JsonSerializer.Serialize(attributesTyped, jsonSerializerOptions));
         }
 
 

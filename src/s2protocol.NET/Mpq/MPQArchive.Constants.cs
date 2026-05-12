@@ -10,7 +10,7 @@ public sealed partial class MPQArchive
     //private const uint MPQ_FILE_DELETE_MARKER = 0x02000000;
     //private const uint MPQ_FILE_SECTOR_CRC = 0x04000000;
     //private const uint MPQ_FILE_EXISTS = 0x80000000;
-    private static uint[] StormBuffer = GenerateStormBuffer();
+    private static readonly uint[] StormBuffer = GenerateStormBuffer();
 
     private static uint[] GenerateStormBuffer()
     {

@@ -2,6 +2,7 @@
 using System.Text;
 
 namespace s2protocol.NET.Parser;
+
 internal static partial class Parse
 {
     internal static string GetString(Dictionary<string, object> pydic, string property)

@@ -1,5 +1,5 @@
-using System.Text.Json.Serialization;
 using s2protocol.NET.Models;
+using System.Text.Json.Serialization;
 
 namespace s2protocol.NET;
 

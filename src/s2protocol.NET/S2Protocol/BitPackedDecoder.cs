@@ -94,7 +94,7 @@ internal sealed class BitPackedDecoder : S2ProtocolDecoder
         throw new ArgumentException("Invalid parameters for _blob");
     }
 
-    private bool _bool(IDecodeParameter[] _) => ReadInt(new BoundsParameter(0, 1)) != 0;
+    private bool _bool(IDecodeParameter[] _) => _buffer.ReadBits(1) != 0;
 
     private Dictionary<string, object?> _choice(IDecodeParameter[] parameters)
     {

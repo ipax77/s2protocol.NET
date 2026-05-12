@@ -14,21 +14,21 @@ public sealed partial class MPQArchive
     /// <exception cref="InvalidOperationException">Thrown if the archive does not have a valid listfile or if the listfile is empty.</exception>
     public Dictionary<string, byte[]> Extract()
     {
-        if (_files == null || _files.Length == 0)
+        if (!_files.HasValue || _files.Value.IsEmpty)
             throw new InvalidOperationException("Cannot extract archive without a listfile.");
 
         var result = new Dictionary<string, byte[]>();
-        var text = System.Text.Encoding.UTF8.GetString(_files);
+        var text = System.Text.Encoding.UTF8.GetString(_files.Value.Span);
         var fileNames = text.Split(separator, StringSplitOptions.RemoveEmptyEntries);
         foreach (var file in fileNames)
         {
 
-            byte[]? data = ReadFile(file);
-            result[file] = data ?? Array.Empty<byte>();
+            ReadOnlyMemory<byte>? data = ReadFile(file);
+            result[file] = data?.ToArray() ?? Array.Empty<byte>();
         }
         return result;
     }
-    
+
     private static readonly string[] separatorArray1 = ["\r\n", "\n"];
     private static readonly string[] separatorArray0 = ["\r\n", "\n"];
     private static readonly string[] separator = ["\r\n", "\n"];
@@ -42,23 +42,23 @@ public sealed partial class MPQArchive
     /// <exception cref="InvalidOperationException">Thrown if the archive does not contain a valid listfile or if the listfile is empty.</exception>
     public void ExtractToDisk()
     {
-        if (_files == null || _files.Length == 0)
+        if (!_files.HasValue || _files.Value.IsEmpty)
             throw new InvalidOperationException("Cannot extract archive without a listfile.");
 
         string archiveName = Path.GetFileNameWithoutExtension(_archivePath);
         string outputDir = Path.Combine(Directory.GetCurrentDirectory(), archiveName);
 
         Directory.CreateDirectory(outputDir);
-        var text = System.Text.Encoding.UTF8.GetString(_files);
+        var text = System.Text.Encoding.UTF8.GetString(_files.Value.Span);
         var fileNames = text.Split(separatorArray0, StringSplitOptions.RemoveEmptyEntries);
         foreach (var file in fileNames)
         {
-            byte[]? data = ReadFile(file);
-            if (data == null) continue;
+            ReadOnlyMemory<byte>? data = ReadFile(file);
+            if (!data.HasValue) continue;
 
             string fullPath = Path.Combine(outputDir, file.Replace('/', Path.DirectorySeparatorChar));
             Directory.CreateDirectory(Path.GetDirectoryName(fullPath)!);
-            File.WriteAllBytes(fullPath, data);
+            File.WriteAllBytes(fullPath, data.Value.Span);
         }
     }
 
@@ -74,12 +74,12 @@ public sealed partial class MPQArchive
         ArgumentNullException.ThrowIfNull(filenames);
         foreach (var file in filenames)
         {
-            byte[]? data = ReadFile(file);
-            if (data == null) continue;
+            ReadOnlyMemory<byte>? data = ReadFile(file);
+            if (!data.HasValue) continue;
 
             string outputPath = Path.Combine(Directory.GetCurrentDirectory(), file.Replace('/', Path.DirectorySeparatorChar));
             Directory.CreateDirectory(Path.GetDirectoryName(outputPath)!);
-            File.WriteAllBytes(outputPath, data);
+            File.WriteAllBytes(outputPath, data.Value.Span);
         }
     }
 
@@ -98,11 +98,11 @@ public sealed partial class MPQArchive
     public Dictionary<string, byte[]> ExtractFiles(params string[] filenames)
     {
         ArgumentNullException.ThrowIfNull(filenames);
-        if (_files == null || _files.Length == 0)
+        if (!_files.HasValue || _files.Value.IsEmpty)
             throw new InvalidOperationException("Cannot extract archive without a listfile.");
 
         var result = new Dictionary<string, byte[]>();
-        var text = System.Text.Encoding.UTF8.GetString(_files);
+        var text = System.Text.Encoding.UTF8.GetString(_files.Value.Span);
         var availableFileNames = text.Split(separatorArray1, StringSplitOptions.RemoveEmptyEntries).ToHashSet();
         foreach (var file in filenames)
         {
@@ -110,8 +110,8 @@ public sealed partial class MPQArchive
             {
                 throw new FileNotFoundException(file);
             }
-            byte[]? data = ReadFile(file, true);
-            result[file] = data ?? Array.Empty<byte>();
+            ReadOnlyMemory<byte>? data = ReadFile(file, true);
+            result[file] = data?.ToArray() ?? Array.Empty<byte>();
         }
         return result;
     }

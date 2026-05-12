@@ -37,7 +37,7 @@ public class CurruptedErrorTests
         }
         catch (DecodeException ex)
         {
-            Assert.Equal("Exception has been thrown by the target of an invocation.", ex.Message);
+            Assert.Equal("VersionedTypedDecoder", ex.Message);
         }
 
         decoder.Dispose();
