@@ -77,11 +77,13 @@ public sealed class StressReplayTests
 
         int decoded = 0;
         List<string> errors = [];
+#pragma warning disable CS0618 // Stress test keeps legacy helper coverage while it remains public.
         await foreach (DecodeParallelResult result in replayDecoder.DecodeParallelWithErrorReport(
                            replayPaths,
                            2,
                            CreateDirectStrikeCoreOptions(),
                            CancellationToken.None).ConfigureAwait(false))
+#pragma warning restore CS0618 // Stress test keeps legacy helper coverage while it remains public.
         {
             if (result.Sc2Replay is null)
             {

@@ -38,7 +38,9 @@ public class DecodeParallelTests
         CancellationTokenSource cts = new();
 
         int decoded = 0;
+#pragma warning disable CS0618 // Legacy helper is intentionally covered by compatibility tests.
         await foreach (var sc2rep in decoder.DecodeParallel(replays, 2, options, cts.Token))
+#pragma warning restore CS0618 // Legacy helper is intentionally covered by compatibility tests.
         {
             if (sc2rep != null)
             {
@@ -77,7 +79,9 @@ public class DecodeParallelTests
         CancellationTokenSource cts = new();
 
         int decoded = 0;
+#pragma warning disable CS0618 // Legacy helper is intentionally covered by compatibility tests.
         await foreach (var sc2rep in decoder.DecodeParallel(replays, 2, options, cts.Token))
+#pragma warning restore CS0618 // Legacy helper is intentionally covered by compatibility tests.
         {
             decoded++;
         }
@@ -115,7 +119,9 @@ public class DecodeParallelTests
         int decoded = 0;
         int errors = 0;
         List<DecodeParallelResult> results = [];
+#pragma warning disable CS0618 // Legacy helper is intentionally covered by compatibility tests.
         await foreach (var decodeResult in decoder.DecodeParallelWithErrorReport(replays, 2, options, cts.Token))
+#pragma warning restore CS0618 // Legacy helper is intentionally covered by compatibility tests.
         {
             if (decodeResult.Sc2Replay == null)
             {
@@ -128,7 +134,55 @@ public class DecodeParallelTests
             results.Add(decodeResult);
         }
         Assert.Equal(replays.Length - errors, decoded);
-        Assert.Equal(errors, errors);
+        Assert.Equal(replays.Length, decoded + errors);
+
+        await cts.CancelAsync();
+        cts.Dispose();
+        decoder.Dispose();
+    }
+
+    [Fact]
+    public async Task DecodeParallelWithResultSlowConsumerTest()
+    {
+        Assert.True(assemblyPath != null, "Could not get ExecutionAssembly path");
+        if (assemblyPath == null)
+        {
+            return;
+        }
+        using ReplayDecoder decoder = new();
+        ReplayDecoderOptions options = new()
+        {
+            Initdata = false,
+            Details = false,
+            Metadata = false,
+            MessageEvents = false,
+            TrackerEvents = true,
+            GameEvents = false,
+            AttributeEvents = false,
+        };
+
+        var replays = Directory.GetFiles(Path.Combine(assemblyPath, "replays"), "*.SC2Replay", SearchOption.TopDirectoryOnly);
+
+        CancellationTokenSource cts = new();
+
+        int decoded = 0;
+        int errors = 0;
+#pragma warning disable CS0618 // Legacy helper is intentionally covered by compatibility tests.
+        await foreach (var decodeResult in decoder.DecodeParallelWithErrorReport(replays, 2, options, cts.Token))
+#pragma warning restore CS0618 // Legacy helper is intentionally covered by compatibility tests.
+        {
+            await Task.Delay(1, cts.Token);
+
+            if (decodeResult.Sc2Replay == null)
+            {
+                errors++;
+            }
+            else
+            {
+                decoded++;
+            }
+        }
+        Assert.Equal(replays.Length, decoded + errors);
 
         await cts.CancelAsync();
         cts.Dispose();

@@ -119,7 +119,16 @@ Set `S2PROTOCOL_BENCHMARK_REPLAY_DIR` to benchmark a custom replay corpus. Optio
 
 # ChangeLog
 
-<details open="open"><summary>v0.9.2</summary>
+<details open="open"><summary>v0.9.3</summary>
+
+>- replaced runtime `protocol*.py` parsing with generated compact JSON protocol resources
+>- moved Python protocol files to the `S2ProtocolJsonGenerator` tool
+>- reduced protocol resource payload and optimized version fallback lookup
+>- marked built-in parallel decoding helpers obsolete; prefer `DecodeAsync` with caller-owned parallelism
+
+</details>
+
+<details><summary>v0.9.2</summary>
 
 >- improved protocol decoding performance by replacing reflection-based dispatch with prebuilt decoder metadata
 >- reduced MPQ decompression allocations by passing expected output lengths
