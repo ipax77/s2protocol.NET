@@ -1,5 +1,6 @@
 using System;
 using System.IO;
+using System.Linq;
 using System.Reflection;
 using System.Threading.Tasks;
 using Xunit;
@@ -214,6 +215,20 @@ public class DecodeTests
             return;
         }
         Assert.True(replay.TrackerEvents.SUnitBornEvents.Count > 0, "Could not get replay.TrackerEvents SUnitBornEvents");
+        Assert.True(replay.TrackerEvents.SPlayerStatsEvents.Count > 0, "Could not get replay.TrackerEvents SPlayerStatsEvents");
+        Assert.True(replay.TrackerEvents.SUnitPositionsEvents.Count > 0, "Could not get replay.TrackerEvents SUnitPositionsEvents");
+
+        var bornEvent = replay.TrackerEvents.SUnitBornEvents.First();
+        Assert.False(string.IsNullOrEmpty(bornEvent.UnitTypeName));
+        Assert.True(bornEvent.UnitTagIndex >= 0);
+
+        var statsEvent = replay.TrackerEvents.SPlayerStatsEvents.First();
+        Assert.True(statsEvent.FoodUsed >= 0);
+        Assert.True(statsEvent.MineralsCurrent >= 0);
+
+        var positionsEvent = replay.TrackerEvents.SUnitPositionsEvents.First();
+        Assert.True(positionsEvent.FirstUnitIndex >= 0);
+        Assert.NotEmpty(positionsEvent.UnitPositions);
 
         decoder.Dispose();
     }

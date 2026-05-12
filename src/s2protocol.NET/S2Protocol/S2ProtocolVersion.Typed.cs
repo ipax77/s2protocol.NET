@@ -225,59 +225,11 @@ public sealed partial record S2ProtocolVersion
             {
                 if (eventName == "NNet.Game.SChatMessage")
                 {
-                    int recipient = 0;
-                    string message = string.Empty;
-                    decoder.ReadStruct(typeId, (name, fieldTypeId) =>
-                    {
-                        switch (name)
-                        {
-                            case "m_recipient":
-                                recipient = decoder.ReadInt(fieldTypeId);
-                                return true;
-                            case "m_string":
-                                message = decoder.ReadString(fieldTypeId);
-                                return true;
-                            default:
-                                return false;
-                        }
-                    });
-                    chatMessages.Add(new ChatMessageEvent(recipient, userId, message, gameloop));
+                    chatMessages.Add(ReadSChatMessage(decoder, typeId, userId, gameloop));
                 }
                 else if (eventName == "NNet.Game.SPingMessage")
                 {
-                    int recipient = 0;
-                    long x = 0;
-                    long y = 0;
-                    decoder.ReadStruct(typeId, (name, fieldTypeId) =>
-                    {
-                        switch (name)
-                        {
-                            case "m_recipient":
-                                recipient = decoder.ReadInt(fieldTypeId);
-                                return true;
-                            case "m_point":
-                                decoder.ReadStruct(fieldTypeId, (pointName, pointTypeId) =>
-                                {
-                                    if (pointName == "x")
-                                    {
-                                        x = decoder.ReadLong(pointTypeId);
-                                        return true;
-                                    }
-
-                                    if (pointName == "y")
-                                    {
-                                        y = decoder.ReadLong(pointTypeId);
-                                        return true;
-                                    }
-
-                                    return false;
-                                });
-                                return true;
-                            default:
-                                return false;
-                        }
-                    });
-                    pingMessages.Add(new PingMessageEvent(recipient, userId, gameloop, x, y));
+                    pingMessages.Add(ReadSPingMessage(decoder, typeId, userId, gameloop));
                 }
                 else
                 {
@@ -303,7 +255,24 @@ public sealed partial record S2ProtocolVersion
                 {
                     GameEventType.SUserFinishedLoadingSyncEvent => ReadEmptyGameEvent(decoder, typeId, userId, eventId, bits, gameloop),
                     GameEventType.STriggerSoundLengthSyncEvent => ReadSoundLengthSyncEvent(decoder, typeId, userId, eventId, bits, gameloop),
-                    _ => ReadGenericKnownGameEvent(decoder, typeId, userId, eventId, bits, gameloop, eventName, eventType),
+                    GameEventType.SBankFileEvent => ReadSBankFileEvent(decoder, typeId, userId, eventId, bits, gameloop),
+                    GameEventType.SBankKeyEvent => ReadSBankKeyEvent(decoder, typeId, userId, eventId, bits, gameloop),
+                    GameEventType.SBankSectionEvent => ReadSBankSectionEvent(decoder, typeId, userId, eventId, bits, gameloop),
+                    GameEventType.SBankValueEvent => ReadSBankValueEvent(decoder, typeId, userId, eventId, bits, gameloop),
+                    GameEventType.SControlGroupUpdateEvent => ReadSControlGroupUpdateEvent(decoder, typeId, userId, eventId, bits, gameloop),
+                    GameEventType.SGameUserLeaveEvent => ReadSGameUserLeaveEvent(decoder, typeId, userId, eventId, bits, gameloop),
+                    GameEventType.SSetSyncLoadingTimeEvent => ReadSSetSyncLoadingTimeEvent(decoder, typeId, userId, eventId, bits, gameloop),
+                    GameEventType.SSetSyncPlayingTimeEvent => ReadSSetSyncPlayingTimeEvent(decoder, typeId, userId, eventId, bits, gameloop),
+                    GameEventType.STriggerButtonPressedEvent => ReadSTriggerButtonPressedEvent(decoder, typeId, userId, eventId, bits, gameloop),
+                    GameEventType.STriggerChatMessageEvent => ReadSTriggerChatMessageEvent(decoder, typeId, userId, eventId, bits, gameloop),
+                    GameEventType.STriggerCutsceneEndSceneFiredEvent => ReadSTriggerCutsceneEndSceneFiredEvent(decoder, typeId, userId, eventId, bits, gameloop),
+                    GameEventType.STriggerGameMenuItemSelectedEvent => ReadSTriggerGameMenuItemSelectedEvent(decoder, typeId, userId, eventId, bits, gameloop),
+                    GameEventType.STriggerSoundOffsetEvent => ReadSTriggerSoundOffsetEvent(decoder, typeId, userId, eventId, bits, gameloop),
+                    GameEventType.STriggerSoundtrackDoneEvent => ReadSTriggerSoundtrackDoneEvent(decoder, typeId, userId, eventId, bits, gameloop),
+                    GameEventType.STriggerTransmissionCompleteEvent => ReadSTriggerTransmissionCompleteEvent(decoder, typeId, userId, eventId, bits, gameloop),
+                    GameEventType.STriggerTransmissionOffsetEvent => ReadSTriggerTransmissionOffsetEvent(decoder, typeId, userId, eventId, bits, gameloop),
+                    GameEventType.SUnitClickEvent => ReadSUnitClickEvent(decoder, typeId, userId, eventId, bits, gameloop),
+                    _ => ReadUnknownGameEvent(decoder, typeId, userId, eventId, bits, gameloop, eventName),
                 };
                 events.Add(gameEvent);
             });
@@ -331,39 +300,40 @@ public sealed partial record S2ProtocolVersion
             (eventId, eventName, bits, gameloop, _, typeId) =>
             {
                 TrackerEventType eventType = GetTrackerEventType(eventName);
-                TrackerEvent parsedEvent = ReadTrackerEvent(decoder, typeId, eventId, bits, gameloop, eventType);
-
-                switch (parsedEvent)
+                switch (eventType)
                 {
-                    case SPlayerSetupEvent e:
-                        playerSetupEvents.Add(e);
+                    case TrackerEventType.SPlayerSetupEvent:
+                        playerSetupEvents.Add(ReadSPlayerSetupEvent(decoder, typeId, eventId, bits, gameloop));
                         break;
-                    case SPlayerStatsEvent e:
-                        playerStatsEvents.Add(e);
+                    case TrackerEventType.SPlayerStatsEvent:
+                        playerStatsEvents.Add(ReadSPlayerStatsEvent(decoder, typeId, eventId, bits, gameloop));
                         break;
-                    case SUnitBornEvent e:
-                        unitBornEvents.Add(e);
+                    case TrackerEventType.SUnitBornEvent:
+                        unitBornEvents.Add(ReadSUnitBornEvent(decoder, typeId, eventId, bits, gameloop));
                         break;
-                    case SUnitDiedEvent e:
-                        unitDiedEvents.Add(e);
+                    case TrackerEventType.SUnitDiedEvent:
+                        unitDiedEvents.Add(ReadSUnitDiedEvent(decoder, typeId, eventId, bits, gameloop));
                         break;
-                    case SUnitOwnerChangeEvent e:
-                        unitOwnerChangeEvents.Add(e);
+                    case TrackerEventType.SUnitOwnerChangeEvent:
+                        unitOwnerChangeEvents.Add(ReadSUnitOwnerChangeEvent(decoder, typeId, eventId, bits, gameloop));
                         break;
-                    case SUnitPositionsEvent e:
-                        unitPositionsEvents.Add(e);
+                    case TrackerEventType.SUnitPositionsEvent:
+                        unitPositionsEvents.Add(ReadSUnitPositionsEvent(decoder, typeId, eventId, bits, gameloop));
                         break;
-                    case SUnitTypeChangeEvent e:
-                        unitTypeChangeEvents.Add(e);
+                    case TrackerEventType.SUnitTypeChangeEvent:
+                        unitTypeChangeEvents.Add(ReadSUnitTypeChangeEvent(decoder, typeId, eventId, bits, gameloop));
                         break;
-                    case SUpgradeEvent e:
-                        upgradeEvents.Add(e);
+                    case TrackerEventType.SUpgradeEvent:
+                        upgradeEvents.Add(ReadSUpgradeEvent(decoder, typeId, eventId, bits, gameloop));
                         break;
-                    case SUnitInitEvent e:
-                        unitInitEvents.Add(e);
+                    case TrackerEventType.SUnitInitEvent:
+                        unitInitEvents.Add(ReadSUnitInitEvent(decoder, typeId, eventId, bits, gameloop));
                         break;
-                    case SUnitDoneEvent e:
-                        unitDoneEvents.Add(e);
+                    case TrackerEventType.SUnitDoneEvent:
+                        unitDoneEvents.Add(ReadSUnitDoneEvent(decoder, typeId, eventId, bits, gameloop));
+                        break;
+                    default:
+                        decoder.SkipType(typeId);
                         break;
                 }
             });
@@ -379,201 +349,6 @@ public sealed partial record S2ProtocolVersion
             [.. upgradeEvents],
             [.. unitInitEvents],
             [.. unitDoneEvents]);
-    }
-
-    private static TrackerEvent ReadTrackerEvent(
-        TypedProtocolDecoder decoder,
-        int typeId,
-        int eventId,
-        int bits,
-        int gameloop,
-        TrackerEventType eventType)
-    {
-        int playerId = 0;
-        int type = 0;
-        int? userId = null;
-        int slotId = 0;
-        int unitTagIndex = 0;
-        int unitTagRecycle = 0;
-        int? killerPlayerId = null;
-        int x = 0;
-        int y = 0;
-        int? killerUnitTagRecycle = null;
-        int? killerUnitTagIndex = null;
-        string? creatorAbilityName = null;
-        int? creatorUnitTagRecycle = null;
-        int controlPlayerId = 0;
-        int upkeepPlayerId = 0;
-        string unitTypeName = string.Empty;
-        int? creatorUnitTagIndex = null;
-        int firstUnitIndex = 0;
-        List<int> items = [];
-        int count = 0;
-        string upgradeTypeName = string.Empty;
-        int[]? stats = null;
-
-        decoder.ReadStruct(typeId, (name, fieldTypeId) =>
-        {
-            switch (name)
-            {
-                case "m_playerId":
-                    playerId = decoder.ReadInt(fieldTypeId);
-                    return true;
-                case "m_type":
-                    type = decoder.ReadInt(fieldTypeId);
-                    return true;
-                case "m_userId":
-                    userId = decoder.ReadNullableInt(fieldTypeId);
-                    return true;
-                case "m_slotId":
-                    slotId = decoder.ReadInt(fieldTypeId);
-                    return true;
-                case "m_unitTagIndex":
-                    unitTagIndex = decoder.ReadInt(fieldTypeId);
-                    return true;
-                case "m_unitTagRecycle":
-                    unitTagRecycle = decoder.ReadInt(fieldTypeId);
-                    return true;
-                case "m_killerPlayerId":
-                    killerPlayerId = decoder.ReadNullableInt(fieldTypeId);
-                    return true;
-                case "m_x":
-                    x = decoder.ReadInt(fieldTypeId);
-                    return true;
-                case "m_y":
-                    y = decoder.ReadInt(fieldTypeId);
-                    return true;
-                case "m_killerUnitTagRecycle":
-                    killerUnitTagRecycle = decoder.ReadNullableInt(fieldTypeId);
-                    return true;
-                case "m_killerUnitTagIndex":
-                    killerUnitTagIndex = decoder.ReadNullableInt(fieldTypeId);
-                    return true;
-                case "m_creatorAbilityName":
-                    creatorAbilityName = decoder.ReadNullableString(fieldTypeId);
-                    return true;
-                case "m_creatorUnitTagRecycle":
-                    creatorUnitTagRecycle = decoder.ReadNullableInt(fieldTypeId);
-                    return true;
-                case "m_controlPlayerId":
-                    controlPlayerId = decoder.ReadInt(fieldTypeId);
-                    return true;
-                case "m_upkeepPlayerId":
-                    upkeepPlayerId = decoder.ReadInt(fieldTypeId);
-                    return true;
-                case "m_unitTypeName":
-                    unitTypeName = decoder.ReadString(fieldTypeId);
-                    return true;
-                case "m_creatorUnitTagIndex":
-                    creatorUnitTagIndex = decoder.ReadNullableInt(fieldTypeId);
-                    return true;
-                case "m_firstUnitIndex":
-                    firstUnitIndex = decoder.ReadInt(fieldTypeId);
-                    return true;
-                case "m_items":
-                    items = decoder.ReadIntList(fieldTypeId);
-                    return true;
-                case "m_count":
-                    count = decoder.ReadInt(fieldTypeId);
-                    return true;
-                case "m_upgradeTypeName":
-                    upgradeTypeName = decoder.ReadString(fieldTypeId);
-                    return true;
-                case "m_stats":
-                    stats = ReadPlayerStats(decoder, fieldTypeId);
-                    return true;
-                default:
-                    return false;
-            }
-        });
-
-        return eventType switch
-        {
-            TrackerEventType.SPlayerSetupEvent => new SPlayerSetupEvent(playerId, eventId, bits, gameloop, type, userId, slotId),
-            TrackerEventType.SPlayerStatsEvent => stats == null ? throw new InvalidOperationException("SPlayerStatsEvent was missing m_stats.") :
-             new SPlayerStatsEvent(playerId, eventId, bits, gameloop,
-                stats[0], stats[1], stats[2], stats[3], stats[4], stats[5], stats[6], stats[7], stats[8], stats[9],
-                stats[10], stats[11], stats[12], stats[13], stats[14], stats[15], stats[16], stats[17], stats[18],
-                stats[19], stats[20], stats[21], stats[22], stats[23], stats[24], stats[25], stats[26], stats[27],
-                stats[28], stats[29], stats[30], stats[31], stats[32], stats[33], stats[34], stats[35], stats[36],
-                stats[37], stats[38]),
-            TrackerEventType.SUnitBornEvent => new SUnitBornEvent(playerId, eventId, bits, gameloop, unitTagIndex,
-                unitTagRecycle, creatorAbilityName, creatorUnitTagRecycle, controlPlayerId, x, y, upkeepPlayerId,
-                unitTypeName, creatorUnitTagIndex),
-            TrackerEventType.SUnitDiedEvent => new SUnitDiedEvent(playerId, eventId, bits, gameloop, unitTagIndex,
-                unitTagRecycle, killerPlayerId, x, y, killerUnitTagRecycle, killerUnitTagIndex),
-            TrackerEventType.SUnitOwnerChangeEvent => new SUnitOwnerChangeEvent(playerId, eventId, bits, gameloop,
-                unitTagIndex, unitTagRecycle, controlPlayerId, upkeepPlayerId),
-            TrackerEventType.SUnitPositionsEvent => new SUnitPositionsEvent(playerId, eventId, bits, gameloop,
-                firstUnitIndex, [.. items]),
-            TrackerEventType.SUnitTypeChangeEvent => new SUnitTypeChangeEvent(playerId, eventId, bits, gameloop,
-                unitTagIndex, unitTagRecycle, unitTypeName),
-            TrackerEventType.SUpgradeEvent => new SUpgradeEvent(playerId, eventId, bits, gameloop, count, upgradeTypeName),
-            TrackerEventType.SUnitInitEvent => new SUnitInitEvent(playerId, eventId, bits, gameloop, unitTagIndex,
-                unitTagRecycle, controlPlayerId, x, y, upkeepPlayerId, unitTypeName),
-            TrackerEventType.SUnitDoneEvent => new SUnitDoneEvent(playerId, eventId, bits, gameloop, unitTagIndex, unitTagRecycle),
-            _ => new UnknownTrackerEvent(playerId, eventId, eventType, bits, gameloop),
-        };
-    }
-
-    private static int[] ReadPlayerStats(TypedProtocolDecoder decoder, int typeId)
-    {
-        int[] stats = new int[39];
-        decoder.ReadStruct(typeId, (name, fieldTypeId) =>
-        {
-            int index = name switch
-            {
-                "m_scoreValueVespeneUsedCurrentTechnology" => 0,
-                "m_scoreValueVespeneFriendlyFireArmy" => 1,
-                "m_scoreValueMineralsFriendlyFireTechnology" => 2,
-                "m_scoreValueMineralsUsedCurrentEconomy" => 3,
-                "m_scoreValueVespeneLostEconomy" => 4,
-                "m_scoreValueMineralsUsedCurrentArmy" => 5,
-                "m_scoreValueVespeneUsedInProgressArmy" => 6,
-                "m_scoreValueVespeneCollectionRate" => 7,
-                "m_scoreValueMineralsUsedInProgressTechnology" => 8,
-                "m_scoreValueMineralsCollectionRate" => 9,
-                "m_scoreValueWorkersActiveCount" => 10,
-                "m_scoreValueMineralsUsedInProgressArmy" => 11,
-                "m_scoreValueVespeneLostArmy" => 12,
-                "m_scoreValueMineralsKilledEconomy" => 13,
-                "m_scoreValueMineralsUsedCurrentTechnology" => 14,
-                "m_scoreValueMineralsKilledArmy" => 15,
-                "m_scoreValueMineralsLostEconomy" => 16,
-                "m_scoreValueMineralsCurrent" => 17,
-                "m_scoreValueMineralsLostArmy" => 18,
-                "m_scoreValueVespeneKilledArmy" => 19,
-                "m_scoreValueVespeneKilledTechnology" => 20,
-                "m_scoreValueVespeneKilledEconomy" => 21,
-                "m_scoreValueMineralsUsedActiveForces" => 22,
-                "m_scoreValueVespeneUsedCurrentArmy" => 23,
-                "m_scoreValueMineralsFriendlyFireArmy" => 24,
-                "m_scoreValueVespeneUsedActiveForces" => 25,
-                "m_scoreValueVespeneCurrent" => 26,
-                "m_scoreValueMineralsLostTechnology" => 27,
-                "m_scoreValueMineralsUsedInProgressEconomy" => 28,
-                "m_scoreValueMineralsFriendlyFireEconomy" => 29,
-                "m_scoreValueVespeneUsedInProgressTechnology" => 30,
-                "m_scoreValueFoodMade" => 31,
-                "m_scoreValueMineralsKilledTechnology" => 32,
-                "m_scoreValueVespeneLostTechnology" => 33,
-                "m_scoreValueVespeneFriendlyFireEconomy" => 34,
-                "m_scoreValueVespeneUsedInProgressEconomy" => 35,
-                "m_scoreValueVespeneUsedCurrentEconomy" => 36,
-                "m_scoreValueVespeneFriendlyFireTechnology" => 37,
-                "m_scoreValueFoodUsed" => 38,
-                _ => -1,
-            };
-
-            if (index < 0)
-            {
-                return false;
-            }
-
-            stats[index] = decoder.ReadInt(fieldTypeId);
-            return true;
-        });
-        return stats;
     }
 
     public static AttributeEvents DecodeReplayAttributeEvents(byte[] content) => DecodeReplayAttributeEvents((ReadOnlyMemory<byte>)content);
@@ -722,93 +497,6 @@ public sealed partial record S2ProtocolVersion
             }
         });
         return new Toon(id, programId, realm, region);
-    }
-
-    private static SUserFinishedLoadingSyncEvent ReadEmptyGameEvent(TypedProtocolDecoder decoder, int typeId, int userId, int eventId, int bits, int gameloop)
-    {
-        decoder.SkipType(typeId);
-        return new SUserFinishedLoadingSyncEvent(userId, eventId, bits, gameloop);
-    }
-
-    private static STriggerSoundLengthSyncEvent ReadSoundLengthSyncEvent(TypedProtocolDecoder decoder, int typeId, int userId, int eventId, int bits, int gameloop)
-    {
-        decoder.SkipType(typeId);
-        return new STriggerSoundLengthSyncEvent(userId, eventId, bits, gameloop);
-    }
-
-    private static GameEvent ReadGenericKnownGameEvent(
-        TypedProtocolDecoder decoder,
-        int typeId,
-        int userId,
-        int eventId,
-        int bits,
-        int gameloop,
-        string eventName,
-        GameEventType eventType)
-    {
-        string name = string.Empty;
-        string data = string.Empty;
-        int intValue = 0;
-        long longValue = 0;
-
-        decoder.ReadStruct(typeId, (fieldName, fieldTypeId) =>
-        {
-            switch (fieldName)
-            {
-                case "m_name":
-                case "m_fileName":
-                    name = decoder.ReadString(fieldTypeId);
-                    return true;
-                case "m_data":
-                case "m_chatMessage":
-                    data = decoder.ReadString(fieldTypeId);
-                    return true;
-                case "m_type":
-                case "m_state":
-                case "m_leaveReason":
-                case "m_controlGroupUpdate":
-                case "m_syncTime":
-                case "m_button":
-                case "m_key":
-                case "m_flags":
-                case "m_unitTag":
-                case "m_sound":
-                case "m_soundtrack":
-                case "m_achievementLink":
-                    intValue = decoder.ReadInt(fieldTypeId);
-                    return true;
-                case "m_cutsceneId":
-                case "m_gameMenuItemIndex":
-                case "m_transmissionId":
-                case "m_decrementSeconds":
-                    longValue = decoder.ReadLong(fieldTypeId);
-                    return true;
-                default:
-                    return false;
-            }
-        });
-
-        return eventType switch
-        {
-            GameEventType.SBankFileEvent => new SBankFileEvent(userId, eventId, bits, gameloop, name),
-            GameEventType.SBankKeyEvent => new SBankKeyEvent(userId, eventId, bits, gameloop, name, data, intValue),
-            GameEventType.SBankSectionEvent => new SBankSectionEvent(userId, eventId, bits, gameloop, name),
-            GameEventType.SBankValueEvent => new SBankValueEvent(userId, eventId, bits, gameloop, name, data, intValue),
-            GameEventType.SControlGroupUpdateEvent => new SControlGroupUpdateEvent(userId, eventId, bits, gameloop, intValue),
-            GameEventType.SGameUserLeaveEvent => new SGameUserLeaveEvent(userId, eventId, bits, gameloop, intValue),
-            GameEventType.SSetSyncLoadingTimeEvent => new SSetSyncLoadingTimeEvent(userId, eventId, bits, gameloop, intValue),
-            GameEventType.SSetSyncPlayingTimeEvent => new SSetSyncPlayingTimeEvent(userId, eventId, bits, gameloop, intValue),
-            GameEventType.STriggerButtonPressedEvent => new STriggerButtonPressedEvent(userId, eventId, bits, gameloop, intValue),
-            GameEventType.STriggerChatMessageEvent => new STriggerChatMessageEvent(userId, eventId, bits, gameloop, data),
-            GameEventType.STriggerCutsceneEndSceneFiredEvent => new STriggerCutsceneEndSceneFiredEvent(userId, eventId, bits, gameloop, longValue),
-            GameEventType.STriggerGameMenuItemSelectedEvent => new STriggerGameMenuItemSelectedEvent(userId, eventId, bits, gameloop, longValue),
-            GameEventType.STriggerSoundOffsetEvent => new STriggerSoundOffsetEvent(userId, eventId, bits, gameloop, intValue),
-            GameEventType.STriggerSoundtrackDoneEvent => new STriggerSoundtrackDoneEvent(userId, eventId, bits, gameloop, intValue),
-            GameEventType.STriggerTransmissionCompleteEvent => new STriggerTransmissionCompleteEvent(userId, eventId, bits, gameloop, longValue),
-            GameEventType.STriggerTransmissionOffsetEvent => new STriggerTransmissionOffsetEvent(userId, eventId, bits, gameloop, intValue),
-            GameEventType.SUnitClickEvent => new SUnitClickEvent(userId, eventId, bits, gameloop, intValue),
-            _ => new UnknownGameEvent(userId, eventId, bits, gameloop, eventName),
-        };
     }
 
     private void DecodeEventStream(

@@ -4,6 +4,11 @@ using System.Text;
 
 namespace s2protocol.NET.S2Protocol;
 
+internal interface IStructFieldReader
+{
+    bool ReadField(TypedProtocolDecoder decoder, string name, int fieldTypeId);
+}
+
 internal abstract class TypedProtocolDecoder(ReadOnlyMemory<byte> contents, List<S2TypeInfo> typeInfos)
 {
     protected readonly BitPackedBuffer Buffer = new(contents);
@@ -26,13 +31,9 @@ internal abstract class TypedProtocolDecoder(ReadOnlyMemory<byte> contents, List
             return ReadInt(typeId);
         }
 
-        int? result = null;
-        ReadOptional(typeId, innerTypeId =>
-        {
-            result = ReadInt(innerTypeId);
-            return true;
-        });
-        return result;
+        return TryReadOptionalTypeId(typeId, out int innerTypeId)
+            ? ReadInt(innerTypeId)
+            : null;
     }
 
     public long ReadLong(int typeId)
@@ -57,13 +58,9 @@ internal abstract class TypedProtocolDecoder(ReadOnlyMemory<byte> contents, List
             return ReadLong(typeId);
         }
 
-        long? result = null;
-        ReadOptional(typeId, innerTypeId =>
-        {
-            result = ReadLong(innerTypeId);
-            return true;
-        });
-        return result;
+        return TryReadOptionalTypeId(typeId, out int innerTypeId)
+            ? ReadLong(innerTypeId)
+            : null;
     }
 
     public bool ReadBool(int typeId)
@@ -99,13 +96,9 @@ internal abstract class TypedProtocolDecoder(ReadOnlyMemory<byte> contents, List
             return ReadString(typeId);
         }
 
-        string? result = null;
-        ReadOptional(typeId, innerTypeId =>
-        {
-            result = ReadString(innerTypeId);
-            return true;
-        });
-        return result;
+        return TryReadOptionalTypeId(typeId, out int innerTypeId)
+            ? ReadString(innerTypeId)
+            : null;
     }
 
     public KeyValuePair<int, BigInteger> ReadBitArray(int typeId)
@@ -133,13 +126,21 @@ internal abstract class TypedProtocolDecoder(ReadOnlyMemory<byte> contents, List
 
     public List<int> ReadIntList(int typeId)
     {
-        List<int> result = [];
-        ReadArray(typeId, itemTypeId =>
+        S2TypeInfo typeInfo = GetTypeInfo(typeId);
+        if (typeInfo.DecodeKind == S2DecodeKind.Optional)
         {
-            result.Add(ReadInt(itemTypeId));
-            return true;
-        });
-        return result;
+            return TryReadOptionalTypeId(typeId, out int innerTypeId)
+                ? ReadIntList(innerTypeId)
+                : [];
+        }
+
+        if (typeInfo.DecodeKind != S2DecodeKind.Array
+            || typeInfo.Parameters is not [BoundsParameter bounds, TypeIdParameter itemType])
+        {
+            throw new DecodeException($"Type {typeId} is not an array.");
+        }
+
+        return ReadIntListItems(bounds, itemType.TypeId);
     }
 
     public List<string> ReadStringList(int typeId)
@@ -215,6 +216,41 @@ internal abstract class TypedProtocolDecoder(ReadOnlyMemory<byte> contents, List
 
             return handleField(field.Name, field.TypeId);
         });
+    }
+
+    public void ReadStruct<TState>(int typeId, ref TState state)
+        where TState : struct, IStructFieldReader
+    {
+        S2TypeInfo typeInfo = GetTypeInfo(typeId);
+        if (typeInfo.DecodeKind == S2DecodeKind.Optional)
+        {
+            if (TryReadOptionalTypeId(typeId, out int innerTypeId))
+            {
+                ReadStruct(innerTypeId, ref state);
+            }
+
+            return;
+        }
+
+        if (typeInfo.DecodeKind == S2DecodeKind.Choice)
+        {
+            if (typeInfo.Parameters is not [BoundsParameter bounds, ChoiceParameter choices])
+            {
+                throw new DecodeException($"Type {typeId} is not a choice.");
+            }
+
+            ReadChoiceStruct(bounds, choices, ref state);
+            return;
+        }
+
+        if (typeInfo.DecodeKind != S2DecodeKind.Struct
+            || typeInfo.Parameters is not [FieldListParameter fieldList])
+        {
+            SkipType(typeId);
+            return;
+        }
+
+        ReadStructFields(fieldList, ref state);
     }
 
     public void ReadChoice(int typeId, Func<string, int, bool> handleChoice)
@@ -324,9 +360,15 @@ internal abstract class TypedProtocolDecoder(ReadOnlyMemory<byte> contents, List
     protected abstract float ReadReal32Value();
     protected abstract double ReadReal64Value();
     protected abstract void ReadArrayItems(BoundsParameter bounds, int itemTypeId, Func<int, bool> handleItem);
+    protected abstract List<int> ReadIntListItems(BoundsParameter bounds, int itemTypeId);
     protected abstract void ReadStructFields(FieldListParameter fields, Func<DecodeField, bool> handleField);
+    protected abstract void ReadStructFields<TState>(FieldListParameter fields, ref TState state)
+        where TState : struct, IStructFieldReader;
     protected abstract void ReadChoiceValue(BoundsParameter bounds, ChoiceParameter choices, Func<DecodeChoice, bool> handleChoice);
+    protected abstract void ReadChoiceStruct<TState>(BoundsParameter bounds, ChoiceParameter choices, ref TState state)
+        where TState : struct, IStructFieldReader;
     protected abstract void ReadOptional(int typeId, Func<int, bool> handleValue);
+    protected abstract bool TryReadOptionalTypeId(int typeId, out int innerTypeId);
 
     private long ReadChoiceLong(int typeId)
     {
@@ -487,11 +529,38 @@ internal sealed class BitPackedTypedDecoder(ReadOnlyMemory<byte> contents, List<
         }
     }
 
+    protected override List<int> ReadIntListItems(BoundsParameter bounds, int itemTypeId)
+    {
+        long length = ReadIntValue(bounds);
+        List<int> result = new((int)Math.Min(length, int.MaxValue));
+        for (long i = 0; i < length; i++)
+        {
+            result.Add(ReadInt(itemTypeId));
+        }
+
+        return result;
+    }
+
     protected override void ReadStructFields(FieldListParameter fields, Func<DecodeField, bool> handleField)
     {
         foreach (var field in fields.Fields)
         {
             if (!handleField(field))
+            {
+                SkipType(field.TypeId);
+            }
+        }
+    }
+
+    protected override void ReadStructFields<TState>(FieldListParameter fields, ref TState state)
+    {
+        foreach (var field in fields.Fields)
+        {
+            bool handled = field.Name == "__parent"
+                ? ReadParentStruct(field.TypeId, ref state)
+                : state.ReadField(this, field.Name, field.TypeId);
+
+            if (!handled)
             {
                 SkipType(field.TypeId);
             }
@@ -512,7 +581,31 @@ internal sealed class BitPackedTypedDecoder(ReadOnlyMemory<byte> contents, List<
         }
     }
 
+    protected override void ReadChoiceStruct<TState>(BoundsParameter bounds, ChoiceParameter choices, ref TState state)
+    {
+        long tag = ReadIntValue(bounds);
+        if (!choices.Choices.TryGetValue(tag, out var choice))
+        {
+            throw new DecodeException(nameof(BitPackedTypedDecoder));
+        }
+
+        ReadStruct(choice.TypeId, ref state);
+    }
+
     protected override void ReadOptional(int typeId, Func<int, bool> handleValue)
+    {
+        if (!TryReadOptionalTypeId(typeId, out int innerTypeId))
+        {
+            return;
+        }
+
+        if (!handleValue(innerTypeId))
+        {
+            SkipType(innerTypeId);
+        }
+    }
+
+    protected override bool TryReadOptionalTypeId(int typeId, out int innerTypeId)
     {
         S2TypeInfo typeInfo = GetTypeInfo(typeId);
         if (typeInfo.Parameters is not [TypeIdParameter innerType])
@@ -520,15 +613,15 @@ internal sealed class BitPackedTypedDecoder(ReadOnlyMemory<byte> contents, List<
             throw new DecodeException("Invalid optional type.");
         }
 
-        if (!ReadBoolValue())
-        {
-            return;
-        }
+        innerTypeId = innerType.TypeId;
+        return ReadBoolValue();
+    }
 
-        if (!handleValue(innerType.TypeId))
-        {
-            SkipType(innerType.TypeId);
-        }
+    private bool ReadParentStruct<TState>(int typeId, ref TState state)
+        where TState : struct, IStructFieldReader
+    {
+        ReadStruct(typeId, ref state);
+        return true;
     }
 }
 
@@ -607,6 +700,19 @@ internal sealed class VersionedTypedDecoder(ReadOnlyMemory<byte> contents, List<
         }
     }
 
+    protected override List<int> ReadIntListItems(BoundsParameter bounds, int itemTypeId)
+    {
+        ExpectSkip(0);
+        long length = VInt();
+        List<int> result = new((int)Math.Min(length, int.MaxValue));
+        for (long i = 0; i < length; i++)
+        {
+            result.Add(ReadInt(itemTypeId));
+        }
+
+        return result;
+    }
+
     protected override void ReadStructFields(FieldListParameter fields, Func<DecodeField, bool> handleField)
     {
         ExpectSkip(5);
@@ -618,6 +724,32 @@ internal sealed class VersionedTypedDecoder(ReadOnlyMemory<byte> contents, List<
             if (fields.FieldsByTag.TryGetValue(tag, out var field))
             {
                 if (!handleField(field))
+                {
+                    SkipType(field.TypeId);
+                }
+            }
+            else
+            {
+                SkipInstance();
+            }
+        }
+    }
+
+    protected override void ReadStructFields<TState>(FieldListParameter fields, ref TState state)
+    {
+        ExpectSkip(5);
+        long length = VInt();
+
+        for (long i = 0; i < length; i++)
+        {
+            long tag = VInt();
+            if (fields.FieldsByTag.TryGetValue(tag, out var field))
+            {
+                bool handled = field.Name == "__parent"
+                    ? ReadParentStruct(field.TypeId, ref state)
+                    : state.ReadField(this, field.Name, field.TypeId);
+
+                if (!handled)
                 {
                     SkipType(field.TypeId);
                 }
@@ -645,7 +777,33 @@ internal sealed class VersionedTypedDecoder(ReadOnlyMemory<byte> contents, List<
         }
     }
 
+    protected override void ReadChoiceStruct<TState>(BoundsParameter bounds, ChoiceParameter choices, ref TState state)
+    {
+        ExpectSkip(3);
+        long tag = VInt();
+        if (!choices.Choices.TryGetValue(tag, out var choice))
+        {
+            SkipInstance();
+            return;
+        }
+
+        ReadStruct(choice.TypeId, ref state);
+    }
+
     protected override void ReadOptional(int typeId, Func<int, bool> handleValue)
+    {
+        if (!TryReadOptionalTypeId(typeId, out int innerTypeId))
+        {
+            return;
+        }
+
+        if (!handleValue(innerTypeId))
+        {
+            SkipType(innerTypeId);
+        }
+    }
+
+    protected override bool TryReadOptionalTypeId(int typeId, out int innerTypeId)
     {
         S2TypeInfo typeInfo = GetTypeInfo(typeId);
         if (typeInfo.Parameters is not [TypeIdParameter innerType])
@@ -654,15 +812,15 @@ internal sealed class VersionedTypedDecoder(ReadOnlyMemory<byte> contents, List<
         }
 
         ExpectSkip(4);
-        if (Buffer.ReadBits(8) == 0)
-        {
-            return;
-        }
+        innerTypeId = innerType.TypeId;
+        return Buffer.ReadBits(8) != 0;
+    }
 
-        if (!handleValue(innerType.TypeId))
-        {
-            SkipType(innerType.TypeId);
-        }
+    private bool ReadParentStruct<TState>(int typeId, ref TState state)
+        where TState : struct, IStructFieldReader
+    {
+        ReadStruct(typeId, ref state);
+        return true;
     }
 
     private void ExpectSkip(int expected)
