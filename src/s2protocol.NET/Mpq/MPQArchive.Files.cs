@@ -215,69 +215,76 @@ public sealed partial class MPQArchive
         _reader.BaseStream.Seek(offset, SeekOrigin.Begin);
 
         // Read raw compressed bytes
-        byte[] rawData = new byte[compressedSize];
-        int read = await _reader.BaseStream.ReadAsync(rawData, cancellationToken).ConfigureAwait(false);
-        if (read != rawData.Length)
-            throw new EndOfStreamException("Could not read entire block.");
-
-        // Encrypted?
-        if ((blockEntry.Flags & 0x00010000) != 0) // MPQ_FILE_ENCRYPTED
-            throw new NotSupportedException("Encrypted files are not supported yet.");
-
-        // Single unit file (one chunk, maybe compressed)
-        if ((blockEntry.Flags & 0x01000000) != 0) // MPQ_FILE_SINGLE_UNIT
+        byte[] rawData = ArrayPool<byte>.Shared.Rent(compressedSize);
+        try
         {
-            if ((blockEntry.Flags & 0x00000200) != 0 && // MPQ_FILE_COMPRESS
-                (forceDecompress || blockEntry.CompressedSize < blockEntry.FileSize))
+            int read = await _reader.BaseStream.ReadAsync(rawData.AsMemory(0, compressedSize), cancellationToken).ConfigureAwait(false);
+            if (read != compressedSize)
+                throw new EndOfStreamException("Could not read entire block.");
+
+            // Encrypted?
+            if ((blockEntry.Flags & 0x00010000) != 0) // MPQ_FILE_ENCRYPTED
+                throw new NotSupportedException("Encrypted files are not supported yet.");
+
+            // Single unit file (one chunk, maybe compressed)
+            if ((blockEntry.Flags & 0x01000000) != 0) // MPQ_FILE_SINGLE_UNIT
             {
-                byte[] singleUnitResult = new byte[fileSize];
-                await DecompressAsync(rawData, 0, rawData.Length, singleUnitResult, 0, fileSize, cancellationToken).ConfigureAwait(false);
-                return singleUnitResult;
+                if ((blockEntry.Flags & 0x00000200) != 0 && // MPQ_FILE_COMPRESS
+                    (forceDecompress || blockEntry.CompressedSize < blockEntry.FileSize))
+                {
+                    byte[] singleUnitResult = new byte[fileSize];
+                    await DecompressAsync(rawData, 0, compressedSize, singleUnitResult, 0, fileSize, cancellationToken).ConfigureAwait(false);
+                    return singleUnitResult;
+                }
+
+                return rawData;
             }
 
-            return rawData;
-        }
+            // Multi-sector file
+            int sectorSize = 512 << _header.SectorSizeShift;
+            int sectorCount = (int)Math.Ceiling(blockEntry.FileSize / (double)sectorSize);
+            bool hasSectorChecksum = (blockEntry.Flags & 0x00000100) != 0; // MPQ_FILE_SECTOR_CRC
 
-        // Multi-sector file
-        int sectorSize = 512 << _header.SectorSizeShift;
-        int sectorCount = (int)Math.Ceiling(blockEntry.FileSize / (double)sectorSize);
-        bool hasSectorChecksum = (blockEntry.Flags & 0x00000100) != 0; // MPQ_FILE_SECTOR_CRC
+            int tableEntries = sectorCount + 1 + (hasSectorChecksum ? 1 : 0);
+            int[] positions = new int[tableEntries];
 
-        int tableEntries = sectorCount + 1 + (hasSectorChecksum ? 1 : 0);
-        int[] positions = new int[tableEntries];
-
-        for (int i = 0; i < tableEntries; i++)
-        {
-            cancellationToken.ThrowIfCancellationRequested();
-            positions[i] = BinaryPrimitives.ReadInt32LittleEndian(rawData.AsSpan(i * sizeof(int), sizeof(int)));
-        }
-
-        byte[] result = new byte[fileSize];
-        int bytesCopied = 0;
-
-        for (int i = 0; i < sectorCount; i++)
-        {
-            cancellationToken.ThrowIfCancellationRequested();
-
-            int start = positions[i];
-            int end = positions[i + 1];
-            int length = end - start;
-
-            if ((blockEntry.Flags & 0x00000200) != 0 &&
-                (forceDecompress || length < sectorSize))
+            for (int i = 0; i < tableEntries; i++)
             {
-                int expectedSectorLength = Math.Min(sectorSize, fileSize - bytesCopied);
-                await DecompressAsync(rawData, start, length, result, bytesCopied, expectedSectorLength, cancellationToken).ConfigureAwait(false);
-                bytesCopied += expectedSectorLength;
+                cancellationToken.ThrowIfCancellationRequested();
+                positions[i] = BinaryPrimitives.ReadInt32LittleEndian(rawData.AsSpan(i * sizeof(int), sizeof(int)));
             }
-            else
-            {
-                Array.Copy(rawData, start, result, bytesCopied, length);
-                bytesCopied += length;
-            }
-        }
 
-        return result;
+            byte[] result = new byte[fileSize];
+            int bytesCopied = 0;
+
+            for (int i = 0; i < sectorCount; i++)
+            {
+                cancellationToken.ThrowIfCancellationRequested();
+
+                int start = positions[i];
+                int end = positions[i + 1];
+                int length = end - start;
+
+                if ((blockEntry.Flags & 0x00000200) != 0 &&
+                    (forceDecompress || length < sectorSize))
+                {
+                    int expectedSectorLength = Math.Min(sectorSize, fileSize - bytesCopied);
+                    await DecompressAsync(rawData, start, length, result, bytesCopied, expectedSectorLength, cancellationToken).ConfigureAwait(false);
+                    bytesCopied += expectedSectorLength;
+                }
+                else
+                {
+                    Array.Copy(rawData, start, result, bytesCopied, length);
+                    bytesCopied += length;
+                }
+            }
+
+            return result;
+        }
+        finally
+        {
+            ArrayPool<byte>.Shared.Return(rawData);
+        }
     }
 
     private static async Task DecompressAsync(byte[] data,
