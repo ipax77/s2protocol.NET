@@ -469,7 +469,7 @@ internal sealed class BitPackedTypedDecoder(ReadOnlyMemory<byte> contents, List<
     protected override long ReadIntValue(BoundsParameter bounds)
         => bounds.Min + Buffer.ReadBits((int)bounds.Max);
 
-    protected override bool ReadBoolValue() => ReadIntValue(new BoundsParameter(0, 1)) != 0;
+    protected override bool ReadBoolValue() => Buffer.ReadBits(1) != 0;
 
     protected override ReadOnlySpan<byte> ReadBlobValue(BoundsParameter bounds)
     {
