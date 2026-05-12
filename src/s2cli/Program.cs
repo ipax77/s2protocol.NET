@@ -159,7 +159,7 @@ sealed class Program
 
         if (metadata || all)
         {
-            var metaContent = mpqArchive.ReadFile("replay.gamemetadata.json");
+            var metaContent = mpqArchive.ReadFile("replay.gamemetadata.json")?.ToArray() ?? null;
             ArgumentNullException.ThrowIfNull(metaContent, "No metadata found in replay.");
             var metaString = Encoding.UTF8.GetString(metaContent);
             using var doc = JsonDocument.Parse(metaString);
@@ -169,7 +169,7 @@ sealed class Program
 
         if (details || all)
         {
-            var detailsContent = mpqArchive.ReadFile("replay.details");
+            var detailsContent = mpqArchive.ReadFile("replay.details")?.ToArray() ?? null;
             ArgumentNullException.ThrowIfNull(detailsContent, "No details found in replay.");
             var detailsTyped = s2protocol.DecodeReplayDetails(detailsContent);
             sb.AppendLine(JsonSerializer.Serialize(detailsTyped, jsonSerializerOptions));
@@ -177,7 +177,7 @@ sealed class Program
 
         if (detailsBackup || all)
         {
-            var detailsContent = mpqArchive.ReadFile("replay.details.backup");
+            var detailsContent = mpqArchive.ReadFile("replay.details.backup")?.ToArray() ?? null;
             ArgumentNullException.ThrowIfNull(detailsContent, "No details found in replay.");
             var detailsTyped = s2protocol.DecodeReplayDetails(detailsContent);
             sb.AppendLine(JsonSerializer.Serialize(detailsTyped, jsonSerializerOptions));
@@ -185,7 +185,7 @@ sealed class Program
 
         if (initData || all)
         {
-            var initDataContent = mpqArchive.ReadFile("replay.initData");
+            var initDataContent = mpqArchive.ReadFile("replay.initData")?.ToArray() ?? null;
             ArgumentNullException.ThrowIfNull(initDataContent, "No init data found in replay.");
             var initDataTyped = s2protocol.DecodeReplayInitData(initDataContent);
             ArgumentNullException.ThrowIfNull(initDataTyped, "Failed decoding initData.");
@@ -194,7 +194,7 @@ sealed class Program
 
         if (gameEvents || all)
         {
-            var gameContent = mpqArchive.ReadFile("replay.game.events");
+            var gameContent = mpqArchive.ReadFile("replay.game.events")?.ToArray() ?? null;
             ArgumentNullException.ThrowIfNull(gameContent, "No gameEvents found in replay.");
             var gameTyped = s2protocol.DecodeReplayGameEvents(gameContent);
             sb.AppendLine(JsonSerializer.Serialize(gameTyped, jsonSerializerOptions));
@@ -202,7 +202,7 @@ sealed class Program
 
         if (messageEvents || all)
         {
-            var messageContent = mpqArchive.ReadFile("replay.message.events");
+            var messageContent = mpqArchive.ReadFile("replay.message.events")?.ToArray() ?? null;
             ArgumentNullException.ThrowIfNull(messageContent, "No message events found in replay.");
             var messageTyped = s2protocol.DecodeReplayMessageEvents(messageContent);
             sb.AppendLine(JsonSerializer.Serialize(messageTyped, jsonSerializerOptions));
@@ -210,7 +210,7 @@ sealed class Program
 
         if (trackerEvents || all)
         {
-            var trackerContent = mpqArchive.ReadFile("replay.tracker.events");
+            var trackerContent = mpqArchive.ReadFile("replay.tracker.events")?.ToArray() ?? null;
             ArgumentNullException.ThrowIfNull(trackerContent, "No tracker events found in replay.");
             var trackerTyped = s2protocol.DecodeReplayTrackerEvents(trackerContent);
             sb.AppendLine(JsonSerializer.Serialize(trackerTyped, jsonSerializerOptions));
@@ -218,7 +218,7 @@ sealed class Program
 
         if (attributeEvents || all)
         {
-            var attributeContent = mpqArchive.ReadFile("replay.attributes.events");
+            var attributeContent = mpqArchive.ReadFile("replay.attributes.events")?.ToArray() ?? null;
             ArgumentNullException.ThrowIfNull(attributeContent, "No attributeEvents found in replay.");
             var attributesTyped = S2ProtocolVersion.DecodeReplayAttributeEvents(attributeContent);
             sb.AppendLine(JsonSerializer.Serialize(attributesTyped, jsonSerializerOptions));

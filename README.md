@@ -98,28 +98,23 @@ s2cli --replay path/to/game.SC2Replay [options]
 | `--versions`               | Show supported protocol versions          |
 
 ## Benchmark
-Performance comparison between s2cli (.NET 10, C#) and the original s2_cli.exe (Python):
+Decode-only process comparison using `test6.SC2Replay` (base build `88500`). Each target decodes the same replay once per process, materializes the decoded object graph, prints only a compact summary, and keeps the decoded data alive until exit. Results are 5 process launches on Windows 11 / .NET 10.
 
-| Metric       | C# / .NET | Python        | Winner               |
-| ------------ | --------- | ------------- | -------------------- |
-| Avg Time     | 1,598 ms  | 10,766 ms     | ✅ C# (\~6.7× faster) |
-| Min Time     | 333 ms    | 970 ms        | ✅ C#                 |
-| Max Time     | 3,911 ms  | 31,603 ms (!) | ✅ C#                 |
-| Success Rate | ✅ 23/23   | ✅ 23/23       | 🎉 Tie               |
-
-⏱ Benchmarked on 23 real StarCraft II replays across multiple match types with option '--all'.
-
-Run the BenchmarkDotNet replay benchmarks:
-
-```bash
-dotnet run -c Release --project src/s2protocol.NET.Benchmarks
-```
-
-Set `S2PROTOCOL_BENCHMARK_REPLAY_DIR` to benchmark a custom replay corpus. Optional Direct Strike stress replay tests can be enabled with `S2PROTOCOL_RUN_STRESS_TESTS=1`; they use `S2PROTOCOL_BENCHMARK_REPLAY_DIR` when set.
+| Decoder | Mean Time | Min Time | Max Time | Peak Working Set | Peak Private Bytes |
+| ------- | --------: | -------: | -------: | ---------------: | -----------------: |
+| `s2protocol.NET` v0.9.4 sample exe | 435.90 ms | 379.41 ms | 467.22 ms | 38.27 MB | 23.30 MB |
+| Blizzard Python `s2protocol` 5.0.15.95299.0 helper | 1,472.93 ms | 1,432.50 ms | 1,558.93 ms | 47.41 MB | 41.38 MB |
 
 # ChangeLog
 
-<details open="open"><summary>v0.9.3</summary>
+<details open="open"><summary>v0.9.4</summary>
+
+>- Improved performance/momory usage
+>- MPQArchive.ReadFile(Async) now returns ReadOnlyMemory<byte> instead of byte[]
+
+</details>
+
+<details><summary>v0.9.3</summary>
 
 >- replaced runtime `protocol*.py` parsing with generated compact JSON protocol resources
 >- moved Python protocol files to the `S2ProtocolJsonGenerator` tool

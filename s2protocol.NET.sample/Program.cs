@@ -1,38 +1,44 @@
-﻿using s2protocol.NET;
+using System.Diagnostics;
+using System.Globalization;
+using s2protocol.NET;
+using s2protocol.NET.Models;
 
-var replayPath = @"C:\Users\pax77\source\repos\s2protocol.NET\s2protocol.NET.tests\replays\test7.SC2Replay";
+string replayPath = args.Length > 0
+    ? args[0]
+    : @"C:\Users\pax77\source\repos\s2protocol.NET\src\s2protocol.NET.Benchmarks\bin\Release\net10.0\replays\test6.SC2Replay";
 
-Console.WriteLine("Warmup...");
-{
-    using var warmupDecoder = new ReplayDecoder();
-    var warmupReplay = await warmupDecoder.DecodeAsync(replayPath);
-    ArgumentNullException.ThrowIfNull(warmupReplay);
-}
+Stopwatch stopwatch = Stopwatch.StartNew();
+using ReplayDecoder replayDecoder = new();
+Sc2Replay sc2Replay = await replayDecoder.DecodeAsync(replayPath).ConfigureAwait(false)
+    ?? throw new InvalidOperationException($"Could not decode replay '{replayPath}'.");
+stopwatch.Stop();
 
-GC.Collect();
-GC.WaitForPendingFinalizers();
-GC.Collect();
-
-Console.WriteLine("Attach/start allocation recording now.");
-Console.WriteLine("Press Enter to decode exactly once...");
-Console.ReadLine();
-
-long before = GC.GetTotalAllocatedBytes(precise: true);
-
-using var replayDecoder = new ReplayDecoder();
-
-var sc2Replay = await replayDecoder.DecodeAsync(replayPath);
-
-long after = GC.GetTotalAllocatedBytes(precise: true);
-
-ArgumentNullException.ThrowIfNull(sc2Replay);
-ArgumentNullException.ThrowIfNull(sc2Replay.Details);
-
-Console.WriteLine(sc2Replay.Details.DateTimeUTC.ToShortDateString());
-Console.WriteLine($"Single decode allocated: {(after - before) / 1024.0 / 1024.0:N2} MB");
+Console.WriteLine($"file={Path.GetFileName(replayPath)}");
+Console.WriteLine($"baseBuild={sc2Replay.Header.BaseBuild}");
+Console.WriteLine($"elapsedMs={stopwatch.Elapsed.TotalMilliseconds.ToString("F2", CultureInfo.InvariantCulture)}");
+Console.WriteLine($"players={sc2Replay.Details?.Players.Count ?? 0}");
+Console.WriteLine($"gameEvents={sc2Replay.GameEvents?.BaseGameEvents.Count ?? 0}");
+Console.WriteLine($"messageEvents={(sc2Replay.ChatMessages?.Count ?? 0) + (sc2Replay.PingMessages?.Count ?? 0)}");
+Console.WriteLine($"trackerEvents={CountTrackerEvents(sc2Replay.TrackerEvents)}");
+Console.WriteLine($"attributeEvents={sc2Replay.AttributeEvents?.Scopes.Count ?? 0}");
 
 GC.KeepAlive(sc2Replay);
 
-Console.WriteLine("Stop allocation recording now.");
-Console.WriteLine("Press Enter to exit...");
-Console.ReadLine();
+static int CountTrackerEvents(TrackerEvents? trackerEvents)
+{
+    if (trackerEvents is null)
+    {
+        return 0;
+    }
+
+    return trackerEvents.SPlayerSetupEvents.Count
+        + trackerEvents.SPlayerStatsEvents.Count
+        + trackerEvents.SUnitBornEvents.Count
+        + trackerEvents.SUnitDiedEvents.Count
+        + trackerEvents.SUnitOwnerChangeEvents.Count
+        + trackerEvents.SUnitPositionsEvents.Count
+        + trackerEvents.SUnitTypeChangeEvents.Count
+        + trackerEvents.SUpgradeEvents.Count
+        + trackerEvents.SUnitInitEvents.Count
+        + trackerEvents.SUnitDoneEvents.Count;
+}
