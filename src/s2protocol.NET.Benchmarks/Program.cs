@@ -1,4 +1,5 @@
 using BenchmarkDotNet.Attributes;
+using BenchmarkDotNet.Diagnosers;
 using BenchmarkDotNet.Jobs;
 using BenchmarkDotNet.Running;
 using s2protocol.NET;
@@ -23,6 +24,7 @@ public static class Program
 }
 
 [MemoryDiagnoser]
+[EventPipeProfiler(EventPipeProfile.GcVerbose)]
 [ShortRunJob]
 public class SingleReplayDecodeBenchmarks
 {

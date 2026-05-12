@@ -410,7 +410,7 @@ public sealed partial record S2ProtocolVersion
         List<int> items = [];
         int count = 0;
         string upgradeTypeName = string.Empty;
-        int[] stats = new int[39];
+        int[]? stats = null;
 
         decoder.ReadStruct(typeId, (name, fieldTypeId) =>
         {
@@ -490,7 +490,8 @@ public sealed partial record S2ProtocolVersion
         return eventType switch
         {
             TrackerEventType.SPlayerSetupEvent => new SPlayerSetupEvent(playerId, eventId, bits, gameloop, type, userId, slotId),
-            TrackerEventType.SPlayerStatsEvent => new SPlayerStatsEvent(playerId, eventId, bits, gameloop,
+            TrackerEventType.SPlayerStatsEvent => stats == null ? throw new InvalidOperationException("SPlayerStatsEvent was missing m_stats.") :
+             new SPlayerStatsEvent(playerId, eventId, bits, gameloop,
                 stats[0], stats[1], stats[2], stats[3], stats[4], stats[5], stats[6], stats[7], stats[8], stats[9],
                 stats[10], stats[11], stats[12], stats[13], stats[14], stats[15], stats[16], stats[17], stats[18],
                 stats[19], stats[20], stats[21], stats[22], stats[23], stats[24], stats[25], stats[26], stats[27],
