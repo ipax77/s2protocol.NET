@@ -16,7 +16,7 @@ public sealed partial class MPQArchive : IDisposable
     private long _headerOffset;
     private MPQHashTableEntry[] _hashTable;
     private MPQBlockTableEntry[] _blockTable;
-    private byte[]? _files;
+    private ReadOnlyMemory<byte>? _files;
 
     /// <summary>
     /// Initializes a new instance of the <see cref="MPQArchive"/> class from a file path.

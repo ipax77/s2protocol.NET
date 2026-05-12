@@ -193,9 +193,9 @@ public sealed partial class ReplayDecoder : IDisposable
     private static async Task<AttributeEvents?> GetAttributeEventsAsync(MPQArchive archive, CancellationToken token)
     {
         var game_enc = await archive.ReadFileAsync("replay.attributes.events", false, token).ConfigureAwait(false);
-        if (game_enc != null)
+        if (game_enc.HasValue)
         {
-            return S2ProtocolVersion.DecodeReplayAttributeEvents(game_enc);
+            return S2ProtocolVersion.DecodeReplayAttributeEvents(game_enc.Value);
         }
         return null;
     }
@@ -203,9 +203,9 @@ public sealed partial class ReplayDecoder : IDisposable
     private static async Task<GameEvents?> GetGameEventsAsync(MPQArchive archive, S2ProtocolVersion protocol, CancellationToken token)
     {
         var game_enc = await archive.ReadFileAsync("replay.game.events", false, token).ConfigureAwait(false);
-        if (game_enc != null)
+        if (game_enc.HasValue)
         {
-            return protocol.DecodeReplayGameEvents(game_enc);
+            return protocol.DecodeReplayGameEvents(game_enc.Value);
         }
         return null;
     }
@@ -213,9 +213,9 @@ public sealed partial class ReplayDecoder : IDisposable
     private static async Task<Initdata?> GetInitDataAsync(MPQArchive archive, S2ProtocolVersion protocol, CancellationToken token)
     {
         var init_enc = await archive.ReadFileAsync("replay.initData", false, token).ConfigureAwait(false);
-        if (init_enc != null)
+        if (init_enc.HasValue)
         {
-            return protocol.DecodeReplayInitData(init_enc);
+            return protocol.DecodeReplayInitData(init_enc.Value);
         }
         return null;
     }
@@ -223,9 +223,9 @@ public sealed partial class ReplayDecoder : IDisposable
     private static async Task<TrackerEvents?> GetTrackereventsAsync(MPQArchive archive, S2ProtocolVersion protocol, CancellationToken token)
     {
         var tracker_dec = await archive.ReadFileAsync("replay.tracker.events", false, token).ConfigureAwait(false);
-        if (tracker_dec != null)
+        if (tracker_dec.HasValue)
         {
-            return protocol.DecodeReplayTrackerEvents(tracker_dec);
+            return protocol.DecodeReplayTrackerEvents(tracker_dec.Value);
         }
         return null;
     }
@@ -233,9 +233,9 @@ public sealed partial class ReplayDecoder : IDisposable
     private static async Task<MessageEvents?> GetMessagesAsync(MPQArchive archive, S2ProtocolVersion protocol, CancellationToken token)
     {
         var msg_enc = await archive.ReadFileAsync("replay.message.events", false, token).ConfigureAwait(false);
-        if (msg_enc != null)
+        if (msg_enc.HasValue)
         {
-            return protocol.DecodeReplayMessageEvents(msg_enc);
+            return protocol.DecodeReplayMessageEvents(msg_enc.Value);
         }
         return null;
     }
@@ -243,9 +243,9 @@ public sealed partial class ReplayDecoder : IDisposable
     private static async Task<ReplayMetadata?> GetMetadataAsync(MPQArchive archive, CancellationToken token)
     {
         var meta_bytes = await archive.ReadFileAsync("replay.gamemetadata.json", false, token).ConfigureAwait(false);
-        if (meta_bytes != null)
+        if (meta_bytes.HasValue)
         {
-            return JsonSerializer.Deserialize(meta_bytes, S2ProtocolJsonSerializerContext.Default.ReplayMetadata);
+            return JsonSerializer.Deserialize(meta_bytes.Value.Span, S2ProtocolJsonSerializerContext.Default.ReplayMetadata);
         }
         return null;
     }
@@ -253,9 +253,9 @@ public sealed partial class ReplayDecoder : IDisposable
     private static async Task<Details?> GetDetailsAsync(MPQArchive archive, S2ProtocolVersion protocol, CancellationToken token)
     {
         var details_enc = await archive.ReadFileAsync("replay.details", false, token).ConfigureAwait(false);
-        if (details_enc != null)
+        if (details_enc.HasValue)
         {
-            return protocol.DecodeReplayDetails(details_enc);
+            return protocol.DecodeReplayDetails(details_enc.Value);
         }
         return null;
     }

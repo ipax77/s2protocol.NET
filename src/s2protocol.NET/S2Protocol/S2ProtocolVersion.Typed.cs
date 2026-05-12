@@ -6,8 +6,6 @@ namespace s2protocol.NET.S2Protocol;
 
 public sealed partial record S2ProtocolVersion
 {
-    public Header DecodeReplayHeader(byte[] content) => DecodeReplayHeader((ReadOnlyMemory<byte>)content);
-
     public Header DecodeReplayHeader(ReadOnlyMemory<byte> content)
     {
         VersionedTypedDecoder decoder = new(content, TypeInfos);
@@ -18,8 +16,6 @@ public sealed partial record S2ProtocolVersion
         return new Header(state.DataBuild, state.Elapsed, state.UseScaledTime, state.Version ?? new Version(),
             state.Signature ?? string.Empty, string.Empty, string.Empty, state.Type, state.Flags, state.Build, state.BaseBuild);
     }
-
-    public Details DecodeReplayDetails(byte[] content) => DecodeReplayDetails((ReadOnlyMemory<byte>)content);
 
     public Details DecodeReplayDetails(ReadOnlyMemory<byte> content)
     {
@@ -37,8 +33,6 @@ public sealed partial record S2ProtocolVersion
             state.TimeLocalOffset, state.TimeUTC, state.Title ?? string.Empty, state.Players);
     }
 
-    public Initdata? DecodeReplayInitData(byte[] content) => DecodeReplayInitData((ReadOnlyMemory<byte>)content);
-
     public Initdata? DecodeReplayInitData(ReadOnlyMemory<byte> content)
     {
         BitPackedTypedDecoder decoder = new(content, TypeInfos);
@@ -48,8 +42,6 @@ public sealed partial record S2ProtocolVersion
 
         return state.Initdata;
     }
-
-    public MessageEvents DecodeReplayMessageEvents(byte[] content) => DecodeReplayMessageEvents((ReadOnlyMemory<byte>)content);
 
     public MessageEvents DecodeReplayMessageEvents(ReadOnlyMemory<byte> content)
     {
@@ -63,8 +55,6 @@ public sealed partial record S2ProtocolVersion
         return new MessageEvents(chatMessages, pingMessages);
     }
 
-    public GameEvents DecodeReplayGameEvents(byte[] content) => DecodeReplayGameEvents((ReadOnlyMemory<byte>)content);
-
     public GameEvents DecodeReplayGameEvents(ReadOnlyMemory<byte> content)
     {
         BitPackedTypedDecoder decoder = new(content, TypeInfos);
@@ -75,8 +65,6 @@ public sealed partial record S2ProtocolVersion
 
         return new GameEvents(events);
     }
-
-    public TrackerEvents DecodeReplayTrackerEvents(byte[] content) => DecodeReplayTrackerEvents((ReadOnlyMemory<byte>)content);
 
     public TrackerEvents DecodeReplayTrackerEvents(ReadOnlyMemory<byte> content)
     {
@@ -118,8 +106,6 @@ public sealed partial record S2ProtocolVersion
             [.. unitInitEvents],
             [.. unitDoneEvents]);
     }
-
-    public static AttributeEvents DecodeReplayAttributeEvents(byte[] content) => DecodeReplayAttributeEvents((ReadOnlyMemory<byte>)content);
 
     public static AttributeEvents DecodeReplayAttributeEvents(ReadOnlyMemory<byte> content)
     {

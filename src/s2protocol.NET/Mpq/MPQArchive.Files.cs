@@ -1,4 +1,3 @@
-using System.Buffers;
 using System.Buffers.Binary;
 using System.IO.Compression;
 using System.Text;
@@ -19,10 +18,10 @@ public sealed partial class MPQArchive
     /// smaller than its uncompressed size. If <see langword="true"/>, the file will always be decompressed if it is
     /// compressed.</param>
     /// <param name="cancellationToken"></param>
-    /// <returns>A byte array containing the file's contents, or <see langword="null"/> if the file does not exist or cannot be
+    /// <returns>A read-only memory block containing the file's contents, or <see langword="null"/> if the file does not exist or cannot be
     /// read.</returns>
     /// <exception cref="NotSupportedException">Thrown if the file is encrypted, as encrypted files are not supported.</exception>
-    public byte[]? ReadFile(string filename, bool forceDecompress = false, CancellationToken cancellationToken = default)
+    public ReadOnlyMemory<byte>? ReadFile(string filename, bool forceDecompress = false, CancellationToken cancellationToken = default)
     {
         var hashEntry = GetHashTableEntry(filename);
         if (hashEntry == null)
@@ -194,9 +193,9 @@ public sealed partial class MPQArchive
     /// <returns></returns>
     /// <exception cref="EndOfStreamException"></exception>
     /// <exception cref="NotSupportedException"></exception>
-    public async Task<byte[]?> ReadFileAsync(string filename,
-                                             bool forceDecompress = false,
-                                             CancellationToken cancellationToken = default)
+    public async Task<ReadOnlyMemory<byte>?> ReadFileAsync(string filename,
+                                                          bool forceDecompress = false,
+                                                          CancellationToken cancellationToken = default)
     {
         var hashEntry = GetHashTableEntry(filename);
         if (hashEntry == null)
@@ -215,76 +214,75 @@ public sealed partial class MPQArchive
         _reader.BaseStream.Seek(offset, SeekOrigin.Begin);
 
         // Read raw compressed bytes
-        byte[] rawData = ArrayPool<byte>.Shared.Rent(compressedSize);
-        try
+        byte[] rawData = new byte[compressedSize];
+        await _reader.BaseStream.ReadExactlyAsync(rawData, cancellationToken).ConfigureAwait(false);
+
+        // Encrypted?
+        if ((blockEntry.Flags & 0x00010000) != 0) // MPQ_FILE_ENCRYPTED
+            throw new NotSupportedException("Encrypted files are not supported yet.");
+
+        // Single unit file (one chunk, maybe compressed)
+        if ((blockEntry.Flags & 0x01000000) != 0) // MPQ_FILE_SINGLE_UNIT
         {
-            int read = await _reader.BaseStream.ReadAsync(rawData.AsMemory(0, compressedSize), cancellationToken).ConfigureAwait(false);
-            if (read != compressedSize)
-                throw new EndOfStreamException("Could not read entire block.");
-
-            // Encrypted?
-            if ((blockEntry.Flags & 0x00010000) != 0) // MPQ_FILE_ENCRYPTED
-                throw new NotSupportedException("Encrypted files are not supported yet.");
-
-            // Single unit file (one chunk, maybe compressed)
-            if ((blockEntry.Flags & 0x01000000) != 0) // MPQ_FILE_SINGLE_UNIT
+            if ((blockEntry.Flags & 0x00000200) != 0 && // MPQ_FILE_COMPRESS
+                (forceDecompress || blockEntry.CompressedSize < blockEntry.FileSize))
             {
-                if ((blockEntry.Flags & 0x00000200) != 0 && // MPQ_FILE_COMPRESS
-                    (forceDecompress || blockEntry.CompressedSize < blockEntry.FileSize))
-                {
-                    byte[] singleUnitResult = new byte[fileSize];
-                    await DecompressAsync(rawData, 0, compressedSize, singleUnitResult, 0, fileSize, cancellationToken).ConfigureAwait(false);
-                    return singleUnitResult;
-                }
-
-                return rawData;
+                byte[] singleUnitResult = new byte[fileSize];
+                await DecompressAsync(rawData, 0, compressedSize, singleUnitResult, 0, fileSize, cancellationToken).ConfigureAwait(false);
+                return singleUnitResult;
             }
 
-            // Multi-sector file
-            int sectorSize = 512 << _header.SectorSizeShift;
-            int sectorCount = (int)Math.Ceiling(blockEntry.FileSize / (double)sectorSize);
-            bool hasSectorChecksum = (blockEntry.Flags & 0x00000100) != 0; // MPQ_FILE_SECTOR_CRC
-
-            int tableEntries = sectorCount + 1 + (hasSectorChecksum ? 1 : 0);
-            int[] positions = new int[tableEntries];
-
-            for (int i = 0; i < tableEntries; i++)
-            {
-                cancellationToken.ThrowIfCancellationRequested();
-                positions[i] = BinaryPrimitives.ReadInt32LittleEndian(rawData.AsSpan(i * sizeof(int), sizeof(int)));
-            }
-
-            byte[] result = new byte[fileSize];
-            int bytesCopied = 0;
-
-            for (int i = 0; i < sectorCount; i++)
-            {
-                cancellationToken.ThrowIfCancellationRequested();
-
-                int start = positions[i];
-                int end = positions[i + 1];
-                int length = end - start;
-
-                if ((blockEntry.Flags & 0x00000200) != 0 &&
-                    (forceDecompress || length < sectorSize))
-                {
-                    int expectedSectorLength = Math.Min(sectorSize, fileSize - bytesCopied);
-                    await DecompressAsync(rawData, start, length, result, bytesCopied, expectedSectorLength, cancellationToken).ConfigureAwait(false);
-                    bytesCopied += expectedSectorLength;
-                }
-                else
-                {
-                    Array.Copy(rawData, start, result, bytesCopied, length);
-                    bytesCopied += length;
-                }
-            }
-
-            return result;
+            return rawData;
         }
-        finally
+
+        // Multi-sector file
+        int sectorSize = 512 << _header.SectorSizeShift;
+        int sectorCount = (int)Math.Ceiling(blockEntry.FileSize / (double)sectorSize);
+        bool hasSectorChecksum = (blockEntry.Flags & 0x00000100) != 0; // MPQ_FILE_SECTOR_CRC
+
+        int tableEntries = sectorCount + 1 + (hasSectorChecksum ? 1 : 0);
+        int[] positions = new int[tableEntries];
+
+        for (int i = 0; i < tableEntries; i++)
         {
-            ArrayPool<byte>.Shared.Return(rawData);
+            cancellationToken.ThrowIfCancellationRequested();
+            positions[i] = BinaryPrimitives.ReadInt32LittleEndian(rawData.AsSpan(i * sizeof(int), sizeof(int)));
         }
+
+        byte[] result = new byte[fileSize];
+        int bytesCopied = 0;
+
+        for (int i = 0; i < sectorCount; i++)
+        {
+            cancellationToken.ThrowIfCancellationRequested();
+
+            int start = positions[i];
+            int end = positions[i + 1];
+            int length = end - start;
+
+            int expectedSectorLength = Math.Min(sectorSize, fileSize - bytesCopied);
+
+            bool isCompressedSector =
+                (blockEntry.Flags & 0x00000200) != 0 &&
+                length < expectedSectorLength;
+
+            if (isCompressedSector)
+            {
+                await DecompressAsync(rawData, start, length, result, bytesCopied, expectedSectorLength, cancellationToken).ConfigureAwait(false);
+                bytesCopied += expectedSectorLength;
+            }
+            else
+            {
+                if (length != expectedSectorLength)
+                    throw new InvalidDataException(
+                        $"MPQ sector length mismatch. Expected {expectedSectorLength}, got {length}.");
+
+                Array.Copy(rawData, start, result, bytesCopied, length);
+                bytesCopied += length;
+            }
+        }
+
+        return result;
     }
 
     private static async Task DecompressAsync(byte[] data,
@@ -344,7 +342,7 @@ public sealed partial class MPQArchive
             return string.Empty;
         }
         StringBuilder sb = new();
-        var text = System.Text.Encoding.UTF8.GetString(_files);
+        var text = System.Text.Encoding.UTF8.GetString(_files.Value.Span);
         var lines = text.Split(separatorArray, StringSplitOptions.RemoveEmptyEntries);
         foreach (var line in lines)
         {
