@@ -6,7 +6,7 @@ namespace s2protocol.NET.S2Protocol;
 /// <summary>
 /// TypeInfoLoader - loading s2protocol versions
 /// </summary>
-public static class TypeInfoLoader
+public static partial class TypeInfoLoader
 {
     private static readonly Dictionary<int, string> _protocolResourceMap = new();
     private static readonly Dictionary<string, string[]> _resourceContents = new();
@@ -80,7 +80,7 @@ public static class TypeInfoLoader
 
     private static int ExtractVersionNumber(string resourceName)
     {
-        var match = Regex.Match(resourceName, @"protocol(\d+)\.py");
+        var match = ProtocolRegex().Match(resourceName);
         return match.Success ? int.Parse(match.Groups[1].Value, CultureInfo.InvariantCulture) : 0;
     }
 
@@ -186,7 +186,7 @@ public static class TypeInfoLoader
             if (inTypeInfos)
             {
 
-                var match = Regex.Match(line, @"\('(\w+)',\s*\[(.+)\]\)");
+                var match = TypeInfoRegex().Match(line);
                 string typeName = string.Empty;
                 string content = string.Empty;
                 if (!match.Success)
@@ -221,7 +221,7 @@ public static class TypeInfoLoader
                 if (typeName is "_int" or "_blob" or "_bitarray")
                 {
                     // Try to extract bounds: (0, 7)
-                    var boundsMatch = Regex.Match(content, @"\((-?\d+),\s*(-?\d+)\)");
+                    var boundsMatch = BoundsRegex().Match(content);
                     if (boundsMatch.Success)
                     {
                         long a = long.Parse(boundsMatch.Groups[1].Value, CultureInfo.InvariantCulture);
@@ -232,7 +232,7 @@ public static class TypeInfoLoader
                 }
                 else if (typeName == "_choice")
                 {
-                    var tupleDictMatch = Regex.Match(content, @"\((-?\d+),\s*(-?\d+)\),\s*\{(.+)\}");
+                    var tupleDictMatch = ChoiceRegex().Match(content);
                     if (tupleDictMatch.Success)
                     {
                         long a = long.Parse(tupleDictMatch.Groups[1].Value, CultureInfo.InvariantCulture);
@@ -243,7 +243,7 @@ public static class TypeInfoLoader
 
                         var dict = new Dictionary<int, S2ChoiceElement>();
 
-                        var entryMatches = Regex.Matches(dictRaw, @"(-?\d+):\s*\('([^']+)',\s*(-?\d+)\)");
+                        var entryMatches = EntryRegex().Matches(dictRaw);
                         foreach (Match em in entryMatches)
                         {
                             int key = int.Parse(em.Groups[1].Value, CultureInfo.InvariantCulture);
@@ -258,10 +258,10 @@ public static class TypeInfoLoader
                 else if (typeName == "_struct")
                 {
                     // Match nested list of tuples like: [('m_flags', 10, 0), ...]
-                    var innerListMatch = Regex.Match(content, @"\[\((.*?)\)\]");
+                    var innerListMatch = StructRegex().Match(content);
                     var mElement = new S2TypeInfoMElement();
 
-                    var fieldMatches = Regex.Matches(content, @"\('([^']+)',\s*(-?\d+),\s*(-?\d+)\)");
+                    var fieldMatches = FieldRegex().Matches(content);
                     foreach (Match m in fieldMatches)
                     {
                         string typeField = m.Groups[1].Value;
@@ -280,7 +280,7 @@ public static class TypeInfoLoader
                 else if (typeName == "_array")
                 {
                     // Catch both bounds and typeId
-                    var argsMatch = Regex.Match(content, @"\((-?\d+),\s*(-?\d+)\),\s*(-?\d+)");
+                    var argsMatch = ArrayRegex().Match(content);
                     if (argsMatch.Success)
                     {
                         long a = long.Parse(argsMatch.Groups[1].Value, CultureInfo.InvariantCulture);
@@ -294,7 +294,7 @@ public static class TypeInfoLoader
                 else if (typeName == "_optional")
                 {
                     //     ('_optional',[10]),  #25
-                    var optionalMatch = Regex.Match(content, @"(\d+)");
+                    var optionalMatch = OptionalRegex().Match(content);
                     if (optionalMatch.Success)
                     {
                         long innerTypeId = long.Parse(optionalMatch.Groups[1].Value, CultureInfo.InvariantCulture);
@@ -313,7 +313,7 @@ public static class TypeInfoLoader
             }
             else if (!inGameEventTypes && !inMessageEventTypes && !inTrackerEventTypes)
             {
-                var idMatch = Regex.Match(line.Trim(), @"(\w+)\s*=\s*(-?\d+)");
+                var idMatch = GameEventRegex().Match(line.Trim());
                 if (idMatch.Success)
                 {
                     string key = idMatch.Groups[1].Value;
@@ -397,7 +397,7 @@ public static class TypeInfoLoader
             if (line.Trim().StartsWith('}'))
                 break;
 
-            var match = Regex.Match(line.Trim(), @"(-?\d+):\s*\((-?\d+),\s*'([^']+)'\)");
+            var match = EventTypeRegex().Match(line.Trim());
             if (match.Success)
             {
                 int eventId = int.Parse(match.Groups[1].Value, CultureInfo.InvariantCulture);
@@ -407,4 +407,27 @@ public static class TypeInfoLoader
             }
         }
     }
+
+    [GeneratedRegex(@"(-?\d+):\s*\((-?\d+),\s*'([^']+)'\)")]
+    private static partial Regex EventTypeRegex();
+    [GeneratedRegex(@"(\w+)\s*=\s*(-?\d+)")]
+    private static partial Regex GameEventRegex();
+    [GeneratedRegex(@"(\d+)")]
+    private static partial Regex OptionalRegex();
+    [GeneratedRegex(@"\((-?\d+),\s*(-?\d+)\),\s*(-?\d+)")]
+    private static partial Regex ArrayRegex();
+    [GeneratedRegex(@"\('([^']+)',\s*(-?\d+),\s*(-?\d+)\)")]
+    private static partial Regex FieldRegex();
+    [GeneratedRegex(@"\[\((.*?)\)\]")]
+    private static partial Regex StructRegex();
+    [GeneratedRegex(@"(-?\d+):\s*\('([^']+)',\s*(-?\d+)\)")]
+    private static partial Regex EntryRegex();
+    [GeneratedRegex(@"\((-?\d+),\s*(-?\d+)\),\s*\{(.+)\}")]
+    private static partial Regex ChoiceRegex();
+    [GeneratedRegex(@"\((-?\d+),\s*(-?\d+)\)")]
+    private static partial Regex BoundsRegex();
+    [GeneratedRegex(@"\('(\w+)',\s*\[(.+)\]\)")]
+    private static partial Regex TypeInfoRegex();
+    [GeneratedRegex(@"protocol(\d+)\.py")]
+    private static partial Regex ProtocolRegex();
 }
