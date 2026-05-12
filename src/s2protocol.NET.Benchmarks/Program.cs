@@ -24,7 +24,6 @@ public static class Program
 }
 
 [MemoryDiagnoser]
-[EventPipeProfiler(EventPipeProfile.GcVerbose)]
 [ShortRunJob]
 public class SingleReplayDecodeBenchmarks
 {

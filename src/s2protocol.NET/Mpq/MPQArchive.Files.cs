@@ -1,3 +1,5 @@
+using System.Buffers;
+using System.Buffers.Binary;
 using System.IO.Compression;
 using System.Text;
 
@@ -33,9 +35,11 @@ public sealed partial class MPQArchive
         if (blockEntry.CompressedSize == 0)
             return null;
 
+        int compressedSize = checked((int)blockEntry.CompressedSize);
+        int fileSize = checked((int)blockEntry.FileSize);
         int offset = (int)(blockEntry.FileOffset + _headerOffset);
         _reader.BaseStream.Seek(offset, SeekOrigin.Begin);
-        byte[] rawData = _reader.ReadBytes((int)blockEntry.CompressedSize);
+        byte[] rawData = _reader.ReadBytes(compressedSize);
 
         // Encrypted?
         if ((blockEntry.Flags & 0x00010000) != 0) // MPQ_FILE_ENCRYPTED
@@ -47,7 +51,9 @@ public sealed partial class MPQArchive
             if ((blockEntry.Flags & 0x00000200) != 0 && // MPQ_FILE_COMPRESS
                 (forceDecompress || blockEntry.CompressedSize < blockEntry.FileSize))
             {
-                return Decompress(rawData, (int)blockEntry.FileSize);
+                byte[] singleUnitResult = new byte[fileSize];
+                Decompress(rawData, 0, rawData.Length, singleUnitResult, 0, fileSize);
+                return singleUnitResult;
             }
 
             return rawData;
@@ -61,13 +67,10 @@ public sealed partial class MPQArchive
         int tableEntries = sectorCount + 1 + (hasSectorChecksum ? 1 : 0);
         int[] positions = new int[tableEntries];
 
-        using var ms = new MemoryStream(rawData);
-        using var br = new BinaryReader(ms);
-
         for (int i = 0; i < tableEntries; i++)
-            positions[i] = br.ReadInt32();
+            positions[i] = BinaryPrimitives.ReadInt32LittleEndian(rawData.AsSpan(i * sizeof(int), sizeof(int)));
 
-        byte[] result = new byte[blockEntry.FileSize];
+        byte[] result = new byte[fileSize];
         int bytesCopied = 0;
 
         for (int i = 0; i < sectorCount; i++)
@@ -78,21 +81,25 @@ public sealed partial class MPQArchive
             int end = positions[i + 1];
             int length = end - start;
 
-            ms.Seek(start, SeekOrigin.Begin);
-            byte[] sector = br.ReadBytes(length);
+            int expectedSectorLength = Math.Min(sectorSize, fileSize - bytesCopied);
 
-            if ((blockEntry.Flags & 0x00000200) != 0 && // MPQ_FILE_COMPRESS
-                (forceDecompress || sector.Length < sectorSize))
+            bool isCompressedSector =
+                (blockEntry.Flags & 0x00000200) != 0 && // MPQ_FILE_COMPRESS
+                length < expectedSectorLength;
+
+            if (isCompressedSector)
             {
-                int expectedSectorLength = Math.Min(sectorSize, (int)blockEntry.FileSize - bytesCopied);
-                byte[] decompressed = Decompress(sector, expectedSectorLength);
-                Array.Copy(decompressed, 0, result, bytesCopied, decompressed.Length);
-                bytesCopied += decompressed.Length;
+                Decompress(rawData, start, length, result, bytesCopied, expectedSectorLength);
+                bytesCopied += expectedSectorLength;
             }
             else
             {
-                Array.Copy(sector, 0, result, bytesCopied, sector.Length);
-                bytesCopied += sector.Length;
+                if (length != expectedSectorLength)
+                    throw new InvalidDataException(
+                        $"MPQ sector length mismatch. Expected {expectedSectorLength}, got {length}.");
+
+                Buffer.BlockCopy(rawData, start, result, bytesCopied, length);
+                bytesCopied += length;
             }
         }
 
@@ -117,33 +124,65 @@ public sealed partial class MPQArchive
         return null;
     }
 
-    private static byte[] Decompress(byte[] data, int expectedLength = 0)
+    private static void Decompress(byte[] data,
+                                   int offset,
+                                   int length,
+                                   byte[] destination,
+                                   int destinationOffset,
+                                   int expectedLength)
     {
-        byte compressionType = data[0];
+        if (length <= 0)
+            throw new InvalidDataException("Compressed MPQ data is empty.");
+
+        byte compressionType = data[offset];
 
         switch (compressionType)
         {
             case 0: // No compression
-                return data;
+                if (length != expectedLength)
+                    throw new InvalidDataException($"Decompressed MPQ data length mismatch. Expected {expectedLength} bytes, got {length} bytes.");
+
+                Array.Copy(data, offset, destination, destinationOffset, expectedLength);
+                return;
+
             case 2: // zlib/deflate
-                using (var input = new MemoryStream(data, 1, data.Length - 1))
+                using (var input = new MemoryStream(data, offset + 1, length - 1, writable: false))
                 using (var deflate = new DeflateStream(input, CompressionMode.Decompress))
-                using (var output = expectedLength > 0 ? new MemoryStream(expectedLength) : new MemoryStream())
                 {
-                    deflate.CopyTo(output);
-                    return output.ToArray();
+                    ReadExpectedLength(deflate, destination, destinationOffset, expectedLength);
+                    return;
                 }
+
             case 16: // BZip2 (requires SharpZipLib or similar)
-                using (var input = new MemoryStream(data, 1, data.Length - 1))
+                using (var input = new MemoryStream(data, offset + 1, length - 1, writable: false))
                 using (var bzip = new ICSharpCode.SharpZipLib.BZip2.BZip2InputStream(input))
-                using (var output = expectedLength > 0 ? new MemoryStream(expectedLength) : new MemoryStream())
                 {
-                    bzip.CopyTo(output);
-                    return output.ToArray();
+                    ReadExpectedLength(bzip, destination, destinationOffset, expectedLength);
+                    return;
                 }
+
             default:
                 throw new NotSupportedException($"Unsupported compression type: {compressionType}");
         }
+    }
+
+    private static void ReadExpectedLength(Stream source, byte[] destination, int destinationOffset, int expectedLength)
+    {
+        int totalRead = 0;
+        while (totalRead < expectedLength)
+        {
+            int read = source.Read(destination, destinationOffset + totalRead, expectedLength - totalRead);
+            if (read == 0)
+                break;
+
+            totalRead += read;
+        }
+
+        if (totalRead != expectedLength)
+            throw new InvalidDataException($"Decompressed MPQ data length mismatch. Expected {expectedLength} bytes, got {totalRead} bytes.");
+
+        if (source.ReadByte() >= 0)
+            throw new InvalidDataException($"Decompressed MPQ data exceeds expected length of {expectedLength} bytes.");
     }
 
     /// <summary>
@@ -170,11 +209,13 @@ public sealed partial class MPQArchive
         if (blockEntry.CompressedSize == 0)
             return null;
 
+        int compressedSize = checked((int)blockEntry.CompressedSize);
+        int fileSize = checked((int)blockEntry.FileSize);
         int offset = (int)(blockEntry.FileOffset + _headerOffset);
         _reader.BaseStream.Seek(offset, SeekOrigin.Begin);
 
         // Read raw compressed bytes
-        byte[] rawData = new byte[blockEntry.CompressedSize];
+        byte[] rawData = new byte[compressedSize];
         int read = await _reader.BaseStream.ReadAsync(rawData, cancellationToken).ConfigureAwait(false);
         if (read != rawData.Length)
             throw new EndOfStreamException("Could not read entire block.");
@@ -189,7 +230,9 @@ public sealed partial class MPQArchive
             if ((blockEntry.Flags & 0x00000200) != 0 && // MPQ_FILE_COMPRESS
                 (forceDecompress || blockEntry.CompressedSize < blockEntry.FileSize))
             {
-                return await DecompressAsync(rawData, (int)blockEntry.FileSize, cancellationToken).ConfigureAwait(false);
+                byte[] singleUnitResult = new byte[fileSize];
+                await DecompressAsync(rawData, 0, rawData.Length, singleUnitResult, 0, fileSize, cancellationToken).ConfigureAwait(false);
+                return singleUnitResult;
             }
 
             return rawData;
@@ -203,16 +246,13 @@ public sealed partial class MPQArchive
         int tableEntries = sectorCount + 1 + (hasSectorChecksum ? 1 : 0);
         int[] positions = new int[tableEntries];
 
-        using var ms = new MemoryStream(rawData, writable: false);
-        using var br = new BinaryReader(ms);
-
         for (int i = 0; i < tableEntries; i++)
         {
             cancellationToken.ThrowIfCancellationRequested();
-            positions[i] = br.ReadInt32();
+            positions[i] = BinaryPrimitives.ReadInt32LittleEndian(rawData.AsSpan(i * sizeof(int), sizeof(int)));
         }
 
-        byte[] result = new byte[blockEntry.FileSize];
+        byte[] result = new byte[fileSize];
         int bytesCopied = 0;
 
         for (int i = 0; i < sectorCount; i++)
@@ -223,63 +263,66 @@ public sealed partial class MPQArchive
             int end = positions[i + 1];
             int length = end - start;
 
-            ms.Seek(start, SeekOrigin.Begin);
-            byte[] sector = new byte[length];
-            int sectorRead = await ms.ReadAsync(sector.AsMemory(0, length), cancellationToken).ConfigureAwait(false);
-            if (sectorRead != length)
-                throw new EndOfStreamException("Sector read mismatch.");
-
             if ((blockEntry.Flags & 0x00000200) != 0 &&
-                (forceDecompress || sector.Length < sectorSize))
+                (forceDecompress || length < sectorSize))
             {
-                int expectedSectorLength = Math.Min(sectorSize, (int)blockEntry.FileSize - bytesCopied);
-                byte[] decompressed = await DecompressAsync(sector, expectedSectorLength, cancellationToken).ConfigureAwait(false);
-                Array.Copy(decompressed, 0, result, bytesCopied, decompressed.Length);
-                bytesCopied += decompressed.Length;
+                int expectedSectorLength = Math.Min(sectorSize, fileSize - bytesCopied);
+                await DecompressAsync(rawData, start, length, result, bytesCopied, expectedSectorLength, cancellationToken).ConfigureAwait(false);
+                bytesCopied += expectedSectorLength;
             }
             else
             {
-                Array.Copy(sector, 0, result, bytesCopied, sector.Length);
-                bytesCopied += sector.Length;
+                Array.Copy(rawData, start, result, bytesCopied, length);
+                bytesCopied += length;
             }
         }
 
         return result;
     }
 
-    private static async Task<byte[]> DecompressAsync(byte[] data, int expectedLength, CancellationToken cancellationToken)
+    private static async Task DecompressAsync(byte[] data,
+                                             int offset,
+                                             int length,
+                                             byte[] destination,
+                                             int destinationOffset,
+                                             int expectedLength,
+                                             CancellationToken cancellationToken)
     {
-        byte compressionType = data[0];
+        if (length <= 0)
+            throw new InvalidDataException("Compressed MPQ data is empty.");
+
+        byte compressionType = data[offset];
 
         switch (compressionType)
         {
             case 0: // No compression
-                return data;
+                if (length != expectedLength)
+                    throw new InvalidDataException($"Decompressed MPQ data length mismatch. Expected {expectedLength} bytes, got {length} bytes.");
+
+                Array.Copy(data, offset, destination, destinationOffset, expectedLength);
+                return;
 
             case 2: // zlib/deflate
-                using (var input = new MemoryStream(data, 1, data.Length - 1))
-                using (var deflate = new DeflateStream(input, CompressionMode.Decompress))
-                using (var output = expectedLength > 0 ? new MemoryStream(expectedLength) : new MemoryStream())
                 {
-                    await deflate.CopyToAsync(output, 81920, cancellationToken).ConfigureAwait(false);
-                    return output.ToArray();
+                    using var input = new MemoryStream(data, offset + 1, length - 1, writable: false);
+                    using var output = new MemoryStream(destination, destinationOffset, expectedLength, writable: true);
+                    using var deflate = new DeflateStream(input, CompressionMode.Decompress);
+                    await deflate.CopyToAsync(output, cancellationToken).ConfigureAwait(false);
+                    return;
                 }
 
-            case 16: // BZip2 (requires SharpZipLib or similar)
-                using (var input = new MemoryStream(data, 1, data.Length - 1))
-                using (var bzip = new ICSharpCode.SharpZipLib.BZip2.BZip2InputStream(input))
-                using (var output = expectedLength > 0 ? new MemoryStream(expectedLength) : new MemoryStream())
+            case 16: // BZip2
                 {
-                    await bzip.CopyToAsync(output, 81920, cancellationToken).ConfigureAwait(false);
-                    return output.ToArray();
+                    using var input = new MemoryStream(data, offset + 1, length - 1, writable: false);
+                    using var output = new MemoryStream(destination, destinationOffset, expectedLength, writable: true);
+                    ICSharpCode.SharpZipLib.BZip2.BZip2.Decompress(input, output, isStreamOwner: false);
+                    return;
                 }
 
             default:
                 throw new NotSupportedException($"Unsupported compression type: {compressionType}");
         }
     }
-
-
 
     /// <summary>
     /// Returns the contents of the files stored in the internal buffer.
