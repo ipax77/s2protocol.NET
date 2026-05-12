@@ -5,7 +5,7 @@ namespace s2protocol.NET.S2Protocol;
 /// <summary>
 /// S2ProtocolVersion
 /// </summary>
-public sealed record S2ProtocolVersion
+public sealed partial record S2ProtocolVersion
 {
 #pragma warning disable CS1591 // Missing XML comment for publicly visible type or member
     public int Version { get; set; }
@@ -22,13 +22,13 @@ public sealed record S2ProtocolVersion
     public int? GameDetailsTypeId { get; set; }
     public int? ReplayInitDataTypeId { get; set; }
 
-    public object? DecodeReplayHeader(byte[] content)
+    internal object? DecodeReplayHeaderRaw(byte[] content)
     {
         var decoder = new VersionedDecoder(content, TypeInfos);
         return decoder.Instance(ReplayHeaderTypeId ?? 18);
     }
 
-    public IEnumerable<Dictionary<string, object?>> DecodeReplayGameEvents(byte[] content)
+    internal IEnumerable<Dictionary<string, object?>> DecodeReplayGameEventsRaw(byte[] content)
     {
         var decoder = new BitPackedDecoder(content, TypeInfos);
         foreach (var gameEvent in DecodeEventStream(decoder, GameEventIdTypeId ?? 0, GameEvents, true))
@@ -37,7 +37,7 @@ public sealed record S2ProtocolVersion
         }
     }
 
-    public IEnumerable<Dictionary<string, object?>> DecodeReplayMessageEvents(byte[] content)
+    internal IEnumerable<Dictionary<string, object?>> DecodeReplayMessageEventsRaw(byte[] content)
     {
         var decoder = new BitPackedDecoder(content, TypeInfos);
         foreach (var messageEvent in DecodeEventStream(decoder, MessageEventIdTypeId ?? 1, MessageEvents, true))
@@ -46,7 +46,7 @@ public sealed record S2ProtocolVersion
         }
     }
 
-    public IEnumerable<Dictionary<string, object?>> DecodeReplayTrackerEvents(byte[] content)
+    internal IEnumerable<Dictionary<string, object?>> DecodeReplayTrackerEventsRaw(byte[] content)
     {
         var decoder = new VersionedDecoder(content, TypeInfos);
         foreach (var trackerEvent in DecodeEventStream(decoder, TrackerEventIdTypeId ?? 2, TrackerEvents, false))
@@ -55,13 +55,13 @@ public sealed record S2ProtocolVersion
         }
     }
 
-    public object? DecodeReplayDetails(byte[] content)
+    internal object? DecodeReplayDetailsRaw(byte[] content)
     {
         var decoder = new VersionedDecoder(content, TypeInfos);
         return decoder.Instance(GameDetailsTypeId ?? 40);
     }
 
-    public object? DecodeReplayInitDataRaw(byte[] content)
+    internal object? DecodeReplayInitDataDictionaryRaw(byte[] content)
     {
         var decoder = new BitPackedDecoder(content, TypeInfos);
         return decoder.Instance(ReplayInitDataTypeId ?? 73);

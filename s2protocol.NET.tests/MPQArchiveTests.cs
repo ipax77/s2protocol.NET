@@ -1,6 +1,5 @@
 ﻿using s2protocol.NET.Mpq;
 using s2protocol.NET.S2Protocol;
-using System.Collections.Generic;
 using System.IO;
 using System.Reflection;
 using Xunit;
@@ -21,21 +20,8 @@ public class MPQArchiveTests
         var s2protocol = TypeInfoLoader.GetLatestVersion();
         var header = s2protocol.DecodeReplayHeader(headerContent);
         Assert.NotNull(header);
-        long expectedVersion = 15405;
-        if (header is Dictionary<string, object> headerDict)
-        {
-            Assert.True(headerDict.ContainsKey("m_version"));
-            Assert.True(headerDict["m_version"] is Dictionary<string, object>);
-            var versionDict = (Dictionary<string, object>)headerDict["m_version"];
-            Assert.True(versionDict.ContainsKey("m_baseBuild"));
-            Assert.IsType<long>(versionDict["m_baseBuild"]);
-            long actualVersion = (long)versionDict["m_baseBuild"];
-            Assert.Equal(expectedVersion, actualVersion);
-        }
-        else
-        {
-            Assert.Fail("Header is not a dictionary.");
-        }
+        int expectedVersion = 15405;
+        Assert.Equal(expectedVersion, header.BaseBuild);
     }
 
     [Fact]

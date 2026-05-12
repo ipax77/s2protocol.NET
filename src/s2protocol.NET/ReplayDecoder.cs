@@ -72,16 +72,7 @@ public sealed partial class ReplayDecoder : IDisposable
 
             var latestVersion = TypeInfoLoader.GetLatestVersion();
             var header = latestVersion.DecodeReplayHeader(headerContent);
-            ArgumentNullException.ThrowIfNull(header);
-            if (header is not Dictionary<string, object> headerDict
-                || !headerDict.TryGetValue("m_version", out object? value)
-                || value is not Dictionary<string, object> headerVersionDict
-                || !headerVersionDict.TryGetValue("m_baseBuild", out object? baseBuildValue)
-                || baseBuildValue is not long baseBuild)
-            {
-                throw new DecodeException("Header is not as expected.");
-            }
-            var s2protocol = TypeInfoLoader.LoadTypeInfos((int)baseBuild);
+            var s2protocol = TypeInfoLoader.LoadTypeInfos(header.BaseBuild);
             ArgumentNullException.ThrowIfNull(s2protocol, nameof(s2protocol));
 
             Sc2Replay replay = new(header, replayPath);
@@ -91,18 +82,14 @@ public sealed partial class ReplayDecoder : IDisposable
                 var init = await GetInitDataAsync(MPQArchive, s2protocol, token).ConfigureAwait(false);
                 ArgumentNullException.ThrowIfNull((object?)init, nameof(init));
 
-                replay.Initdata = Parse.InitData(init);
+                replay.Initdata = init;
             }
 
             if (options.Details)
             {
                 var details = await GetDetailsAsync(MPQArchive, s2protocol, token).ConfigureAwait(false);
                 ArgumentNullException.ThrowIfNull((object?)details, nameof(details));
-                if (details is not Dictionary<string, object> detailsDict)
-                {
-                    throw new DecodeException("Details is not a Dictionary<string, object>");
-                }
-                replay.Details = Parse.Datails(detailsDict);
+                replay.Details = details;
             }
 
             if (options.Metadata)
@@ -117,7 +104,8 @@ public sealed partial class ReplayDecoder : IDisposable
             {
                 var messages = await GetMessagesAsync(MPQArchive, s2protocol, token).ConfigureAwait(false);
                 ArgumentNullException.ThrowIfNull((object?)messages, nameof(messages));
-                Parse.SetMessages(messages, replay);
+                replay.ChatMessages = messages.ChatMessages;
+                replay.PingMessages = messages.PingMessages;
             }
 
             if (options.TrackerEvents)
@@ -125,7 +113,7 @@ public sealed partial class ReplayDecoder : IDisposable
                 var trackerEvents = await GetTrackereventsAsync(MPQArchive, s2protocol, token).ConfigureAwait(false);
                 ArgumentNullException.ThrowIfNull((object?)trackerEvents, nameof(trackerEvents));
 
-                replay.TrackerEvents = Parse.Tracker(trackerEvents);
+                replay.TrackerEvents = trackerEvents;
 
                 if (replay.TrackerEvents != null)
                 {
@@ -138,8 +126,7 @@ public sealed partial class ReplayDecoder : IDisposable
             {
                 var gameEventsRaw = await GetGameEventsAsync(MPQArchive, s2protocol, token).ConfigureAwait(false);
                 ArgumentNullException.ThrowIfNull((object?)gameEventsRaw, nameof(gameEventsRaw));
-                var gameEvents = Parse.GameEvents(gameEventsRaw);
-                replay.GameEvents = gameEvents;
+                replay.GameEvents = gameEventsRaw;
             }
 
             if (options.AttributeEvents)
@@ -147,7 +134,7 @@ public sealed partial class ReplayDecoder : IDisposable
                 var attributeEvents = await GetAttributeEventsAsync(MPQArchive, token).ConfigureAwait(false);
                 ArgumentNullException.ThrowIfNull((object?)attributeEvents, nameof(attributeEvents));
 
-                replay.AttributeEvents = Parse.GetAttributeEvents(attributeEvents);
+                replay.AttributeEvents = attributeEvents;
             }
 
 
@@ -203,17 +190,17 @@ public sealed partial class ReplayDecoder : IDisposable
         }
     }
 
-    private static async Task<Dictionary<string, object>?> GetAttributeEventsAsync(MPQArchive archive, CancellationToken token)
+    private static async Task<AttributeEvents?> GetAttributeEventsAsync(MPQArchive archive, CancellationToken token)
     {
         var game_enc = await archive.ReadFileAsync("replay.attributes.events", false, token).ConfigureAwait(false);
         if (game_enc != null)
         {
-            return S2ProtocolVersion.DecodeReplayAttributeEventsRaw(game_enc);
+            return S2ProtocolVersion.DecodeReplayAttributeEvents(game_enc);
         }
         return null;
     }
 
-    private static async Task<IEnumerable<Dictionary<string, object?>>?> GetGameEventsAsync(MPQArchive archive, S2ProtocolVersion protocol, CancellationToken token)
+    private static async Task<GameEvents?> GetGameEventsAsync(MPQArchive archive, S2ProtocolVersion protocol, CancellationToken token)
     {
         var game_enc = await archive.ReadFileAsync("replay.game.events", false, token).ConfigureAwait(false);
         if (game_enc != null)
@@ -223,17 +210,17 @@ public sealed partial class ReplayDecoder : IDisposable
         return null;
     }
 
-    private static async Task<object?> GetInitDataAsync(MPQArchive archive, S2ProtocolVersion protocol, CancellationToken token)
+    private static async Task<Initdata?> GetInitDataAsync(MPQArchive archive, S2ProtocolVersion protocol, CancellationToken token)
     {
         var init_enc = await archive.ReadFileAsync("replay.initData", false, token).ConfigureAwait(false);
         if (init_enc != null)
         {
-            return protocol.DecodeReplayInitDataRaw(init_enc);
+            return protocol.DecodeReplayInitData(init_enc);
         }
         return null;
     }
 
-    private static async Task<IEnumerable<Dictionary<string, object?>>?> GetTrackereventsAsync(MPQArchive archive, S2ProtocolVersion protocol, CancellationToken token)
+    private static async Task<TrackerEvents?> GetTrackereventsAsync(MPQArchive archive, S2ProtocolVersion protocol, CancellationToken token)
     {
         var tracker_dec = await archive.ReadFileAsync("replay.tracker.events", false, token).ConfigureAwait(false);
         if (tracker_dec != null)
@@ -243,17 +230,12 @@ public sealed partial class ReplayDecoder : IDisposable
         return null;
     }
 
-    private static async Task<List<object>?> GetMessagesAsync(MPQArchive archive, S2ProtocolVersion protocol, CancellationToken token)
+    private static async Task<MessageEvents?> GetMessagesAsync(MPQArchive archive, S2ProtocolVersion protocol, CancellationToken token)
     {
-        List<object> messageEvents = [];
         var msg_enc = await archive.ReadFileAsync("replay.message.events", false, token).ConfigureAwait(false);
         if (msg_enc != null)
         {
-            foreach (var messageEvent in protocol.DecodeReplayMessageEvents(msg_enc))
-            {
-                messageEvents.Add(messageEvent);
-            }
-            return messageEvents;
+            return protocol.DecodeReplayMessageEvents(msg_enc);
         }
         return null;
     }
@@ -268,7 +250,7 @@ public sealed partial class ReplayDecoder : IDisposable
         return null;
     }
 
-    private static async Task<object?> GetDetailsAsync(MPQArchive archive, S2ProtocolVersion protocol, CancellationToken token)
+    private static async Task<Details?> GetDetailsAsync(MPQArchive archive, S2ProtocolVersion protocol, CancellationToken token)
     {
         var details_enc = await archive.ReadFileAsync("replay.details", false, token).ConfigureAwait(false);
         if (details_enc != null)

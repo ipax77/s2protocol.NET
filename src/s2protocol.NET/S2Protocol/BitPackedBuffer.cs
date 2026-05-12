@@ -4,13 +4,13 @@ namespace s2protocol.NET.S2Protocol;
 
 internal sealed class BitPackedBuffer
 {
-    private readonly byte[] _data;
+    private readonly ReadOnlyMemory<byte> _data;
     private long _used;
     private int _next;
     private int _nextBits;
     private readonly bool _bigEndian;
 
-    public BitPackedBuffer(byte[] contents, string endian = "big")
+    public BitPackedBuffer(ReadOnlyMemory<byte> contents, string endian = "big")
     {
         _data = contents;
         _used = 0;
@@ -20,7 +20,7 @@ internal sealed class BitPackedBuffer
 
     public override string ToString()
     {
-        string s = (_used < _data.Length) ? _data[_used].ToString("x2", CultureInfo.InvariantCulture) : "--";
+        string s = (_used < _data.Length) ? _data.Span[(int)_used].ToString("x2", CultureInfo.InvariantCulture) : "--";
         return $"buffer({(_nextBits > 0 ? _next : 0):x2}/{_nextBits},[{_used}]={s})";
     }
 
@@ -31,15 +31,16 @@ internal sealed class BitPackedBuffer
     public void ByteAlign() => _nextBits = 0;
 
     public byte[] ReadAlignedBytes(long count)
+        => ReadAlignedSpan(count).ToArray();
+
+    public ReadOnlySpan<byte> ReadAlignedSpan(long count)
     {
         ByteAlign();
 
         long available = _data.Length - _used;
 
         int bytesToRead = (int)Math.Min(count, available);
-
-        var result = new byte[bytesToRead];
-        Array.Copy(_data, (int)_used, result, 0, bytesToRead);
+        var result = _data.Span.Slice((int)_used, bytesToRead);
         _used += bytesToRead;
 
         if (bytesToRead != count)
@@ -106,7 +107,7 @@ internal sealed class BitPackedBuffer
             {
                 if (Done())
                     throw new DecodeException(nameof(BitPackedDecoder));
-                _next = _data[_used];
+                _next = _data.Span[(int)_used];
                 _used += 1;
                 _nextBits = 8;
             }
