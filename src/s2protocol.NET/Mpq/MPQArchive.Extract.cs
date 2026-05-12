@@ -28,7 +28,7 @@ public sealed partial class MPQArchive
         }
         return result;
     }
-    
+
     private static readonly string[] separatorArray1 = ["\r\n", "\n"];
     private static readonly string[] separatorArray0 = ["\r\n", "\n"];
     private static readonly string[] separator = ["\r\n", "\n"];

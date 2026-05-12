@@ -1,5 +1,4 @@
 ﻿using System.Numerics;
-using System.Text.Json.Serialization;
 
 namespace s2protocol.NET.Models;
 

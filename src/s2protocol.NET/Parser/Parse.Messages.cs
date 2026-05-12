@@ -1,6 +1,7 @@
 ﻿using s2protocol.NET.Models;
 
 namespace s2protocol.NET.Parser;
+
 internal static partial class Parse
 {
     public static void SetMessages(List<object> genDict, Sc2Replay replay)

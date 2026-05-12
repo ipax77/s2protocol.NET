@@ -1,6 +1,7 @@
 ﻿using s2protocol.NET.Models;
 
 namespace s2protocol.NET.Parser;
+
 internal static partial class Parse
 {
     private static bool DoGetRootKey;
@@ -47,12 +48,12 @@ internal static partial class Parse
             return "";
         else
             if (pydic.ContainsKey("m_ngdpRootKey"))
-        {
-            if (pydic["m_ngdpRootKey"] is Dictionary<string, object> rootDic)
             {
-                return GetAsciiString(rootDic, "m_data");
+                if (pydic["m_ngdpRootKey"] is Dictionary<string, object> rootDic)
+                {
+                    return GetAsciiString(rootDic, "m_data");
+                }
             }
-        }
         return "";
     }
 }
