@@ -308,16 +308,10 @@ public sealed partial class MPQArchive
 
             case 2: // zlib/deflate
                 {
-                    ReadOnlySpan<byte> source = data.AsSpan(offset + 1, length - 1);
-                    Span<byte> target = destination.AsSpan(destinationOffset, expectedLength);
-
-                    if (!ZLibDecoder.TryDecompress(source, target, out int bytesWritten) ||
-                        bytesWritten != expectedLength)
-                    {
-                        throw new InvalidDataException(
-                            $"Decompressed MPQ data length mismatch. Expected {expectedLength} bytes, got {bytesWritten} bytes.");
-                    }
-
+                    using var input = new MemoryStream(data, offset + 1, length - 1, writable: false);
+                    using var output = new MemoryStream(destination, destinationOffset, expectedLength, writable: true);
+                    using var deflate = new DeflateStream(input, CompressionMode.Decompress);
+                    deflate.CopyTo(output);
                     return;
                 }
 
