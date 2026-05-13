@@ -1,20 +1,21 @@
-﻿using System;
+using System;
 using System.IO;
 using System.Reflection;
 using System.Threading.Tasks;
-using Xunit;
+using Microsoft.VisualStudio.TestTools.UnitTesting;
 
 namespace s2protocol.NET.tests;
 
+[TestClass]
 public class CurruptedErrorTests
 {
     public static readonly string? assemblyPath = Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location);
 
-    [Theory]
-    [InlineData("testError.SC2Replay")]
+    [TestMethod]
+    [DataRow("testError.SC2Replay")]
     public async Task CurruptedTrackereventsTestsAsync(string replayFile)
     {
-        Assert.True(assemblyPath != null, "Could not get ExecutionAssembly path");
+        Assert.IsTrue(assemblyPath != null, "Could not get ExecutionAssembly path");
         if (assemblyPath == null)
         {
             return;
@@ -33,21 +34,22 @@ public class CurruptedErrorTests
 
         try
         {
-            var replay = await decoder.DecodeAsync(Path.Combine(assemblyPath, "replays", replayFile), options);
+            _ = await decoder.DecodeAsync(Path.Combine(assemblyPath, "replays", replayFile), options);
+            Assert.Fail("Expected a decode exception.");
         }
         catch (DecodeException ex)
         {
-            Assert.Equal("VersionedTypedDecoder", ex.Message);
+            Assert.AreEqual("VersionedTypedDecoder", ex.Message);
         }
 
         decoder.Dispose();
     }
 
-    [Theory]
-    [InlineData("testError2.SC2Replay")]
+    [TestMethod]
+    [DataRow("testError2.SC2Replay")]
     public async Task CurruptedTestsAsync(string replayFile)
     {
-        Assert.True(assemblyPath != null, "Could not get ExecutionAssembly path");
+        Assert.IsTrue(assemblyPath != null, "Could not get ExecutionAssembly path");
         if (assemblyPath == null)
         {
             return;
@@ -66,11 +68,12 @@ public class CurruptedErrorTests
 
         try
         {
-            var replay = await decoder.DecodeAsync(Path.Combine(assemblyPath, "replays", replayFile), options);
+            _ = await decoder.DecodeAsync(Path.Combine(assemblyPath, "replays", replayFile), options);
+            Assert.Fail("Expected a decode exception.");
         }
         catch (DecodeException ex)
         {
-            Assert.Equal("Value cannot be null. (Parameter 'trackerEvents')", ex.Message);
+            Assert.AreEqual("Value cannot be null. (Parameter 'trackerEvents')", ex.Message);
         }
 
         decoder.Dispose();

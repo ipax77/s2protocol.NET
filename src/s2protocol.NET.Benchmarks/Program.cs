@@ -318,7 +318,7 @@ internal static class ReplayBenchmarkData
         yield return Path.Combine(baseDirectory, "testdata");
         yield return Path.Combine(baseDirectory, "replays");
         yield return Path.Combine(baseDirectory, "Sc2DirectStrike", "src", "Sc2DirectStrike.Tests", "testdata");
-        yield return Path.Combine(baseDirectory, "s2protocol.NET.tests", "replays");
+        yield return Path.Combine(baseDirectory, "src", "s2protocol.NET.tests", "replays");
     }
 
     private static bool IsReplayDirectory(string? replayDirectory)

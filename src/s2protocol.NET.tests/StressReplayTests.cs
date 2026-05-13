@@ -4,10 +4,11 @@ using System.IO;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
-using Xunit;
+using Microsoft.VisualStudio.TestTools.UnitTesting;
 
 namespace s2protocol.NET.tests;
 
+[TestClass]
 public sealed class StressReplayTests
 {
     private const string RunStressTestsEnvironmentVariable = "S2PROTOCOL_RUN_STRESS_TESTS";
@@ -21,12 +22,13 @@ public sealed class StressReplayTests
         "Direct Strike TE (1904).SC2Replay",
     ];
 
-    [StressReplayTheory]
-    [InlineData("Direct Strike (10060).SC2Replay")]
-    [InlineData("Direct Strike (10096).SC2Replay")]
-    [InlineData("Direct Strike (10124).SC2Replay")]
-    [InlineData("Direct Strike (10143).SC2Replay")]
-    [InlineData("Direct Strike TE (1904).SC2Replay")]
+    [TestMethod]
+    [StressReplayEnabled]
+    [DataRow("Direct Strike (10060).SC2Replay")]
+    [DataRow("Direct Strike (10096).SC2Replay")]
+    [DataRow("Direct Strike (10124).SC2Replay")]
+    [DataRow("Direct Strike (10143).SC2Replay")]
+    [DataRow("Direct Strike TE (1904).SC2Replay")]
     public async Task DirectStrikeStressReplayCanDecode(string replayName)
     {
         string? replayDirectory = StressReplayData.TryResolveReplayDirectory();
@@ -46,15 +48,16 @@ public sealed class StressReplayTests
             .ConfigureAwait(false)
             ?? throw new InvalidOperationException($"Could not decode replay '{replayPath}'.");
 
-        Assert.NotNull(replay.Details);
-        Assert.StartsWith("Direct Strike", replay.Details.Title, StringComparison.OrdinalIgnoreCase);
+        var details = replay.Details ?? throw new AssertFailedException("Expected replay details.");
+        Assert.IsTrue(details.Title.StartsWith("Direct Strike", StringComparison.OrdinalIgnoreCase));
 
-        Assert.NotNull(replay.TrackerEvents);
-        Assert.True(replay.TrackerEvents.SUnitBornEvents.Count > 0, "Expected unit born tracker events.");
-        Assert.True(replay.TrackerEvents.SPlayerStatsEvents.Count > 0, "Expected player stats tracker events.");
+        var trackerEvents = replay.TrackerEvents ?? throw new AssertFailedException("Expected tracker events.");
+        Assert.IsTrue(trackerEvents.SUnitBornEvents.Count > 0, "Expected unit born tracker events.");
+        Assert.IsTrue(trackerEvents.SPlayerStatsEvents.Count > 0, "Expected player stats tracker events.");
     }
 
-    [StressReplayFact]
+    [TestMethod]
+    [StressReplayEnabled]
     public async Task DirectStrikeCorpusCanDecodeInParallel()
     {
         string? replayDirectory = StressReplayData.TryResolveReplayDirectory();
@@ -94,8 +97,8 @@ public sealed class StressReplayTests
             decoded++;
         }
 
-        Assert.Empty(errors);
-        Assert.Equal(replayPaths.Length, decoded);
+        Assert.AreEqual(0, errors.Count);
+        Assert.AreEqual(replayPaths.Length, decoded);
     }
 
     private static ReplayDecoderOptions CreateDirectStrikeCoreOptions()
@@ -112,26 +115,18 @@ public sealed class StressReplayTests
         };
     }
 
-    private sealed class StressReplayFactAttribute : FactAttribute
+    [AttributeUsage(AttributeTargets.Method)]
+    private sealed class StressReplayEnabledAttribute : ConditionBaseAttribute
     {
-        public StressReplayFactAttribute()
+        public StressReplayEnabledAttribute()
+            : base(ConditionMode.Include)
         {
-            if (!IsStressTestEnabled())
-            {
-                Skip = $"Set {RunStressTestsEnvironmentVariable}=1 to run DirectStrike stress replay tests.";
-            }
+            IgnoreMessage = $"Set {RunStressTestsEnvironmentVariable}=1 to run DirectStrike stress replay tests.";
         }
-    }
 
-    private sealed class StressReplayTheoryAttribute : TheoryAttribute
-    {
-        public StressReplayTheoryAttribute()
-        {
-            if (!IsStressTestEnabled())
-            {
-                Skip = $"Set {RunStressTestsEnvironmentVariable}=1 to run DirectStrike stress replay tests.";
-            }
-        }
+        public override bool IsConditionMet => IsStressTestEnabled();
+
+        public override string GroupName => nameof(StressReplayEnabledAttribute);
     }
 
     private static bool IsStressTestEnabled()

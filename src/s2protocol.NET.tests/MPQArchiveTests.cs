@@ -1,36 +1,37 @@
-﻿using s2protocol.NET.Mpq;
+using s2protocol.NET.Mpq;
 using s2protocol.NET.S2Protocol;
 using System.IO;
 using System.Reflection;
-using Xunit;
+using Microsoft.VisualStudio.TestTools.UnitTesting;
 
 namespace s2protocol.NET.tests;
 
+[TestClass]
 public class MPQArchiveTests
 {
     public static readonly string assemblyPath = Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location) ?? "";
 
-    [Fact]
+    [TestMethod]
     public void MPQArchiveHeaderTest()
     {
         var replayPath = Path.Combine(assemblyPath, "replays", "test.SC2Replay");
         using var mpqArchive = new MPQArchive(replayPath);
         var headerContent = mpqArchive.GetUserDataHeaderContent();
-        Assert.NotNull(headerContent);
+        Assert.IsNotNull(headerContent);
         var s2protocol = TypeInfoLoader.GetLatestVersion();
         var header = s2protocol.DecodeReplayHeader(headerContent);
-        Assert.NotNull(header);
+        Assert.IsNotNull(header);
         int expectedVersion = 15405;
-        Assert.Equal(expectedVersion, header.BaseBuild);
+        Assert.AreEqual(expectedVersion, header.BaseBuild);
     }
 
-    [Fact]
+    [TestMethod]
     public void FilesTest()
     {
         var replayPath = Path.Combine(assemblyPath, "replays", "test.SC2Replay");
         using var mpqArchive = new MPQArchive(replayPath);
         var files = mpqArchive.PrintFiles();
-        Assert.NotNull(files);
+        Assert.IsNotNull(files);
         var expectedFiles = @"replay.attributes.events
 replay.details
 replay.game.events
@@ -40,16 +41,16 @@ replay.message.events
 replay.smartcam.events
 replay.sync.events
 ";
-        Assert.Equal(expectedFiles, files);
+        Assert.AreEqual(expectedFiles, files);
     }
 
-    [Fact]
+    [TestMethod]
     public void HashTableTest()
     {
         var replayPath = Path.Combine(assemblyPath, "replays", "test.SC2Replay");
         using var mpqArchive = new MPQArchive(replayPath);
         var hashTable = mpqArchive.PrintHashTable();
-        Assert.NotNull(hashTable);
+        Assert.IsNotNull(hashTable);
         var expectedHashString = @"MPQ archive hash table
 ----------------------
  Hash A   Hash B  Locl Plat BlockIdx
@@ -71,16 +72,16 @@ FFFFFFFF FFFFFFFF FFFF FFFF FFFFFFFF
 31952289 6A5FFAA3 0000 0000 00000003
 
 ";
-        Assert.Equal(expectedHashString, hashTable);
+        Assert.AreEqual(expectedHashString, hashTable);
     }
 
-    [Fact]
+    [TestMethod]
     public void BlockTableTest()
     {
         var replayPath = Path.Combine(assemblyPath, "replays", "test.SC2Replay");
         using var mpqArchive = new MPQArchive(replayPath);
         var hashTable = mpqArchive.PrintBlockTable();
-        Assert.NotNull(hashTable);
+        Assert.IsNotNull(hashTable);
         var expectedHashString = @"MPQ archive block table
 ----------------------
 FileOffset ArchSize RealSize Flags
@@ -96,6 +97,6 @@ FileOffset ArchSize RealSize Flags
 00031E56 254 288 81000200
 
 ";
-        Assert.Equal(expectedHashString, hashTable);
+        Assert.AreEqual(expectedHashString, hashTable);
     }
 }

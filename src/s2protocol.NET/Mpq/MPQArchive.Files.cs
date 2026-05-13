@@ -228,7 +228,7 @@ public sealed partial class MPQArchive
                 (forceDecompress || blockEntry.CompressedSize < blockEntry.FileSize))
             {
                 byte[] singleUnitResult = new byte[fileSize];
-                await DecompressAsync(rawData, 0, compressedSize, singleUnitResult, 0, fileSize, cancellationToken).ConfigureAwait(false);
+                DecompressAsync(rawData, 0, compressedSize, singleUnitResult, 0, fileSize);
                 return singleUnitResult;
             }
 
@@ -268,7 +268,7 @@ public sealed partial class MPQArchive
 
             if (isCompressedSector)
             {
-                await DecompressAsync(rawData, start, length, result, bytesCopied, expectedSectorLength, cancellationToken).ConfigureAwait(false);
+                DecompressAsync(rawData, start, length, result, bytesCopied, expectedSectorLength);
                 bytesCopied += expectedSectorLength;
             }
             else
@@ -285,13 +285,12 @@ public sealed partial class MPQArchive
         return result;
     }
 
-    private static async Task DecompressAsync(byte[] data,
+    private static void DecompressAsync(byte[] data,
                                              int offset,
                                              int length,
                                              byte[] destination,
                                              int destinationOffset,
-                                             int expectedLength,
-                                             CancellationToken cancellationToken)
+                                             int expectedLength)
     {
         if (length <= 0)
             throw new InvalidDataException("Compressed MPQ data is empty.");
@@ -309,10 +308,16 @@ public sealed partial class MPQArchive
 
             case 2: // zlib/deflate
                 {
-                    using var input = new MemoryStream(data, offset + 1, length - 1, writable: false);
-                    using var output = new MemoryStream(destination, destinationOffset, expectedLength, writable: true);
-                    using var deflate = new DeflateStream(input, CompressionMode.Decompress);
-                    await deflate.CopyToAsync(output, cancellationToken).ConfigureAwait(false);
+                    ReadOnlySpan<byte> source = data.AsSpan(offset + 1, length - 1);
+                    Span<byte> target = destination.AsSpan(destinationOffset, expectedLength);
+
+                    if (!ZLibDecoder.TryDecompress(source, target, out int bytesWritten) ||
+                        bytesWritten != expectedLength)
+                    {
+                        throw new InvalidDataException(
+                            $"Decompressed MPQ data length mismatch. Expected {expectedLength} bytes, got {bytesWritten} bytes.");
+                    }
+
                     return;
                 }
 

@@ -4,18 +4,19 @@ using System.Linq;
 using System.Reflection;
 using System.Threading;
 using System.Threading.Tasks;
-using Xunit;
+using Microsoft.VisualStudio.TestTools.UnitTesting;
 
 namespace s2protocol.NET.tests;
 
+[TestClass]
 public class DecodeParallelTests
 {
     public static readonly string? assemblyPath = Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location);
 
-    [Fact]
+    [TestMethod]
     public async Task DecodeParallelTest()
     {
-        Assert.True(assemblyPath != null, "Could not get ExecutionAssembly path");
+        Assert.IsTrue(assemblyPath != null, "Could not get ExecutionAssembly path");
         if (assemblyPath == null)
         {
             return;
@@ -47,17 +48,17 @@ public class DecodeParallelTests
                 decoded++;
             }
         }
-        Assert.Equal(replays.Length, decoded);
+        Assert.AreEqual(replays.Length, decoded);
 
         await cts.CancelAsync();
         cts.Dispose();
         decoder.Dispose();
     }
 
-    [Fact]
+    [TestMethod]
     public async Task DecodeParallelErrorTest()
     {
-        Assert.True(assemblyPath != null, "Could not get ExecutionAssembly path");
+        Assert.IsTrue(assemblyPath != null, "Could not get ExecutionAssembly path");
         if (assemblyPath == null)
         {
             return;
@@ -85,17 +86,17 @@ public class DecodeParallelTests
         {
             decoded++;
         }
-        Assert.Equal(replays.Length - 3, decoded);
+        Assert.AreEqual(replays.Length - 3, decoded);
 
         await cts.CancelAsync();
         cts.Dispose();
         decoder.Dispose();
     }
 
-    [Fact]
+    [TestMethod]
     public async Task DecodeParallelWithResultTest()
     {
-        Assert.True(assemblyPath != null, "Could not get ExecutionAssembly path");
+        Assert.IsTrue(assemblyPath != null, "Could not get ExecutionAssembly path");
         if (assemblyPath == null)
         {
             return;
@@ -133,18 +134,18 @@ public class DecodeParallelTests
             }
             results.Add(decodeResult);
         }
-        Assert.Equal(replays.Length - errors, decoded);
-        Assert.Equal(replays.Length, decoded + errors);
+        Assert.AreEqual(replays.Length - errors, decoded);
+        Assert.AreEqual(replays.Length, decoded + errors);
 
         await cts.CancelAsync();
         cts.Dispose();
         decoder.Dispose();
     }
 
-    [Fact]
+    [TestMethod]
     public async Task DecodeParallelWithResultSlowConsumerTest()
     {
-        Assert.True(assemblyPath != null, "Could not get ExecutionAssembly path");
+        Assert.IsTrue(assemblyPath != null, "Could not get ExecutionAssembly path");
         if (assemblyPath == null)
         {
             return;
@@ -182,7 +183,7 @@ public class DecodeParallelTests
                 decoded++;
             }
         }
-        Assert.Equal(replays.Length, decoded + errors);
+        Assert.AreEqual(replays.Length, decoded + errors);
 
         await cts.CancelAsync();
         cts.Dispose();
