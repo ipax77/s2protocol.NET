@@ -24,7 +24,7 @@ public sealed partial class MPQArchive
         {
 
             ReadOnlyMemory<byte>? data = ReadFile(file);
-            result[file] = data?.ToArray() ?? Array.Empty<byte>();
+            result[file] = data?.ToArray() ?? [];
         }
         return result;
     }
@@ -48,7 +48,7 @@ public sealed partial class MPQArchive
         string archiveName = Path.GetFileNameWithoutExtension(_archivePath);
         string outputDir = Path.Combine(Directory.GetCurrentDirectory(), archiveName);
 
-        Directory.CreateDirectory(outputDir);
+        _ = Directory.CreateDirectory(outputDir);
         var text = System.Text.Encoding.UTF8.GetString(_files.Value.Span);
         var fileNames = text.Split(separatorArray0, StringSplitOptions.RemoveEmptyEntries);
         foreach (var file in fileNames)
@@ -57,7 +57,7 @@ public sealed partial class MPQArchive
             if (!data.HasValue) continue;
 
             string fullPath = Path.Combine(outputDir, file.Replace('/', Path.DirectorySeparatorChar));
-            Directory.CreateDirectory(Path.GetDirectoryName(fullPath)!);
+            _ = Directory.CreateDirectory(Path.GetDirectoryName(fullPath)!);
             File.WriteAllBytes(fullPath, data.Value.Span);
         }
     }
@@ -78,7 +78,7 @@ public sealed partial class MPQArchive
             if (!data.HasValue) continue;
 
             string outputPath = Path.Combine(Directory.GetCurrentDirectory(), file.Replace('/', Path.DirectorySeparatorChar));
-            Directory.CreateDirectory(Path.GetDirectoryName(outputPath)!);
+            _ = Directory.CreateDirectory(Path.GetDirectoryName(outputPath)!);
             File.WriteAllBytes(outputPath, data.Value.Span);
         }
     }
@@ -111,7 +111,7 @@ public sealed partial class MPQArchive
                 throw new FileNotFoundException(file);
             }
             ReadOnlyMemory<byte>? data = ReadFile(file, true);
-            result[file] = data?.ToArray() ?? Array.Empty<byte>();
+            result[file] = data?.ToArray() ?? [];
         }
         return result;
     }
@@ -123,10 +123,6 @@ public sealed partial class MPQArchive
     /// not set.</returns>
     public byte[] GetUserDataHeaderContent()
     {
-        if (_userDataHeader is null)
-        {
-            return [];
-        }
-        return _userDataHeader.Value.Content;
+        return _userDataHeader is null ? [] : _userDataHeader.Value.Content;
     }
 }

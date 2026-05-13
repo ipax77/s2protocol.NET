@@ -1,25 +1,20 @@
 namespace s2protocol.NET.Models;
 /// <summary>Record <c>SCommandManagerStateEvent</c> SCommandManagerStateEvent</summary>
 ///
-public sealed class SCommandManagerStateEvent : GameEvent
+/// <remarks>Record <c>SCommandManagerStateEvent</c> constructor</remarks>
+///
+public sealed class SCommandManagerStateEvent(int userId,
+    int eventId,
+    int bits,
+    int gameloop,
+    int state,
+                                 int? sequence) : GameEvent(userId, eventId, GameEventType.SCommandManagerStateEvent, bits, gameloop)
 {
-    /// <summary>Record <c>SCommandManagerStateEvent</c> constructor</summary>
-    ///
-    public SCommandManagerStateEvent(int userId,
-        int eventId,
-        int bits,
-        int gameloop,
-        int state,
-                                     int? sequence) : base(userId, eventId, GameEventType.SCommandManagerStateEvent, bits, gameloop)
-    {
-        State = state;
-        Sequence = sequence;
-    }
 
     /// <summary>Event State</summary>
     ///
-    public int State { get; }
+    public int State { get; } = state;
     /// <summary>Event Sequence</summary>
     ///
-    public int? Sequence { get; }
+    public int? Sequence { get; } = sequence;
 }

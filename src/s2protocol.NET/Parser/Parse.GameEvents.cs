@@ -14,7 +14,7 @@ internal static partial class Parse
 
     public static GameEvents GameEvents(IEnumerable<Dictionary<string, object?>> pydic)
     {
-        List<GameEvent> gameevents = new();
+        List<GameEvent> gameevents = [];
 
         foreach (var ent in pydic)
         {
@@ -63,7 +63,8 @@ internal static partial class Parse
                     GameEventType.STriggerButtonPressedEvent => GetSTriggerButtonPressedEvent(gameDic, gameEvent),
                     GameEventType.STriggerGameMenuItemSelectedEvent => GetSTriggerGameMenuItemSelectedEvent(gameDic, gameEvent),
                     GameEventType.STriggerMouseMovedEvent => GetSTriggerMouseMovedEvent(gameDic, gameEvent),
-                    _ => GetUnknownEvent(gameDic, gameEvent)
+                    GameEventType.None => GetUnknownEvent(gameEvent),
+                    _ => GetUnknownEvent(gameEvent)
                 };
                 gameevents.Add(detailEvent);
             }
@@ -114,7 +115,8 @@ internal static partial class Parse
             GameEventType.STriggerButtonPressedEvent => GetSTriggerButtonPressedEvent(gameDic, gameEvent),
             GameEventType.STriggerGameMenuItemSelectedEvent => GetSTriggerGameMenuItemSelectedEvent(gameDic, gameEvent),
             GameEventType.STriggerMouseMovedEvent => GetSTriggerMouseMovedEvent(gameDic, gameEvent),
-            _ => GetUnknownEvent(gameDic, gameEvent)
+            GameEventType.None => GetUnknownEvent(gameEvent),
+            _ => GetUnknownEvent(gameEvent)
         };
     }
 
@@ -186,7 +188,7 @@ internal static partial class Parse
         return 0;
     }
 
-    private static UnknownGameEvent GetUnknownEvent(Dictionary<string, object> pydic, GameEventHeader gameEvent)
+    private static UnknownGameEvent GetUnknownEvent(GameEventHeader gameEvent)
     {
         return new UnknownGameEvent(gameEvent.UserId, gameEvent.EventId, gameEvent.Bits, gameEvent.Gameloop, gameEvent.EventTypeName);
     }

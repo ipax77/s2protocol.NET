@@ -1,20 +1,16 @@
 namespace s2protocol.NET.Models;
 /// <summary>Record <c>STriggerSoundOffsetEvent</c> STriggerSoundOffsetEvent</summary>
 ///
-public sealed class STriggerSoundOffsetEvent : GameEvent
+/// <remarks>Record <c>STriggerSoundOffsetEvent</c> constructor</remarks>
+///
+public sealed class STriggerSoundOffsetEvent(int userId,
+    int eventId,
+    int bits,
+    int gameloop,
+    int sound) : GameEvent(userId, eventId, GameEventType.STriggerSoundOffsetEvent, bits, gameloop)
 {
-    /// <summary>Record <c>STriggerSoundOffsetEvent</c> constructor</summary>
-    ///
-    public STriggerSoundOffsetEvent(int userId,
-        int eventId,
-        int bits,
-        int gameloop,
-        int sound) : base(userId, eventId, GameEventType.STriggerSoundOffsetEvent, bits, gameloop)
-    {
-        Sound = sound;
-    }
 
     /// <summary>Event Sound</summary>
     ///
-    public int Sound { get; }
+    public int Sound { get; } = sound;
 }

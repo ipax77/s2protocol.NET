@@ -21,12 +21,12 @@ public sealed partial class MPQArchive
         {
             for (int j = 0; j < 5; j++) // inner loop: 5 times per outer
             {
-                int index = j * 0x100 + i;
+                int index = (j * 0x100) + i;
 
-                seed = (seed * 125 + 3) % 0x2AAAAB;
+                seed = ((seed * 125) + 3) % 0x2AAAAB;
                 uint temp1 = (seed & 0xFFFF) << 16;
 
-                seed = (seed * 125 + 3) % 0x2AAAAB;
+                seed = ((seed * 125) + 3) % 0x2AAAAB;
                 uint temp2 = seed & 0xFFFF;
 
                 stormBuffer[index] = temp1 | temp2;

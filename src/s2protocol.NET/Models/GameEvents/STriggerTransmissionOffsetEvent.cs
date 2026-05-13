@@ -1,19 +1,15 @@
 namespace s2protocol.NET.Models;
 /// <summary>Record <c>STriggerTransmissionOffsetEvent</c> STriggerTransmissionOffsetEvent</summary>
 ///
-public sealed class STriggerTransmissionOffsetEvent : GameEvent
+/// <remarks>Record <c>STriggerTransmissionOffsetEvent</c> constructor</remarks>
+///
+public sealed class STriggerTransmissionOffsetEvent(int userId,
+    int eventId,
+    int bits,
+    int gameloop,
+    int achievementLink) : GameEvent(userId, eventId, GameEventType.STriggerTransmissionOffsetEvent, bits, gameloop)
 {
-    /// <summary>Record <c>STriggerTransmissionOffsetEvent</c> constructor</summary>
-    ///
-    public STriggerTransmissionOffsetEvent(int userId,
-        int eventId,
-        int bits,
-        int gameloop,
-        int achievementLink) : base(userId, eventId, GameEventType.STriggerTransmissionOffsetEvent, bits, gameloop)
-    {
-        AchievementLink = achievementLink;
-    }
     /// <summary>Event Flags</summary>
     ///
-    public int AchievementLink { get; }
+    public int AchievementLink { get; } = achievementLink;
 }

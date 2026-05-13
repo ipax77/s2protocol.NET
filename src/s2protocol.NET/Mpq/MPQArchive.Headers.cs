@@ -18,7 +18,7 @@ public sealed partial class MPQArchive
         }
         else if (magicBytes.SequenceEqual(new byte[] { 0x4D, 0x50, 0x51, 0x1B })) // 'MPQ\x1B' User Data Header
         {
-            _reader.BaseStream.Seek(0, SeekOrigin.Begin);
+            _ = _reader.BaseStream.Seek(0, SeekOrigin.Begin);
             var magic = _reader.ReadUInt32();
             var userDataSize = _reader.ReadUInt32();
             var mPQHeaderOffset = _reader.ReadUInt32();
@@ -39,7 +39,7 @@ public sealed partial class MPQArchive
             throw new DecodeException("Invalid MPQ header.");
         }
 
-        _reader.BaseStream.Seek(headerOffset, SeekOrigin.Begin);
+        _ = _reader.BaseStream.Seek(headerOffset, SeekOrigin.Begin);
 
         header = new MPQHeader
         {
@@ -126,8 +126,8 @@ public sealed partial class MPQArchive
         {
             Console.WriteLine("{0,-30} {1}", name, $"byte[{byteArray.Length}]");
         }
-        else if (value is uint || value is int || value is ushort || value is short ||
-                 value is long || value is ulong)
+        else if (value is uint or int or ushort or short or
+                 long or ulong)
         {
             Console.WriteLine("{0,-30} {1} (0x{1:X})", name, value);
         }

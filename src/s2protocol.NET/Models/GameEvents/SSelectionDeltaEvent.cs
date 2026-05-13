@@ -3,27 +3,22 @@ using System.Text.Json.Serialization;
 namespace s2protocol.NET.Models;
 /// <summary>Record <c>SSelectionDeltaEvent</c> SSelectionDeltaEvent</summary>
 ///
-public sealed class SSelectionDeltaEvent : GameEvent
+/// <remarks>Record <c>SSelectionDeltaEvent</c> constructor</remarks>
+///
+public sealed class SSelectionDeltaEvent(int userId,
+    int eventId,
+    int bits,
+    int gameloop,
+    SelectionDeltaEventDelta delta,
+    int controlGroupId) : GameEvent(userId, eventId, GameEventType.SSelectionDeltaEvent, bits, gameloop)
 {
-    /// <summary>Record <c>SSelectionDeltaEvent</c> constructor</summary>
-    ///
-    public SSelectionDeltaEvent(int userId,
-        int eventId,
-        int bits,
-        int gameloop,
-        SelectionDeltaEventDelta delta,
-        int controlGroupId) : base(userId, eventId, GameEventType.SSelectionDeltaEvent, bits, gameloop)
-    {
-        Delta = delta;
-        ControlGroupId = controlGroupId;
-    }
 
     /// <summary>Event Type</summary>
     ///
-    public SelectionDeltaEventDelta Delta { get; }
+    public SelectionDeltaEventDelta Delta { get; } = delta;
     /// <summary>Event ControlGroupId</summary>
     ///
-    public int ControlGroupId { get; }
+    public int ControlGroupId { get; } = controlGroupId;
 }
 
 /// <summary>Record <c>SelectionDeltaEventDelta</c> SelectionDeltaEventDelta</summary>

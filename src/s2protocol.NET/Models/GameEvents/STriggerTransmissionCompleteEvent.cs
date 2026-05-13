@@ -1,20 +1,16 @@
 namespace s2protocol.NET.Models;
 /// <summary>Record <c>STriggerTransmissionCompleteEvent</c> STriggerTransmissionCompleteEvent</summary>
 ///
-public sealed class STriggerTransmissionCompleteEvent : GameEvent
+/// <remarks>Record <c>STriggerTransmissionCompleteEvent</c> constructor</remarks>
+///
+public sealed class STriggerTransmissionCompleteEvent(int userId,
+    int eventId,
+    int bits,
+    int gameloop,
+    long transmissionId) : GameEvent(userId, eventId, GameEventType.STriggerTransmissionCompleteEvent, bits, gameloop)
 {
-    /// <summary>Record <c>STriggerTransmissionCompleteEvent</c> constructor</summary>
-    ///
-    public STriggerTransmissionCompleteEvent(int userId,
-        int eventId,
-        int bits,
-        int gameloop,
-        long transmissionId) : base(userId, eventId, GameEventType.STriggerTransmissionCompleteEvent, bits, gameloop)
-    {
-        TransmissionId = transmissionId;
-    }
 
     /// <summary>Event TransmissionId</summary>
     ///
-    public long TransmissionId { get; }
+    public long TransmissionId { get; } = transmissionId;
 }

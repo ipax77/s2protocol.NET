@@ -1,7 +1,5 @@
 namespace s2protocol.NET.S2Protocol;
 
-using System.Collections.Generic;
-
 internal abstract class S2ProtocolDecoder
 {
     /// <summary>
@@ -30,10 +28,7 @@ internal abstract class S2ProtocolDecoder
             return [];
         }
         var obj = Instance(typeId);
-        if (obj is Dictionary<string, object?> dict)
-            return dict;
-
-        throw new DecodeException($"Type {typeId} did not decode to a dictionary.");
+        return obj is Dictionary<string, object?> dict ? dict : throw new DecodeException($"Type {typeId} did not decode to a dictionary.");
     }
 
     public static int Varuint32Value(object? value)

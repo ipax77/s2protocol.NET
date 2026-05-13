@@ -7,7 +7,7 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "src", "src", "{B63F12FB-3E0
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "s2protocol.NET", "src\s2protocol.NET\s2protocol.NET.csproj", "{F5519D5E-1BC5-4097-B6A9-7611A6BABF79}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "s2protocol.NET.tests", "s2protocol.NET.tests\s2protocol.NET.tests.csproj", "{D8B0E890-6AEC-4C00-97EE-C40F7A1B657A}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "s2protocol.NET.tests", "src\s2protocol.NET.tests\s2protocol.NET.tests.csproj", "{D8B0E890-6AEC-4C00-97EE-C40F7A1B657A}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "s2protocol.NET.Benchmarks", "src\s2protocol.NET.Benchmarks\s2protocol.NET.Benchmarks.csproj", "{38645489-098A-4099-A61C-F59F003569CE}"
 EndProject
@@ -41,6 +41,7 @@ Global
 	EndGlobalSection
 	GlobalSection(NestedProjects) = preSolution
 		{F5519D5E-1BC5-4097-B6A9-7611A6BABF79} = {B63F12FB-3E0B-4669-B949-77590A6EBD08}
+		{D8B0E890-6AEC-4C00-97EE-C40F7A1B657A} = {B63F12FB-3E0B-4669-B949-77590A6EBD08}
 		{38645489-098A-4099-A61C-F59F003569CE} = {B63F12FB-3E0B-4669-B949-77590A6EBD08}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution

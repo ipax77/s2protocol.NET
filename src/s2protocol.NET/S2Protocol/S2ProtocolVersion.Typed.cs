@@ -181,20 +181,12 @@ public sealed partial record S2ProtocolVersion
         }
     }
 
-    private struct HeaderVersionReadState : IStructFieldReader
+    private struct HeaderVersionReadState(Version version, int flags, int build, int baseBuild) : IStructFieldReader
     {
-        public HeaderVersionReadState(Version version, int flags, int build, int baseBuild)
-        {
-            Version = version;
-            Flags = flags;
-            Build = build;
-            BaseBuild = baseBuild;
-        }
-
-        public Version Version;
-        public int Flags;
-        public int Build;
-        public int BaseBuild;
+        public Version Version = version;
+        public int Flags = flags;
+        public int Build = build;
+        public int BaseBuild = baseBuild;
 
         public bool ReadField(TypedProtocolDecoder decoder, string name, int fieldTypeId)
         {
@@ -492,6 +484,7 @@ public sealed partial record S2ProtocolVersion
         public void Handle(in DecodedEvent decodedEvent)
         {
             GameEventType eventType = GetGameEventType(decodedEvent.TypeName);
+#pragma warning disable IDE0072 // Add missing cases
             GameEvent gameEvent = eventType switch
             {
                 GameEventType.SUserFinishedLoadingSyncEvent => ReadEmptyGameEvent(decoder, decodedEvent.TypeId, decodedEvent.UserId, decodedEvent.EventId, decodedEvent.Bits, decodedEvent.Gameloop),
@@ -515,6 +508,7 @@ public sealed partial record S2ProtocolVersion
                 GameEventType.SUnitClickEvent => ReadSUnitClickEvent(decoder, decodedEvent.TypeId, decodedEvent.UserId, decodedEvent.EventId, decodedEvent.Bits, decodedEvent.Gameloop),
                 _ => ReadUnknownGameEvent(decoder, decodedEvent.TypeId, decodedEvent.UserId, decodedEvent.EventId, decodedEvent.Bits, decodedEvent.Gameloop, decodedEvent.TypeName),
             };
+#pragma warning restore IDE0072 // Add missing cases
 
             events.Add(gameEvent);
         }
@@ -568,6 +562,8 @@ public sealed partial record S2ProtocolVersion
                 case TrackerEventType.SUnitDoneEvent:
                     unitDoneEvents.Add(ReadSUnitDoneEvent(decoder, decodedEvent.TypeId, decodedEvent.EventId, decodedEvent.Bits, decodedEvent.Gameloop));
                     break;
+                case TrackerEventType.None:
+                    break;
                 default:
                     decoder.SkipType(decodedEvent.TypeId);
                     break;
@@ -609,66 +605,74 @@ public sealed partial record S2ProtocolVersion
         }
     }
 
-    private static GameEventType GetGameEventType(string eventTypeName) => eventTypeName switch
+    private static GameEventType GetGameEventType(string eventTypeName)
     {
-        "NNet.Game.SBankFileEvent" => GameEventType.SBankFileEvent,
-        "NNet.Game.SBankKeyEvent" => GameEventType.SBankKeyEvent,
-        "NNet.Game.SBankSectionEvent" => GameEventType.SBankSectionEvent,
-        "NNet.Game.SBankSignatureEvent" => GameEventType.SBankSignatureEvent,
-        "NNet.Game.SBankValueEvent" => GameEventType.SBankValueEvent,
-        "NNet.Game.SCameraUpdateEvent" => GameEventType.SCameraUpdateEvent,
-        "NNet.Game.SCmdEvent" => GameEventType.SCmdEvent,
-        "NNet.Game.SCmdUpdateTargetPointEvent" => GameEventType.SCmdUpdateTargetPointEvent,
-        "NNet.Game.SCommandManagerStateEvent" => GameEventType.SCommandManagerStateEvent,
-        "NNet.Game.SControlGroupUpdateEvent" => GameEventType.SControlGroupUpdateEvent,
-        "NNet.Game.SGameUserLeaveEvent" => GameEventType.SGameUserLeaveEvent,
-        "NNet.Game.SSelectionDeltaEvent" => GameEventType.SSelectionDeltaEvent,
-        "NNet.Game.SSetSyncLoadingTimeEvent" => GameEventType.SSetSyncLoadingTimeEvent,
-        "NNet.Game.SSetSyncPlayingTimeEvent" => GameEventType.SSetSyncPlayingTimeEvent,
-        "NNet.Game.STriggerDialogControlEvent" => GameEventType.STriggerDialogControlEvent,
-        "NNet.Game.STriggerPingEvent" => GameEventType.STriggerPingEvent,
-        "NNet.Game.STriggerSoundLengthSyncEvent" => GameEventType.STriggerSoundLengthSyncEvent,
-        "NNet.Game.SUserFinishedLoadingSyncEvent" => GameEventType.SUserFinishedLoadingSyncEvent,
-        "NNet.Game.SUserOptionsEvent" => GameEventType.SUserOptionsEvent,
-        "NNet.Game.SCmdUpdateTargetUnitEvent" => GameEventType.SCmdUpdateTargetUnitEvents,
-        "NNet.Game.STriggerKeyPressedEvent" => GameEventType.STriggerKeyPressedEvent,
-        "NNet.Game.SUnitClickEvent" => GameEventType.SUnitClickEvent,
-        "NNet.Game.SDecrementGameTimeRemainingEvent" => GameEventType.SDecrementGameTimeRemainingEvent,
-        "NNet.Game.STriggerChatMessageEvent" => GameEventType.STriggerChatMessageEvent,
-        "NNet.Game.STriggerMouseClickedEvent" => GameEventType.STriggerMouseClickedEvent,
-        "NNet.Game.STriggerSoundtrackDoneEvent" => GameEventType.STriggerSoundtrackDoneEvent,
-        "NNet.Game.SCameraSaveEvent" => GameEventType.SCameraSaveEvent,
-        "NNet.Game.STriggerCutsceneBookmarkFiredEvent" => GameEventType.STriggerCutsceneBookmarkFiredEvent,
-        "NNet.Game.STriggerCutsceneEndSceneFiredEvent" => GameEventType.STriggerCutsceneEndSceneFiredEvent,
-        "NNet.Game.STriggerSoundLengthQueryEvent" => GameEventType.STriggerSoundLengthQueryEvent,
-        "NNet.Game.STriggerSoundOffsetEvent" => GameEventType.STriggerSoundOffsetEvent,
-        "NNet.Game.STriggerTargetModeUpdateEvent" => GameEventType.STriggerTargetModeUpdateEvent,
-        "NNet.Game.STriggerTransmissionCompleteEvent" => GameEventType.STriggerTransmissionCompleteEvent,
-        "NNet.Game.SAchievementAwardedEvent" => GameEventType.SAchievementAwardedEvent,
-        "NNet.Game.STriggerTransmissionOffsetEvent" => GameEventType.STriggerTransmissionOffsetEvent,
-        "NNet.Game.STriggerButtonPressedEvent" => GameEventType.STriggerButtonPressedEvent,
-        "NNet.Game.STriggerGameMenuItemSelectedEvent" => GameEventType.STriggerGameMenuItemSelectedEvent,
-        "NNet.Game.STriggerMouseMovedEvent" => GameEventType.STriggerMouseMovedEvent,
-        _ => GameEventType.None
-    };
+        return eventTypeName switch
+        {
+            "NNet.Game.SBankFileEvent" => GameEventType.SBankFileEvent,
+            "NNet.Game.SBankKeyEvent" => GameEventType.SBankKeyEvent,
+            "NNet.Game.SBankSectionEvent" => GameEventType.SBankSectionEvent,
+            "NNet.Game.SBankSignatureEvent" => GameEventType.SBankSignatureEvent,
+            "NNet.Game.SBankValueEvent" => GameEventType.SBankValueEvent,
+            "NNet.Game.SCameraUpdateEvent" => GameEventType.SCameraUpdateEvent,
+            "NNet.Game.SCmdEvent" => GameEventType.SCmdEvent,
+            "NNet.Game.SCmdUpdateTargetPointEvent" => GameEventType.SCmdUpdateTargetPointEvent,
+            "NNet.Game.SCommandManagerStateEvent" => GameEventType.SCommandManagerStateEvent,
+            "NNet.Game.SControlGroupUpdateEvent" => GameEventType.SControlGroupUpdateEvent,
+            "NNet.Game.SGameUserLeaveEvent" => GameEventType.SGameUserLeaveEvent,
+            "NNet.Game.SSelectionDeltaEvent" => GameEventType.SSelectionDeltaEvent,
+            "NNet.Game.SSetSyncLoadingTimeEvent" => GameEventType.SSetSyncLoadingTimeEvent,
+            "NNet.Game.SSetSyncPlayingTimeEvent" => GameEventType.SSetSyncPlayingTimeEvent,
+            "NNet.Game.STriggerDialogControlEvent" => GameEventType.STriggerDialogControlEvent,
+            "NNet.Game.STriggerPingEvent" => GameEventType.STriggerPingEvent,
+            "NNet.Game.STriggerSoundLengthSyncEvent" => GameEventType.STriggerSoundLengthSyncEvent,
+            "NNet.Game.SUserFinishedLoadingSyncEvent" => GameEventType.SUserFinishedLoadingSyncEvent,
+            "NNet.Game.SUserOptionsEvent" => GameEventType.SUserOptionsEvent,
+            "NNet.Game.SCmdUpdateTargetUnitEvent" => GameEventType.SCmdUpdateTargetUnitEvents,
+            "NNet.Game.STriggerKeyPressedEvent" => GameEventType.STriggerKeyPressedEvent,
+            "NNet.Game.SUnitClickEvent" => GameEventType.SUnitClickEvent,
+            "NNet.Game.SDecrementGameTimeRemainingEvent" => GameEventType.SDecrementGameTimeRemainingEvent,
+            "NNet.Game.STriggerChatMessageEvent" => GameEventType.STriggerChatMessageEvent,
+            "NNet.Game.STriggerMouseClickedEvent" => GameEventType.STriggerMouseClickedEvent,
+            "NNet.Game.STriggerSoundtrackDoneEvent" => GameEventType.STriggerSoundtrackDoneEvent,
+            "NNet.Game.SCameraSaveEvent" => GameEventType.SCameraSaveEvent,
+            "NNet.Game.STriggerCutsceneBookmarkFiredEvent" => GameEventType.STriggerCutsceneBookmarkFiredEvent,
+            "NNet.Game.STriggerCutsceneEndSceneFiredEvent" => GameEventType.STriggerCutsceneEndSceneFiredEvent,
+            "NNet.Game.STriggerSoundLengthQueryEvent" => GameEventType.STriggerSoundLengthQueryEvent,
+            "NNet.Game.STriggerSoundOffsetEvent" => GameEventType.STriggerSoundOffsetEvent,
+            "NNet.Game.STriggerTargetModeUpdateEvent" => GameEventType.STriggerTargetModeUpdateEvent,
+            "NNet.Game.STriggerTransmissionCompleteEvent" => GameEventType.STriggerTransmissionCompleteEvent,
+            "NNet.Game.SAchievementAwardedEvent" => GameEventType.SAchievementAwardedEvent,
+            "NNet.Game.STriggerTransmissionOffsetEvent" => GameEventType.STriggerTransmissionOffsetEvent,
+            "NNet.Game.STriggerButtonPressedEvent" => GameEventType.STriggerButtonPressedEvent,
+            "NNet.Game.STriggerGameMenuItemSelectedEvent" => GameEventType.STriggerGameMenuItemSelectedEvent,
+            "NNet.Game.STriggerMouseMovedEvent" => GameEventType.STriggerMouseMovedEvent,
+            _ => GameEventType.None
+        };
+    }
 
-    private static TrackerEventType GetTrackerEventType(string eventType) => eventType switch
+    private static TrackerEventType GetTrackerEventType(string eventType)
     {
-        "NNet.Replay.Tracker.SPlayerSetupEvent" => TrackerEventType.SPlayerSetupEvent,
-        "NNet.Replay.Tracker.SPlayerStatsEvent" => TrackerEventType.SPlayerStatsEvent,
-        "NNet.Replay.Tracker.SUnitBornEvent" => TrackerEventType.SUnitBornEvent,
-        "NNet.Replay.Tracker.SUnitDiedEvent" => TrackerEventType.SUnitDiedEvent,
-        "NNet.Replay.Tracker.SUnitOwnerChangeEvent" => TrackerEventType.SUnitOwnerChangeEvent,
-        "NNet.Replay.Tracker.SUnitPositionsEvent" => TrackerEventType.SUnitPositionsEvent,
-        "NNet.Replay.Tracker.SUnitTypeChangeEvent" => TrackerEventType.SUnitTypeChangeEvent,
-        "NNet.Replay.Tracker.SUpgradeEvent" => TrackerEventType.SUpgradeEvent,
-        "NNet.Replay.Tracker.SUnitInitEvent" => TrackerEventType.SUnitInitEvent,
-        "NNet.Replay.Tracker.SUnitDoneEvent" => TrackerEventType.SUnitDoneEvent,
-        _ => TrackerEventType.None
-    };
+        return eventType switch
+        {
+            "NNet.Replay.Tracker.SPlayerSetupEvent" => TrackerEventType.SPlayerSetupEvent,
+            "NNet.Replay.Tracker.SPlayerStatsEvent" => TrackerEventType.SPlayerStatsEvent,
+            "NNet.Replay.Tracker.SUnitBornEvent" => TrackerEventType.SUnitBornEvent,
+            "NNet.Replay.Tracker.SUnitDiedEvent" => TrackerEventType.SUnitDiedEvent,
+            "NNet.Replay.Tracker.SUnitOwnerChangeEvent" => TrackerEventType.SUnitOwnerChangeEvent,
+            "NNet.Replay.Tracker.SUnitPositionsEvent" => TrackerEventType.SUnitPositionsEvent,
+            "NNet.Replay.Tracker.SUnitTypeChangeEvent" => TrackerEventType.SUnitTypeChangeEvent,
+            "NNet.Replay.Tracker.SUpgradeEvent" => TrackerEventType.SUpgradeEvent,
+            "NNet.Replay.Tracker.SUnitInitEvent" => TrackerEventType.SUnitInitEvent,
+            "NNet.Replay.Tracker.SUnitDoneEvent" => TrackerEventType.SUnitDoneEvent,
+            _ => TrackerEventType.None
+        };
+    }
 
     private static GameDescription EmptyGameDescription()
-        => new(0, 0, false, 0, false, new GameOptions(false, false, false, false, false, 0, false, false, 0, false, false, 0, 0, false, false, false), 0, false, string.Empty, 0, 0, false, 0, 0, false, 0, 0, 0, 0, [], 0, 0, string.Empty, string.Empty, [], 0, 0, false);
+    {
+        return new(0, 0, false, 0, false, new GameOptions(false, false, false, false, false, 0, false, false, 0, false, false, 0, 0, false, false, false), 0, false, string.Empty, 0, 0, false, 0, 0, false, 0, 0, 0, 0, [], 0, 0, string.Empty, string.Empty, [], 0, 0, false);
+    }
 
     private struct UserInitialDataReadState : IStructFieldReader
     {

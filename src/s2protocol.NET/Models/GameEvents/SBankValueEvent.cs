@@ -1,30 +1,24 @@
 namespace s2protocol.NET.Models;
 /// <summary>Record <c>SBankValueEvent</c> SBankValueEvent</summary>
 ///
-public sealed class SBankValueEvent : GameEvent
+/// <remarks>Record <c>SBankValueEvent</c> constructor</remarks>
+///
+public sealed class SBankValueEvent(int userId,
+    int eventId,
+    int bits,
+    int gameloop,
+    string name,
+    string data,
+    int type) : GameEvent(userId, eventId, GameEventType.SBankValueEvent, bits, gameloop)
 {
-    /// <summary>Record <c>SBankValueEvent</c> constructor</summary>
-    ///
-    public SBankValueEvent(int userId,
-        int eventId,
-        int bits,
-        int gameloop,
-        string name,
-        string data,
-        int type) : base(userId, eventId, GameEventType.SBankValueEvent, bits, gameloop)
-    {
-        Name = name;
-        Data = data;
-        Type = type;
-    }
 
     /// <summary>Event Type</summary>
     ///
-    public string Name { get; }
+    public string Name { get; } = name;
     /// <summary>Event Data</summary>
     ///
-    public string Data { get; }
+    public string Data { get; } = data;
     /// <summary>Event Type</summary>
     ///
-    public int Type { get; }
+    public int Type { get; } = type;
 }

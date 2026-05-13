@@ -9,11 +9,11 @@ namespace s2protocol.NET.S2Protocol;
 /// </summary>
 public static partial class TypeInfoLoader
 {
-    private static readonly Dictionary<int, string> _protocolResourceMap = new();
+    private static readonly Dictionary<int, string> _protocolResourceMap = [];
     private static int[] _protocolVersions = [];
-    private static readonly Dictionary<int, S2ProtocolVersion> _typeInfoCache = new();
-    private static readonly object _initLock = new();
-    private static readonly object _typeInfoCacheLock = new();
+    private static readonly Dictionary<int, S2ProtocolVersion> _typeInfoCache = [];
+    private static readonly Lock _initLock = new();
+    private static readonly Lock _typeInfoCacheLock = new();
     private static int _latestProtocolVersion;
     private static volatile bool _initialized;
 
@@ -64,22 +64,14 @@ public static partial class TypeInfoLoader
     private static S2ProtocolVersion LoadResourceContent(string resourceName)
     {
         var assembly = typeof(TypeInfoLoader).Assembly;
-        using var stream = assembly.GetManifestResourceStream(resourceName);
-        if (stream == null)
-        {
-            throw new DecodeException("resource stream was null.");
-        }
-
+        using var stream = assembly.GetManifestResourceStream(resourceName) ?? throw new DecodeException("resource stream was null.");
         var compactVersion = JsonSerializer.Deserialize(
             stream,
             S2ProtocolTypeInfoJsonSerializerContext.Default.CompactProtocolVersion);
 
-        if (compactVersion is null)
-        {
-            throw new DecodeException($"Protocol resource '{resourceName}' could not be deserialized.");
-        }
-
-        return compactVersion.ToProtocolVersion();
+        return compactVersion is null
+            ? throw new DecodeException($"Protocol resource '{resourceName}' could not be deserialized.")
+            : compactVersion.ToProtocolVersion();
     }
 
     /// <summary>
@@ -91,12 +83,9 @@ public static partial class TypeInfoLoader
     {
         Initialize();
 
-        if (_latestProtocolVersion == 0)
-        {
-            throw new DecodeException("No protocol versions found.");
-        }
-
-        return LoadTypeInfos(_latestProtocolVersion);
+        return _latestProtocolVersion == 0
+            ? throw new DecodeException("No protocol versions found.")
+            : LoadTypeInfos(_latestProtocolVersion);
     }
 
     /// <summary>
@@ -147,12 +136,7 @@ public static partial class TypeInfoLoader
             index = ~index - 1;
         }
 
-        if (index < 0)
-        {
-            throw new DecodeException("No protocol resource found.");
-        }
-
-        return _protocolVersions[index];
+        return index < 0 ? throw new DecodeException("No protocol resource found.") : _protocolVersions[index];
     }
 
     [GeneratedRegex(@"protocol(\d+)\.json")]

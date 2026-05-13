@@ -1,27 +1,18 @@
 ﻿namespace s2protocol.NET.Models;
 /// <summary>Record <c>Event</c> Event baseclass</summary>
 ///
-public abstract class TrackerEvent
+public abstract class TrackerEvent(
+    int playerId,
+    int eventId,
+    TrackerEventType eventType,
+    int bits,
+    int gameloop)
 {
-    protected TrackerEvent(
-        int playerId,
-        int eventId,
-        TrackerEventType eventType,
-        int bits,
-        int gameloop)
-    {
-        PlayerId = playerId;
-        EventId = eventId;
-        EventType = eventType;
-        Bits = bits;
-        Gameloop = gameloop;
-    }
-
-    public int PlayerId { get; }
-    public int EventId { get; }
-    public TrackerEventType EventType { get; }
-    public int Bits { get; }
-    public int Gameloop { get; }
+    public int PlayerId { get; } = playerId;
+    public int EventId { get; } = eventId;
+    public TrackerEventType EventType { get; } = eventType;
+    public int Bits { get; } = bits;
+    public int Gameloop { get; } = gameloop;
 }
 
 public sealed class UnknownTrackerEvent(

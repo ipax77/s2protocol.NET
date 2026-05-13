@@ -8,8 +8,7 @@ internal static partial class Parse
     {
         if (pydic.TryGetValue("m_stats", out object? value))
         {
-            Dictionary<string, object>? statsDic = value as Dictionary<string, object>;
-            if (statsDic != null)
+            if (value is Dictionary<string, object> statsDic)
             {
                 int scoreValueVespeneUsedCurrentTechnology = GetInt(statsDic, "m_scoreValueVespeneUsedCurrentTechnology");
                 int scoreValueVespeneFriendlyFireArmy = GetInt(statsDic, "m_scoreValueVespeneFriendlyFireArmy");

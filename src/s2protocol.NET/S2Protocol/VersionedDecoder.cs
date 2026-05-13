@@ -2,18 +2,15 @@ using System.Reflection;
 
 namespace s2protocol.NET.S2Protocol;
 
-internal sealed class VersionedDecoder : S2ProtocolDecoder
+internal sealed class VersionedDecoder(byte[] contents, List<S2TypeInfo> typeinfos) : S2ProtocolDecoder
 {
-    private BitPackedBuffer _buffer;
-    private List<S2TypeInfo> _typeInfos;
+    private readonly BitPackedBuffer _buffer = new(contents);
+    private readonly List<S2TypeInfo> _typeInfos = typeinfos;
 
-    public VersionedDecoder(byte[] contents, List<S2TypeInfo> typeinfos)
+    public override string ToString()
     {
-        _buffer = new BitPackedBuffer(contents);
-        _typeInfos = typeinfos;
+        return _buffer.ToString();
     }
-
-    public override string ToString() => _buffer.ToString();
 
     public override object? Instance(int typeid)
     {
@@ -30,18 +27,19 @@ internal sealed class VersionedDecoder : S2ProtocolDecoder
         {
             return typeInfo.DecodeKind switch
             {
-                S2DecodeKind.Array => _array(typeInfo.Parameters),
-                S2DecodeKind.BitArray => _bitarray(typeInfo.Parameters),
-                S2DecodeKind.Blob => _blob(typeInfo.Parameters),
-                S2DecodeKind.Bool => _bool(typeInfo.Parameters),
-                S2DecodeKind.Choice => _choice(typeInfo.Parameters),
-                S2DecodeKind.FourCc => _fourcc(typeInfo.Parameters),
-                S2DecodeKind.Int => _int(typeInfo.Parameters),
-                S2DecodeKind.Null => _null(typeInfo.Parameters),
-                S2DecodeKind.Optional => _optional(typeInfo.Parameters),
-                S2DecodeKind.Real32 => _real32(typeInfo.Parameters),
-                S2DecodeKind.Real64 => _real64(typeInfo.Parameters),
-                S2DecodeKind.Struct => _struct(typeInfo.Parameters),
+                S2DecodeKind.Array => Vdarray(typeInfo.Parameters),
+                S2DecodeKind.BitArray => Vdbitarray(),
+                S2DecodeKind.Blob => Vdblob(),
+                S2DecodeKind.Bool => Vdbool(),
+                S2DecodeKind.Choice => Vdchoice(typeInfo.Parameters),
+                S2DecodeKind.FourCc => Vdfourcc(),
+                S2DecodeKind.Int => Vdint(),
+                S2DecodeKind.Null => Vdnull(),
+                S2DecodeKind.Optional => Vdoptional(typeInfo.Parameters),
+                S2DecodeKind.Real32 => Vdreal32(),
+                S2DecodeKind.Real64 => Vdreal64(),
+                S2DecodeKind.Struct => Vdstruct(typeInfo.Parameters),
+                S2DecodeKind.Unknown => throw new NotImplementedException(),
                 _ => throw new DecodeException(nameof(VersionedDecoder)),
             };
         }
@@ -55,18 +53,29 @@ internal sealed class VersionedDecoder : S2ProtocolDecoder
         }
     }
 
-    public override bool Done() => _buffer.Done();
-    public override long UsedBits() => _buffer.UsedBits();
-    public override void ByteAlign() => _buffer.ByteAlign();
+    public override bool Done()
+    {
+        return _buffer.Done();
+    }
 
-    private void _expect_skip(int expected)
+    public override long UsedBits()
+    {
+        return _buffer.UsedBits();
+    }
+
+    public override void ByteAlign()
+    {
+        _buffer.ByteAlign();
+    }
+
+    private void Vdexpect_skip(int expected)
     {
         var bits = _buffer.ReadBits(8);
         if (bits != expected)
             throw new DecodeException(nameof(VersionedDecoder));
     }
 
-    private long _vint()
+    private long Vdvint()
     {
         var b = _buffer.ReadBits(8);
         bool negative = (b & 1) != 0;
@@ -76,23 +85,23 @@ internal sealed class VersionedDecoder : S2ProtocolDecoder
         while ((b & 0x80) != 0)
         {
             b = _buffer.ReadBits(8);
-            result |= ((long)(b & 0x7F)) << bits;
+            result |= (b & 0x7F) << bits;
             bits += 7;
         }
 
         return negative ? -result : result;
     }
 
-    private List<object?> _array(IDecodeParameter[] decodeParameters)
+    private List<object?> Vdarray(IDecodeParameter[] decodeParameters)
     {
         var list = new List<object?>();
         if (decodeParameters.Length == 2
-            && decodeParameters[0] is BoundsParameter bounds
+            && decodeParameters[0] is BoundsParameter
             && decodeParameters[1] is TypeIdParameter typeParam
         )
         {
-            _expect_skip(0);
-            long length = _vint();
+            Vdexpect_skip(0);
+            long length = Vdvint();
             for (long i = 0; i < length; i++)
             {
                 list.Add(Instance(typeParam.TypeId));
@@ -101,40 +110,40 @@ internal sealed class VersionedDecoder : S2ProtocolDecoder
         return list;
     }
 
-    private (long, byte[]) _bitarray(IDecodeParameter[] decodeParameters)
+    private (long, byte[]) Vdbitarray()
     {
-        _expect_skip(1);
-        long length = _vint();
+        Vdexpect_skip(1);
+        long length = Vdvint();
         long byteLength = (length + 7) / 8;
         return (length, _buffer.ReadAlignedBytes(byteLength));
     }
 
-    private byte[] _blob(IDecodeParameter[] decodeParameters)
+    private byte[] Vdblob()
     {
-        _expect_skip(2);
-        long length = _vint();
+        Vdexpect_skip(2);
+        long length = Vdvint();
         return _buffer.ReadAlignedBytes(length);
     }
 
-    private bool _bool(IDecodeParameter[] decodeParameters)
+    private bool Vdbool()
     {
-        _expect_skip(6);
+        Vdexpect_skip(6);
         return _buffer.ReadBits(8) != 0;
     }
 
-    private Dictionary<string, object?> _choice(IDecodeParameter[] decodeParameters)
+    private Dictionary<string, object?> Vdchoice(IDecodeParameter[] decodeParameters)
     {
         //BoundsParameter bounds, Dictionary<long, DecodeChoice> fields
         if (decodeParameters.Length == 2
-            && decodeParameters[0] is BoundsParameter bounds
+            && decodeParameters[0] is BoundsParameter
             && decodeParameters[1] is ChoiceParameter choiceParam)
         {
 
-            _expect_skip(3);
-            long tag = _vint();
+            Vdexpect_skip(3);
+            long tag = Vdvint();
             if (!choiceParam.Choices.TryGetValue(tag, out DecodeChoice? field))
             {
-                _skip_instance();
+                Vdskip_instance();
                 return [];
             }
 
@@ -143,62 +152,60 @@ internal sealed class VersionedDecoder : S2ProtocolDecoder
         return [];
     }
 
-    private byte[] _fourcc(IDecodeParameter[] decodeParameters)
+    private byte[] Vdfourcc()
     {
-        _expect_skip(7);
+        Vdexpect_skip(7);
         return _buffer.ReadAlignedBytes(4);
     }
 
-    private long _int(IDecodeParameter[] decodeParameters)
+    private long Vdint()
     {
-        _expect_skip(9);
-        return _vint();
+        Vdexpect_skip(9);
+        return Vdvint();
     }
 
-    private static object? _null(IDecodeParameter[] decodeParameters) => null;
-
-    private object? _optional(IDecodeParameter[] decodeParameters)
+    private static object? Vdnull()
     {
-        _expect_skip(4);
+        return null;
+    }
+
+    private object? Vdoptional(IDecodeParameter[] decodeParameters)
+    {
+        Vdexpect_skip(4);
         bool exists = _buffer.ReadBits(8) != 0;
-        if (decodeParameters.Length == 1
-            && decodeParameters[0] is TypeIdParameter typeParam)
-        {
-            return exists ? Instance(typeParam.TypeId) : null;
-        }
-        else
-        {
-            throw new NotSupportedException("Optional without TypeIdParameter is not supported.");
-        }
+        return decodeParameters.Length == 1
+            && decodeParameters[0] is TypeIdParameter typeParam
+            ? exists ? Instance(typeParam.TypeId) : null
+            : throw new NotSupportedException("Optional without TypeIdParameter is not supported.");
     }
 
-    private float _real32(IDecodeParameter[] decodeParameters)
+    private float Vdreal32()
     {
-        _expect_skip(7);
+        Vdexpect_skip(7);
         var bytes = _buffer.ReadAlignedBytes(4);
         if (BitConverter.IsLittleEndian) Array.Reverse(bytes);
         return BitConverter.ToSingle(bytes, 0);
     }
 
-    private double _real64(IDecodeParameter[] decodeParameters)
+    private double Vdreal64()
     {
-        _expect_skip(8);
+        Vdexpect_skip(8);
         var bytes = _buffer.ReadAlignedBytes(8);
         if (BitConverter.IsLittleEndian) Array.Reverse(bytes);
         return BitConverter.ToDouble(bytes, 0);
     }
 
-    private object? _struct(IDecodeParameter[] decodeParameters)
+    private object? Vdstruct(IDecodeParameter[] decodeParameters)
     {
         if (decodeParameters.Length == 1 && decodeParameters[0] is FieldListParameter fieldListParam)
         {
-            _expect_skip(5);
+            Vdexpect_skip(5);
             var result = new Dictionary<string, object?>();
-            long length = _vint();
+            long length = Vdvint();
 
             for (long i = 0; i < length; i++)
             {
-                long tag = _vint();
+                long tag = Vdvint();
                 if (fieldListParam.FieldsByTag.TryGetValue(tag, out var field))
                 {
                     if (field.Name == "__parent")
@@ -218,7 +225,7 @@ internal sealed class VersionedDecoder : S2ProtocolDecoder
                 }
                 else
                 {
-                    _skip_instance();
+                    Vdskip_instance();
                 }
             }
 
@@ -227,7 +234,7 @@ internal sealed class VersionedDecoder : S2ProtocolDecoder
         return null;
     }
 
-    private void _skip_instance()
+    private void Vdskip_instance()
     {
         var skip = _buffer.ReadBits(8);
 
@@ -235,57 +242,57 @@ internal sealed class VersionedDecoder : S2ProtocolDecoder
         {
             case 0: // array
                 {
-                    long length = _vint();
+                    long length = Vdvint();
                     for (long i = 0; i < length; i++)
-                        _skip_instance();
+                        Vdskip_instance();
                     break;
                 }
             case 1: // bitblob
                 {
-                    long length = _vint();
+                    long length = Vdvint();
                     long byteLength = (length + 7) / 8;
-                    _buffer.ReadAlignedBytes(byteLength);
+                    _ = _buffer.ReadAlignedBytes(byteLength);
                     break;
                 }
             case 2: // blob
                 {
-                    long length = _vint();
-                    _buffer.ReadAlignedBytes(length);
+                    long length = Vdvint();
+                    _ = _buffer.ReadAlignedBytes(length);
                     break;
                 }
             case 3: // choice
                 {
-                    _vint(); // tag
-                    _skip_instance();
+                    _ = Vdvint(); // tag
+                    Vdskip_instance();
                     break;
                 }
             case 4: // optional
                 {
                     bool exists = _buffer.ReadBits(8) != 0;
-                    if (exists) _skip_instance();
+                    if (exists) Vdskip_instance();
                     break;
                 }
             case 5: // struct
                 {
-                    long length = _vint();
+                    long length = Vdvint();
                     for (long i = 0; i < length; i++)
                     {
-                        _vint(); // tag
-                        _skip_instance();
+                        _ = Vdvint(); // tag
+                        Vdskip_instance();
                     }
                     break;
                 }
             case 6: // u8
-                _buffer.ReadAlignedBytes(1);
+                _ = _buffer.ReadAlignedBytes(1);
                 break;
             case 7: // u32
-                _buffer.ReadAlignedBytes(4);
+                _ = _buffer.ReadAlignedBytes(4);
                 break;
             case 8: // u64
-                _buffer.ReadAlignedBytes(8);
+                _ = _buffer.ReadAlignedBytes(8);
                 break;
             case 9: // vint
-                _vint();
+                _ = Vdvint();
                 break;
             default:
                 throw new DecodeException(nameof(VersionedDecoder));

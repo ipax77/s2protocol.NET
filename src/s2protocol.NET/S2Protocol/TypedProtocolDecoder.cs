@@ -23,9 +23,20 @@ internal abstract class TypedProtocolDecoder(ReadOnlyMemory<byte> contents, List
     protected readonly BitPackedBuffer Buffer = new(contents);
     private readonly List<S2TypeInfo> _typeInfos = typeInfos;
 
-    public bool Done() => Buffer.Done();
-    public long UsedBits() => Buffer.UsedBits();
-    public void ByteAlign() => Buffer.ByteAlign();
+    public bool Done()
+    {
+        return Buffer.Done();
+    }
+
+    public long UsedBits()
+    {
+        return Buffer.UsedBits();
+    }
+
+    public void ByteAlign()
+    {
+        Buffer.ByteAlign();
+    }
 
     public int ReadInt(int typeId)
     {
@@ -35,12 +46,9 @@ internal abstract class TypedProtocolDecoder(ReadOnlyMemory<byte> contents, List
 
     public int? ReadNullableInt(int typeId)
     {
-        if (GetKind(typeId) != S2DecodeKind.Optional)
-        {
-            return ReadInt(typeId);
-        }
-
-        return TryReadOptionalTypeId(typeId, out int innerTypeId)
+        return GetKind(typeId) != S2DecodeKind.Optional
+            ? ReadInt(typeId)
+            : TryReadOptionalTypeId(typeId, out int innerTypeId)
             ? ReadInt(innerTypeId)
             : null;
     }
@@ -48,6 +56,7 @@ internal abstract class TypedProtocolDecoder(ReadOnlyMemory<byte> contents, List
     public long ReadLong(int typeId)
     {
         S2TypeInfo typeInfo = GetTypeInfo(typeId);
+#pragma warning disable IDE0072 // Add missing cases
         return typeInfo.DecodeKind switch
         {
             S2DecodeKind.Int => ReadIntValue((BoundsParameter)typeInfo.Parameters[0]),
@@ -58,16 +67,14 @@ internal abstract class TypedProtocolDecoder(ReadOnlyMemory<byte> contents, List
             S2DecodeKind.Null => 0,
             _ => throw new DecodeException($"Type {typeId} is not numeric."),
         };
+#pragma warning restore IDE0072 // Add missing cases
     }
 
     public long? ReadNullableLong(int typeId)
     {
-        if (GetKind(typeId) != S2DecodeKind.Optional)
-        {
-            return ReadLong(typeId);
-        }
-
-        return TryReadOptionalTypeId(typeId, out int innerTypeId)
+        return GetKind(typeId) != S2DecodeKind.Optional
+            ? ReadLong(typeId)
+            : TryReadOptionalTypeId(typeId, out int innerTypeId)
             ? ReadLong(innerTypeId)
             : null;
     }
@@ -75,17 +82,20 @@ internal abstract class TypedProtocolDecoder(ReadOnlyMemory<byte> contents, List
     public bool ReadBool(int typeId)
     {
         S2TypeInfo typeInfo = GetTypeInfo(typeId);
+#pragma warning disable IDE0072 // Add missing cases
         return typeInfo.DecodeKind switch
         {
             S2DecodeKind.Bool => ReadBoolValue(),
             S2DecodeKind.Optional => ReadOptionalBool(typeId),
             _ => ReadLong(typeId) != 0,
         };
+#pragma warning restore IDE0072 // Add missing cases
     }
 
     public string ReadString(int typeId)
     {
         S2TypeInfo typeInfo = GetTypeInfo(typeId);
+#pragma warning disable IDE0072 // Add missing cases
         return typeInfo.DecodeKind switch
         {
             S2DecodeKind.Blob => Encoding.UTF8.GetString(ReadBlobValue((BoundsParameter)typeInfo.Parameters[0])),
@@ -96,16 +106,14 @@ internal abstract class TypedProtocolDecoder(ReadOnlyMemory<byte> contents, List
             S2DecodeKind.Null => string.Empty,
             _ => ReadLong(typeId).ToString(System.Globalization.CultureInfo.InvariantCulture),
         };
+#pragma warning restore IDE0072 // Add missing cases
     }
 
     public string? ReadNullableString(int typeId)
     {
-        if (GetKind(typeId) != S2DecodeKind.Optional)
-        {
-            return ReadString(typeId);
-        }
-
-        return TryReadOptionalTypeId(typeId, out int innerTypeId)
+        return GetKind(typeId) != S2DecodeKind.Optional
+            ? ReadString(typeId)
+            : TryReadOptionalTypeId(typeId, out int innerTypeId)
             ? ReadString(innerTypeId)
             : null;
     }
@@ -132,20 +140,14 @@ internal abstract class TypedProtocolDecoder(ReadOnlyMemory<byte> contents, List
     public List<int> ReadIntList(int typeId)
     {
         S2TypeInfo typeInfo = GetTypeInfo(typeId);
-        if (typeInfo.DecodeKind == S2DecodeKind.Optional)
-        {
-            return TryReadOptionalTypeId(typeId, out int innerTypeId)
+        return typeInfo.DecodeKind == S2DecodeKind.Optional
+            ? TryReadOptionalTypeId(typeId, out int innerTypeId)
                 ? ReadIntList(innerTypeId)
-                : [];
-        }
-
-        if (typeInfo.DecodeKind != S2DecodeKind.Array
-            || typeInfo.Parameters is not [BoundsParameter bounds, TypeIdParameter itemType])
-        {
-            throw new DecodeException($"Type {typeId} is not an array.");
-        }
-
-        return ReadIntListItems(bounds, itemType.TypeId);
+                : []
+            : typeInfo.DecodeKind != S2DecodeKind.Array
+            || typeInfo.Parameters is not [BoundsParameter bounds, TypeIdParameter itemType]
+            ? throw new DecodeException($"Type {typeId} is not an array.")
+            : ReadIntListItems(bounds, itemType.TypeId);
     }
 
     public List<string> ReadStringList(int typeId)
@@ -245,13 +247,13 @@ internal abstract class TypedProtocolDecoder(ReadOnlyMemory<byte> contents, List
                 }
                 break;
             case S2DecodeKind.BitArray:
-                ReadBitArrayValue((BoundsParameter)typeInfo.Parameters[0]);
+                _ = ReadBitArrayValue((BoundsParameter)typeInfo.Parameters[0]);
                 break;
             case S2DecodeKind.Blob:
-                ReadBlobValue((BoundsParameter)typeInfo.Parameters[0]);
+                _ = ReadBlobValue((BoundsParameter)typeInfo.Parameters[0]);
                 break;
             case S2DecodeKind.Bool:
-                ReadBoolValue();
+                _ = ReadBoolValue();
                 break;
             case S2DecodeKind.Choice:
                 if (typeInfo.Parameters is [BoundsParameter choiceBounds, ChoiceParameter choices])
@@ -261,10 +263,10 @@ internal abstract class TypedProtocolDecoder(ReadOnlyMemory<byte> contents, List
                 }
                 break;
             case S2DecodeKind.FourCc:
-                ReadFourCcValue();
+                _ = ReadFourCcValue();
                 break;
             case S2DecodeKind.Int:
-                ReadIntValue((BoundsParameter)typeInfo.Parameters[0]);
+                _ = ReadIntValue((BoundsParameter)typeInfo.Parameters[0]);
                 break;
             case S2DecodeKind.Null:
                 break;
@@ -275,10 +277,10 @@ internal abstract class TypedProtocolDecoder(ReadOnlyMemory<byte> contents, List
                 }
                 break;
             case S2DecodeKind.Real32:
-                ReadReal32Value();
+                _ = ReadReal32Value();
                 break;
             case S2DecodeKind.Real64:
-                ReadReal64Value();
+                _ = ReadReal64Value();
                 break;
             case S2DecodeKind.Struct:
                 if (typeInfo.Parameters is [FieldListParameter fieldList])
@@ -287,21 +289,21 @@ internal abstract class TypedProtocolDecoder(ReadOnlyMemory<byte> contents, List
                     ReadStructFields(fieldList, ref reader);
                 }
                 break;
+            case S2DecodeKind.Unknown:
+                break;
             default:
                 throw new DecodeException($"Unknown type {typeId}.");
         }
     }
 
-    protected S2DecodeKind GetKind(int typeId) => GetTypeInfo(typeId).DecodeKind;
+    protected S2DecodeKind GetKind(int typeId)
+    {
+        return GetTypeInfo(typeId).DecodeKind;
+    }
 
     protected S2TypeInfo GetTypeInfo(int typeId)
     {
-        if (typeId < 0 || typeId >= _typeInfos.Count)
-        {
-            throw new DecodeException($"Invalid type id {typeId}.");
-        }
-
-        return _typeInfos[typeId];
+        return typeId < 0 || typeId >= _typeInfos.Count ? throw new DecodeException($"Invalid type id {typeId}.") : _typeInfos[typeId];
     }
 
     protected abstract long ReadIntValue(BoundsParameter bounds);
@@ -330,7 +332,9 @@ internal abstract class TypedProtocolDecoder(ReadOnlyMemory<byte> contents, List
     }
 
     private long ReadOptionalLong(int typeId)
-        => TryReadOptionalTypeId(typeId, out int innerTypeId) ? ReadLong(innerTypeId) : 0;
+    {
+        return TryReadOptionalTypeId(typeId, out int innerTypeId) ? ReadLong(innerTypeId) : 0;
+    }
 
     private long ReadFirstStructLong(int typeId)
     {
@@ -340,7 +344,9 @@ internal abstract class TypedProtocolDecoder(ReadOnlyMemory<byte> contents, List
     }
 
     private bool ReadOptionalBool(int typeId)
-        => TryReadOptionalTypeId(typeId, out int innerTypeId) && ReadBool(innerTypeId);
+    {
+        return TryReadOptionalTypeId(typeId, out int innerTypeId) && ReadBool(innerTypeId);
+    }
 
     private string ReadChoiceString(int typeId)
     {
@@ -350,7 +356,9 @@ internal abstract class TypedProtocolDecoder(ReadOnlyMemory<byte> contents, List
     }
 
     private string ReadOptionalString(int typeId)
-        => TryReadOptionalTypeId(typeId, out int innerTypeId) ? ReadString(innerTypeId) : string.Empty;
+    {
+        return TryReadOptionalTypeId(typeId, out int innerTypeId) ? ReadString(innerTypeId) : string.Empty;
+    }
 
     private string ReadFirstStructString(int typeId)
     {
@@ -428,7 +436,7 @@ internal abstract class TypedProtocolDecoder(ReadOnlyMemory<byte> contents, List
 
     private struct SkipArrayItemReader : IArrayItemReader
     {
-        public bool ReadItem(TypedProtocolDecoder decoder, int itemTypeId)
+        public readonly bool ReadItem(TypedProtocolDecoder decoder, int itemTypeId)
         {
             decoder.SkipType(itemTypeId);
             return true;
@@ -437,7 +445,7 @@ internal abstract class TypedProtocolDecoder(ReadOnlyMemory<byte> contents, List
 
     private struct SkipChoiceHandler : IChoiceHandler
     {
-        public bool HandleChoice(TypedProtocolDecoder decoder, string name, int choiceTypeId)
+        public readonly bool HandleChoice(TypedProtocolDecoder decoder, string name, int choiceTypeId)
         {
             decoder.SkipType(choiceTypeId);
             return true;
@@ -446,7 +454,7 @@ internal abstract class TypedProtocolDecoder(ReadOnlyMemory<byte> contents, List
 
     private struct SkipStructFieldReader : IStructFieldReader
     {
-        public bool ReadField(TypedProtocolDecoder decoder, string name, int fieldTypeId)
+        public readonly bool ReadField(TypedProtocolDecoder decoder, string name, int fieldTypeId)
         {
             decoder.SkipType(fieldTypeId);
             return true;
@@ -466,9 +474,14 @@ internal sealed class BitPackedTypedDecoder(ReadOnlyMemory<byte> contents, List<
     : TypedProtocolDecoder(contents, typeInfos)
 {
     protected override long ReadIntValue(BoundsParameter bounds)
-        => bounds.Min + Buffer.ReadBits((int)bounds.Max);
+    {
+        return bounds.Min + Buffer.ReadBits((int)bounds.Max);
+    }
 
-    protected override bool ReadBoolValue() => Buffer.ReadBits(1) != 0;
+    protected override bool ReadBoolValue()
+    {
+        return Buffer.ReadBits(1) != 0;
+    }
 
     protected override ReadOnlySpan<byte> ReadBlobValue(BoundsParameter bounds)
     {
@@ -476,7 +489,10 @@ internal sealed class BitPackedTypedDecoder(ReadOnlyMemory<byte> contents, List<
         return Buffer.ReadAlignedSpan(length);
     }
 
-    protected override ReadOnlySpan<byte> ReadFourCcValue() => Buffer.ReadUnalignedBytes(4);
+    protected override ReadOnlySpan<byte> ReadFourCcValue()
+    {
+        return Buffer.ReadUnalignedBytes(4);
+    }
 
     protected override KeyValuePair<int, BigInteger> ReadBitArrayValue(BoundsParameter bounds)
     {
@@ -801,14 +817,14 @@ internal sealed class VersionedTypedDecoder(ReadOnlyMemory<byte> contents, List<
                 {
                     long length = VInt();
                     long byteLength = (length + 7) / 8;
-                    Buffer.ReadAlignedSpan(byteLength);
+                    _ = Buffer.ReadAlignedSpan(byteLength);
                     break;
                 }
             case 2:
-                Buffer.ReadAlignedSpan(VInt());
+                _ = Buffer.ReadAlignedSpan(VInt());
                 break;
             case 3:
-                VInt();
+                _ = VInt();
                 SkipInstance();
                 break;
             case 4:
@@ -822,22 +838,22 @@ internal sealed class VersionedTypedDecoder(ReadOnlyMemory<byte> contents, List<
                     long length = VInt();
                     for (long i = 0; i < length; i++)
                     {
-                        VInt();
+                        _ = VInt();
                         SkipInstance();
                     }
                     break;
                 }
             case 6:
-                Buffer.ReadAlignedSpan(1);
+                _ = Buffer.ReadAlignedSpan(1);
                 break;
             case 7:
-                Buffer.ReadAlignedSpan(4);
+                _ = Buffer.ReadAlignedSpan(4);
                 break;
             case 8:
-                Buffer.ReadAlignedSpan(8);
+                _ = Buffer.ReadAlignedSpan(8);
                 break;
             case 9:
-                VInt();
+                _ = VInt();
                 break;
             default:
                 throw new DecodeException(nameof(VersionedTypedDecoder));

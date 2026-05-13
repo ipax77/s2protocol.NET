@@ -1,24 +1,19 @@
 namespace s2protocol.NET.Models;
 /// <summary>Record <c>STriggerKeyPressedEvent</c> STriggerKeyPressedEvent</summary>
 ///
-public sealed class STriggerKeyPressedEvent : GameEvent
+/// <remarks>Record <c>STriggerKeyPressedEvent</c> constructor</remarks>
+///
+public sealed class STriggerKeyPressedEvent(int userId,
+    int eventId,
+    int bits,
+    int gameloop,
+    int flags,
+    int key) : GameEvent(userId, eventId, GameEventType.STriggerKeyPressedEvent, bits, gameloop)
 {
-    /// <summary>Record <c>STriggerKeyPressedEvent</c> constructor</summary>
-    ///
-    public STriggerKeyPressedEvent(int userId,
-        int eventId,
-        int bits,
-        int gameloop,
-        int flags,
-        int key) : base(userId, eventId, GameEventType.STriggerKeyPressedEvent, bits, gameloop)
-    {
-        Flags = flags;
-        Key = key;
-    }
     /// <summary>Event Flags</summary>
     ///
-    public int Flags { get; }
+    public int Flags { get; } = flags;
     /// <summary>Event Key</summary>
     ///
-    public int Key { get; }
+    public int Key { get; } = key;
 }

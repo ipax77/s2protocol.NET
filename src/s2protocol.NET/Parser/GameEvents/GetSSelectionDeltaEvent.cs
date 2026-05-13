@@ -19,8 +19,8 @@ internal static partial class Parse
             {
 
                 List<int> addUnitTags = GetIntList(deltaDic, "m_addUnitTags");
-                List<SelectionDeltaEventDeltaSubGroup> subgroups = new();
-                List<int> zeroIndices = new();
+                List<SelectionDeltaEventDeltaSubGroup> subgroups = [];
+                List<int> zeroIndices = [];
 
                 if (deltaDic.TryGetValue("m_addSubgroups", out object? subGroups))
                 {
@@ -58,6 +58,6 @@ internal static partial class Parse
                 return new SelectionDeltaEventDelta(addUnitTags, subgroups, zeroIndices, subgroupIndex);
             }
         }
-        return new SelectionDeltaEventDelta(new List<int>(), new List<SelectionDeltaEventDeltaSubGroup>(), new List<int>(), 0);
+        return new SelectionDeltaEventDelta([], [], [], 0);
     }
 }

@@ -14,7 +14,7 @@ internal static partial class Parse
 
     private static List<AttributeEventScope> GetAttributeScopes(Dictionary<string, object> attrDic)
     {
-        List<AttributeEventScope> scopesList = new List<AttributeEventScope>();
+        List<AttributeEventScope> scopesList = [];
 
         if (attrDic.TryGetValue("scopes", out object? scopes))
         {
@@ -36,7 +36,7 @@ internal static partial class Parse
 
     private static List<AttributeEventScope> GetAttributeScopes(int scope, Dictionary<string, object> scopeDic)
     {
-        List<AttributeEventScope> scopes = new();
+        List<AttributeEventScope> scopes = [];
         foreach (var ent in scopeDic)
         {
             if (!int.TryParse(ent.Key, out int scopeId) && scopeId == 0)
