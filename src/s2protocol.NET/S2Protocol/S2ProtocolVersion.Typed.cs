@@ -580,6 +580,8 @@ public sealed partial record S2ProtocolVersion
                 case TrackerEventType.SUnitDoneEvent:
                     unitDoneEvents.Add(ReadSUnitDoneEvent(decoder, decodedEvent.TypeId, decodedEvent.EventId, decodedEvent.Bits, decodedEvent.Gameloop));
                     break;
+                case TrackerEventType.None:
+                    break;
                 default:
                     decoder.SkipType(decodedEvent.TypeId);
                     break;

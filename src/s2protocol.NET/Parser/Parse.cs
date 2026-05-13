@@ -7,40 +7,18 @@ internal static partial class Parse
 {
     internal static string GetString(Dictionary<string, object> pydic, string property)
     {
-        if (pydic.TryGetValue(property, out object? value))
-        {
-            if (value != null && value.GetType() == typeof(byte[]))
-            {
-                if (value is byte[] b)
-                    return Encoding.UTF8.GetString(b);
-                else
-                    return "";
-            }
-            else
-            {
-                return value?.ToString() ?? "";
-            }
-        }
-        else return "";
+        return pydic.TryGetValue(property, out object? value)
+            ? value != null && value.GetType() == typeof(byte[])
+                ? value is byte[] b ? Encoding.UTF8.GetString(b) : ""
+                : value?.ToString() ?? ""
+            : "";
     }
 
     internal static string? GetNullableString(Dictionary<string, object> pydic, string property)
     {
-        if (pydic.TryGetValue(property, out object? value))
-        {
-            if (value != null && value.GetType() == typeof(byte[]))
-            {
-                if (value is byte[] b)
-                    return Encoding.UTF8.GetString(b);
-                else
-                    return null;
-            }
-            else
-            {
-                return value?.ToString();
-            }
-        }
-        else return null;
+        return pydic.TryGetValue(property, out object? value)
+            ? value != null && value.GetType() == typeof(byte[]) ? value is byte[] b ? Encoding.UTF8.GetString(b) : null : (value?.ToString())
+            : null;
     }
 
     internal static int GetInt(Dictionary<string, object> pydic, string property)
@@ -50,22 +28,11 @@ internal static partial class Parse
             if (value != null && value.GetType() == typeof(Int32))
             {
                 int? i = value as int?;
-                if (i != null)
-                {
-                    return i.Value;
-                }
-                else
-                {
-                    return 0;
-                }
-            }
-            else if (value != null && value.GetType() == typeof(Int64))
-            {
-                return (int)(long)value;
+                return i != null ? i.Value : 0;
             }
             else
             {
-                return 0;
+                return value != null && value.GetType() == typeof(Int64) ? (int)(long)value : 0;
             }
         }
         else
@@ -81,14 +48,7 @@ internal static partial class Parse
             if (value != null && value.GetType() == typeof(Int32))
             {
                 int? i = value as int?;
-                if (i != null)
-                {
-                    return i.Value;
-                }
-                else
-                {
-                    return null;
-                }
+                return i;
             }
             else if (value != null && value.GetType() == typeof(Int64))
             {
@@ -114,78 +74,28 @@ internal static partial class Parse
 
     internal static long GetBigInt(Dictionary<string, object> pydic, string property)
     {
-        if (pydic.TryGetValue(property, out object? value))
-        {
-            if (value != null)
-            {
-                if (value.GetType() == typeof(BigInteger))
-                {
-                    return (long)(BigInteger)value;
-                }
-                else if (value.GetType() == typeof(Int32))
-                {
-                    return (int)value;
-                }
-                else if (value.GetType() == typeof(Int64))
-                {
-                    return (long)value;
-                }
-                else if (value.GetType() == typeof(int))
-                {
-                    return (int)value;
-                }
-                else
-                {
-                    return 0;
-                }
-            }
-            else
-            {
-                return 0;
-            }
-        }
-        else
-        {
-            return 0;
-        }
+        return pydic.TryGetValue(property, out object? value)
+            ? value != null
+                ? value.GetType() == typeof(BigInteger)
+                    ? (long)(BigInteger)value
+                    : value.GetType() == typeof(Int32)
+                        ? (int)value
+                        : value.GetType() == typeof(Int64) ? (long)value : value.GetType() == typeof(int) ? (int)value : 0
+                : 0
+            : 0;
     }
 
     internal static long? GetNullableBigInt(Dictionary<string, object> pydic, string property)
     {
-        if (pydic.TryGetValue(property, out object? value))
-        {
-            if (value != null)
-            {
-                if (value.GetType() == typeof(BigInteger))
-                {
-                    return (long)(BigInteger)value;
-                }
-                else if (value.GetType() == typeof(int))
-                {
-                    return (int)value;
-                }
-                else if (value.GetType() == typeof(Int32))
-                {
-                    return (int)value;
-                }
-                else if (value.GetType() == typeof(Int64))
-                {
-                    return (long)value;
-                }
-                else
-                {
-                    return null;
-                }
-            }
-            else
-            {
-                return null;
-            }
-        }
-        else
-        {
-            return null;
-        }
+        return pydic.TryGetValue(property, out object? value)
+            ? value != null
+                ? value.GetType() == typeof(BigInteger)
+                    ? (long)(BigInteger)value
+                    : value.GetType() == typeof(int)
+                        ? (int)value
+                        : value.GetType() == typeof(Int32) ? (int)value : value.GetType() == typeof(Int64) ? (long)value : null
+                : null
+            : null;
     }
 
     internal static bool GetBool(Dictionary<string, object> pydic, string property)
@@ -195,14 +105,7 @@ internal static partial class Parse
             if (value != null && value.GetType() == typeof(bool))
             {
                 bool? b = value as bool?;
-                if (b != null)
-                {
-                    return (bool)b;
-                }
-                else
-                {
-                    return false;
-                }
+                return b != null && (bool)b;
             }
             else
             {
@@ -234,30 +137,15 @@ internal static partial class Parse
 
     internal static double GetDouble(Dictionary<string, object> pydic, string property)
     {
-        if (pydic.TryGetValue(property, out object? value))
-        {
-            if (value != null && value.GetType() == typeof(double))
-            {
-                return (double)value;
-            }
-            else if (value != null && value.GetType() == typeof(float))
-            {
-                return (float)value;
-            }
-            else if (value != null && value.GetType() == typeof(int))
-            {
-                return (int)value;
-            }
-            else if (value != null && value.GetType() == typeof(long))
-            {
-                return (long)value;
-            }
-            else
-            {
-                return 0;
-            }
-        }
-        else return 0;
+        return pydic.TryGetValue(property, out object? value)
+            ? value != null && value.GetType() == typeof(double)
+                ? (double)value
+                : value != null && value.GetType() == typeof(float)
+                    ? (double)(float)value
+                    : value != null && value.GetType() == typeof(int)
+                                    ? (int)value
+                                    : value != null && value.GetType() == typeof(long) ? (long)value : 0
+            : 0;
     }
 
     internal static List<int> GetIntList(Dictionary<string, object> pydic, string property)

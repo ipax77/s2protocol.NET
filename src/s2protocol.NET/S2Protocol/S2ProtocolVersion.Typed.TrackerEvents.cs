@@ -44,12 +44,9 @@ public sealed partial record S2ProtocolVersion
     {
         SPlayerStatsEventReadState state = default;
         decoder.ReadStruct(typeId, ref state);
-        if (!state.HasStats)
-        {
-            throw new InvalidOperationException("SPlayerStatsEvent was missing m_stats.");
-        }
-
-        return new SPlayerStatsEvent(state.PlayerId, eventId, bits, gameloop,
+        return !state.HasStats
+            ? throw new InvalidOperationException("SPlayerStatsEvent was missing m_stats.")
+            : new SPlayerStatsEvent(state.PlayerId, eventId, bits, gameloop,
             state.Stats.ScoreValueVespeneUsedCurrentTechnology,
             state.Stats.ScoreValueVespeneFriendlyFireArmy,
             state.Stats.ScoreValueMineralsFriendlyFireTechnology,

@@ -80,7 +80,7 @@ public sealed partial record S2ProtocolVersion
         // Read initial attributes
         attributes["source"] = buffer.ReadBits(8);
         attributes["mapNamespace"] = buffer.ReadBits(32);
-        var count = buffer.ReadBits(32);
+        _ = buffer.ReadBits(32);
 
         var scopes = new Dictionary<byte, Dictionary<uint, List<Dictionary<string, object>>>>();
         attributes["scopes"] = scopes;
@@ -150,18 +150,11 @@ public sealed partial record S2ProtocolVersion
             if (decodeUserId)
             {
                 var useridRaw = decoder.Instance(ReplayUserIdTypeId ?? 8);
-                if (useridRaw is int useridInt)
-                {
-                    userid = useridInt;
-                }
-                else if (useridRaw is Dictionary<string, object> useridDict)
-                {
-                    userid = Varuint32Value(useridDict);
-                }
-                else
-                {
-                    throw new InvalidCastException("userid is not an int or dictionary");
-                }
+                userid = useridRaw is int useridInt
+                    ? useridInt
+                    : useridRaw is Dictionary<string, object> useridDict
+                        ? Varuint32Value(useridDict)
+                        : throw new InvalidCastException("userid is not an int or dictionary");
             }
 
             var eventidRaw = decoder.Instance(eventIdTypeId);

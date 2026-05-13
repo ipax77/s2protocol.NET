@@ -46,7 +46,7 @@ internal static partial class Parse
         {
             if (pydic["m_playerList"] is ICollection<object> plDics)
             {
-                foreach (Dictionary<string, object> plDic in plDics)
+                foreach (Dictionary<string, object> plDic in plDics.Cast<Dictionary<string, object>>())
                 {
                     if (plDic != null)
                     {

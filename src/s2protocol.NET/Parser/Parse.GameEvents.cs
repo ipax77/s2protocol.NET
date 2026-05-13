@@ -64,7 +64,7 @@ internal static partial class Parse
                     GameEventType.STriggerGameMenuItemSelectedEvent => GetSTriggerGameMenuItemSelectedEvent(gameDic, gameEvent),
                     GameEventType.STriggerMouseMovedEvent => GetSTriggerMouseMovedEvent(gameDic, gameEvent),
                     GameEventType.None => throw new NotImplementedException(),
-                    _ => GetUnknownEvent(gameDic, gameEvent)
+                    _ => GetUnknownEvent(gameEvent)
                 };
                 gameevents.Add(detailEvent);
             }
@@ -116,7 +116,7 @@ internal static partial class Parse
             GameEventType.STriggerGameMenuItemSelectedEvent => GetSTriggerGameMenuItemSelectedEvent(gameDic, gameEvent),
             GameEventType.STriggerMouseMovedEvent => GetSTriggerMouseMovedEvent(gameDic, gameEvent),
             GameEventType.None => throw new NotImplementedException(),
-            _ => GetUnknownEvent(gameDic, gameEvent)
+            _ => GetUnknownEvent(gameEvent)
         };
     }
 
@@ -188,7 +188,7 @@ internal static partial class Parse
         return 0;
     }
 
-    private static UnknownGameEvent GetUnknownEvent(Dictionary<string, object> pydic, GameEventHeader gameEvent)
+    private static UnknownGameEvent GetUnknownEvent(GameEventHeader gameEvent)
     {
         return new UnknownGameEvent(gameEvent.UserId, gameEvent.EventId, gameEvent.Bits, gameEvent.Gameloop, gameEvent.EventTypeName);
     }

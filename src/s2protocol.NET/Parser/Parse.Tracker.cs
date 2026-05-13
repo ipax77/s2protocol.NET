@@ -67,6 +67,8 @@ internal static partial class Parse
                 case SUnitDoneEvent e:
                     unitDoneEvents.Add(e);
                     break;
+                default:
+                    break;
             }
         }
 
@@ -125,34 +127,34 @@ internal static partial class Parse
 
         foreach (var e in trackerEvents.SUnitDiedEvents)
         {
-            diedByUnitIndex.TryAdd(e.UnitIndex, e);
+            _ = diedByUnitIndex.TryAdd(e.UnitIndex, e);
         }
 
         foreach (var e in trackerEvents.SUnitDoneEvents)
         {
-            doneByUnitIndex.TryAdd(e.UnitIndex, e);
+            _ = doneByUnitIndex.TryAdd(e.UnitIndex, e);
         }
 
         foreach (var e in trackerEvents.SUnitBornEvents)
         {
-            bornByUnitTag.TryAdd(new UnitTag(e.UnitTagIndex, e.UnitTagRecycle), e);
+            _ = bornByUnitTag.TryAdd(new UnitTag(e.UnitTagIndex, e.UnitTagRecycle), e);
         }
 
         foreach (var e in trackerEvents.SUnitInitEvents)
         {
-            initByUnitTag.TryAdd(new UnitTag(e.UnitTagIndex, e.UnitTagRecycle), e);
+            _ = initByUnitTag.TryAdd(new UnitTag(e.UnitTagIndex, e.UnitTagRecycle), e);
         }
 
         foreach (var e in trackerEvents.SUnitBornEvents)
         {
-            diedByUnitIndex.TryGetValue(e.UnitIndex, out var diedEvent);
+            _ = diedByUnitIndex.TryGetValue(e.UnitIndex, out var diedEvent);
             e.SUnitDiedEvent = diedEvent;
         }
 
         foreach (var e in trackerEvents.SUnitInitEvents)
         {
-            diedByUnitIndex.TryGetValue(e.UnitIndex, out var diedEvent);
-            doneByUnitIndex.TryGetValue(e.UnitIndex, out var doneEvent);
+            _ = diedByUnitIndex.TryGetValue(e.UnitIndex, out var diedEvent);
+            _ = doneByUnitIndex.TryGetValue(e.UnitIndex, out var doneEvent);
 
             e.SUnitDiedEvent = diedEvent;
             e.SUnitDoneEvent = doneEvent;
@@ -169,8 +171,8 @@ internal static partial class Parse
                 e.KillerUnitTagIndex.Value,
                 e.KillerUnitTagRecycle.Value);
 
-            bornByUnitTag.TryGetValue(killerTag, out var bornEvent);
-            initByUnitTag.TryGetValue(killerTag, out var initEvent);
+            _ = bornByUnitTag.TryGetValue(killerTag, out var bornEvent);
+            _ = initByUnitTag.TryGetValue(killerTag, out var initEvent);
 
             e.KillerUnitBornEvent = bornEvent;
             e.KillerUnitInitEvent = initEvent;

@@ -37,7 +37,7 @@ public sealed partial class MPQArchive
         int compressedSize = checked((int)blockEntry.CompressedSize);
         int fileSize = checked((int)blockEntry.FileSize);
         int offset = (int)(blockEntry.FileOffset + _headerOffset);
-        _reader.BaseStream.Seek(offset, SeekOrigin.Begin);
+        _ = _reader.BaseStream.Seek(offset, SeekOrigin.Begin);
         byte[] rawData = _reader.ReadBytes(compressedSize);
 
         // Encrypted?
@@ -211,7 +211,7 @@ public sealed partial class MPQArchive
         int compressedSize = checked((int)blockEntry.CompressedSize);
         int fileSize = checked((int)blockEntry.FileSize);
         int offset = (int)(blockEntry.FileOffset + _headerOffset);
-        _reader.BaseStream.Seek(offset, SeekOrigin.Begin);
+        _ = _reader.BaseStream.Seek(offset, SeekOrigin.Begin);
 
         // Read raw compressed bytes
         byte[] rawData = new byte[compressedSize];
@@ -346,7 +346,7 @@ public sealed partial class MPQArchive
         var lines = text.Split(separatorArray, StringSplitOptions.RemoveEmptyEntries);
         foreach (var line in lines)
         {
-            sb.AppendLine(line);
+            _ = sb.AppendLine(line);
         }
         return sb.ToString();
     }
