@@ -262,7 +262,7 @@ internal static partial class Parse
 
     internal static List<int> GetIntList(Dictionary<string, object> pydic, string property)
     {
-        List<int> intList = new();
+        List<int> intList = [];
         if (pydic.TryGetValue(property, out object? value))
         {
             if (value != null && value.GetType() == typeof(List<object>))
@@ -297,7 +297,7 @@ internal static partial class Parse
 
     internal static List<long> GetLongList(Dictionary<string, object> pydic, string property)
     {
-        List<long> longList = new();
+        List<long> longList = [];
         if (pydic.TryGetValue(property, out object? value))
         {
             if (value != null && value.GetType() == typeof(List<object>))
@@ -372,7 +372,7 @@ internal static partial class Parse
 
     internal static List<string> GetStringList(Dictionary<string, object> pydic, string property)
     {
-        List<string> stringList = new();
+        List<string> stringList = [];
         if (pydic.TryGetValue(property, out object? value))
         {
             if (value != null && value.GetType() == typeof(List<object>))

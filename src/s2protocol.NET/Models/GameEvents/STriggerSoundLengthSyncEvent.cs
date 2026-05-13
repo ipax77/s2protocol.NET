@@ -1,14 +1,11 @@
 namespace s2protocol.NET.Models;
 /// <summary>Record <c>STriggerSoundLengthSyncEvent</c> STriggerSoundLengthSyncEvent</summary>
 ///
-public sealed class STriggerSoundLengthSyncEvent : GameEvent
+/// <remarks>Record <c>STriggerSoundLengthSyncEvent</c> constructor</remarks>
+///
+public sealed class STriggerSoundLengthSyncEvent(int userId,
+    int eventId,
+    int bits,
+    int gameloop) : GameEvent(userId, eventId, GameEventType.STriggerSoundLengthSyncEvent, bits, gameloop)
 {
-    /// <summary>Record <c>STriggerSoundLengthSyncEvent</c> constructor</summary>
-    ///
-    public STriggerSoundLengthSyncEvent(int userId,
-        int eventId,
-        int bits,
-        int gameloop) : base(userId, eventId, GameEventType.STriggerSoundLengthSyncEvent, bits, gameloop)
-    {
-    }
 }

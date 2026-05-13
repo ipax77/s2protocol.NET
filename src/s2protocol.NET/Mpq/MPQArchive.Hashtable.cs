@@ -29,7 +29,7 @@ public sealed partial class MPQArchive
         uint key = Hash($"({tableType} table)", "TABLE");
 
         long tableSize = tableEntries * 16;
-        _reader.BaseStream.Seek(tableOffset + _headerOffset, SeekOrigin.Begin);
+        _ = _reader.BaseStream.Seek(tableOffset + _headerOffset, SeekOrigin.Begin);
         byte[] encryptedData = _reader.ReadBytes((int)tableSize);
         byte[] decryptedData = DecryptTable(encryptedData, key);
 
@@ -61,7 +61,7 @@ public sealed partial class MPQArchive
             uint ch = c;
             var value = StormBuffer[(type << 8) + ch];
             seed1 = (value ^ (seed1 + seed2)) & 0xFFFFFFFF;
-            seed2 = ch + seed1 + seed2 + (seed2 << 5) + 3 & 0xFFFFFFFF;
+            seed2 = (ch + seed1 + seed2 + (seed2 << 5) + 3) & 0xFFFFFFFF;
         }
 
         return seed1;
@@ -80,7 +80,7 @@ public sealed partial class MPQArchive
             uint value = BitConverter.ToUInt32(data, i * 4);
             value = (value ^ (seed1 + seed2)) & 0xFFFFFFFF;
 
-            seed1 = ((~seed1 << 21) + 0x11111111 | (seed1 >> 11)) & 0xFFFFFFFF;
+            seed1 = (((~seed1 << 21) + 0x11111111) | (seed1 >> 11)) & 0xFFFFFFFF;
             seed2 = (value + seed2 + (seed2 << 5) + 3) & 0xFFFFFFFF;
 
             byte[] valueBytes = BitConverter.GetBytes(value);
@@ -91,6 +91,7 @@ public sealed partial class MPQArchive
     }
 
 #pragma warning disable CA1303 // Do not pass literals as localized parameters
+#pragma warning disable IDE0058 // Expression value is never used
 
     /// <summary>
     /// Returns the contents of the hash table in a formatted table.
@@ -147,3 +148,4 @@ public sealed partial class MPQArchive
     }
 }
 #pragma warning restore CA1303 // Do not pass literals as localized parameters
+#pragma warning restore IDE0058 // Expression value is never used

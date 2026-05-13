@@ -1,88 +1,71 @@
 namespace s2protocol.NET.Models;
 /// <summary>Record <c>SUserOptionsEvent</c> SUserOptionsEvent</summary>
 ///
-public sealed class SUserOptionsEvent : GameEvent
+/// <remarks>Record <c>SUserOptionsEvent</c> constructor</remarks>
+///
+public sealed class SUserOptionsEvent(int userId,
+    int eventId,
+    int bits,
+    int gameloop,
+    bool testCheatsEnabled,
+                         bool multiplayerCheatsEnabled,
+                         bool gameFullyDownloaded,
+                         string hotkeyProfile,
+                         bool useGalaxyAsserts,
+                         bool debugPauseEnabled,
+                         bool cameraFollow,
+                         bool isMapToMapTransition,
+                         int buildNum,
+                         int versionFlags,
+                         bool developmentCheatsEnabled,
+                         bool platformMac,
+                         int baseBuildNum,
+                         bool syncChecksummingEnabled) : GameEvent(userId, eventId, GameEventType.SUserOptionsEvent, bits, gameloop)
 {
-    /// <summary>Record <c>SUserOptionsEvent</c> constructor</summary>
-    ///
-    public SUserOptionsEvent(int userId,
-        int eventId,
-        int bits,
-        int gameloop,
-        bool testCheatsEnabled,
-                             bool multiplayerCheatsEnabled,
-                             bool gameFullyDownloaded,
-                             string hotkeyProfile,
-                             bool useGalaxyAsserts,
-                             bool debugPauseEnabled,
-                             bool cameraFollow,
-                             bool isMapToMapTransition,
-                             int buildNum,
-                             int versionFlags,
-                             bool developmentCheatsEnabled,
-                             bool platformMac,
-                             int baseBuildNum,
-                             bool syncChecksummingEnabled) : base(userId, eventId, GameEventType.SUserOptionsEvent, bits, gameloop)
-    {
-        TestCheatsEnabled = testCheatsEnabled;
-        MultiplayerCheatsEnabled = multiplayerCheatsEnabled;
-        GameFullyDownloaded = gameFullyDownloaded;
-        HotkeyProfile = hotkeyProfile;
-        UseGalaxyAsserts = useGalaxyAsserts;
-        DebugPauseEnabled = debugPauseEnabled;
-        CameraFollow = cameraFollow;
-        IsMapToMapTransition = isMapToMapTransition;
-        BuildNum = buildNum;
-        VersionFlags = versionFlags;
-        DevelopmentCheatsEnabled = developmentCheatsEnabled;
-        PlatformMac = platformMac;
-        BaseBuildNum = baseBuildNum;
-        SyncChecksummingEnabled = syncChecksummingEnabled;
-    }
 
 
 
     /// <summary>Event TestCheatsEnabled</summary>
     ///
-    public bool TestCheatsEnabled { get; }
+    public bool TestCheatsEnabled { get; } = testCheatsEnabled;
     /// <summary>Event MultiplayerCheatsEnabled</summary>
     ///
-    public bool MultiplayerCheatsEnabled { get; }
+    public bool MultiplayerCheatsEnabled { get; } = multiplayerCheatsEnabled;
     /// <summary>Event GameFullyDownloaded</summary>
     ///
-    public bool GameFullyDownloaded { get; }
+    public bool GameFullyDownloaded { get; } = gameFullyDownloaded;
     /// <summary>Event HotkeyProfile</summary>
     ///
-    public string HotkeyProfile { get; }
+    public string HotkeyProfile { get; } = hotkeyProfile;
     /// <summary>Event UseGalaxyAsserts</summary>
     ///
-    public bool UseGalaxyAsserts { get; }
+    public bool UseGalaxyAsserts { get; } = useGalaxyAsserts;
     /// <summary>Event DebugPauseEnabled</summary>
     ///
-    public bool DebugPauseEnabled { get; }
+    public bool DebugPauseEnabled { get; } = debugPauseEnabled;
     /// <summary>Event CameraFollow</summary>
     ///
-    public bool CameraFollow { get; }
+    public bool CameraFollow { get; } = cameraFollow;
     /// <summary>Event IsMapToMapTransition</summary>
     ///
-    public bool IsMapToMapTransition { get; }
+    public bool IsMapToMapTransition { get; } = isMapToMapTransition;
     /// <summary>Event BuildNum</summary>
     ///
-    public int BuildNum { get; }
+    public int BuildNum { get; } = buildNum;
     /// <summary>Event VersionFlags</summary>
     ///
-    public int VersionFlags { get; }
+    public int VersionFlags { get; } = versionFlags;
     /// <summary>Event DevelopmentCheatsEnabled</summary>
     ///
-    public bool DevelopmentCheatsEnabled { get; }
+    public bool DevelopmentCheatsEnabled { get; } = developmentCheatsEnabled;
     /// <summary>Event PlatformMac</summary>
     ///
-    public bool PlatformMac { get; }
+    public bool PlatformMac { get; } = platformMac;
     /// <summary>Event BaseBuildNum</summary>
     ///
-    public int BaseBuildNum { get; }
+    public int BaseBuildNum { get; } = baseBuildNum;
     /// <summary>Event SyncChecksummingEnabled</summary>
     ///
-    public bool SyncChecksummingEnabled { get; }
+    public bool SyncChecksummingEnabled { get; } = syncChecksummingEnabled;
 
 }

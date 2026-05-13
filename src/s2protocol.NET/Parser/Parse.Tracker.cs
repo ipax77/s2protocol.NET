@@ -101,6 +101,7 @@ internal static partial class Parse
             TrackerEventType.SUpgradeEvent => GetSUpgradeEvent(eventDic, header),
             TrackerEventType.SUnitInitEvent => GetSUnitInitEvent(eventDic, header),
             TrackerEventType.SUnitDoneEvent => GetSUnitDoneEvent(eventDic, header),
+            TrackerEventType.None => throw new NotImplementedException(),
             _ => GetUnknownEvent(header)
         };
     }
@@ -240,7 +241,7 @@ internal static partial class Parse
     private static SUnitPositionsEvent GetSUnitPositionsEvent(Dictionary<string, object> pydic, TrackerEventHeader header)
     {
         int firstUnitIndex = GetInt(pydic, "m_firstUnitIndex");
-        List<int> items = new();
+        List<int> items = [];
         if (pydic.ContainsKey("m_items"))
         {
             if (pydic["m_items"] is ICollection<object> nums)
@@ -359,20 +360,23 @@ internal static partial class Parse
             gameloop);
     }
 
-    private static TrackerEventType GetTrackerEventType(string eventType) => eventType switch
+    private static TrackerEventType GetTrackerEventType(string eventType)
     {
-        "NNet.Replay.Tracker.SPlayerSetupEvent" => TrackerEventType.SPlayerSetupEvent,
-        "NNet.Replay.Tracker.SPlayerStatsEvent" => TrackerEventType.SPlayerStatsEvent,
-        "NNet.Replay.Tracker.SUnitBornEvent" => TrackerEventType.SUnitBornEvent,
-        "NNet.Replay.Tracker.SUnitDiedEvent" => TrackerEventType.SUnitDiedEvent,
-        "NNet.Replay.Tracker.SUnitOwnerChangeEvent" => TrackerEventType.SUnitOwnerChangeEvent,
-        "NNet.Replay.Tracker.SUnitPositionsEvent" => TrackerEventType.SUnitPositionsEvent,
-        "NNet.Replay.Tracker.SUnitTypeChangeEvent" => TrackerEventType.SUnitTypeChangeEvent,
-        "NNet.Replay.Tracker.SUpgradeEvent" => TrackerEventType.SUpgradeEvent,
-        "NNet.Replay.Tracker.SUnitInitEvent" => TrackerEventType.SUnitInitEvent,
-        "NNet.Replay.Tracker.SUnitDoneEvent" => TrackerEventType.SUnitDoneEvent,
-        _ => TrackerEventType.None
-    };
+        return eventType switch
+        {
+            "NNet.Replay.Tracker.SPlayerSetupEvent" => TrackerEventType.SPlayerSetupEvent,
+            "NNet.Replay.Tracker.SPlayerStatsEvent" => TrackerEventType.SPlayerStatsEvent,
+            "NNet.Replay.Tracker.SUnitBornEvent" => TrackerEventType.SUnitBornEvent,
+            "NNet.Replay.Tracker.SUnitDiedEvent" => TrackerEventType.SUnitDiedEvent,
+            "NNet.Replay.Tracker.SUnitOwnerChangeEvent" => TrackerEventType.SUnitOwnerChangeEvent,
+            "NNet.Replay.Tracker.SUnitPositionsEvent" => TrackerEventType.SUnitPositionsEvent,
+            "NNet.Replay.Tracker.SUnitTypeChangeEvent" => TrackerEventType.SUnitTypeChangeEvent,
+            "NNet.Replay.Tracker.SUpgradeEvent" => TrackerEventType.SUpgradeEvent,
+            "NNet.Replay.Tracker.SUnitInitEvent" => TrackerEventType.SUnitInitEvent,
+            "NNet.Replay.Tracker.SUnitDoneEvent" => TrackerEventType.SUnitDoneEvent,
+            _ => TrackerEventType.None
+        };
+    }
 
     private readonly record struct TrackerEventHeader(
     int PlayerId,

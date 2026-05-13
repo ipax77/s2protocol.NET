@@ -14,7 +14,7 @@ internal static partial class Parse
 
     public static GameEvents GameEvents(IEnumerable<Dictionary<string, object?>> pydic)
     {
-        List<GameEvent> gameevents = new();
+        List<GameEvent> gameevents = [];
 
         foreach (var ent in pydic)
         {
@@ -63,6 +63,7 @@ internal static partial class Parse
                     GameEventType.STriggerButtonPressedEvent => GetSTriggerButtonPressedEvent(gameDic, gameEvent),
                     GameEventType.STriggerGameMenuItemSelectedEvent => GetSTriggerGameMenuItemSelectedEvent(gameDic, gameEvent),
                     GameEventType.STriggerMouseMovedEvent => GetSTriggerMouseMovedEvent(gameDic, gameEvent),
+                    GameEventType.None => throw new NotImplementedException(),
                     _ => GetUnknownEvent(gameDic, gameEvent)
                 };
                 gameevents.Add(detailEvent);
@@ -114,6 +115,7 @@ internal static partial class Parse
             GameEventType.STriggerButtonPressedEvent => GetSTriggerButtonPressedEvent(gameDic, gameEvent),
             GameEventType.STriggerGameMenuItemSelectedEvent => GetSTriggerGameMenuItemSelectedEvent(gameDic, gameEvent),
             GameEventType.STriggerMouseMovedEvent => GetSTriggerMouseMovedEvent(gameDic, gameEvent),
+            GameEventType.None => throw new NotImplementedException(),
             _ => GetUnknownEvent(gameDic, gameEvent)
         };
     }

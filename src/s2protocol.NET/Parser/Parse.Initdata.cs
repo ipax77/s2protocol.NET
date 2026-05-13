@@ -89,7 +89,7 @@ internal static partial class Parse
                     );
             }
         }
-        return new GameDescription(0, 0, false, 0, false, GetGameOptions(pydic), 0, false, "", 0, 0, false, 0, 0, false, 0, 0, 0, 0, new List<string>(), 0, 0, "", "", new List<SlotDescription>(), 0, 0, false);
+        return new GameDescription(0, 0, false, 0, false, GetGameOptions(pydic), 0, false, "", 0, 0, false, 0, 0, false, 0, 0, 0, 0, [], 0, 0, "", "", [], 0, 0, false);
     }
 
     private static GameOptions GetGameOptions(Dictionary<string, object> pydic)
@@ -139,7 +139,7 @@ internal static partial class Parse
 
     private static List<SlotDescription> GetSlotDescriptions(Dictionary<string, object> pydic)
     {
-        List<SlotDescription> slotDescscitions = new();
+        List<SlotDescription> slotDescscitions = [];
         if (pydic.ContainsKey("m_slotDescriptions"))
         {
             if (pydic["m_slotDescriptions"] is List<object> slotDescs)
@@ -199,12 +199,12 @@ internal static partial class Parse
                                       gameDuration);
             }
         }
-        return new LobbyState(0, new List<Slot>(), 0, false, 0, 0, 0, 0, 0, 0, 0);
+        return new LobbyState(0, [], 0, false, 0, 0, 0, 0, 0, 0, 0);
     }
 
     private static List<Slot> GetSlots(Dictionary<string, object> pydic)
     {
-        List<Slot> slots = new();
+        List<Slot> slots = [];
         if (pydic.ContainsKey("m_slots"))
         {
             if (pydic["m_slots"] is List<object> slotList)
@@ -286,7 +286,7 @@ internal static partial class Parse
 
     private static List<UserInitialData> GetUserInitialData(Dictionary<string, object> pydic)
     {
-        List<UserInitialData> initDatas = new();
+        List<UserInitialData> initDatas = [];
         if (pydic.ContainsKey("m_userInitialData"))
         {
             if (pydic["m_userInitialData"] is List<object> userInitalDatas)

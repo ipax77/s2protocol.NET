@@ -105,19 +105,19 @@ public sealed partial record S2ProtocolVersion
             // Ensure the scope exists
             if (!scopes.TryGetValue(scope, out var scopeDict))
             {
-                scopeDict = new Dictionary<uint, List<Dictionary<string, object>>>();
+                scopeDict = [];
                 scopes[scope] = scopeDict;
             }
             // Ensure the attribute ID list exists
             if (!scopeDict.TryGetValue((uint)attrid, out var attrList))
             {
-                attrList = new List<Dictionary<string, object>>();
+                attrList = [];
                 scopeDict[(uint)attrid] = attrList;
             }
 
             attrList.Add(value);
             {
-                scopes[scope][(uint)attrid] = new List<Dictionary<string, object>>();
+                scopes[scope][(uint)attrid] = [];
             }
 
             scopes[scope][(uint)attrid].Add(value);

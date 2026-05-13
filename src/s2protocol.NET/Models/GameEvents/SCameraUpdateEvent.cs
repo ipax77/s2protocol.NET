@@ -1,50 +1,40 @@
 namespace s2protocol.NET.Models;
 /// <summary>Record <c>SCameraUpdateEvent</c> SCameraUpdateEvent</summary>
 ///
-public sealed class SCameraUpdateEvent : GameEvent
+/// <remarks>Record <c>SCameraUpdateEvent</c> constructor</remarks>
+///
+public sealed class SCameraUpdateEvent(int userId,
+    int eventId,
+    int bits,
+    int gameloop,
+    string? reason,
+                      int? distance,
+                      long? targetX,
+                      long? targetY,
+                      int? yaw,
+                      int? pitch,
+                      bool follow) : GameEvent(userId, eventId, GameEventType.SCameraUpdateEvent, bits, gameloop)
 {
-    /// <summary>Record <c>SCameraUpdateEvent</c> constructor</summary>
-    ///
-    public SCameraUpdateEvent(int userId,
-        int eventId,
-        int bits,
-        int gameloop,
-        string? reason,
-                          int? distance,
-                          long? targetX,
-                          long? targetY,
-                          int? yaw,
-                          int? pitch,
-                          bool follow) : base(userId, eventId, GameEventType.SCameraUpdateEvent, bits, gameloop)
-    {
-        Reason = reason;
-        Distance = distance;
-        TargetX = targetX;
-        TargetY = targetY;
-        Yaw = yaw;
-        Pitch = pitch;
-        Follow = follow;
-    }
 
     /// <summary>Event Reason</summary>
     ///
-    public string? Reason { get; }
+    public string? Reason { get; } = reason;
     /// <summary>Event Distance</summary>
     ///
-    public int? Distance { get; }
+    public int? Distance { get; } = distance;
     /// <summary>Event TargetX</summary>
     ///
-    public long? TargetX { get; }
+    public long? TargetX { get; } = targetX;
     /// <summary>Event TargetY</summary>
     ///
-    public long? TargetY { get; }
+    public long? TargetY { get; } = targetY;
     /// <summary>Event Yaw</summary>
     ///
-    public int? Yaw { get; }
+    public int? Yaw { get; } = yaw;
     /// <summary>Event Pitch</summary>
     ///
-    public int? Pitch { get; }
+    public int? Pitch { get; } = pitch;
     /// <summary>Event Follow</summary>
     ///
-    public bool Follow { get; }
+    public bool Follow { get; } = follow;
 }

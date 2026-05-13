@@ -1,30 +1,24 @@
 namespace s2protocol.NET.Models;
 /// <summary>Record <c>SCmdUpdateTargetPointEvent</c> SCmdUpdateTargetPointEvent</summary>
 ///
-public sealed class SCmdUpdateTargetPointEvent : GameEvent
+/// <remarks>Record <c>SCmdUpdateTargetPointEvent</c> constructor</remarks>
+///
+public sealed class SCmdUpdateTargetPointEvent(int userId,
+    int eventId,
+    int bits,
+    int gameloop,
+    long x,
+    long y,
+    long z) : GameEvent(userId, eventId, GameEventType.SCmdUpdateTargetPointEvent, bits, gameloop)
 {
-    /// <summary>Record <c>SCmdUpdateTargetPointEvent</c> constructor</summary>
-    ///
-    public SCmdUpdateTargetPointEvent(int userId,
-        int eventId,
-        int bits,
-        int gameloop,
-        long x,
-        long y,
-        long z) : base(userId, eventId, GameEventType.SCmdUpdateTargetPointEvent, bits, gameloop)
-    {
-        TargetX = x;
-        TargetY = y;
-        TargetZ = z;
-    }
 
     /// <summary>Event TargetX</summary>
     ///
-    public long TargetX { get; }
+    public long TargetX { get; } = x;
     /// <summary>Event TargetY</summary>
     ///
-    public long TargetY { get; }
+    public long TargetY { get; } = y;
     /// <summary>Event TargetZ</summary>
     ///
-    public long TargetZ { get; }
+    public long TargetZ { get; } = z;
 }

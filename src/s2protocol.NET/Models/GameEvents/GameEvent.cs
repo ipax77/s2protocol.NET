@@ -1,35 +1,27 @@
 namespace s2protocol.NET.Models;
 /// <summary>Record <c>Event</c> Event baseclass</summary>
 ///
-public abstract class GameEvent
+/// <remarks>Record <c>GameEvent</c> base constructor</remarks>
+///
+public abstract class GameEvent(int userId, int eventId, GameEventType eventType, int bits, int gameloop)
 {
-    /// <summary>Record <c>GameEvent</c> base constructor</summary>
-    ///
-    protected GameEvent(int userId, int eventId, GameEventType eventType, int bits, int gameloop)
-    {
-        UserId = userId;
-        EventId = eventId;
-        EventType = eventType;
-        Bits = bits;
-        Gameloop = gameloop;
-    }
 
     /// <summary>Event PlayerId</summary>
     ///
-    public int UserId { get; }
+    public int UserId { get; } = userId;
 
     /// <summary>Event EventId</summary>
     ///
-    public int EventId { get; }
+    public int EventId { get; } = eventId;
     /// <summary>Event EventType</summary>
     ///
-    public GameEventType EventType { get; }
+    public GameEventType EventType { get; } = eventType;
     /// <summary>Event Bits</summary>
     ///
-    public int Bits { get; }
+    public int Bits { get; } = bits;
     /// <summary>Event Gameloop</summary>
     ///
-    public int Gameloop { get; }
+    public int Gameloop { get; } = gameloop;
 }
 
 

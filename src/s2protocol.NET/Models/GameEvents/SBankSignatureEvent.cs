@@ -1,25 +1,20 @@
 namespace s2protocol.NET.Models;
 /// <summary>Record <c>SBankSignatureEvent</c> SBankSignatureEvent</summary>
 ///
-public sealed class SBankSignatureEvent : GameEvent
+/// <remarks>Record <c>SBankSignatureEvent</c> constructor</remarks>
+///
+public sealed class SBankSignatureEvent(int userId,
+    int eventId,
+    int bits,
+    int gameloop,
+    string toonHandle,
+    ICollection<int> signature) : GameEvent(userId, eventId, GameEventType.SBankSignatureEvent, bits, gameloop)
 {
-    /// <summary>Record <c>SBankSignatureEvent</c> constructor</summary>
-    ///
-    public SBankSignatureEvent(int userId,
-        int eventId,
-        int bits,
-        int gameloop,
-        string toonHandle,
-        ICollection<int> signature) : base(userId, eventId, GameEventType.SBankSignatureEvent, bits, gameloop)
-    {
-        ToonHandle = toonHandle;
-        Signature = signature;
-    }
 
     /// <summary>Event ToonHandle</summary>
     ///
-    public string ToonHandle { get; }
+    public string ToonHandle { get; } = toonHandle;
     /// <summary>Event Signature</summary>
     ///
-    public ICollection<int> Signature { get; }
+    public ICollection<int> Signature { get; } = signature;
 }

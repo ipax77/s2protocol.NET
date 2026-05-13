@@ -41,7 +41,7 @@ internal static partial class Parse
 
     private static List<DetailsPlayer> GetDetailsPlayers(Dictionary<string, object> pydic)
     {
-        List<DetailsPlayer> players = new();
+        List<DetailsPlayer> players = [];
         if (pydic.ContainsKey("m_playerList"))
         {
             if (pydic["m_playerList"] is ICollection<object> plDics)

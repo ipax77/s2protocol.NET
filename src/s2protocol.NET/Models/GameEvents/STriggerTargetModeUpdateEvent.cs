@@ -1,30 +1,24 @@
 namespace s2protocol.NET.Models;
 /// <summary>Record <c>STriggerTargetModeUpdateEvent</c> STriggerTargetModeUpdateEvent</summary>
 ///
-public sealed class STriggerTargetModeUpdateEvent : GameEvent
+/// <remarks>Record <c>STriggerTargetModeUpdateEvent</c> constructor</remarks>
+///
+public sealed class STriggerTargetModeUpdateEvent(int userId,
+    int eventId,
+    int bits,
+    int gameloop,
+    int abilCmdIndex,
+                        int abilLink,
+                        int state) : GameEvent(userId, eventId, GameEventType.STriggerTargetModeUpdateEvent, bits, gameloop)
 {
-    /// <summary>Record <c>STriggerTargetModeUpdateEvent</c> constructor</summary>
-    ///
-    public STriggerTargetModeUpdateEvent(int userId,
-        int eventId,
-        int bits,
-        int gameloop,
-        int abilCmdIndex,
-                            int abilLink,
-                            int state) : base(userId, eventId, GameEventType.STriggerTargetModeUpdateEvent, bits, gameloop)
-    {
-        AbilCmdIndex = abilCmdIndex;
-        AbilLink = abilLink;
-        State = state;
-    }
 
     /// <summary>Event AbilCmdIndex</summary>
     ///
-    public int AbilCmdIndex { get; }
+    public int AbilCmdIndex { get; } = abilCmdIndex;
     /// <summary>Event AbilLink</summary>
     ///
-    public int AbilLink { get; }
+    public int AbilLink { get; } = abilLink;
     /// <summary>Event State</summary>
     ///
-    public int State { get; }
+    public int State { get; } = state;
 }

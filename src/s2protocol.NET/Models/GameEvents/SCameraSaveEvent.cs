@@ -1,30 +1,24 @@
 namespace s2protocol.NET.Models;
 /// <summary>Record <c>SCameraSaveEvent</c> SCameraSaveEvent</summary>
 ///
-public sealed class SCameraSaveEvent : GameEvent
+/// <remarks>Record <c>SCameraSaveEvent</c> constructor</remarks>
+///
+public sealed class SCameraSaveEvent(int userId,
+    int eventId,
+    int bits,
+    int gameloop,
+    int which,
+                        long targetX,
+                        long targetY) : GameEvent(userId, eventId, GameEventType.SCameraSaveEvent, bits, gameloop)
 {
-    /// <summary>Record <c>SCameraSaveEvent</c> constructor</summary>
-    ///
-    public SCameraSaveEvent(int userId,
-        int eventId,
-        int bits,
-        int gameloop,
-        int which,
-                            long targetX,
-                            long targetY) : base(userId, eventId, GameEventType.SCameraSaveEvent, bits, gameloop)
-    {
-        Which = which;
-        TargetX = targetX;
-        TargetY = targetY;
-    }
 
     /// <summary>Event Which</summary>
     ///
-    public int Which { get; }
+    public int Which { get; } = which;
     /// <summary>Event TargetX</summary>
     ///
-    public long TargetX { get; }
+    public long TargetX { get; } = targetX;
     /// <summary>Event TargetY</summary>
     ///
-    public long TargetY { get; }
+    public long TargetY { get; } = targetY;
 }

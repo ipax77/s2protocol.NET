@@ -2,21 +2,13 @@ using System.Globalization;
 
 namespace s2protocol.NET.S2Protocol;
 
-internal sealed class BitPackedBuffer
+internal sealed class BitPackedBuffer(ReadOnlyMemory<byte> contents, string endian = "big")
 {
-    private readonly ReadOnlyMemory<byte> _data;
+    private readonly ReadOnlyMemory<byte> _data = contents;
     private long _used;
     private int _next;
     private int _nextBits;
-    private readonly bool _bigEndian;
-
-    public BitPackedBuffer(ReadOnlyMemory<byte> contents, string endian = "big")
-    {
-        _data = contents;
-        _used = 0;
-        _nextBits = 0;
-        _bigEndian = (endian == "big");
-    }
+    private readonly bool _bigEndian = endian == "big";
 
     public override string ToString()
     {
@@ -24,14 +16,25 @@ internal sealed class BitPackedBuffer
         return $"buffer({(_nextBits > 0 ? _next : 0):x2}/{_nextBits},[{_used}]={s})";
     }
 
-    public bool Done() => _nextBits == 0 && _used >= _data.Length;
+    public bool Done()
+    {
+        return _nextBits == 0 && _used >= _data.Length;
+    }
 
-    public long UsedBits() => _used * 8 - _nextBits;
+    public long UsedBits()
+    {
+        return (_used * 8) - _nextBits;
+    }
 
-    public void ByteAlign() => _nextBits = 0;
+    public void ByteAlign()
+    {
+        _nextBits = 0;
+    }
 
     public byte[] ReadAlignedBytes(long count)
-        => ReadAlignedSpan(count).ToArray();
+    {
+        return ReadAlignedSpan(count).ToArray();
+    }
 
     public ReadOnlySpan<byte> ReadAlignedSpan(long count)
     {
@@ -43,10 +46,7 @@ internal sealed class BitPackedBuffer
         var result = _data.Span.Slice((int)_used, bytesToRead);
         _used += bytesToRead;
 
-        if (bytesToRead != count)
-            throw new DecodeException(nameof(BitPackedDecoder));
-
-        return result;
+        return bytesToRead != count ? throw new DecodeException(nameof(BitPackedDecoder)) : result;
     }
 
     public long ReadBits(int bits)
@@ -81,11 +81,11 @@ internal sealed class BitPackedBuffer
             {
                 if (_bigEndian)
                 {
-                    result |= ((long)copy << (readBits - resultBits - copyBits));
+                    result |= (long)copy << (readBits - resultBits - copyBits);
                 }
                 else
                 {
-                    result |= ((long)copy << resultBits);
+                    result |= (long)copy << resultBits;
                 }
 
                 resultBits += copyBits;
@@ -105,7 +105,7 @@ internal sealed class BitPackedBuffer
         for (int i = 0; i < count; i++)
         {
             var val = ReadBits(8);
-            if (val < 0 || val > 255)
+            if (val is < 0 or > 255)
                 throw new DecodeException("Invalid byte value");
             result[i] = (byte)val;
         }

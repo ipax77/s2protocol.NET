@@ -1,20 +1,16 @@
 namespace s2protocol.NET.Models;
 /// <summary>Record <c>UnknownGameEvent</c> UnknownGameEvent</summary>
 ///
-public sealed class UnknownGameEvent : GameEvent
+/// <remarks>Record <c>UnknownGameEvent</c> constructor</remarks>
+///
+public sealed class UnknownGameEvent(int userId,
+    int eventId,
+    int bits,
+    int gameloop,
+    string name) : GameEvent(userId, eventId, GameEventType.None, bits, gameloop)
 {
-    /// <summary>Record <c>UnknownGameEvent</c> constructor</summary>
-    ///
-    public UnknownGameEvent(int userId,
-        int eventId,
-        int bits,
-        int gameloop,
-        string name) : base(userId, eventId, GameEventType.None, bits, gameloop)
-    {
-        EventTypeName = name;
-    }
 
     /// <summary>EventTypeName</summary>
     ///
-    public string EventTypeName { get; }
+    public string EventTypeName { get; } = name;
 }
