@@ -103,7 +103,7 @@ internal static partial class Parse
             TrackerEventType.SUpgradeEvent => GetSUpgradeEvent(eventDic, header),
             TrackerEventType.SUnitInitEvent => GetSUnitInitEvent(eventDic, header),
             TrackerEventType.SUnitDoneEvent => GetSUnitDoneEvent(eventDic, header),
-            TrackerEventType.None => throw new NotImplementedException(),
+            TrackerEventType.None => GetUnknownEvent(header),
             _ => GetUnknownEvent(header)
         };
     }

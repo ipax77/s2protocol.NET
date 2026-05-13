@@ -63,7 +63,7 @@ internal static partial class Parse
                     GameEventType.STriggerButtonPressedEvent => GetSTriggerButtonPressedEvent(gameDic, gameEvent),
                     GameEventType.STriggerGameMenuItemSelectedEvent => GetSTriggerGameMenuItemSelectedEvent(gameDic, gameEvent),
                     GameEventType.STriggerMouseMovedEvent => GetSTriggerMouseMovedEvent(gameDic, gameEvent),
-                    GameEventType.None => throw new NotImplementedException(),
+                    GameEventType.None => GetUnknownEvent(gameEvent),
                     _ => GetUnknownEvent(gameEvent)
                 };
                 gameevents.Add(detailEvent);
@@ -115,7 +115,7 @@ internal static partial class Parse
             GameEventType.STriggerButtonPressedEvent => GetSTriggerButtonPressedEvent(gameDic, gameEvent),
             GameEventType.STriggerGameMenuItemSelectedEvent => GetSTriggerGameMenuItemSelectedEvent(gameDic, gameEvent),
             GameEventType.STriggerMouseMovedEvent => GetSTriggerMouseMovedEvent(gameDic, gameEvent),
-            GameEventType.None => throw new NotImplementedException(),
+            GameEventType.None => GetUnknownEvent(gameEvent),
             _ => GetUnknownEvent(gameEvent)
         };
     }

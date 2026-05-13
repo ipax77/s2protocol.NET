@@ -56,6 +56,7 @@ internal abstract class TypedProtocolDecoder(ReadOnlyMemory<byte> contents, List
     public long ReadLong(int typeId)
     {
         S2TypeInfo typeInfo = GetTypeInfo(typeId);
+#pragma warning disable IDE0072 // Add missing cases
         return typeInfo.DecodeKind switch
         {
             S2DecodeKind.Int => ReadIntValue((BoundsParameter)typeInfo.Parameters[0]),
@@ -64,15 +65,9 @@ internal abstract class TypedProtocolDecoder(ReadOnlyMemory<byte> contents, List
             S2DecodeKind.Optional => ReadOptionalLong(typeId),
             S2DecodeKind.Struct => ReadFirstStructLong(typeId),
             S2DecodeKind.Null => 0,
-            S2DecodeKind.Unknown => throw new NotImplementedException(),
-            S2DecodeKind.Array => throw new NotImplementedException(),
-            S2DecodeKind.BitArray => throw new NotImplementedException(),
-            S2DecodeKind.Blob => throw new NotImplementedException(),
-            S2DecodeKind.FourCc => throw new NotImplementedException(),
-            S2DecodeKind.Real32 => throw new NotImplementedException(),
-            S2DecodeKind.Real64 => throw new NotImplementedException(),
             _ => throw new DecodeException($"Type {typeId} is not numeric."),
         };
+#pragma warning restore IDE0072 // Add missing cases
     }
 
     public long? ReadNullableLong(int typeId)
@@ -87,28 +82,20 @@ internal abstract class TypedProtocolDecoder(ReadOnlyMemory<byte> contents, List
     public bool ReadBool(int typeId)
     {
         S2TypeInfo typeInfo = GetTypeInfo(typeId);
+#pragma warning disable IDE0072 // Add missing cases
         return typeInfo.DecodeKind switch
         {
             S2DecodeKind.Bool => ReadBoolValue(),
             S2DecodeKind.Optional => ReadOptionalBool(typeId),
-            S2DecodeKind.Unknown => throw new NotImplementedException(),
-            S2DecodeKind.Array => throw new NotImplementedException(),
-            S2DecodeKind.BitArray => throw new NotImplementedException(),
-            S2DecodeKind.Blob => throw new NotImplementedException(),
-            S2DecodeKind.Choice => throw new NotImplementedException(),
-            S2DecodeKind.FourCc => throw new NotImplementedException(),
-            S2DecodeKind.Int => throw new NotImplementedException(),
-            S2DecodeKind.Null => throw new NotImplementedException(),
-            S2DecodeKind.Real32 => throw new NotImplementedException(),
-            S2DecodeKind.Real64 => throw new NotImplementedException(),
-            S2DecodeKind.Struct => throw new NotImplementedException(),
             _ => ReadLong(typeId) != 0,
         };
+#pragma warning restore IDE0072 // Add missing cases
     }
 
     public string ReadString(int typeId)
     {
         S2TypeInfo typeInfo = GetTypeInfo(typeId);
+#pragma warning disable IDE0072 // Add missing cases
         return typeInfo.DecodeKind switch
         {
             S2DecodeKind.Blob => Encoding.UTF8.GetString(ReadBlobValue((BoundsParameter)typeInfo.Parameters[0])),
@@ -117,15 +104,9 @@ internal abstract class TypedProtocolDecoder(ReadOnlyMemory<byte> contents, List
             S2DecodeKind.Choice => ReadChoiceString(typeId),
             S2DecodeKind.Struct => ReadFirstStructString(typeId),
             S2DecodeKind.Null => string.Empty,
-            S2DecodeKind.Unknown => throw new NotImplementedException(),
-            S2DecodeKind.Array => throw new NotImplementedException(),
-            S2DecodeKind.BitArray => throw new NotImplementedException(),
-            S2DecodeKind.Bool => throw new NotImplementedException(),
-            S2DecodeKind.Int => throw new NotImplementedException(),
-            S2DecodeKind.Real32 => throw new NotImplementedException(),
-            S2DecodeKind.Real64 => throw new NotImplementedException(),
             _ => ReadLong(typeId).ToString(System.Globalization.CultureInfo.InvariantCulture),
         };
+#pragma warning restore IDE0072 // Add missing cases
     }
 
     public string? ReadNullableString(int typeId)

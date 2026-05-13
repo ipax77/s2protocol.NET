@@ -484,6 +484,7 @@ public sealed partial record S2ProtocolVersion
         public void Handle(in DecodedEvent decodedEvent)
         {
             GameEventType eventType = GetGameEventType(decodedEvent.TypeName);
+#pragma warning disable IDE0072 // Add missing cases
             GameEvent gameEvent = eventType switch
             {
                 GameEventType.SUserFinishedLoadingSyncEvent => ReadEmptyGameEvent(decoder, decodedEvent.TypeId, decodedEvent.UserId, decodedEvent.EventId, decodedEvent.Bits, decodedEvent.Gameloop),
@@ -505,28 +506,9 @@ public sealed partial record S2ProtocolVersion
                 GameEventType.STriggerTransmissionCompleteEvent => ReadSTriggerTransmissionCompleteEvent(decoder, decodedEvent.TypeId, decodedEvent.UserId, decodedEvent.EventId, decodedEvent.Bits, decodedEvent.Gameloop),
                 GameEventType.STriggerTransmissionOffsetEvent => ReadSTriggerTransmissionOffsetEvent(decoder, decodedEvent.TypeId, decodedEvent.UserId, decodedEvent.EventId, decodedEvent.Bits, decodedEvent.Gameloop),
                 GameEventType.SUnitClickEvent => ReadSUnitClickEvent(decoder, decodedEvent.TypeId, decodedEvent.UserId, decodedEvent.EventId, decodedEvent.Bits, decodedEvent.Gameloop),
-                GameEventType.None => throw new NotImplementedException(),
-                GameEventType.SBankSignatureEvent => throw new NotImplementedException(),
-                GameEventType.SCameraUpdateEvent => throw new NotImplementedException(),
-                GameEventType.SCmdEvent => throw new NotImplementedException(),
-                GameEventType.SCmdUpdateTargetPointEvent => throw new NotImplementedException(),
-                GameEventType.SCommandManagerStateEvent => throw new NotImplementedException(),
-                GameEventType.SSelectionDeltaEvent => throw new NotImplementedException(),
-                GameEventType.STriggerDialogControlEvent => throw new NotImplementedException(),
-                GameEventType.STriggerPingEvent => throw new NotImplementedException(),
-                GameEventType.SUserOptionsEvent => throw new NotImplementedException(),
-                GameEventType.SCmdUpdateTargetUnitEvents => throw new NotImplementedException(),
-                GameEventType.STriggerKeyPressedEvent => throw new NotImplementedException(),
-                GameEventType.SDecrementGameTimeRemainingEvent => throw new NotImplementedException(),
-                GameEventType.STriggerMouseClickedEvent => throw new NotImplementedException(),
-                GameEventType.SCameraSaveEvent => throw new NotImplementedException(),
-                GameEventType.STriggerCutsceneBookmarkFiredEvent => throw new NotImplementedException(),
-                GameEventType.STriggerSoundLengthQueryEvent => throw new NotImplementedException(),
-                GameEventType.STriggerTargetModeUpdateEvent => throw new NotImplementedException(),
-                GameEventType.SAchievementAwardedEvent => throw new NotImplementedException(),
-                GameEventType.STriggerMouseMovedEvent => throw new NotImplementedException(),
                 _ => ReadUnknownGameEvent(decoder, decodedEvent.TypeId, decodedEvent.UserId, decodedEvent.EventId, decodedEvent.Bits, decodedEvent.Gameloop, decodedEvent.TypeName),
             };
+#pragma warning restore IDE0072 // Add missing cases
 
             events.Add(gameEvent);
         }
