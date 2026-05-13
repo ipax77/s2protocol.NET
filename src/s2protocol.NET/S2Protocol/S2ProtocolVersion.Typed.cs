@@ -55,6 +55,27 @@ public sealed partial record S2ProtocolVersion
         return new MessageEvents(chatMessages, pingMessages);
     }
 
+    public void DecodeReplayMessageEvents(
+        ReadOnlyMemory<byte> content,
+        MessageEventSelection selection,
+        Action<ChatMessageEvent> onChatMessage,
+        Action<PingMessageEvent> onPingMessage)
+    {
+        ArgumentNullException.ThrowIfNull(selection);
+        ArgumentNullException.ThrowIfNull(onChatMessage);
+        ArgumentNullException.ThrowIfNull(onPingMessage);
+
+        if (!selection.Enabled)
+        {
+            return;
+        }
+
+        BitPackedTypedDecoder decoder = new(content, TypeInfos);
+        ProjectingMessageEventHandler handler = new(decoder, selection, onChatMessage, onPingMessage);
+
+        DecodeEventStream(decoder, MessageEventIdTypeId ?? 1, MessageEvents, decodeUserId: true, ref handler);
+    }
+
     public GameEvents DecodeReplayGameEvents(ReadOnlyMemory<byte> content)
     {
         BitPackedTypedDecoder decoder = new(content, TypeInfos);
@@ -64,6 +85,25 @@ public sealed partial record S2ProtocolVersion
         DecodeEventStream(decoder, GameEventIdTypeId ?? 0, GameEvents, decodeUserId: true, ref handler);
 
         return new GameEvents(events);
+    }
+
+    public void DecodeReplayGameEvents(
+        ReadOnlyMemory<byte> content,
+        ReplayEventSelection<GameEventType> selection,
+        Action<GameEvent> onGameEvent)
+    {
+        ArgumentNullException.ThrowIfNull(selection);
+        ArgumentNullException.ThrowIfNull(onGameEvent);
+
+        if (!selection.Enabled)
+        {
+            return;
+        }
+
+        BitPackedTypedDecoder decoder = new(content, TypeInfos);
+        ProjectingGameEventHandler handler = new(decoder, selection, onGameEvent);
+
+        DecodeEventStream(decoder, GameEventIdTypeId ?? 0, GameEvents, decodeUserId: true, ref handler);
     }
 
     public TrackerEvents DecodeReplayTrackerEvents(ReadOnlyMemory<byte> content)
@@ -105,6 +145,25 @@ public sealed partial record S2ProtocolVersion
             [.. upgradeEvents],
             [.. unitInitEvents],
             [.. unitDoneEvents]);
+    }
+
+    public void DecodeReplayTrackerEvents(
+        ReadOnlyMemory<byte> content,
+        ReplayEventSelection<TrackerEventType> selection,
+        Action<TrackerEvent> onTrackerEvent)
+    {
+        ArgumentNullException.ThrowIfNull(selection);
+        ArgumentNullException.ThrowIfNull(onTrackerEvent);
+
+        if (!selection.Enabled)
+        {
+            return;
+        }
+
+        VersionedTypedDecoder decoder = new(content, TypeInfos);
+        ProjectingTrackerEventHandler handler = new(decoder, selection, onTrackerEvent);
+
+        DecodeEventStream(decoder, TrackerEventIdTypeId ?? 2, TrackerEvents, decodeUserId: false, ref handler);
     }
 
     public static AttributeEvents DecodeReplayAttributeEvents(ReadOnlyMemory<byte> content)
@@ -479,38 +538,41 @@ public sealed partial record S2ProtocolVersion
         }
     }
 
+    private static GameEvent ReadGameEvent(TypedProtocolDecoder decoder, in DecodedEvent decodedEvent)
+    {
+        GameEventType eventType = GetGameEventType(decodedEvent.TypeName);
+#pragma warning disable IDE0072 // Add missing cases
+        return eventType switch
+        {
+            GameEventType.SUserFinishedLoadingSyncEvent => ReadEmptyGameEvent(decoder, decodedEvent.TypeId, decodedEvent.UserId, decodedEvent.EventId, decodedEvent.Bits, decodedEvent.Gameloop),
+            GameEventType.STriggerSoundLengthSyncEvent => ReadSoundLengthSyncEvent(decoder, decodedEvent.TypeId, decodedEvent.UserId, decodedEvent.EventId, decodedEvent.Bits, decodedEvent.Gameloop),
+            GameEventType.SBankFileEvent => ReadSBankFileEvent(decoder, decodedEvent.TypeId, decodedEvent.UserId, decodedEvent.EventId, decodedEvent.Bits, decodedEvent.Gameloop),
+            GameEventType.SBankKeyEvent => ReadSBankKeyEvent(decoder, decodedEvent.TypeId, decodedEvent.UserId, decodedEvent.EventId, decodedEvent.Bits, decodedEvent.Gameloop),
+            GameEventType.SBankSectionEvent => ReadSBankSectionEvent(decoder, decodedEvent.TypeId, decodedEvent.UserId, decodedEvent.EventId, decodedEvent.Bits, decodedEvent.Gameloop),
+            GameEventType.SBankValueEvent => ReadSBankValueEvent(decoder, decodedEvent.TypeId, decodedEvent.UserId, decodedEvent.EventId, decodedEvent.Bits, decodedEvent.Gameloop),
+            GameEventType.SControlGroupUpdateEvent => ReadSControlGroupUpdateEvent(decoder, decodedEvent.TypeId, decodedEvent.UserId, decodedEvent.EventId, decodedEvent.Bits, decodedEvent.Gameloop),
+            GameEventType.SGameUserLeaveEvent => ReadSGameUserLeaveEvent(decoder, decodedEvent.TypeId, decodedEvent.UserId, decodedEvent.EventId, decodedEvent.Bits, decodedEvent.Gameloop),
+            GameEventType.SSetSyncLoadingTimeEvent => ReadSSetSyncLoadingTimeEvent(decoder, decodedEvent.TypeId, decodedEvent.UserId, decodedEvent.EventId, decodedEvent.Bits, decodedEvent.Gameloop),
+            GameEventType.SSetSyncPlayingTimeEvent => ReadSSetSyncPlayingTimeEvent(decoder, decodedEvent.TypeId, decodedEvent.UserId, decodedEvent.EventId, decodedEvent.Bits, decodedEvent.Gameloop),
+            GameEventType.STriggerButtonPressedEvent => ReadSTriggerButtonPressedEvent(decoder, decodedEvent.TypeId, decodedEvent.UserId, decodedEvent.EventId, decodedEvent.Bits, decodedEvent.Gameloop),
+            GameEventType.STriggerChatMessageEvent => ReadSTriggerChatMessageEvent(decoder, decodedEvent.TypeId, decodedEvent.UserId, decodedEvent.EventId, decodedEvent.Bits, decodedEvent.Gameloop),
+            GameEventType.STriggerCutsceneEndSceneFiredEvent => ReadSTriggerCutsceneEndSceneFiredEvent(decoder, decodedEvent.TypeId, decodedEvent.UserId, decodedEvent.EventId, decodedEvent.Bits, decodedEvent.Gameloop),
+            GameEventType.STriggerGameMenuItemSelectedEvent => ReadSTriggerGameMenuItemSelectedEvent(decoder, decodedEvent.TypeId, decodedEvent.UserId, decodedEvent.EventId, decodedEvent.Bits, decodedEvent.Gameloop),
+            GameEventType.STriggerSoundOffsetEvent => ReadSTriggerSoundOffsetEvent(decoder, decodedEvent.TypeId, decodedEvent.UserId, decodedEvent.EventId, decodedEvent.Bits, decodedEvent.Gameloop),
+            GameEventType.STriggerSoundtrackDoneEvent => ReadSTriggerSoundtrackDoneEvent(decoder, decodedEvent.TypeId, decodedEvent.UserId, decodedEvent.EventId, decodedEvent.Bits, decodedEvent.Gameloop),
+            GameEventType.STriggerTransmissionCompleteEvent => ReadSTriggerTransmissionCompleteEvent(decoder, decodedEvent.TypeId, decodedEvent.UserId, decodedEvent.EventId, decodedEvent.Bits, decodedEvent.Gameloop),
+            GameEventType.STriggerTransmissionOffsetEvent => ReadSTriggerTransmissionOffsetEvent(decoder, decodedEvent.TypeId, decodedEvent.UserId, decodedEvent.EventId, decodedEvent.Bits, decodedEvent.Gameloop),
+            GameEventType.SUnitClickEvent => ReadSUnitClickEvent(decoder, decodedEvent.TypeId, decodedEvent.UserId, decodedEvent.EventId, decodedEvent.Bits, decodedEvent.Gameloop),
+            _ => ReadUnknownGameEvent(decoder, decodedEvent.TypeId, decodedEvent.UserId, decodedEvent.EventId, decodedEvent.Bits, decodedEvent.Gameloop, decodedEvent.TypeName),
+        };
+#pragma warning restore IDE0072 // Add missing cases
+    }
+
     private readonly struct GameEventHandler(TypedProtocolDecoder decoder, List<GameEvent> events) : IEventHandler
     {
         public void Handle(in DecodedEvent decodedEvent)
         {
-            GameEventType eventType = GetGameEventType(decodedEvent.TypeName);
-#pragma warning disable IDE0072 // Add missing cases
-            GameEvent gameEvent = eventType switch
-            {
-                GameEventType.SUserFinishedLoadingSyncEvent => ReadEmptyGameEvent(decoder, decodedEvent.TypeId, decodedEvent.UserId, decodedEvent.EventId, decodedEvent.Bits, decodedEvent.Gameloop),
-                GameEventType.STriggerSoundLengthSyncEvent => ReadSoundLengthSyncEvent(decoder, decodedEvent.TypeId, decodedEvent.UserId, decodedEvent.EventId, decodedEvent.Bits, decodedEvent.Gameloop),
-                GameEventType.SBankFileEvent => ReadSBankFileEvent(decoder, decodedEvent.TypeId, decodedEvent.UserId, decodedEvent.EventId, decodedEvent.Bits, decodedEvent.Gameloop),
-                GameEventType.SBankKeyEvent => ReadSBankKeyEvent(decoder, decodedEvent.TypeId, decodedEvent.UserId, decodedEvent.EventId, decodedEvent.Bits, decodedEvent.Gameloop),
-                GameEventType.SBankSectionEvent => ReadSBankSectionEvent(decoder, decodedEvent.TypeId, decodedEvent.UserId, decodedEvent.EventId, decodedEvent.Bits, decodedEvent.Gameloop),
-                GameEventType.SBankValueEvent => ReadSBankValueEvent(decoder, decodedEvent.TypeId, decodedEvent.UserId, decodedEvent.EventId, decodedEvent.Bits, decodedEvent.Gameloop),
-                GameEventType.SControlGroupUpdateEvent => ReadSControlGroupUpdateEvent(decoder, decodedEvent.TypeId, decodedEvent.UserId, decodedEvent.EventId, decodedEvent.Bits, decodedEvent.Gameloop),
-                GameEventType.SGameUserLeaveEvent => ReadSGameUserLeaveEvent(decoder, decodedEvent.TypeId, decodedEvent.UserId, decodedEvent.EventId, decodedEvent.Bits, decodedEvent.Gameloop),
-                GameEventType.SSetSyncLoadingTimeEvent => ReadSSetSyncLoadingTimeEvent(decoder, decodedEvent.TypeId, decodedEvent.UserId, decodedEvent.EventId, decodedEvent.Bits, decodedEvent.Gameloop),
-                GameEventType.SSetSyncPlayingTimeEvent => ReadSSetSyncPlayingTimeEvent(decoder, decodedEvent.TypeId, decodedEvent.UserId, decodedEvent.EventId, decodedEvent.Bits, decodedEvent.Gameloop),
-                GameEventType.STriggerButtonPressedEvent => ReadSTriggerButtonPressedEvent(decoder, decodedEvent.TypeId, decodedEvent.UserId, decodedEvent.EventId, decodedEvent.Bits, decodedEvent.Gameloop),
-                GameEventType.STriggerChatMessageEvent => ReadSTriggerChatMessageEvent(decoder, decodedEvent.TypeId, decodedEvent.UserId, decodedEvent.EventId, decodedEvent.Bits, decodedEvent.Gameloop),
-                GameEventType.STriggerCutsceneEndSceneFiredEvent => ReadSTriggerCutsceneEndSceneFiredEvent(decoder, decodedEvent.TypeId, decodedEvent.UserId, decodedEvent.EventId, decodedEvent.Bits, decodedEvent.Gameloop),
-                GameEventType.STriggerGameMenuItemSelectedEvent => ReadSTriggerGameMenuItemSelectedEvent(decoder, decodedEvent.TypeId, decodedEvent.UserId, decodedEvent.EventId, decodedEvent.Bits, decodedEvent.Gameloop),
-                GameEventType.STriggerSoundOffsetEvent => ReadSTriggerSoundOffsetEvent(decoder, decodedEvent.TypeId, decodedEvent.UserId, decodedEvent.EventId, decodedEvent.Bits, decodedEvent.Gameloop),
-                GameEventType.STriggerSoundtrackDoneEvent => ReadSTriggerSoundtrackDoneEvent(decoder, decodedEvent.TypeId, decodedEvent.UserId, decodedEvent.EventId, decodedEvent.Bits, decodedEvent.Gameloop),
-                GameEventType.STriggerTransmissionCompleteEvent => ReadSTriggerTransmissionCompleteEvent(decoder, decodedEvent.TypeId, decodedEvent.UserId, decodedEvent.EventId, decodedEvent.Bits, decodedEvent.Gameloop),
-                GameEventType.STriggerTransmissionOffsetEvent => ReadSTriggerTransmissionOffsetEvent(decoder, decodedEvent.TypeId, decodedEvent.UserId, decodedEvent.EventId, decodedEvent.Bits, decodedEvent.Gameloop),
-                GameEventType.SUnitClickEvent => ReadSUnitClickEvent(decoder, decodedEvent.TypeId, decodedEvent.UserId, decodedEvent.EventId, decodedEvent.Bits, decodedEvent.Gameloop),
-                _ => ReadUnknownGameEvent(decoder, decodedEvent.TypeId, decodedEvent.UserId, decodedEvent.EventId, decodedEvent.Bits, decodedEvent.Gameloop, decodedEvent.TypeName),
-            };
-#pragma warning restore IDE0072 // Add missing cases
-
-            events.Add(gameEvent);
+            events.Add(ReadGameEvent(decoder, in decodedEvent));
         }
     }
 
@@ -568,6 +630,102 @@ public sealed partial record S2ProtocolVersion
                     decoder.SkipType(decodedEvent.TypeId);
                     break;
             }
+        }
+    }
+
+    private readonly struct ProjectingMessageEventHandler(
+        TypedProtocolDecoder decoder,
+        MessageEventSelection selection,
+        Action<ChatMessageEvent> onChatMessage,
+        Action<PingMessageEvent> onPingMessage) : IEventHandler
+    {
+        public void Handle(in DecodedEvent decodedEvent)
+        {
+            if (decodedEvent.TypeName == "NNet.Game.SChatMessage")
+            {
+                if (selection.ChatMessages)
+                {
+                    onChatMessage(ReadSChatMessage(decoder, decodedEvent.TypeId, decodedEvent.UserId, decodedEvent.Gameloop));
+                }
+                else
+                {
+                    decoder.SkipType(decodedEvent.TypeId);
+                }
+            }
+            else if (decodedEvent.TypeName == "NNet.Game.SPingMessage")
+            {
+                if (selection.PingMessages)
+                {
+                    onPingMessage(ReadSPingMessage(decoder, decodedEvent.TypeId, decodedEvent.UserId, decodedEvent.Gameloop));
+                }
+                else
+                {
+                    decoder.SkipType(decodedEvent.TypeId);
+                }
+            }
+            else
+            {
+                decoder.SkipType(decodedEvent.TypeId);
+            }
+        }
+    }
+
+    private readonly struct ProjectingGameEventHandler(
+        TypedProtocolDecoder decoder,
+        ReplayEventSelection<GameEventType> selection,
+        Action<GameEvent> onGameEvent) : IEventHandler
+    {
+        public void Handle(in DecodedEvent decodedEvent)
+        {
+            GameEventType eventType = GetGameEventType(decodedEvent.TypeName);
+            if (eventType == GameEventType.None || !selection.Includes(eventType))
+            {
+                decoder.SkipType(decodedEvent.TypeId);
+                return;
+            }
+
+            onGameEvent(ReadGameEvent(decoder, in decodedEvent));
+        }
+    }
+
+    private readonly struct ProjectingTrackerEventHandler(
+        TypedProtocolDecoder decoder,
+        ReplayEventSelection<TrackerEventType> selection,
+        Action<TrackerEvent> onTrackerEvent) : IEventHandler
+    {
+        public void Handle(in DecodedEvent decodedEvent)
+        {
+            TrackerEventType eventType = GetTrackerEventType(decodedEvent.TypeName);
+            if (eventType == TrackerEventType.None || !selection.Includes(eventType))
+            {
+                decoder.SkipType(decodedEvent.TypeId);
+                return;
+            }
+
+#pragma warning disable IDE0072 // Add missing cases
+            TrackerEvent? trackerEvent = eventType switch
+            {
+                TrackerEventType.SPlayerSetupEvent => ReadSPlayerSetupEvent(decoder, decodedEvent.TypeId, decodedEvent.EventId, decodedEvent.Bits, decodedEvent.Gameloop),
+                TrackerEventType.SPlayerStatsEvent => ReadSPlayerStatsEvent(decoder, decodedEvent.TypeId, decodedEvent.EventId, decodedEvent.Bits, decodedEvent.Gameloop),
+                TrackerEventType.SUnitBornEvent => ReadSUnitBornEvent(decoder, decodedEvent.TypeId, decodedEvent.EventId, decodedEvent.Bits, decodedEvent.Gameloop),
+                TrackerEventType.SUnitDiedEvent => ReadSUnitDiedEvent(decoder, decodedEvent.TypeId, decodedEvent.EventId, decodedEvent.Bits, decodedEvent.Gameloop),
+                TrackerEventType.SUnitOwnerChangeEvent => ReadSUnitOwnerChangeEvent(decoder, decodedEvent.TypeId, decodedEvent.EventId, decodedEvent.Bits, decodedEvent.Gameloop),
+                TrackerEventType.SUnitPositionsEvent => ReadSUnitPositionsEvent(decoder, decodedEvent.TypeId, decodedEvent.EventId, decodedEvent.Bits, decodedEvent.Gameloop),
+                TrackerEventType.SUnitTypeChangeEvent => ReadSUnitTypeChangeEvent(decoder, decodedEvent.TypeId, decodedEvent.EventId, decodedEvent.Bits, decodedEvent.Gameloop),
+                TrackerEventType.SUpgradeEvent => ReadSUpgradeEvent(decoder, decodedEvent.TypeId, decodedEvent.EventId, decodedEvent.Bits, decodedEvent.Gameloop),
+                TrackerEventType.SUnitInitEvent => ReadSUnitInitEvent(decoder, decodedEvent.TypeId, decodedEvent.EventId, decodedEvent.Bits, decodedEvent.Gameloop),
+                TrackerEventType.SUnitDoneEvent => ReadSUnitDoneEvent(decoder, decodedEvent.TypeId, decodedEvent.EventId, decodedEvent.Bits, decodedEvent.Gameloop),
+                _ => null,
+            };
+#pragma warning restore IDE0072 // Add missing cases
+
+            if (trackerEvent is null)
+            {
+                decoder.SkipType(decodedEvent.TypeId);
+                return;
+            }
+
+            onTrackerEvent(trackerEvent);
         }
     }
 
