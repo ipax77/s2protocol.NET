@@ -500,8 +500,11 @@ public sealed partial record S2ProtocolVersion
                 GameEventType.SBankKeyEvent => ReadSBankKeyEvent(decoder, decodedEvent.TypeId, decodedEvent.UserId, decodedEvent.EventId, decodedEvent.Bits, decodedEvent.Gameloop),
                 GameEventType.SBankSectionEvent => ReadSBankSectionEvent(decoder, decodedEvent.TypeId, decodedEvent.UserId, decodedEvent.EventId, decodedEvent.Bits, decodedEvent.Gameloop),
                 GameEventType.SBankValueEvent => ReadSBankValueEvent(decoder, decodedEvent.TypeId, decodedEvent.UserId, decodedEvent.EventId, decodedEvent.Bits, decodedEvent.Gameloop),
+                GameEventType.SCmdEvent => ReadSCmdEvent(decoder, decodedEvent.TypeId, decodedEvent.UserId, decodedEvent.EventId, decodedEvent.Bits, decodedEvent.Gameloop),
                 GameEventType.SControlGroupUpdateEvent => ReadSControlGroupUpdateEvent(decoder, decodedEvent.TypeId, decodedEvent.UserId, decodedEvent.EventId, decodedEvent.Bits, decodedEvent.Gameloop),
                 GameEventType.SGameUserLeaveEvent => ReadSGameUserLeaveEvent(decoder, decodedEvent.TypeId, decodedEvent.UserId, decodedEvent.EventId, decodedEvent.Bits, decodedEvent.Gameloop),
+                GameEventType.SGameUserJoinEvent => ReadSGameUserJoinEvent(decoder, decodedEvent.TypeId, decodedEvent.UserId, decodedEvent.EventId, decodedEvent.Bits, decodedEvent.Gameloop),
+                GameEventType.SHijackReplayGameEvent => ReadSHijackReplayGameEvent(decoder, decodedEvent.TypeId, decodedEvent.UserId, decodedEvent.EventId, decodedEvent.Bits, decodedEvent.Gameloop),
                 GameEventType.SSetSyncLoadingTimeEvent => ReadSSetSyncLoadingTimeEvent(decoder, decodedEvent.TypeId, decodedEvent.UserId, decodedEvent.EventId, decodedEvent.Bits, decodedEvent.Gameloop),
                 GameEventType.SSetSyncPlayingTimeEvent => ReadSSetSyncPlayingTimeEvent(decoder, decodedEvent.TypeId, decodedEvent.UserId, decodedEvent.EventId, decodedEvent.Bits, decodedEvent.Gameloop),
                 GameEventType.STriggerButtonPressedEvent => ReadSTriggerButtonPressedEvent(decoder, decodedEvent.TypeId, decodedEvent.UserId, decodedEvent.EventId, decodedEvent.Bits, decodedEvent.Gameloop),
@@ -622,6 +625,8 @@ public sealed partial record S2ProtocolVersion
         "NNet.Game.SCommandManagerStateEvent" => GameEventType.SCommandManagerStateEvent,
         "NNet.Game.SControlGroupUpdateEvent" => GameEventType.SControlGroupUpdateEvent,
         "NNet.Game.SGameUserLeaveEvent" => GameEventType.SGameUserLeaveEvent,
+        "NNet.Game.SGameUserJoinEvent" => GameEventType.SGameUserJoinEvent,
+        "NNet.Game.SHijackReplayGameEvent" => GameEventType.SHijackReplayGameEvent,
         "NNet.Game.SSelectionDeltaEvent" => GameEventType.SSelectionDeltaEvent,
         "NNet.Game.SSetSyncLoadingTimeEvent" => GameEventType.SSetSyncLoadingTimeEvent,
         "NNet.Game.SSetSyncPlayingTimeEvent" => GameEventType.SSetSyncPlayingTimeEvent,
@@ -666,6 +671,7 @@ public sealed partial record S2ProtocolVersion
         "NNet.Replay.Tracker.SUnitDoneEvent" => TrackerEventType.SUnitDoneEvent,
         _ => TrackerEventType.None
     };
+
 
     private static GameDescription EmptyGameDescription()
         => new(0, 0, false, 0, false, new GameOptions(false, false, false, false, false, 0, false, false, 0, false, false, 0, 0, false, false, false), 0, false, string.Empty, 0, 0, false, 0, 0, false, 0, 0, 0, 0, [], 0, 0, string.Empty, string.Empty, [], 0, 0, false);
