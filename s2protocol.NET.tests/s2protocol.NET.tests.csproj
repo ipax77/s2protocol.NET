@@ -73,7 +73,10 @@
     </None>    
     <None Update="replays\testError2.SC2Replay">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </None>   
+    </None>
+    <None Update="replays\karax-target.SC2Replay">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
   </ItemGroup>
 
 </Project>

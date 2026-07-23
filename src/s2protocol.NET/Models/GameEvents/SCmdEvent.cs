@@ -18,7 +18,8 @@ public sealed class SCmdEvent : GameEvent
                  long? targetZ,
                  int cmdFlags,
                  int sequence,
-                 int? otherUnit) : base(userId, eventId, GameEventType.SCmdEvent, bits, gameloop)
+                 int? otherUnit,
+                 int? targetUnitTag = null) : base(userId, eventId, GameEventType.SCmdEvent, bits, gameloop)
     {
         UnitGroup = unitGroup;
         AbilLink = abilLink;
@@ -30,6 +31,7 @@ public sealed class SCmdEvent : GameEvent
         CmdFlags = cmdFlags;
         Sequence = sequence;
         OtherUnit = otherUnit;
+        TargetUnitTag = targetUnitTag;
     }
 
     /// <summary>Event UnitGroup</summary>
@@ -62,4 +64,7 @@ public sealed class SCmdEvent : GameEvent
     /// <summary>Event OtherUnit</summary>
     ///
     public int? OtherUnit { get; }
+    /// <summary>Target unit tag when the command data contains a unit target.</summary>
+    ///
+    public int? TargetUnitTag { get; }
 }

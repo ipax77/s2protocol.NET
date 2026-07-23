@@ -65,7 +65,8 @@ public sealed partial record S2ProtocolVersion
             state.TargetZ,
             state.CmdFlags,
             state.Sequence,
-            state.OtherUnit);
+            state.OtherUnit,
+            state.TargetUnitTag);
     }
 
     private struct SCmdEventReadState : IStructFieldReader
@@ -80,6 +81,7 @@ public sealed partial record S2ProtocolVersion
         public int CmdFlags;
         public int Sequence;
         public int? OtherUnit;
+        public int? TargetUnitTag;
 
         public bool ReadField(TypedProtocolDecoder decoder, string name, int fieldTypeId)
         {
@@ -101,6 +103,7 @@ public sealed partial record S2ProtocolVersion
                     TargetX = data.TargetX;
                     TargetY = data.TargetY;
                     TargetZ = data.TargetZ;
+                    TargetUnitTag = data.TargetUnitTag;
                     return true;
                 case "m_cmdFlags":
                     CmdFlags = decoder.ReadInt(fieldTypeId);
@@ -147,6 +150,7 @@ public sealed partial record S2ProtocolVersion
         public long? TargetX;
         public long? TargetY;
         public long? TargetZ;
+        public int? TargetUnitTag;
 
         public bool HandleChoice(TypedProtocolDecoder decoder, string name, int choiceTypeId)
         {
@@ -160,6 +164,7 @@ public sealed partial record S2ProtocolVersion
                 case "TargetUnit":
                     SCmdTargetUnitReadState unit = default;
                     decoder.ReadStruct(choiceTypeId, ref unit);
+                    TargetUnitTag = unit.Tag;
                     if (unit.HasSnapshotPoint)
                     {
                         SetTarget(unit.SnapshotPoint);
@@ -182,9 +187,16 @@ public sealed partial record S2ProtocolVersion
     {
         public bool HasSnapshotPoint;
         public SCmdTargetPointReadState SnapshotPoint;
+        public int? Tag;
 
         public bool ReadField(TypedProtocolDecoder decoder, string name, int fieldTypeId)
         {
+            if (name == "m_tag")
+            {
+                Tag = decoder.ReadInt(fieldTypeId);
+                return true;
+            }
+
             if (name != "m_snapshotPoint")
             {
                 return false;
