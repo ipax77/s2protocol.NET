@@ -1,4 +1,5 @@
 using System.Globalization;
+using System.Reflection;
 using System.Text.Json;
 using System.Text.RegularExpressions;
 
@@ -9,9 +10,14 @@ namespace s2protocol.NET.S2Protocol;
 /// </summary>
 public static partial class TypeInfoLoader
 {
+    private const string ResourcePrefix = "s2protocol.NET.Resources.versions.";
+    private const string ManifestResourceName = ResourcePrefix + "protocol-versions.json";
+
     private static readonly Dictionary<int, string> _protocolResourceMap = new();
+    private static readonly Dictionary<int, int> _protocolPayloadMap = new();
     private static int[] _protocolVersions = [];
     private static readonly Dictionary<int, S2ProtocolVersion> _typeInfoCache = new();
+    private static readonly Dictionary<int, S2ProtocolVersion> _canonicalTypeInfoCache = new();
     private static readonly object _initLock = new();
     private static readonly object _typeInfoCacheLock = new();
     private static int _latestProtocolVersion;
@@ -35,9 +41,10 @@ public static partial class TypeInfoLoader
                 throw new DecodeException("No embedded resource files found.");
             }
 
+            var manifest = LoadManifest(assembly);
             foreach (var name in resourceNames)
             {
-                if (name.StartsWith("s2protocol.NET.Resources.versions.protocol", StringComparison.Ordinal)
+                if (name.StartsWith(ResourcePrefix + "protocol", StringComparison.Ordinal)
                     && name.EndsWith(".json", StringComparison.Ordinal))
                 {
                     var version = ExtractVersionNumber(name);
@@ -48,11 +55,47 @@ public static partial class TypeInfoLoader
                 }
             }
 
-            _protocolVersions = [.. _protocolResourceMap.Keys.Order()];
+            foreach (var (version, canonicalVersion) in manifest.Versions)
+            {
+                if (version <= 0 || canonicalVersion <= 0)
+                {
+                    throw new DecodeException("Protocol version manifest contains an invalid version.");
+                }
+
+                if (!_protocolResourceMap.ContainsKey(canonicalVersion))
+                {
+                    throw new DecodeException(
+                        $"Protocol version {version} references missing payload {canonicalVersion}.");
+                }
+
+                _protocolPayloadMap.Add(version, canonicalVersion);
+            }
+
+            _protocolVersions = [.. _protocolPayloadMap.Keys.Order()];
             _latestProtocolVersion = _protocolVersions.Length > 0 ? _protocolVersions[^1] : 0;
 
             _initialized = true;
         }
+    }
+
+    private static ProtocolVersionManifest LoadManifest(Assembly assembly)
+    {
+        using var stream = assembly.GetManifestResourceStream(ManifestResourceName);
+        if (stream is null)
+        {
+            throw new DecodeException("Protocol version manifest was not found.");
+        }
+
+        var manifest = JsonSerializer.Deserialize(
+            stream,
+            S2ProtocolTypeInfoJsonSerializerContext.Default.ProtocolVersionManifest);
+
+        if (manifest is null || manifest.Versions.Count == 0)
+        {
+            throw new DecodeException("Protocol version manifest is empty or invalid.");
+        }
+
+        return manifest;
     }
 
     private static int ExtractVersionNumber(string resourceName)
@@ -116,10 +159,18 @@ public static partial class TypeInfoLoader
             }
         }
 
-        var resourceName = _protocolResourceMap[usedVersion];
-        var version = LoadResourceContent(resourceName);
+        var canonicalVersionNumber = _protocolPayloadMap[usedVersion];
+        lock (_typeInfoCacheLock)
+        {
+            if (_canonicalTypeInfoCache.TryGetValue(canonicalVersionNumber, out var cachedCanonicalVersion))
+            {
+                return CacheVersion(usedVersion, canonicalVersionNumber, cachedCanonicalVersion);
+            }
+        }
 
-        foreach (var typeInfo in version.TypeInfos)
+        var resourceName = _protocolResourceMap[canonicalVersionNumber];
+        var canonicalVersion = LoadResourceContent(resourceName);
+        foreach (var typeInfo in canonicalVersion.TypeInfos)
         {
             typeInfo.BuildDecoderMetadata();
         }
@@ -131,9 +182,25 @@ public static partial class TypeInfoLoader
                 return cachedVersion;
             }
 
-            _typeInfoCache[usedVersion] = version;
-        }
+            if (!_canonicalTypeInfoCache.TryGetValue(canonicalVersionNumber, out var cachedCanonicalVersion))
+            {
+                cachedCanonicalVersion = canonicalVersion;
+                _canonicalTypeInfoCache.Add(canonicalVersionNumber, cachedCanonicalVersion);
+            }
 
+            return CacheVersion(usedVersion, canonicalVersionNumber, cachedCanonicalVersion);
+        }
+    }
+
+    private static S2ProtocolVersion CacheVersion(
+        int usedVersion,
+        int canonicalVersionNumber,
+        S2ProtocolVersion canonicalVersion)
+    {
+        var version = usedVersion == canonicalVersionNumber
+            ? canonicalVersion
+            : canonicalVersion with { Version = usedVersion };
+        _typeInfoCache.Add(usedVersion, version);
         return version;
     }
 

@@ -167,6 +167,13 @@ internal sealed record CompactEventType
     public string Name { get; init; } = string.Empty;
 }
 
+internal sealed record ProtocolVersionManifest
+{
+    [JsonPropertyName("v")]
+    public Dictionary<int, int> Versions { get; init; } = [];
+}
+
 [JsonSourceGenerationOptions(PropertyNamingPolicy = JsonKnownNamingPolicy.CamelCase)]
 [JsonSerializable(typeof(CompactProtocolVersion))]
+[JsonSerializable(typeof(ProtocolVersionManifest))]
 internal sealed partial class S2ProtocolTypeInfoJsonSerializerContext : JsonSerializerContext;

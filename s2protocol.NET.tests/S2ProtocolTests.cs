@@ -1,7 +1,7 @@
 using s2protocol.NET.S2Protocol;
 using System;
-using System.Globalization;
 using System.Linq;
+using System.Text.Json;
 using System.Text.RegularExpressions;
 using Xunit;
 
@@ -56,23 +56,68 @@ public class S2ProtocolTests
                 && name.EndsWith(".py", StringComparison.Ordinal))
             .ToArray();
 
-        Assert.Equal(91, jsonResources.Length);
+        Assert.Equal(24, jsonResources.Length);
+        Assert.Contains(
+            "s2protocol.NET.Resources.versions.protocol-versions.json",
+            jsonResources);
+        Assert.DoesNotContain(
+            "s2protocol.NET.Resources.versions.protocol97563.json",
+            jsonResources);
+        Assert.Equal(
+            23,
+            jsonResources.Count(name => Regex.IsMatch(name, @"protocol\d+\.json$")));
         Assert.Empty(pythonResources);
     }
 
     [Fact]
-    public void LatestVersionUsesHighestEmbeddedJsonProtocol()
+    public void ProtocolManifestContainsAllSupportedVersions()
     {
-        var resourceNames = typeof(TypeInfoLoader).Assembly.GetManifestResourceNames();
-        var latestResourceVersion = resourceNames
-            .Select(name => Regex.Match(name, @"protocol(\d+)\.json"))
-            .Where(match => match.Success)
-            .Select(match => int.Parse(match.Groups[1].Value, CultureInfo.InvariantCulture))
-            .Max();
+        var manifest = LoadManifest();
+
+        Assert.Equal(95, manifest.Versions.Count);
+        Assert.Equal(80949, manifest.Versions[96883]);
+        Assert.Equal(80949, manifest.Versions[97364]);
+        Assert.Equal(80949, manifest.Versions[97425]);
+        Assert.Equal(80949, manifest.Versions[97563]);
+    }
+
+    [Fact]
+    public void LatestVersionUsesHighestManifestProtocol()
+    {
+        var latestManifestVersion = LoadManifest().Versions.Keys.Max();
 
         var protocol = TypeInfoLoader.GetLatestVersion();
 
-        Assert.Equal(latestResourceVersion, protocol.Version);
+        Assert.Equal(97563, latestManifestVersion);
+        Assert.Equal(latestManifestVersion, protocol.Version);
+    }
+
+    [Fact]
+    public void AliasedVersionsShareCanonicalDecoderTables()
+    {
+        var canonical = TypeInfoLoader.LoadTypeInfos(80949);
+        var alias = TypeInfoLoader.LoadTypeInfos(97563);
+
+        Assert.Equal(80949, canonical.Version);
+        Assert.Equal(97563, alias.Version);
+        Assert.Same(canonical.TypeInfos, alias.TypeInfos);
+        Assert.Same(canonical.GameEvents, alias.GameEvents);
+        Assert.Same(canonical.MessageEvents, alias.MessageEvents);
+        Assert.Same(canonical.TrackerEvents, alias.TrackerEvents);
+    }
+
+    [Fact]
+    public void ManifestVersionFallbackUsesNearestLowerBuild()
+    {
+        var protocol = TypeInfoLoader.LoadTypeInfos(97564);
+
+        Assert.Equal(97563, protocol.Version);
+    }
+
+    [Fact]
+    public void VersionBeforeEarliestManifestBuildThrows()
+    {
+        Assert.Throws<DecodeException>(() => TypeInfoLoader.LoadTypeInfos(15404));
     }
 
     [Fact]
@@ -107,5 +152,18 @@ public class S2ProtocolTests
         Assert.Equal("NNet.Game.SUserFinishedLoadingSyncEvent", protocol.GameEvents[5].Name);
         Assert.Equal(123, protocol.MessageEvents[0].TypeId);
         Assert.Equal("NNet.Game.SChatMessage", protocol.MessageEvents[0].Name);
+    }
+
+    private static ProtocolVersionManifest LoadManifest()
+    {
+        var assembly = typeof(TypeInfoLoader).Assembly;
+        using var stream = assembly.GetManifestResourceStream(
+            "s2protocol.NET.Resources.versions.protocol-versions.json");
+        Assert.NotNull(stream);
+
+        var manifest = JsonSerializer.Deserialize(
+            stream,
+            S2ProtocolTypeInfoJsonSerializerContext.Default.ProtocolVersionManifest);
+        return Assert.IsType<ProtocolVersionManifest>(manifest);
     }
 }

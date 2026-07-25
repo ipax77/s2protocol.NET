@@ -9,9 +9,20 @@ dotnet run --project tools/S2ProtocolJsonGenerator/S2ProtocolJsonGenerator.cspro
 ```
 
 The tool reads its embedded Blizzard protocol version files from
-`tools/S2ProtocolJsonGenerator/Resources/versions/protocol*.py` and writes
-matching `protocol*.json` files to `src/s2protocol.NET/Resources/versions`.
-The library embeds only the JSON files at runtime.
+`tools/S2ProtocolJsonGenerator/Resources/versions/protocol*.py`. It writes one
+full `protocol*.json` payload for each unique protocol schema and a compact
+`protocol-versions.json` manifest mapping every supported build to its payload.
+The earliest build is used as the canonical payload when multiple builds have
+identical generated content.
+
+The generated output is deterministic. Files from an older generation that are
+no longer canonical are removed. With the current 95 Blizzard versions, this
+reduces the embedded protocol data from about 2.59 MB to about 560 KB while
+preserving every supported build number.
+
+The library embeds only these generated JSON files at runtime. Aliased builds
+share their deserialized decoder tables in memory and retain their own reported
+build number.
 
 The generator intentionally uses the Python protocol files rather than the JSON
 files from Blizzard's `s2protocol` repository. The Python files already contain
