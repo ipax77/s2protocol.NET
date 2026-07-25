@@ -107,7 +107,14 @@ Decode-only process comparison using `test6.SC2Replay` (base build `88500`). Eac
 
 # ChangeLog
 
-<details open="open"><summary>v0.9.4</summary>
+<details open="open"><summary>v0.9.6</summary>
+
+>- Add missing GameEvent types
+>- Add new s2protocol versions with deduplication
+
+</details>
+
+<details><summary>v0.9.4</summary>
 
 >- Improved performance/momory usage
 >- MPQArchive.ReadFile(Async) now returns ReadOnlyMemory<byte> instead of byte[]
