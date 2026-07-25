@@ -41,6 +41,352 @@ public sealed partial record S2ProtocolVersion
         return new UnknownGameEvent(userId, eventId, bits, gameloop, eventName);
     }
 
+    private static SCmdEvent ReadSCmdEvent(
+        TypedProtocolDecoder decoder,
+        int typeId,
+        int userId,
+        int eventId,
+        int bits,
+        int gameloop)
+    {
+        SCmdEventReadState state = default;
+        decoder.ReadStruct(typeId, ref state);
+        return new SCmdEvent(
+            userId,
+            eventId,
+            bits,
+            gameloop,
+            state.UnitGroup,
+            state.AbilLink,
+            state.AbilCmdIndex,
+            state.AbilCmdData,
+            state.TargetX,
+            state.TargetY,
+            state.TargetZ,
+            state.CmdFlags,
+            state.Sequence,
+            state.OtherUnit,
+            state.TargetUnitTag);
+    }
+
+    private struct SCmdEventReadState : IStructFieldReader
+    {
+        public int? UnitGroup;
+        public int AbilLink;
+        public int AbilCmdIndex;
+        public string? AbilCmdData;
+        public long? TargetX;
+        public long? TargetY;
+        public long? TargetZ;
+        public int CmdFlags;
+        public int Sequence;
+        public int? OtherUnit;
+        public int? TargetUnitTag;
+
+        public bool ReadField(TypedProtocolDecoder decoder, string name, int fieldTypeId)
+        {
+            switch (name)
+            {
+                case "m_unitGroup":
+                    UnitGroup = decoder.ReadNullableInt(fieldTypeId);
+                    return true;
+                case "m_abil":
+                    SCmdAbilityReadState ability = default;
+                    decoder.ReadStruct(fieldTypeId, ref ability);
+                    AbilLink = ability.AbilLink;
+                    AbilCmdIndex = ability.AbilCmdIndex;
+                    AbilCmdData = ability.AbilCmdData;
+                    return true;
+                case "m_data":
+                    SCmdDataChoiceHandler data = default;
+                    decoder.ReadChoice(fieldTypeId, ref data);
+                    TargetX = data.TargetX;
+                    TargetY = data.TargetY;
+                    TargetZ = data.TargetZ;
+                    TargetUnitTag = data.TargetUnitTag;
+                    return true;
+                case "m_cmdFlags":
+                    CmdFlags = decoder.ReadInt(fieldTypeId);
+                    return true;
+                case "m_sequence":
+                    Sequence = decoder.ReadNullableInt(fieldTypeId) ?? 0;
+                    return true;
+                case "m_otherUnit":
+                    OtherUnit = decoder.ReadNullableInt(fieldTypeId);
+                    return true;
+                default:
+                    return false;
+            }
+        }
+    }
+
+    private struct SCmdAbilityReadState : IStructFieldReader
+    {
+        public int AbilLink;
+        public int AbilCmdIndex;
+        public string? AbilCmdData;
+
+        public bool ReadField(TypedProtocolDecoder decoder, string name, int fieldTypeId)
+        {
+            switch (name)
+            {
+                case "m_abilLink":
+                    AbilLink = decoder.ReadInt(fieldTypeId);
+                    return true;
+                case "m_abilCmdIndex":
+                    AbilCmdIndex = decoder.ReadInt(fieldTypeId);
+                    return true;
+                case "m_abilCmdData":
+                    AbilCmdData = decoder.ReadNullableString(fieldTypeId);
+                    return true;
+                default:
+                    return false;
+            }
+        }
+    }
+
+    private struct SCmdDataChoiceHandler : IChoiceHandler
+    {
+        public long? TargetX;
+        public long? TargetY;
+        public long? TargetZ;
+        public int? TargetUnitTag;
+
+        public bool HandleChoice(TypedProtocolDecoder decoder, string name, int choiceTypeId)
+        {
+            switch (name)
+            {
+                case "TargetPoint":
+                    SCmdTargetPointReadState point = default;
+                    decoder.ReadStruct(choiceTypeId, ref point);
+                    SetTarget(point);
+                    return true;
+                case "TargetUnit":
+                    SCmdTargetUnitReadState unit = default;
+                    decoder.ReadStruct(choiceTypeId, ref unit);
+                    TargetUnitTag = unit.Tag;
+                    if (unit.HasSnapshotPoint)
+                    {
+                        SetTarget(unit.SnapshotPoint);
+                    }
+                    return true;
+                default:
+                    return false;
+            }
+        }
+
+        private void SetTarget(SCmdTargetPointReadState point)
+        {
+            TargetX = point.X;
+            TargetY = point.Y;
+            TargetZ = point.Z;
+        }
+    }
+
+    private struct SCmdTargetUnitReadState : IStructFieldReader
+    {
+        public bool HasSnapshotPoint;
+        public SCmdTargetPointReadState SnapshotPoint;
+        public int? Tag;
+
+        public bool ReadField(TypedProtocolDecoder decoder, string name, int fieldTypeId)
+        {
+            if (name == "m_tag")
+            {
+                Tag = decoder.ReadInt(fieldTypeId);
+                return true;
+            }
+
+            if (name != "m_snapshotPoint")
+            {
+                return false;
+            }
+
+            decoder.ReadStruct(fieldTypeId, ref SnapshotPoint);
+            HasSnapshotPoint = true;
+            return true;
+        }
+    }
+
+    private struct SCmdTargetPointReadState : IStructFieldReader
+    {
+        public long X;
+        public long Y;
+        public long Z;
+
+        public bool ReadField(TypedProtocolDecoder decoder, string name, int fieldTypeId)
+        {
+            switch (name)
+            {
+                case "x":
+                    X = decoder.ReadLong(fieldTypeId);
+                    return true;
+                case "y":
+                    Y = decoder.ReadLong(fieldTypeId);
+                    return true;
+                case "z":
+                    Z = decoder.ReadLong(fieldTypeId);
+                    return true;
+                default:
+                    return false;
+            }
+        }
+    }
+
+    private static SHijackReplayGameEvent ReadSHijackReplayGameEvent(
+        TypedProtocolDecoder decoder,
+        int typeId,
+        int userId,
+        int eventId,
+        int bits,
+        int gameloop)
+    {
+        SHijackReplayGameEventReadState state = new() { UserInfos = [] };
+        decoder.ReadStruct(typeId, ref state);
+        return new SHijackReplayGameEvent(userId, eventId, bits, gameloop, state.UserInfos, state.Method);
+    }
+
+    private struct SHijackReplayGameEventReadState : IStructFieldReader
+    {
+        public List<HijackReplayUserInfo> UserInfos;
+        public int Method;
+
+        public bool ReadField(TypedProtocolDecoder decoder, string name, int fieldTypeId)
+        {
+            switch (name)
+            {
+                case "m_userInfos":
+                    HijackReplayUserInfoArrayReader users = new(UserInfos);
+                    decoder.ReadArray(fieldTypeId, ref users);
+                    return true;
+                case "m_method":
+                    Method = decoder.ReadInt(fieldTypeId);
+                    return true;
+                default:
+                    return false;
+            }
+        }
+    }
+
+    private readonly struct HijackReplayUserInfoArrayReader(List<HijackReplayUserInfo> users) : IArrayItemReader
+    {
+        public bool ReadItem(TypedProtocolDecoder decoder, int itemTypeId)
+        {
+            HijackReplayUserInfoReadState state = default;
+            decoder.ReadStruct(itemTypeId, ref state);
+            users.Add(new HijackReplayUserInfo(
+                state.GameUserId,
+                state.Observe,
+                state.Name ?? string.Empty,
+                state.ToonHandle,
+                state.ClanTag,
+                state.ClanLogo));
+            return true;
+        }
+    }
+
+    private struct HijackReplayUserInfoReadState : IStructFieldReader
+    {
+        public int GameUserId;
+        public int Observe;
+        public string? Name;
+        public string? ToonHandle;
+        public string? ClanTag;
+        public string? ClanLogo;
+
+        public bool ReadField(TypedProtocolDecoder decoder, string name, int fieldTypeId)
+        {
+            switch (name)
+            {
+                case "m_gameUserId":
+                    GameUserId = decoder.ReadInt(fieldTypeId);
+                    return true;
+                case "m_observe":
+                    Observe = decoder.ReadInt(fieldTypeId);
+                    return true;
+                case "m_name":
+                    Name = decoder.ReadString(fieldTypeId);
+                    return true;
+                case "m_toonHandle":
+                    ToonHandle = decoder.ReadNullableString(fieldTypeId);
+                    return true;
+                case "m_clanTag":
+                    ClanTag = decoder.ReadNullableString(fieldTypeId);
+                    return true;
+                case "m_clanLogo":
+                    ClanLogo = decoder.ReadNullableString(fieldTypeId);
+                    return true;
+                default:
+                    return false;
+            }
+        }
+    }
+
+    private static SGameUserJoinEvent ReadSGameUserJoinEvent(
+        TypedProtocolDecoder decoder,
+        int typeId,
+        int userId,
+        int eventId,
+        int bits,
+        int gameloop)
+    {
+        SGameUserJoinEventReadState state = default;
+        decoder.ReadStruct(typeId, ref state);
+        return new SGameUserJoinEvent(
+            userId,
+            eventId,
+            bits,
+            gameloop,
+            state.Observe,
+            state.Name ?? string.Empty,
+            state.ToonHandle,
+            state.ClanTag,
+            state.ClanLogo,
+            state.Hijack,
+            state.HijackCloneGameUserId);
+    }
+
+    private struct SGameUserJoinEventReadState : IStructFieldReader
+    {
+        public int Observe;
+        public string? Name;
+        public string? ToonHandle;
+        public string? ClanTag;
+        public string? ClanLogo;
+        public bool Hijack;
+        public int? HijackCloneGameUserId;
+
+        public bool ReadField(TypedProtocolDecoder decoder, string name, int fieldTypeId)
+        {
+            switch (name)
+            {
+                case "m_observe":
+                    Observe = decoder.ReadInt(fieldTypeId);
+                    return true;
+                case "m_name":
+                    Name = decoder.ReadString(fieldTypeId);
+                    return true;
+                case "m_toonHandle":
+                    ToonHandle = decoder.ReadNullableString(fieldTypeId);
+                    return true;
+                case "m_clanTag":
+                    ClanTag = decoder.ReadNullableString(fieldTypeId);
+                    return true;
+                case "m_clanLogo":
+                    ClanLogo = decoder.ReadNullableString(fieldTypeId);
+                    return true;
+                case "m_hijack":
+                    Hijack = decoder.ReadBool(fieldTypeId);
+                    return true;
+                case "m_hijackCloneGameUserId":
+                    HijackCloneGameUserId = decoder.ReadNullableInt(fieldTypeId);
+                    return true;
+                default:
+                    return false;
+            }
+        }
+    }
+
     private static SBankFileEvent ReadSBankFileEvent(TypedProtocolDecoder decoder, int typeId, int userId, int eventId, int bits, int gameloop)
     {
         SBankFileEventReadState state = default;

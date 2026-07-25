@@ -1,7 +1,9 @@
 using System.Globalization;
 using System.Reflection;
+using System.Security.Cryptography;
 using System.Text.Json;
 using System.Text.Json.Serialization;
+using System.Text.Json.Serialization.Metadata;
 using System.Text.RegularExpressions;
 
 var repoRoot = args.Length > 0
@@ -22,21 +24,89 @@ var inputResources = assembly
     .Order(StringComparer.Ordinal)
     .ToArray();
 
+var payloadGroupsByHash = new Dictionary<string, List<ProtocolPayloadGroup>>(StringComparer.Ordinal);
 foreach (var resourceName in inputResources)
 {
     using var resourceStream = assembly.GetManifestResourceStream(resourceName)
         ?? throw new InvalidOperationException($"Protocol resource not found: {resourceName}");
     var compactVersion = ProtocolPythonParser.Parse(resourceName, resourceStream);
-    var outputFile = Path.Combine(versionsDirectory, $"protocol{compactVersion.Version}.json");
-    using var output = File.Create(outputFile);
-    JsonSerializer.Serialize(output, compactVersion, JsonContext.Default.CompactProtocolVersion);
-    output.WriteByte((byte)'\n');
+    var normalizedJson = JsonSerializer.SerializeToUtf8Bytes(
+        compactVersion with { Version = 0 },
+        JsonContext.Default.CompactProtocolVersion);
+    var hash = Convert.ToHexString(SHA256.HashData(normalizedJson));
+
+    if (!payloadGroupsByHash.TryGetValue(hash, out var hashGroups))
+    {
+        hashGroups = [];
+        payloadGroupsByHash.Add(hash, hashGroups);
+    }
+
+    var payloadGroup = hashGroups.Find(group => group.NormalizedJson.AsSpan().SequenceEqual(normalizedJson));
+    if (payloadGroup is null)
+    {
+        payloadGroup = new ProtocolPayloadGroup(normalizedJson);
+        hashGroups.Add(payloadGroup);
+    }
+
+    payloadGroup.Versions.Add(compactVersion);
 }
 
+var payloadGroups = payloadGroupsByHash.Values
+    .SelectMany(groups => groups)
+    .OrderBy(group => group.Versions.Min(version => version.Version))
+    .ToArray();
+var versionMap = new Dictionary<int, int>(inputResources.Length);
+var outputs = new Dictionary<string, byte[]>(StringComparer.OrdinalIgnoreCase);
+
+foreach (var payloadGroup in payloadGroups)
+{
+    payloadGroup.Versions.Sort(static (left, right) => left.Version.CompareTo(right.Version));
+    var canonicalVersion = payloadGroup.Versions[0];
+    var outputFile = Path.Combine(versionsDirectory, $"protocol{canonicalVersion.Version}.json");
+    outputs.Add(
+        outputFile,
+        SerializeWithNewline(canonicalVersion, JsonContext.Default.CompactProtocolVersion));
+
+    foreach (var version in payloadGroup.Versions)
+    {
+        versionMap.Add(version.Version, canonicalVersion.Version);
+    }
+}
+
+var orderedVersionMap = versionMap
+    .OrderBy(entry => entry.Key)
+    .ToDictionary();
+var manifest = new ProtocolVersionManifest { Versions = orderedVersionMap };
+outputs.Add(
+    Path.Combine(versionsDirectory, "protocol-versions.json"),
+    SerializeWithNewline(manifest, JsonContext.Default.ProtocolVersionManifest));
+
+foreach (var (outputFile, content) in outputs)
+{
+    File.WriteAllBytes(outputFile, content);
+}
+
+foreach (var existingFile in Directory.EnumerateFiles(versionsDirectory, "protocol*.json"))
+{
+    if (!outputs.ContainsKey(existingFile))
+    {
+        File.Delete(existingFile);
+    }
+}
+
+var outputBytes = outputs.Values.Sum(content => (long)content.Length);
 Console.WriteLine(
     string.Create(
         CultureInfo.InvariantCulture,
-        $"Generated {inputResources.Length} compact protocol JSON files in {versionsDirectory}."));
+        $"Generated {payloadGroups.Length} unique protocol payloads and a {inputResources.Length}-version manifest ({outputBytes} bytes) in {versionsDirectory}."));
+
+static byte[] SerializeWithNewline<T>(T value, JsonTypeInfo<T> jsonTypeInfo)
+{
+    using var output = new MemoryStream();
+    JsonSerializer.Serialize(output, value, jsonTypeInfo);
+    output.WriteByte((byte)'\n');
+    return output.ToArray();
+}
 
 static string FindRepoRoot(string startDirectory)
 {
@@ -428,9 +498,22 @@ internal sealed record CompactEventType
     public string Name { get; init; } = string.Empty;
 }
 
+internal sealed class ProtocolPayloadGroup(byte[] normalizedJson)
+{
+    public byte[] NormalizedJson { get; } = normalizedJson;
+    public List<CompactProtocolVersion> Versions { get; } = [];
+}
+
+internal sealed record ProtocolVersionManifest
+{
+    [JsonPropertyName("v")]
+    public Dictionary<int, int> Versions { get; init; } = [];
+}
+
 [JsonSourceGenerationOptions(
     PropertyNamingPolicy = JsonKnownNamingPolicy.CamelCase,
     DefaultIgnoreCondition = JsonIgnoreCondition.WhenWritingNull,
     WriteIndented = false)]
 [JsonSerializable(typeof(CompactProtocolVersion))]
+[JsonSerializable(typeof(ProtocolVersionManifest))]
 internal sealed partial class JsonContext : JsonSerializerContext;

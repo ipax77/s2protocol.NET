@@ -9,17 +9,17 @@
     <PackageReadmeFile>README.md</PackageReadmeFile>
     <RepositoryUrl>https://github.com/ipax77/s2protocol.NET</RepositoryUrl>
     <PackageTags>Starcraft2;Blizzard;s2protocol;Replay;Replays;Decoder;C#;Dotnet;Library;Parser</PackageTags>
-    <AssemblyVersion>0.9.4.0</AssemblyVersion>
+    <AssemblyVersion>0.9.6.0</AssemblyVersion>
     <Owners>Philipp Hetzner</Owners>
     <Authors>Philipp Hetzner</Authors>
-    <Version>0.9.4</Version>
-	  <FileVersion>0.9.4.0</FileVersion>   
-    <PackageVersion>0.9.4.0</PackageVersion> 
+    <Version>0.9.6</Version>
+	  <FileVersion>0.9.6.0</FileVersion>
+    <PackageVersion>0.9.6</PackageVersion>
     <PackageLicenseExpression>MIT</PackageLicenseExpression>
     <EnforceCodeStyleInBuild>true</EnforceCodeStyleInBuild>
     <EnableNETAnalyzers>true</EnableNETAnalyzers>
-    <AnalysisMode>All</AnalysisMode>
-    <AnalysisLevel>latest</AnalysisLevel>
+    <AnalysisMode>Recommended</AnalysisMode>
+    <AnalysisLevel>10</AnalysisLevel>
     <RunAnalyzersDuringBuild>true</RunAnalyzersDuringBuild>
     <RunAnalyzersDuringLiveAnalysis>true</RunAnalyzersDuringLiveAnalysis>
     <CodeAnalysisTreatWarningsAsErrors>false</CodeAnalysisTreatWarningsAsErrors>
@@ -27,7 +27,7 @@
     <IsAotCompatible>true</IsAotCompatible>
     <GenerateDocumentationFile>true</GenerateDocumentationFile>
     <WarningsAsErrors>nullable</WarningsAsErrors>
-    <LangVersion>latest</LangVersion>
+    <LangVersion>14</LangVersion>
     <WarningsNotAsErrors></WarningsNotAsErrors>
     <DisabledWarnings></DisabledWarnings>
     <NoWarn>CS1591</NoWarn>

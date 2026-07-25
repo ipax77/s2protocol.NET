@@ -11,32 +11,36 @@ internal static partial class Parse
         int cmdFalgs = GetInt(gameDic, "m_cmdFlags");
         int sequence = GetInt(gameDic, "m_sequence");
         int? otherUnit = GetNullableInt(gameDic, "m_otherUnit");
-        (long? targetX, long? targetY, long? targetZ) = GetSCmdEventTarget(gameDic);
-        return new SCmdEvent(gameEvent.UserId, gameEvent.EventId, gameEvent.Bits, gameEvent.Gameloop, unitGroup, abilLink, abilCmdIndex, abilCmdData, targetX, targetY, targetZ, cmdFalgs, sequence, otherUnit);
+        (long? targetX, long? targetY, long? targetZ, int? targetUnitTag) = GetSCmdEventTarget(gameDic);
+        return new SCmdEvent(gameEvent.UserId, gameEvent.EventId, gameEvent.Bits, gameEvent.Gameloop, unitGroup, abilLink, abilCmdIndex, abilCmdData, targetX, targetY, targetZ, cmdFalgs, sequence, otherUnit, targetUnitTag);
     }
 
-    private static (long?, long?, long?) GetSCmdEventTarget(Dictionary<string, object> pydic)
+    private static (long?, long?, long?, int?) GetSCmdEventTarget(Dictionary<string, object> pydic)
     {
-        if (pydic.TryGetValue("m_data", out object? data))
+        if (pydic.TryGetValue("m_data", out object? data)
+            && data is Dictionary<string, object> dataDictionary)
         {
-            if (data != null)
+            if (dataDictionary.TryGetValue("TargetPoint", out object? point)
+                && point is Dictionary<string, object> pointDictionary)
             {
-                if (pydic.TryGetValue("TargetPoint", out object? target))
+                return (GetBigInt(pointDictionary, "x"), GetBigInt(pointDictionary, "y"), GetBigInt(pointDictionary, "z"), null);
+            }
+
+            if (dataDictionary.TryGetValue("TargetUnit", out object? unit)
+                && unit is Dictionary<string, object> unitDictionary)
+            {
+                int? targetUnitTag = GetNullableInt(unitDictionary, "m_tag");
+                if (unitDictionary.TryGetValue("m_snapshotPoint", out object? snapshot)
+                    && snapshot is Dictionary<string, object> snapshotDictionary)
                 {
-                    if (target != null)
-                    {
-                        if (target is Dictionary<string, object> targetDic)
-                        {
-                            long x = GetBigInt(targetDic, "x");
-                            long y = GetBigInt(targetDic, "y");
-                            long z = GetBigInt(targetDic, "z");
-                            return (x, y, z);
-                        }
-                    }
+                    return (GetBigInt(snapshotDictionary, "x"), GetBigInt(snapshotDictionary, "y"), GetBigInt(snapshotDictionary, "z"), targetUnitTag);
                 }
+
+                return (null, null, null, targetUnitTag);
             }
         }
-        return (null, null, null);
+
+        return (null, null, null, null);
     }
 
     private static (int, int, string?) GetAbil(Dictionary<string, object> pydic)

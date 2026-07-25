@@ -77,6 +77,8 @@ public enum GameEventType
     STriggerButtonPressedEvent = 36,
     STriggerGameMenuItemSelectedEvent = 37,
     STriggerMouseMovedEvent = 38,
+    SHijackReplayGameEvent = 39,
+    SGameUserJoinEvent = 40,
 
 #pragma warning restore CS1591 // Missing XML comment for publicly visible type or member
 }
