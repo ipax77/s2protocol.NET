@@ -43,6 +43,68 @@ public sealed class GameEventTests
     }
 
     [Fact]
+    public async Task SelectionDeltasAreStronglyTypedAsync()
+    {
+        using ReplayDecoder decoder = new();
+        Sc2Replay replay = Assert.IsType<Sc2Replay>(await decoder.DecodeAsync(
+            Path.Combine(AssemblyPath, "replays", "test6.SC2Replay"),
+            new ReplayDecoderOptions
+            {
+                Initdata = false,
+                Details = false,
+                Metadata = false,
+                MessageEvents = false,
+                TrackerEvents = false,
+                GameEvents = true,
+                AttributeEvents = false,
+            }));
+
+        GameEvents gameEvents = Assert.IsType<GameEvents>(replay.GameEvents);
+        SSelectionDeltaEvent selection = gameEvents.BaseGameEvents
+            .OfType<SSelectionDeltaEvent>()
+            .First(selection => selection.ControlGroupId == 10);
+
+        Assert.Equal(2, selection.Gameloop);
+        Assert.Equal(0, selection.UserId);
+        Assert.Equal([69730305], selection.Delta.AddUnitTags);
+        Assert.Empty(selection.Delta.ZeroIndices);
+        Assert.Equal(0, selection.Delta.SubgroupIndex);
+        SelectionDeltaEventDeltaSubGroup subgroup = Assert.Single(selection.Delta.AddSubgroups);
+        Assert.Equal(3023, subgroup.UnitLink);
+        Assert.Equal(0, subgroup.SubgroupPriority);
+        Assert.Equal(1, subgroup.Count);
+        Assert.Equal(1, subgroup.IntraSubgroupPriority);
+    }
+
+    [Fact]
+    public async Task CommandManagerStatesAreStronglyTypedAsync()
+    {
+        using ReplayDecoder decoder = new();
+        Sc2Replay replay = Assert.IsType<Sc2Replay>(await decoder.DecodeAsync(
+            Path.Combine(AssemblyPath, "replays", "test6.SC2Replay"),
+            new ReplayDecoderOptions
+            {
+                Initdata = false,
+                Details = false,
+                Metadata = false,
+                MessageEvents = false,
+                TrackerEvents = false,
+                GameEvents = true,
+                AttributeEvents = false,
+            }));
+
+        GameEvents gameEvents = Assert.IsType<GameEvents>(replay.GameEvents);
+        SCommandManagerStateEvent commandState = gameEvents.BaseGameEvents
+            .OfType<SCommandManagerStateEvent>()
+            .First();
+
+        Assert.Equal(228, commandState.Gameloop);
+        Assert.Equal(5, commandState.UserId);
+        Assert.Equal(1, commandState.State);
+        Assert.Equal(2, commandState.Sequence);
+    }
+
+    [Fact]
     public async Task UnitTargetCommandsExposeTargetUnitTagAsync()
     {
         using ReplayDecoder decoder = new();

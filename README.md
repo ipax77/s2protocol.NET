@@ -107,7 +107,13 @@ Decode-only process comparison using `test6.SC2Replay` (base build `88500`). Eac
 
 # ChangeLog
 
-<details open="open"><summary>v0.9.6</summary>
+<details open="open"><summary>v0.9.7</summary>
+
+>- Decode selection delta and command manager state game events into their strongly typed models
+
+</details>
+
+<details><summary>v0.9.6</summary>
 
 >- Add missing GameEvent types
 >- Add new s2protocol versions with deduplication
