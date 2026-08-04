@@ -14,6 +14,45 @@ public sealed class GameEventTests
         ?? throw new InvalidOperationException("Could not resolve the test assembly path.");
 
     [Fact]
+    public async Task ValidReplayCorpusContainsNoUnknownGameEventsAsync()
+    {
+        string replayDirectory = Path.Combine(AssemblyPath, "replays");
+        string[] replayPaths = Directory.GetFiles(replayDirectory, "*.SC2Replay", SearchOption.TopDirectoryOnly)
+            .Where(path => !Path.GetFileName(path).Contains("Error", StringComparison.OrdinalIgnoreCase)
+                && !string.Equals(Path.GetFileName(path), "test.SC2Replay", StringComparison.OrdinalIgnoreCase))
+            .Order(StringComparer.Ordinal)
+            .ToArray();
+
+        foreach (string replayPath in replayPaths)
+        {
+            using ReplayDecoder decoder = new();
+            Sc2Replay replay;
+            try
+            {
+                replay = Assert.IsType<Sc2Replay>(await decoder.DecodeAsync(
+                    replayPath,
+                    new ReplayDecoderOptions
+                    {
+                        Initdata = false,
+                        Details = false,
+                        Metadata = false,
+                        MessageEvents = false,
+                        TrackerEvents = false,
+                        GameEvents = true,
+                        AttributeEvents = false,
+                    }));
+            }
+            catch (DecodeException exception)
+            {
+                throw new InvalidOperationException($"Failed to decode {Path.GetFileName(replayPath)}.", exception);
+            }
+
+            GameEvents gameEvents = Assert.IsType<GameEvents>(replay.GameEvents);
+            Assert.DoesNotContain(gameEvents.BaseGameEvents, gameEvent => gameEvent is UnknownGameEvent);
+        }
+    }
+
+    [Fact]
     public async Task CommandsAreStronglyTypedAsync()
     {
         using ReplayDecoder decoder = new();

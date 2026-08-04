@@ -360,9 +360,17 @@ public sealed partial record S2ProtocolVersion
                     AddSubgroups = subgroupReader.Values;
                     return true;
                 case "m_removeMask":
-                    SelectionRemoveMaskChoiceHandler removeMask = default;
-                    decoder.ReadChoice(fieldTypeId, ref removeMask);
-                    ZeroIndices = removeMask.ZeroIndices;
+                    if (decoder.IsChoice(fieldTypeId))
+                    {
+                        SelectionRemoveMaskChoiceHandler removeMask = default;
+                        decoder.ReadChoice(fieldTypeId, ref removeMask);
+                        ZeroIndices = removeMask.ZeroIndices;
+                    }
+                    else
+                    {
+                        SelectionLegacyRemoveMaskReadState removeMask = default;
+                        decoder.ReadStruct(fieldTypeId, ref removeMask);
+                    }
                     return true;
                 case "m_subgroupIndex":
                     SubgroupIndex = decoder.ReadInt(fieldTypeId);
@@ -371,6 +379,11 @@ public sealed partial record S2ProtocolVersion
                     return false;
             }
         }
+    }
+
+    private struct SelectionLegacyRemoveMaskReadState : IStructFieldReader
+    {
+        public bool ReadField(TypedProtocolDecoder decoder, string name, int fieldTypeId) => false;
     }
 
     private struct IntArrayReader : IArrayItemReader

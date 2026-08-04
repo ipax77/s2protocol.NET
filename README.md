@@ -55,6 +55,8 @@ Console.WriteLine(replay.TrackerEvents.SUnitBornEvents.FirstOrDefault());
 # Known Limitations / ToDo
 
 ## GameEvents
+All 105 game-event names present in the bundled Blizzard protocol schemas decode to public strongly typed models. `UnknownGameEvent` is reserved for unsupported future protocol names.
+
 STriggerSoundLengthSyncEvent => no data
 SControlGroupUpdateEvent => no mask
 No BigInteger support
@@ -110,6 +112,8 @@ Decode-only process comparison using `test6.SC2Replay` (base build `88500`). Eac
 <details open="open"><summary>v0.9.7</summary>
 
 >- Decode selection delta and command manager state game events into their strongly typed models
+>- Add strongly typed coverage for all 105 game-event names in the bundled Blizzard protocols
+>- Preserve historical game-event layouts and expose dialog choices, camera/mouse coordinates, and millisecond decrement data
 
 </details>
 
