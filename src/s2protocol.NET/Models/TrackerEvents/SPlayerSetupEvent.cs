@@ -8,7 +8,7 @@ public sealed class SPlayerSetupEvent(
     int gameloop,
     int type,
     int? userId,
-    int slotId) : TrackerEvent(
+    int? slotId) : TrackerEvent(
         playerId,
         eventId,
         TrackerEventType.SPlayerSetupEvent,
@@ -17,5 +17,5 @@ public sealed class SPlayerSetupEvent(
 {
     public int Type { get; } = type;
     public int? UserId { get; } = userId;
-    public int SlotId { get; } = slotId;
+    public int? SlotId { get; } = slotId;
 }

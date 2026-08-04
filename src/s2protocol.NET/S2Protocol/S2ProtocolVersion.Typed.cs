@@ -95,16 +95,16 @@ public sealed partial record S2ProtocolVersion
         DecodeEventStream(decoder, TrackerEventIdTypeId ?? 2, TrackerEvents, decodeUserId: false, ref handler);
 
         return new TrackerEvents(
-            [.. playerSetupEvents],
-            [.. playerStatsEvents],
-            [.. unitBornEvents],
-            [.. unitDiedEvents],
-            [.. unitOwnerChangeEvents],
-            [.. unitPositionsEvents],
-            [.. unitTypeChangeEvents],
-            [.. upgradeEvents],
-            [.. unitInitEvents],
-            [.. unitDoneEvents]);
+            playerSetupEvents,
+            playerStatsEvents,
+            unitBornEvents,
+            unitDiedEvents,
+            unitOwnerChangeEvents,
+            unitPositionsEvents,
+            unitTypeChangeEvents,
+            upgradeEvents,
+            unitInitEvents,
+            unitDoneEvents);
     }
 
     public static AttributeEvents DecodeReplayAttributeEvents(ReadOnlyMemory<byte> content)

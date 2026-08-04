@@ -71,16 +71,16 @@ internal static partial class Parse
         }
 
         var events = new TrackerEvents(
-            playerSetupEvents.ToArray(),
-            playerStatsEvents.ToArray(),
-            unitBornEvents.ToArray(),
-            unitDiedEvents.ToArray(),
-            unitOwnerChangeEvents.ToArray(),
-            unitPositionsEvents.ToArray(),
-            unitTypeChangeEvents.ToArray(),
-            upgradeEvents.ToArray(),
-            unitInitEvents.ToArray(),
-            unitDoneEvents.ToArray());
+            playerSetupEvents,
+            playerStatsEvents,
+            unitBornEvents,
+            unitDiedEvents,
+            unitOwnerChangeEvents,
+            unitPositionsEvents,
+            unitTypeChangeEvents,
+            upgradeEvents,
+            unitInitEvents,
+            unitDoneEvents);
 
         return events;
     }
@@ -117,10 +117,10 @@ internal static partial class Parse
 
     internal static void SetTrackerEventsUnitConnections(TrackerEvents trackerEvents)
     {
-        var diedByUnitIndex = new Dictionary<int, SUnitDiedEvent>();
-        var doneByUnitIndex = new Dictionary<int, SUnitDoneEvent>();
-        var bornByUnitTag = new Dictionary<UnitTag, SUnitBornEvent>();
-        var initByUnitTag = new Dictionary<UnitTag, SUnitInitEvent>();
+        var diedByUnitIndex = new Dictionary<int, SUnitDiedEvent>(trackerEvents.SUnitDiedEvents.Count);
+        var doneByUnitIndex = new Dictionary<int, SUnitDoneEvent>(trackerEvents.SUnitDoneEvents.Count);
+        var bornByUnitTag = new Dictionary<UnitTag, SUnitBornEvent>(trackerEvents.SUnitBornEvents.Count);
+        var initByUnitTag = new Dictionary<UnitTag, SUnitInitEvent>(trackerEvents.SUnitInitEvents.Count);
 
         foreach (var e in trackerEvents.SUnitDiedEvents)
         {
@@ -333,7 +333,7 @@ internal static partial class Parse
     {
         int type = GetInt(pydic, "m_type");
         int? userId = GetNullableInt(pydic, "m_userId");
-        int slotId = GetInt(pydic, "m_slotId");
+        int? slotId = GetNullableInt(pydic, "m_slotId");
         return new SPlayerSetupEvent(header.PlayerId,
                                      header.EventId,
                                      header.Bits,

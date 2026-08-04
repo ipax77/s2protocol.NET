@@ -97,6 +97,31 @@ public class SingleGameEventsReplayDecodeBenchmarks
 
 [MemoryDiagnoser]
 [ShortRunJob]
+public class SingleTrackerEventsReplayDecodeBenchmarks
+{
+    private string replayPath = string.Empty;
+
+    [GlobalSetup]
+    public void Setup()
+    {
+        replayPath = ReplayBenchmarkData.GetSingleReplayPath();
+    }
+
+    [Benchmark]
+    public async Task<ReplayDecodeSummary> DecodeSingleReplayTrackerEventsOnly()
+    {
+        ReplayDecoderOptions options = ReplayDecodeMode.CreateOptions(ReplayDecodeMode.TrackerEventsOnly);
+
+        using ReplayDecoder replayDecoder = new();
+        Sc2Replay replay = await replayDecoder.DecodeAsync(replayPath, options, CancellationToken.None).ConfigureAwait(false)
+            ?? throw new InvalidOperationException($"Could not decode replay '{replayPath}'.");
+
+        return ReplayDecodeSummary.From(replay);
+    }
+}
+
+[MemoryDiagnoser]
+[ShortRunJob]
 public class ParallelReplayDecodeBenchmarks
 {
     private string[] replayPaths = [];
@@ -173,9 +198,10 @@ internal static class ReplayDecodeMode
     public const string HeaderOnly = nameof(HeaderOnly);
     public const string DirectStrikeCore = nameof(DirectStrikeCore);
     public const string GameEventsOnly = nameof(GameEventsOnly);
+    public const string TrackerEventsOnly = nameof(TrackerEventsOnly);
     public const string Full = nameof(Full);
 
-    public static readonly string[] Names = [HeaderOnly, DirectStrikeCore, GameEventsOnly, Full];
+    public static readonly string[] Names = [HeaderOnly, DirectStrikeCore, GameEventsOnly, TrackerEventsOnly, Full];
 
     public static ReplayDecoderOptions CreateOptions(string mode)
     {
@@ -209,6 +235,16 @@ internal static class ReplayDecodeMode
                 GameEvents = true,
                 MessageEvents = false,
                 TrackerEvents = false,
+                AttributeEvents = false,
+            },
+            TrackerEventsOnly => new ReplayDecoderOptions
+            {
+                Details = false,
+                Initdata = false,
+                Metadata = false,
+                GameEvents = false,
+                MessageEvents = false,
+                TrackerEvents = true,
                 AttributeEvents = false,
             },
             Full => new ReplayDecoderOptions(),

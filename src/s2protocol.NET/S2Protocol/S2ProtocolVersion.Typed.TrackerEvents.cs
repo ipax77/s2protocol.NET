@@ -16,7 +16,7 @@ public sealed partial record S2ProtocolVersion
         public int PlayerId;
         public int Type;
         public int? UserId;
-        public int SlotId;
+        public int? SlotId;
 
         public bool ReadField(TypedProtocolDecoder decoder, string name, int fieldTypeId)
         {
@@ -32,7 +32,7 @@ public sealed partial record S2ProtocolVersion
                     UserId = decoder.ReadNullableInt(fieldTypeId);
                     return true;
                 case "m_slotId":
-                    SlotId = decoder.ReadInt(fieldTypeId);
+                    SlotId = decoder.ReadNullableInt(fieldTypeId);
                     return true;
                 default:
                     return false;

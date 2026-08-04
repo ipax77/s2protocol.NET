@@ -177,18 +177,7 @@ public sealed partial class ReplayDecoder : IDisposable
     }
 
     private static int GetUnitIndex(int unitTagIndex, int unitTagRecyle)
-    {
-        // todo: can be BitInterger
-        var unitTag = S2ProtocolVersion.UnitTag(unitTagIndex, unitTagRecyle);
-        if (unitTag is int intUnitTag)
-        {
-            return intUnitTag;
-        }
-        else
-        {
-            return 0;
-        }
-    }
+        => S2ProtocolVersion.UnitTag(unitTagIndex, unitTagRecyle);
 
     private static async Task<AttributeEvents?> GetAttributeEventsAsync(MPQArchive archive, CancellationToken token)
     {

@@ -114,6 +114,10 @@ Decode-only process comparison using `test6.SC2Replay` (base build `88500`). Eac
 >- Decode selection delta and command manager state game events into their strongly typed models
 >- Add strongly typed coverage for all 105 game-event names in the bundled Blizzard protocols
 >- Preserve historical game-event layouts and expose dialog choices, camera/mouse coordinates, and millisecond decrement data
+>- Verify strongly typed coverage for all 10 tracker-event names across the bundled Blizzard protocols
+>- Preserve the optional tracker player setup slot ID instead of converting a missing value to zero
+>- Add synthetic versioned tracker-event coverage for every canonical protocol resource
+>- Reduce tracker-only benchmark allocations from 6.96 MB to 6.76 MB per decode without a time regression
 
 </details>
 
