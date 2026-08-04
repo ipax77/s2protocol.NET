@@ -115,7 +115,7 @@ Decode-only process comparison using `test6.SC2Replay` (base build `88500`). Eac
 
 # ChangeLog
 
-<details open="open"><summary>v0.9.7</summary>
+<details open="open"><summary>v0.9.8</summary>
 
 >- Decode selection delta and command manager state game events into their strongly typed models
 >- Add strongly typed coverage for all 105 game-event names in the bundled Blizzard protocols
