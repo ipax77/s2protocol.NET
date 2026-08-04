@@ -60,6 +60,9 @@ All 105 game-event names present in the bundled Blizzard protocol schemas decode
 ## MessageEvents
 All five message-event names present in the bundled Blizzard protocol schemas decode to public strongly typed models in stream order. Use `replay.MessageEvents.BaseMessageEvents` for complete coverage; the existing `ChatMessages` and `PingMessages` properties remain synchronized compatibility views. `UnknownMessageEvent` preserves metadata for unsupported future protocol names.
 
+## AttributeEvents
+All records in `replay.attributes.events` decode in stream order with the same generic wire semantics used by Blizzard's 95 bundled protocol definitions. Use `replay.AttributeEvents.Attributes`; the legacy `Scopes`, `MapNameSpace`, `Attrid`, and `SopeId` names remain available as compatibility aliases.
+
 STriggerSoundLengthSyncEvent => no data
 SControlGroupUpdateEvent => no mask
 No BigInteger support
@@ -124,6 +127,9 @@ Decode-only process comparison using `test6.SC2Replay` (base build `88500`). Eac
 >- Add strongly typed coverage for all five message-event names in the bundled Blizzard protocols
 >- Preserve ordered message streams while retaining mutable chat and ping compatibility views
 >- Add a message-events-only allocation benchmark
+>- Preserve every AttributeEvents record, including repeated scope and attribute IDs, with Blizzard-compatible value decoding
+>- Add corrected AttributeEvents API aliases while preserving the existing source and JSON contracts
+>- Reduce transient AttributeEvents allocations and add an attribute-events-only benchmark
 
 </details>
 

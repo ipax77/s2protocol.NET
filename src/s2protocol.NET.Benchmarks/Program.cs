@@ -3,6 +3,9 @@ using BenchmarkDotNet.Diagnosers;
 using BenchmarkDotNet.Jobs;
 using BenchmarkDotNet.Running;
 using s2protocol.NET;
+using s2protocol.NET.Models;
+using s2protocol.NET.Mpq;
+using s2protocol.NET.S2Protocol;
 
 namespace s2protocol.NET.Benchmarks;
 
@@ -147,6 +150,39 @@ public class SingleTrackerEventsReplayDecodeBenchmarks
 
 [MemoryDiagnoser]
 [ShortRunJob]
+public class SingleAttributeEventsReplayDecodeBenchmarks
+{
+    private ReadOnlyMemory<byte> attributeContent;
+    private string replayPath = string.Empty;
+
+    [GlobalSetup]
+    public void Setup()
+    {
+        replayPath = ReplayBenchmarkData.GetSingleReplayPath();
+        using MPQArchive archive = new(replayPath);
+        attributeContent = archive.ReadFile("replay.attributes.events")
+            ?? throw new InvalidOperationException($"Could not read attributes from replay '{replayPath}'.");
+    }
+
+    [Benchmark]
+    public async Task<ReplayDecodeSummary> DecodeSingleReplayAttributeEventsOnly()
+    {
+        ReplayDecoderOptions options = ReplayDecodeMode.CreateOptions(ReplayDecodeMode.AttributeEventsOnly);
+
+        using ReplayDecoder replayDecoder = new();
+        Sc2Replay replay = await replayDecoder.DecodeAsync(replayPath, options, CancellationToken.None).ConfigureAwait(false)
+            ?? throw new InvalidOperationException($"Could not decode replay '{replayPath}'.");
+
+        return ReplayDecodeSummary.From(replay);
+    }
+
+    [Benchmark]
+    public AttributeEvents DecodeAttributeEventsPayload()
+        => S2ProtocolVersion.DecodeReplayAttributeEvents(attributeContent);
+}
+
+[MemoryDiagnoser]
+[ShortRunJob]
 public class ParallelReplayDecodeBenchmarks
 {
     private string[] replayPaths = [];
@@ -202,7 +238,8 @@ public readonly record struct ReplayDecodeSummary(
     int TrackerBornEvents,
     int TrackerStatsEvents,
     int GameEvents,
-    int MessageEvents)
+    int MessageEvents,
+    int AttributeEvents)
 {
     public static ReplayDecodeSummary From(Sc2Replay replay)
     {
@@ -212,7 +249,8 @@ public readonly record struct ReplayDecodeSummary(
             replay.TrackerEvents?.SUnitBornEvents.Count ?? 0,
             replay.TrackerEvents?.SPlayerStatsEvents.Count ?? 0,
             replay.GameEvents?.BaseGameEvents.Count ?? 0,
-            replay.MessageEvents?.BaseMessageEvents.Count ?? 0);
+            replay.MessageEvents?.BaseMessageEvents.Count ?? 0,
+            replay.AttributeEvents?.Attributes.Count ?? 0);
     }
 }
 
@@ -225,10 +263,11 @@ internal static class ReplayDecodeMode
     public const string GameEventsOnly = nameof(GameEventsOnly);
     public const string MessageEventsOnly = nameof(MessageEventsOnly);
     public const string TrackerEventsOnly = nameof(TrackerEventsOnly);
+    public const string AttributeEventsOnly = nameof(AttributeEventsOnly);
     public const string Full = nameof(Full);
 
     public static readonly string[] Names =
-        [HeaderOnly, DirectStrikeCore, GameEventsOnly, MessageEventsOnly, TrackerEventsOnly, Full];
+        [HeaderOnly, DirectStrikeCore, GameEventsOnly, MessageEventsOnly, TrackerEventsOnly, AttributeEventsOnly, Full];
 
     public static ReplayDecoderOptions CreateOptions(string mode)
     {
@@ -283,6 +322,16 @@ internal static class ReplayDecodeMode
                 MessageEvents = false,
                 TrackerEvents = true,
                 AttributeEvents = false,
+            },
+            AttributeEventsOnly => new ReplayDecoderOptions
+            {
+                Details = false,
+                Initdata = false,
+                Metadata = false,
+                GameEvents = false,
+                MessageEvents = false,
+                TrackerEvents = false,
+                AttributeEvents = true,
             },
             Full => new ReplayDecoderOptions(),
             _ => throw new ArgumentOutOfRangeException(nameof(mode), mode, "Unknown replay decode mode."),

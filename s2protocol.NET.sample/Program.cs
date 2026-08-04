@@ -20,7 +20,7 @@ Console.WriteLine($"players={sc2Replay.Details?.Players.Count ?? 0}");
 Console.WriteLine($"gameEvents={sc2Replay.GameEvents?.BaseGameEvents.Count ?? 0}");
 Console.WriteLine($"messageEvents={sc2Replay.MessageEvents?.BaseMessageEvents.Count ?? 0}");
 Console.WriteLine($"trackerEvents={CountTrackerEvents(sc2Replay.TrackerEvents)}");
-Console.WriteLine($"attributeEvents={sc2Replay.AttributeEvents?.Scopes.Count ?? 0}");
+Console.WriteLine($"attributeEvents={sc2Replay.AttributeEvents?.Attributes.Count ?? 0}");
 
 GC.KeepAlive(sc2Replay);
 

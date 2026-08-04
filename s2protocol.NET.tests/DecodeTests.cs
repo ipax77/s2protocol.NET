@@ -353,12 +353,17 @@ public class DecodeTests
             decoder.Dispose();
             return;
         }
-        Assert.True(replay.AttributeEvents != null, "Could not get replay.AttributeEvents");
-        if (replay.AttributeEvents == null)
+        var attributes = Assert.IsType<Models.AttributeEvents>(replay.AttributeEvents);
+        Assert.True(attributes.Source >= 0);
+        Assert.True(attributes.MapNamespace >= 0);
+        Assert.NotEmpty(attributes.Attributes);
+        Assert.All(attributes.Attributes, attribute =>
         {
-            decoder.Dispose();
-            return;
-        }
+            Assert.InRange(attribute.Scope, byte.MinValue, byte.MaxValue);
+            Assert.True(attribute.Namespace >= 0);
+            Assert.True(attribute.AttributeId >= 0);
+            Assert.NotNull(attribute.Value);
+        });
         decoder.Dispose();
     }
 }

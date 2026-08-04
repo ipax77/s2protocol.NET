@@ -116,23 +116,19 @@ public sealed partial record S2ProtocolVersion
 
         int source = (int)buffer.ReadBits(8);
         int mapNamespace = (int)buffer.ReadBits(32);
-        _ = buffer.ReadBits(32);
-        List<AttributeEventScope> scopes = [];
-        Span<byte> rawValue = stackalloc byte[4];
+        long declaredCount = buffer.ReadBits(32);
+        List<AttributeEventScope> attributes = new(GetAttributeCapacity(content.Length, declaredCount));
 
         while (!buffer.Done())
         {
             int ns = (int)buffer.ReadBits(32);
             int attrId = (int)buffer.ReadBits(32);
             int scope = (int)buffer.ReadBits(8);
-            buffer.ReadAlignedSpan(4).CopyTo(rawValue);
-            rawValue.Reverse();
-            string value = Encoding.UTF8.GetString(rawValue).TrimEnd('\0');
-            rawValue.Reverse();
-            scopes.Add(new AttributeEventScope(scope, attrId, ns, attrId, value));
+            string value = DecodeAttributeValue(buffer.ReadAlignedSpan(AttributeValueSize));
+            attributes.Add(new AttributeEventScope(scope, attrId, ns, attrId, value));
         }
 
-        return new AttributeEvents(source, mapNamespace, scopes);
+        return new AttributeEvents(source, mapNamespace, attributes);
     }
 
     private struct HeaderReadState : IStructFieldReader

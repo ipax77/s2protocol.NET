@@ -1,4 +1,5 @@
 using System.Globalization;
+using System.Text;
 
 namespace s2protocol.NET.S2Protocol;
 
@@ -67,63 +68,87 @@ public sealed partial record S2ProtocolVersion
         return decoder.Instance(ReplayInitDataTypeId ?? 73);
     }
 
+    private const int AttributeHeaderSize = 9;
+    private const int AttributeRecordSize = 13;
+    private const int AttributeValueSize = 4;
+
     public static Dictionary<string, object> DecodeReplayAttributeEventsRaw(byte[] content)
+        => DecodeReplayAttributeEventsRaw((ReadOnlyMemory<byte>)content);
+
+    public static Dictionary<string, object> DecodeReplayAttributeEventsRaw(ReadOnlyMemory<byte> content)
     {
-        var buffer = new BitPackedBuffer(content, "little");
-        var attributes = new Dictionary<string, object>();
+        BitPackedBuffer buffer = new(content, "little");
+        Dictionary<string, object> attributes = new(3);
 
         if (buffer.Done())
         {
             return attributes;
         }
 
-        // Read initial attributes
         attributes["source"] = buffer.ReadBits(8);
         attributes["mapNamespace"] = buffer.ReadBits(32);
-        var count = buffer.ReadBits(32);
+        long declaredCount = buffer.ReadBits(32);
 
-        var scopes = new Dictionary<byte, Dictionary<uint, List<Dictionary<string, object>>>>();
+        Dictionary<byte, Dictionary<uint, List<Dictionary<string, object>>>> scopes = [];
         attributes["scopes"] = scopes;
 
         while (!buffer.Done())
         {
-            var value = new Dictionary<string, object>();
-
-            var ns = buffer.ReadBits(32);
-            var attrid = buffer.ReadBits(32);
+            long ns = buffer.ReadBits(32);
+            long attrid = buffer.ReadBits(32);
             byte scope = (byte)buffer.ReadBits(8);
-            byte[] rawValue = buffer.ReadAlignedBytes(4);
+            string valueText = DecodeAttributeValue(buffer.ReadAlignedSpan(AttributeValueSize));
+            Dictionary<string, object> value = new(3)
+            {
+                ["namespace"] = ns,
+                ["attrid"] = attrid,
+                ["value"] = valueText,
+            };
 
-            // Reverse and strip null bytes
-            Array.Reverse(rawValue);
-            string cleanedValue = System.Text.Encoding.UTF8.GetString(rawValue).TrimEnd('\0');
-
-            value["namespace"] = ns;
-            value["attrid"] = attrid;
-            value["value"] = cleanedValue;
-
-            // Ensure the scope exists
             if (!scopes.TryGetValue(scope, out var scopeDict))
             {
-                scopeDict = new Dictionary<uint, List<Dictionary<string, object>>>();
+                scopeDict = [];
                 scopes[scope] = scopeDict;
             }
-            // Ensure the attribute ID list exists
+
             if (!scopeDict.TryGetValue((uint)attrid, out var attrList))
             {
-                attrList = new List<Dictionary<string, object>>();
+                attrList = new List<Dictionary<string, object>>(
+                    Math.Min(GetAttributeCapacity(content.Length, declaredCount), 4));
                 scopeDict[(uint)attrid] = attrList;
             }
 
             attrList.Add(value);
-            {
-                scopes[scope][(uint)attrid] = new List<Dictionary<string, object>>();
-            }
-
-            scopes[scope][(uint)attrid].Add(value);
         }
 
         return attributes;
+    }
+
+    private static int GetAttributeCapacity(int contentLength, long declaredCount)
+    {
+        int payloadCapacity = Math.Max(0, contentLength - AttributeHeaderSize) / AttributeRecordSize;
+        return (int)Math.Min(Math.Max(0, declaredCount), payloadCapacity);
+    }
+
+    private static string DecodeAttributeValue(ReadOnlySpan<byte> rawValue)
+    {
+        Span<byte> decodedValue = stackalloc byte[AttributeValueSize];
+        rawValue.CopyTo(decodedValue);
+        decodedValue.Reverse();
+
+        int start = 0;
+        while (start < decodedValue.Length && decodedValue[start] == 0)
+        {
+            start++;
+        }
+
+        int end = decodedValue.Length;
+        while (end > start && decodedValue[end - 1] == 0)
+        {
+            end--;
+        }
+
+        return Encoding.UTF8.GetString(decodedValue[start..end]);
     }
 
     private IEnumerable<Dictionary<string, object?>> DecodeEventStream(
