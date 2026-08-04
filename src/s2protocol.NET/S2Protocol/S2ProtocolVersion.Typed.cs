@@ -46,13 +46,12 @@ public sealed partial record S2ProtocolVersion
     public MessageEvents DecodeReplayMessageEvents(ReadOnlyMemory<byte> content)
     {
         BitPackedTypedDecoder decoder = new(content, TypeInfos);
-        List<ChatMessageEvent> chatMessages = [];
-        List<PingMessageEvent> pingMessages = [];
-        MessageEventHandler handler = new(decoder, chatMessages, pingMessages);
+        MessageEventStore events = new();
+        MessageEventHandler handler = new(decoder, events);
 
         DecodeEventStream(decoder, MessageEventIdTypeId ?? 1, MessageEvents, decodeUserId: true, ref handler);
 
-        return new MessageEvents(chatMessages, pingMessages);
+        return new MessageEvents(events);
     }
 
     public GameEvents DecodeReplayGameEvents(ReadOnlyMemory<byte> content)
@@ -447,6 +446,7 @@ public sealed partial record S2ProtocolVersion
     private interface IEventHandler
     {
         void Handle(in DecodedEvent decodedEvent);
+        void Complete(int bits);
     }
 
     private readonly struct DecodedEvent(
@@ -467,24 +467,45 @@ public sealed partial record S2ProtocolVersion
 
     private readonly struct MessageEventHandler(
         TypedProtocolDecoder decoder,
-        List<ChatMessageEvent> chatMessages,
-        List<PingMessageEvent> pingMessages) : IEventHandler
+        MessageEventStore events) : IEventHandler
     {
         public void Handle(in DecodedEvent decodedEvent)
         {
-            if (decodedEvent.TypeName == "NNet.Game.SChatMessage")
+            MessageEvent messageEvent;
+            switch (decodedEvent.TypeName)
             {
-                chatMessages.Add(ReadSChatMessage(decoder, decodedEvent.TypeId, decodedEvent.UserId, decodedEvent.Gameloop));
+                case "NNet.Game.SChatMessage":
+                    messageEvent = ReadSChatMessage(decoder, decodedEvent.TypeId, decodedEvent.UserId,
+                        decodedEvent.EventId, decodedEvent.Bits, decodedEvent.Gameloop);
+                    break;
+                case "NNet.Game.SPingMessage":
+                    messageEvent = ReadSPingMessage(decoder, decodedEvent.TypeId, decodedEvent.UserId,
+                        decodedEvent.EventId, decodedEvent.Bits, decodedEvent.Gameloop);
+                    break;
+                case "NNet.Game.SLoadingProgressMessage":
+                    messageEvent = ReadSLoadingProgressMessage(decoder, decodedEvent.TypeId, decodedEvent.UserId,
+                        decodedEvent.EventId, decodedEvent.Bits, decodedEvent.Gameloop);
+                    break;
+                case "NNet.Game.SServerPingMessage":
+                    decoder.SkipType(decodedEvent.TypeId);
+                    messageEvent = new ServerPingMessageEvent(decodedEvent.UserId, decodedEvent.EventId,
+                        decodedEvent.Bits, decodedEvent.Gameloop);
+                    break;
+                case "NNet.Game.SReconnectNotifyMessage":
+                    messageEvent = ReadSReconnectNotifyMessage(decoder, decodedEvent.TypeId, decodedEvent.UserId,
+                        decodedEvent.EventId, decodedEvent.Bits, decodedEvent.Gameloop);
+                    break;
+                default:
+                    decoder.SkipType(decodedEvent.TypeId);
+                    messageEvent = new UnknownMessageEvent(decodedEvent.UserId, decodedEvent.EventId,
+                        decodedEvent.Bits, decodedEvent.Gameloop, decodedEvent.TypeName);
+                    break;
             }
-            else if (decodedEvent.TypeName == "NNet.Game.SPingMessage")
-            {
-                pingMessages.Add(ReadSPingMessage(decoder, decodedEvent.TypeId, decodedEvent.UserId, decodedEvent.Gameloop));
-            }
-            else
-            {
-                decoder.SkipType(decodedEvent.TypeId);
-            }
+
+            events.Add(messageEvent);
         }
+
+        public void Complete(int bits) => events.Last.Bits = bits;
     }
 
     private readonly struct GameEventHandler(TypedProtocolDecoder decoder, List<GameEvent> events) : IEventHandler
@@ -606,6 +627,10 @@ public sealed partial record S2ProtocolVersion
 
             events.Add(gameEvent);
         }
+
+        public void Complete(int bits)
+        {
+        }
     }
 
     private readonly struct TrackerEventHandler(
@@ -661,6 +686,10 @@ public sealed partial record S2ProtocolVersion
                     break;
             }
         }
+
+        public void Complete(int bits)
+        {
+        }
     }
 
     private void DecodeEventStream<THandler>(
@@ -693,7 +722,7 @@ public sealed partial record S2ProtocolVersion
             DecodedEvent decodedEvent = new(eventId, eventTypeInfo.Name, 0, gameloop, userId, eventTypeInfo.TypeId);
             handler.Handle(in decodedEvent);
             decoder.ByteAlign();
-            _ = decoder.UsedBits() - startBits;
+            handler.Complete(checked((int)(decoder.UsedBits() - startBits)));
         }
     }
 

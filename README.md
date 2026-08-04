@@ -57,6 +57,9 @@ Console.WriteLine(replay.TrackerEvents.SUnitBornEvents.FirstOrDefault());
 ## GameEvents
 All 105 game-event names present in the bundled Blizzard protocol schemas decode to public strongly typed models. `UnknownGameEvent` is reserved for unsupported future protocol names.
 
+## MessageEvents
+All five message-event names present in the bundled Blizzard protocol schemas decode to public strongly typed models in stream order. Use `replay.MessageEvents.BaseMessageEvents` for complete coverage; the existing `ChatMessages` and `PingMessages` properties remain synchronized compatibility views. `UnknownMessageEvent` preserves metadata for unsupported future protocol names.
+
 STriggerSoundLengthSyncEvent => no data
 SControlGroupUpdateEvent => no mask
 No BigInteger support
@@ -118,6 +121,9 @@ Decode-only process comparison using `test6.SC2Replay` (base build `88500`). Eac
 >- Preserve the optional tracker player setup slot ID instead of converting a missing value to zero
 >- Add synthetic versioned tracker-event coverage for every canonical protocol resource
 >- Reduce tracker-only benchmark allocations from 6.96 MB to 6.76 MB per decode without a time regression
+>- Add strongly typed coverage for all five message-event names in the bundled Blizzard protocols
+>- Preserve ordered message streams while retaining mutable chat and ping compatibility views
+>- Add a message-events-only allocation benchmark
 
 </details>
 

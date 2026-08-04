@@ -104,6 +104,7 @@ public sealed partial class ReplayDecoder : IDisposable
             {
                 var messages = await GetMessagesAsync(MPQArchive, s2protocol, token).ConfigureAwait(false);
                 ArgumentNullException.ThrowIfNull((object?)messages, nameof(messages));
+                replay.MessageEvents = messages;
                 replay.ChatMessages = messages.ChatMessages;
                 replay.PingMessages = messages.PingMessages;
             }

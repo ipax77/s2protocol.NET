@@ -4,11 +4,17 @@ namespace s2protocol.NET.S2Protocol;
 
 public sealed partial record S2ProtocolVersion
 {
-    private static ChatMessageEvent ReadSChatMessage(TypedProtocolDecoder decoder, int typeId, int userId, int gameloop)
+    private static ChatMessageEvent ReadSChatMessage(
+        TypedProtocolDecoder decoder,
+        int typeId,
+        int userId,
+        int eventId,
+        int bits,
+        int gameloop)
     {
         SChatMessageReadState state = default;
         decoder.ReadStruct(typeId, ref state);
-        return new ChatMessageEvent(state.Recipient, userId, state.Message, gameloop);
+        return new ChatMessageEvent(state.Recipient, userId, state.Message, eventId, bits, gameloop);
     }
 
     private struct SChatMessageReadState : IStructFieldReader
@@ -32,11 +38,17 @@ public sealed partial record S2ProtocolVersion
         }
     }
 
-    private static PingMessageEvent ReadSPingMessage(TypedProtocolDecoder decoder, int typeId, int userId, int gameloop)
+    private static PingMessageEvent ReadSPingMessage(
+        TypedProtocolDecoder decoder,
+        int typeId,
+        int userId,
+        int eventId,
+        int bits,
+        int gameloop)
     {
         SPingMessageReadState state = default;
         decoder.ReadStruct(typeId, ref state);
-        return new PingMessageEvent(state.Recipient, userId, gameloop, state.X, state.Y);
+        return new PingMessageEvent(state.Recipient, userId, eventId, bits, gameloop, state.X, state.Y);
     }
 
     private struct SPingMessageReadState : IStructFieldReader
@@ -82,6 +94,64 @@ public sealed partial record S2ProtocolVersion
                 default:
                     return false;
             }
+        }
+    }
+
+    private static LoadingProgressMessageEvent ReadSLoadingProgressMessage(
+        TypedProtocolDecoder decoder,
+        int typeId,
+        int userId,
+        int eventId,
+        int bits,
+        int gameloop)
+    {
+        SLoadingProgressMessageReadState state = default;
+        decoder.ReadStruct(typeId, ref state);
+        return new LoadingProgressMessageEvent(state.Progress, userId, eventId, bits, gameloop);
+    }
+
+    private struct SLoadingProgressMessageReadState : IStructFieldReader
+    {
+        public int Progress;
+
+        public bool ReadField(TypedProtocolDecoder decoder, string name, int fieldTypeId)
+        {
+            if (name != "m_progress")
+            {
+                return false;
+            }
+
+            Progress = decoder.ReadInt(fieldTypeId);
+            return true;
+        }
+    }
+
+    private static ReconnectNotifyMessageEvent ReadSReconnectNotifyMessage(
+        TypedProtocolDecoder decoder,
+        int typeId,
+        int userId,
+        int eventId,
+        int bits,
+        int gameloop)
+    {
+        SReconnectNotifyMessageReadState state = default;
+        decoder.ReadStruct(typeId, ref state);
+        return new ReconnectNotifyMessageEvent(state.Status, userId, eventId, bits, gameloop);
+    }
+
+    private struct SReconnectNotifyMessageReadState : IStructFieldReader
+    {
+        public int Status;
+
+        public bool ReadField(TypedProtocolDecoder decoder, string name, int fieldTypeId)
+        {
+            if (name != "m_status")
+            {
+                return false;
+            }
+
+            Status = decoder.ReadInt(fieldTypeId);
+            return true;
         }
     }
 }

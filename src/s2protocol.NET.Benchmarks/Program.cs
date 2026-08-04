@@ -97,6 +97,31 @@ public class SingleGameEventsReplayDecodeBenchmarks
 
 [MemoryDiagnoser]
 [ShortRunJob]
+public class SingleMessageEventsReplayDecodeBenchmarks
+{
+    private string replayPath = string.Empty;
+
+    [GlobalSetup]
+    public void Setup()
+    {
+        replayPath = ReplayBenchmarkData.GetSingleReplayPath();
+    }
+
+    [Benchmark]
+    public async Task<ReplayDecodeSummary> DecodeSingleReplayMessageEventsOnly()
+    {
+        ReplayDecoderOptions options = ReplayDecodeMode.CreateOptions(ReplayDecodeMode.MessageEventsOnly);
+
+        using ReplayDecoder replayDecoder = new();
+        Sc2Replay replay = await replayDecoder.DecodeAsync(replayPath, options, CancellationToken.None).ConfigureAwait(false)
+            ?? throw new InvalidOperationException($"Could not decode replay '{replayPath}'.");
+
+        return ReplayDecodeSummary.From(replay);
+    }
+}
+
+[MemoryDiagnoser]
+[ShortRunJob]
 public class SingleTrackerEventsReplayDecodeBenchmarks
 {
     private string replayPath = string.Empty;
@@ -177,7 +202,7 @@ public readonly record struct ReplayDecodeSummary(
     int TrackerBornEvents,
     int TrackerStatsEvents,
     int GameEvents,
-    int ChatMessages)
+    int MessageEvents)
 {
     public static ReplayDecodeSummary From(Sc2Replay replay)
     {
@@ -187,7 +212,7 @@ public readonly record struct ReplayDecodeSummary(
             replay.TrackerEvents?.SUnitBornEvents.Count ?? 0,
             replay.TrackerEvents?.SPlayerStatsEvents.Count ?? 0,
             replay.GameEvents?.BaseGameEvents.Count ?? 0,
-            replay.ChatMessages?.Count ?? 0);
+            replay.MessageEvents?.BaseMessageEvents.Count ?? 0);
     }
 }
 
@@ -198,10 +223,12 @@ internal static class ReplayDecodeMode
     public const string HeaderOnly = nameof(HeaderOnly);
     public const string DirectStrikeCore = nameof(DirectStrikeCore);
     public const string GameEventsOnly = nameof(GameEventsOnly);
+    public const string MessageEventsOnly = nameof(MessageEventsOnly);
     public const string TrackerEventsOnly = nameof(TrackerEventsOnly);
     public const string Full = nameof(Full);
 
-    public static readonly string[] Names = [HeaderOnly, DirectStrikeCore, GameEventsOnly, TrackerEventsOnly, Full];
+    public static readonly string[] Names =
+        [HeaderOnly, DirectStrikeCore, GameEventsOnly, MessageEventsOnly, TrackerEventsOnly, Full];
 
     public static ReplayDecoderOptions CreateOptions(string mode)
     {
@@ -234,6 +261,16 @@ internal static class ReplayDecodeMode
                 Metadata = false,
                 GameEvents = true,
                 MessageEvents = false,
+                TrackerEvents = false,
+                AttributeEvents = false,
+            },
+            MessageEventsOnly => new ReplayDecoderOptions
+            {
+                Details = false,
+                Initdata = false,
+                Metadata = false,
+                GameEvents = false,
+                MessageEvents = true,
                 TrackerEvents = false,
                 AttributeEvents = false,
             },

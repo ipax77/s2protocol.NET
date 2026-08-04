@@ -18,7 +18,7 @@ Console.WriteLine($"baseBuild={sc2Replay.Header.BaseBuild}");
 Console.WriteLine($"elapsedMs={stopwatch.Elapsed.TotalMilliseconds.ToString("F2", CultureInfo.InvariantCulture)}");
 Console.WriteLine($"players={sc2Replay.Details?.Players.Count ?? 0}");
 Console.WriteLine($"gameEvents={sc2Replay.GameEvents?.BaseGameEvents.Count ?? 0}");
-Console.WriteLine($"messageEvents={(sc2Replay.ChatMessages?.Count ?? 0) + (sc2Replay.PingMessages?.Count ?? 0)}");
+Console.WriteLine($"messageEvents={sc2Replay.MessageEvents?.BaseMessageEvents.Count ?? 0}");
 Console.WriteLine($"trackerEvents={CountTrackerEvents(sc2Replay.TrackerEvents)}");
 Console.WriteLine($"attributeEvents={sc2Replay.AttributeEvents?.Scopes.Count ?? 0}");
 

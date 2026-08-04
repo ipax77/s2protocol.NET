@@ -8,6 +8,12 @@ namespace s2protocol.NET.tests;
 
 internal sealed record TestChoiceValue(string Name, object? Value = null);
 
+internal sealed record TestMessageEvent(
+    int EventId,
+    int GameloopDelta = 0,
+    int UserId = 0,
+    IReadOnlyDictionary<string, object?>? Values = null);
+
 internal static class BitPackedTestEncoder
 {
     public static byte[] EncodeGameEvent(
@@ -28,6 +34,55 @@ internal static class BitPackedTestEncoder
         writer.ByteAlign();
         return writer.ToArray();
     }
+
+    public static byte[] EncodeMessageEvent(
+        S2ProtocolVersion protocol,
+        int eventId,
+        IReadOnlyDictionary<string, object?>? values = null,
+        int gameloopDelta = 0,
+        int userId = 0)
+        => EncodeMessageEvents(protocol, [new TestMessageEvent(eventId, gameloopDelta, userId, values)]);
+
+    public static byte[] EncodeMessageEvents(
+        S2ProtocolVersion protocol,
+        IReadOnlyList<TestMessageEvent> events)
+    {
+        BitWriter writer = new();
+        foreach (TestMessageEvent messageEvent in events)
+        {
+            if (!protocol.MessageEvents.TryGetValue(messageEvent.EventId, out S2EventType? eventType))
+            {
+                throw new ArgumentOutOfRangeException(nameof(events), messageEvent.EventId, "Unknown message event id.");
+            }
+
+            WriteType(writer, protocol, protocol.SVarUint32TypeId ?? 7,
+                VarUInt32(messageEvent.GameloopDelta), string.Empty, null);
+            int replayUserIdTypeId = protocol.ReplayUserIdTypeId ?? 8;
+            if (protocol.TypeInfos[replayUserIdTypeId].DecodeKind == S2DecodeKind.Struct)
+            {
+                WriteType(writer, protocol, replayUserIdTypeId, null, string.Empty,
+                    new Dictionary<string, object?> { ["m_userId"] = messageEvent.UserId });
+            }
+            else
+            {
+                WriteType(writer, protocol, replayUserIdTypeId, messageEvent.UserId, string.Empty, null);
+            }
+            WriteType(writer, protocol, protocol.MessageEventIdTypeId ?? 1, messageEvent.EventId, string.Empty, null);
+            WriteType(writer, protocol, eventType.TypeId, null, string.Empty, messageEvent.Values);
+            writer.ByteAlign();
+        }
+
+        return writer.ToArray();
+    }
+
+    private static TestChoiceValue VarUInt32(int value) => value switch
+    {
+        < 0 => throw new ArgumentOutOfRangeException(nameof(value)),
+        < 1 << 6 => new TestChoiceValue("m_uint6", value),
+        < 1 << 14 => new TestChoiceValue("m_uint14", value),
+        < 1 << 22 => new TestChoiceValue("m_uint22", value),
+        _ => new TestChoiceValue("m_uint32", value),
+    };
 
     private static void WriteType(
         BitWriter writer,

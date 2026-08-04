@@ -50,6 +50,10 @@ public record Sc2Replay
     ///
     [JsonInclude]
     public ReplayMetadata? Metadata { get; internal set; }
+    /// <summary>Replay message events in stream order.</summary>
+    ///
+    [JsonInclude]
+    public MessageEvents? MessageEvents { get; internal set; }
     /// <summary>Replay chat messages</summary>
     ///
     [JsonInclude]
