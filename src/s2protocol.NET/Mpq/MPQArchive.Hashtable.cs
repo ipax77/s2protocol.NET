@@ -7,7 +7,7 @@ namespace s2protocol.NET.Mpq;
 
 public sealed partial class MPQArchive
 {
-    private T[] ReadTable<T>(string tableType) where T : struct
+    private T[] ReadTable<T>(string tableType) where T : unmanaged
     {
         ulong tableOffset;
         uint tableEntries;
@@ -29,18 +29,19 @@ public sealed partial class MPQArchive
 
         uint key = Hash($"({tableType} table)", "TABLE");
 
-        int tableSize = checked((int)((long)tableEntries * 16));
+        int entrySize = Marshal.SizeOf<T>();
+        if (entrySize != 16)
+        {
+            throw new InvalidOperationException($"MPQ table entry size must be 16 bytes, but {typeof(T).Name} is {entrySize} bytes.");
+        }
+
+        int tableSize = checked((int)((long)tableEntries * entrySize));
         ValidateArchiveRange(tableOffset, (ulong)tableSize, $"{tableType} table");
         _reader.BaseStream.Seek(checked(_headerOffset + (long)tableOffset), SeekOrigin.Begin);
-        byte[] tableData = new byte[tableSize];
+        T[] entries = new T[(int)tableEntries];
+        Span<byte> tableData = MemoryMarshal.AsBytes(entries.AsSpan());
         _reader.BaseStream.ReadExactly(tableData);
         DecryptTable(tableData, key);
-
-        T[] entries = new T[(int)tableEntries];
-        for (int i = 0; i < entries.Length; i++)
-        {
-            entries[i] = MemoryMarshal.Read<T>(tableData.AsSpan(i * 16, 16));
-        }
 
         return entries;
     }

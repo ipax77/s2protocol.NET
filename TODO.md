@@ -83,7 +83,7 @@ The decoder is feature-complete for the currently bundled StarCraft II protocol 
 
 All optimizations must be benchmarked against the existing full, tracker-only, message-only, attribute-only, and parallel decode scenarios. Correctness and bounded memory usage take priority over isolated microbenchmark improvements.
 
-- [ ] Decrypt MPQ tables in place.
+- [x] Decrypt MPQ tables in place.
   - Avoid the second full table buffer and the per-word `BitConverter.GetBytes` allocation.
   - Prefer span-based `BinaryPrimitives` reads and writes.
 
