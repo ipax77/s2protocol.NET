@@ -23,10 +23,10 @@ public sealed class JsonContractTests
         ReplayDecoder decoder = new();
         Sc2Replay replay = await decoder.DecodeAsync(Path.Combine(ReplayDirectory, "test11.SC2Replay"));
 
-        string json = JsonSerializer.Serialize(replay, S2ProtocolJsonSerializerContext.Default.Sc2Replay);
+        string json = JsonSerializer.Serialize(replay, TestJsonSerializerContext.Default.Sc2Replay);
         Sc2Replay roundTripped = Assert.IsType<Sc2Replay>(
-            JsonSerializer.Deserialize(json, S2ProtocolJsonSerializerContext.Default.Sc2Replay));
-        string secondJson = JsonSerializer.Serialize(roundTripped, S2ProtocolJsonSerializerContext.Default.Sc2Replay);
+            JsonSerializer.Deserialize(json, TestJsonSerializerContext.Default.Sc2Replay));
+        string secondJson = JsonSerializer.Serialize(roundTripped, TestJsonSerializerContext.Default.Sc2Replay);
 
         Assert.True(JsonNode.DeepEquals(JsonNode.Parse(json), JsonNode.Parse(secondJson)), FirstDifference(json, secondJson));
         Assert.Contains("\"$type\":", json, StringComparison.Ordinal);

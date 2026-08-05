@@ -5,7 +5,8 @@ using System.Text.Json.Serialization;
 
 namespace s2protocol.NET.Models;
 
-internal sealed class BitArrayJsonConverter : JsonConverter<KeyValuePair<int, BigInteger>>
+/// <summary>Converts replay bit arrays without truncating their <see cref="BigInteger"/> value.</summary>
+public sealed class BitArrayJsonConverter : JsonConverter<KeyValuePair<int, BigInteger>>
 {
     public override KeyValuePair<int, BigInteger> Read(
         ref Utf8JsonReader reader,

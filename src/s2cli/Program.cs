@@ -1,7 +1,6 @@
 using System.CommandLine;
 using System.Globalization;
 using System.Text.Json;
-using System.Text.Json.Serialization.Metadata;
 using s2protocol.NET;
 using s2protocol.NET.Mpq;
 using s2protocol.NET.S2Protocol;
@@ -85,9 +84,7 @@ sealed class Program
     private static readonly JsonSerializerOptions JsonSerializerOptionsBase = new()
     {
         Converters = { new Utf8ByteArrayConverter() },
-        TypeInfoResolver = JsonTypeInfoResolver.Combine(
-            S2ProtocolJsonSerializerContext.Default,
-            new DefaultJsonTypeInfoResolver()),
+        TypeInfoResolver = S2CliJsonSerializerContext.Default,
     };
 
     private static int Decode(

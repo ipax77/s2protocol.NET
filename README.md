@@ -68,16 +68,21 @@ The complete replay graph supports canonical JSON round-tripping with stable cla
 
 ```csharp
 using System.Text.Json;
+using System.Text.Json.Serialization;
 
-string json = JsonSerializer.Serialize(replay, S2ProtocolJsonSerializerContext.Default.Sc2Replay);
-Sc2Replay copy = JsonSerializer.Deserialize(json, S2ProtocolJsonSerializerContext.Default.Sc2Replay)
+string json = JsonSerializer.Serialize(replay, AppJsonSerializerContext.Default.Sc2Replay);
+Sc2Replay copy = JsonSerializer.Deserialize(json, AppJsonSerializerContext.Default.Sc2Replay)
     ?? throw new JsonException("Replay JSON was null.");
+
+[JsonSerializable(typeof(Sc2Replay))]
+internal partial class AppJsonSerializerContext : JsonSerializerContext;
 ```
 
 Only the ordered base event collections are serialized. Compatibility category/message views and derived unit
 relationships are omitted; tracker unit indexes and relationships are rebuilt after deserialization. Unknown JSON
-discriminators fail with `JsonException`. `S2ProtocolJsonSerializerContext` is public and source-generated, so the same
-contract is safe for trimming and Native AOT.
+discriminators fail with `JsonException`. The complete generated context lives in `s2cli`; library applications opt in
+with an application-local source-generated context as shown above, so decoder-only PWA and Native AOT deployments do
+not carry the complete JSON graph.
 
 Version 1.x targets `net10.0` only. Pin a supported .NET 10 SDK when building or publishing Native AOT applications.
 The repository sample can be published with `dotnet publish -r linux-x64 --self-contained /p:PublishAot=true` and

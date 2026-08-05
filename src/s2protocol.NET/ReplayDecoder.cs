@@ -245,7 +245,7 @@ public sealed partial class ReplayDecoder
         var meta_bytes = await archive.ReadFileAsync("replay.gamemetadata.json", false, token).ConfigureAwait(false);
         if (meta_bytes.HasValue)
         {
-            return JsonSerializer.Deserialize(meta_bytes.Value.Span, S2ProtocolJsonSerializerContext.Default.ReplayMetadata);
+            return JsonSerializer.Deserialize(meta_bytes.Value.Span, ReplayMetadataJsonSerializerContext.Default.ReplayMetadata);
         }
         return null;
     }

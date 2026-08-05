@@ -1,4 +1,9 @@
 #nullable enable
+s2protocol.NET.Sc2Replay.Sc2Replay(string! fileName, s2protocol.NET.Models.Header! header, s2protocol.NET.Models.Initdata? initdata, s2protocol.NET.Models.Details? details, s2protocol.NET.Models.ReplayMetadata? metadata, s2protocol.NET.Models.MessageEvents? messageEvents, s2protocol.NET.Models.TrackerEvents? trackerEvents, s2protocol.NET.Models.GameEvents? gameEvents, s2protocol.NET.Models.AttributeEvents? attributeEvents) -> void
+override s2protocol.NET.Models.BitArrayJsonConverter.Read(ref System.Text.Json.Utf8JsonReader reader, System.Type! typeToConvert, System.Text.Json.JsonSerializerOptions! options) -> System.Collections.Generic.KeyValuePair<int, System.Numerics.BigInteger>
+override s2protocol.NET.Models.BitArrayJsonConverter.Write(System.Text.Json.Utf8JsonWriter! writer, System.Collections.Generic.KeyValuePair<int, System.Numerics.BigInteger> value, System.Text.Json.JsonSerializerOptions! options) -> void
+s2protocol.NET.Models.BitArrayJsonConverter
+s2protocol.NET.Models.BitArrayJsonConverter.BitArrayJsonConverter() -> void
 override s2protocol.NET.Models.GameCheatEventData.GetHashCode() -> int
 override s2protocol.NET.Models.GameEventAbility.GetHashCode() -> int
 override s2protocol.NET.Models.GameEventPoint2D.GetHashCode() -> int
@@ -19,7 +24,6 @@ override s2protocol.NET.ReplayDecoderOptions.ToString() -> string!
 override s2protocol.NET.S2Protocol.S2ProtocolVersion.Equals(object? obj) -> bool
 override s2protocol.NET.S2Protocol.S2ProtocolVersion.GetHashCode() -> int
 override s2protocol.NET.S2Protocol.S2ProtocolVersion.ToString() -> string!
-override s2protocol.NET.S2ProtocolJsonSerializerContext.GetTypeInfo(System.Type! type) -> System.Text.Json.Serialization.Metadata.JsonTypeInfo?
 override s2protocol.NET.Sc2Replay.Equals(object? obj) -> bool
 override s2protocol.NET.Sc2Replay.GetHashCode() -> int
 override s2protocol.NET.Sc2Replay.ToString() -> string!
@@ -1429,9 +1433,6 @@ s2protocol.NET.S2Protocol.S2ProtocolVersion.TrackerEventIdTypeId.set -> void
 s2protocol.NET.S2Protocol.S2ProtocolVersion.Version.get -> int
 s2protocol.NET.S2Protocol.S2ProtocolVersion.Version.set -> void
 s2protocol.NET.S2Protocol.TypeInfoLoader
-s2protocol.NET.S2ProtocolJsonSerializerContext
-s2protocol.NET.S2ProtocolJsonSerializerContext.S2ProtocolJsonSerializerContext() -> void
-s2protocol.NET.S2ProtocolJsonSerializerContext.S2ProtocolJsonSerializerContext(System.Text.Json.JsonSerializerOptions! options) -> void
 s2protocol.NET.Sc2Replay
 s2protocol.NET.Sc2Replay.AttributeEvents.get -> s2protocol.NET.Models.AttributeEvents?
 s2protocol.NET.Sc2Replay.ChatMessages.get -> System.Collections.Generic.ICollection<s2protocol.NET.Models.ChatMessageEvent!>?
@@ -1477,7 +1478,6 @@ static s2protocol.NET.S2Protocol.S2ProtocolVersion.UnitTagIndex(int unitTag) -> 
 static s2protocol.NET.S2Protocol.S2ProtocolVersion.UnitTagRecycle(int unitTag) -> int
 static s2protocol.NET.S2Protocol.TypeInfoLoader.GetLatestVersion() -> s2protocol.NET.S2Protocol.S2ProtocolVersion!
 static s2protocol.NET.S2Protocol.TypeInfoLoader.LoadTypeInfos(int protocolVersion) -> s2protocol.NET.S2Protocol.S2ProtocolVersion!
-static s2protocol.NET.S2ProtocolJsonSerializerContext.Default.get -> s2protocol.NET.S2ProtocolJsonSerializerContext!
 static s2protocol.NET.Sc2Replay.operator !=(s2protocol.NET.Sc2Replay? left, s2protocol.NET.Sc2Replay? right) -> bool
 static s2protocol.NET.Sc2Replay.operator ==(s2protocol.NET.Sc2Replay? left, s2protocol.NET.Sc2Replay? right) -> bool
 virtual s2protocol.NET.Models.SelectionDeltaEventDelta.<Clone>$() -> s2protocol.NET.Models.SelectionDeltaEventDelta!
@@ -1506,190 +1506,3 @@ virtual s2protocol.NET.Sc2Replay.PrintMembers(System.Text.StringBuilder! builder
 ~override s2protocol.NET.Models.GameEventPoint3D.ToString() -> string
 ~override s2protocol.NET.Models.SelectionSyncCheckEventData.Equals(object obj) -> bool
 ~override s2protocol.NET.Models.SelectionSyncCheckEventData.ToString() -> string
-~s2protocol.NET.S2ProtocolJsonSerializerContext.AttributeEvents.get -> System.Text.Json.Serialization.Metadata.JsonTypeInfo<s2protocol.NET.Models.AttributeEvents>
-~s2protocol.NET.S2ProtocolJsonSerializerContext.AttributeEventScope.get -> System.Text.Json.Serialization.Metadata.JsonTypeInfo<s2protocol.NET.Models.AttributeEventScope>
-~s2protocol.NET.S2ProtocolJsonSerializerContext.BigInteger.get -> System.Text.Json.Serialization.Metadata.JsonTypeInfo<System.Numerics.BigInteger>
-~s2protocol.NET.S2ProtocolJsonSerializerContext.Boolean.get -> System.Text.Json.Serialization.Metadata.JsonTypeInfo<bool>
-~s2protocol.NET.S2ProtocolJsonSerializerContext.ChatMessageEvent.get -> System.Text.Json.Serialization.Metadata.JsonTypeInfo<s2protocol.NET.Models.ChatMessageEvent>
-~s2protocol.NET.S2ProtocolJsonSerializerContext.DateTime.get -> System.Text.Json.Serialization.Metadata.JsonTypeInfo<System.DateTime>
-~s2protocol.NET.S2ProtocolJsonSerializerContext.Details.get -> System.Text.Json.Serialization.Metadata.JsonTypeInfo<s2protocol.NET.Models.Details>
-~s2protocol.NET.S2ProtocolJsonSerializerContext.DetailsPlayer.get -> System.Text.Json.Serialization.Metadata.JsonTypeInfo<s2protocol.NET.Models.DetailsPlayer>
-~s2protocol.NET.S2ProtocolJsonSerializerContext.DialogControlEventDataKind.get -> System.Text.Json.Serialization.Metadata.JsonTypeInfo<s2protocol.NET.Models.DialogControlEventDataKind>
-~s2protocol.NET.S2ProtocolJsonSerializerContext.Double.get -> System.Text.Json.Serialization.Metadata.JsonTypeInfo<double>
-~s2protocol.NET.S2ProtocolJsonSerializerContext.GameCheatEventData.get -> System.Text.Json.Serialization.Metadata.JsonTypeInfo<s2protocol.NET.Models.GameCheatEventData>
-~s2protocol.NET.S2ProtocolJsonSerializerContext.GameDescription.get -> System.Text.Json.Serialization.Metadata.JsonTypeInfo<s2protocol.NET.Models.GameDescription>
-~s2protocol.NET.S2ProtocolJsonSerializerContext.GameEvent.get -> System.Text.Json.Serialization.Metadata.JsonTypeInfo<s2protocol.NET.Models.GameEvent>
-~s2protocol.NET.S2ProtocolJsonSerializerContext.GameEventAbility.get -> System.Text.Json.Serialization.Metadata.JsonTypeInfo<s2protocol.NET.Models.GameEventAbility>
-~s2protocol.NET.S2ProtocolJsonSerializerContext.GameEventPoint2D.get -> System.Text.Json.Serialization.Metadata.JsonTypeInfo<s2protocol.NET.Models.GameEventPoint2D>
-~s2protocol.NET.S2ProtocolJsonSerializerContext.GameEventPoint3D.get -> System.Text.Json.Serialization.Metadata.JsonTypeInfo<s2protocol.NET.Models.GameEventPoint3D>
-~s2protocol.NET.S2ProtocolJsonSerializerContext.GameEvents.get -> System.Text.Json.Serialization.Metadata.JsonTypeInfo<s2protocol.NET.Models.GameEvents>
-~s2protocol.NET.S2ProtocolJsonSerializerContext.GameEventType.get -> System.Text.Json.Serialization.Metadata.JsonTypeInfo<s2protocol.NET.Models.GameEventType>
-~s2protocol.NET.S2ProtocolJsonSerializerContext.GameOptions.get -> System.Text.Json.Serialization.Metadata.JsonTypeInfo<s2protocol.NET.Models.GameOptions>
-~s2protocol.NET.S2ProtocolJsonSerializerContext.Header.get -> System.Text.Json.Serialization.Metadata.JsonTypeInfo<s2protocol.NET.Models.Header>
-~s2protocol.NET.S2ProtocolJsonSerializerContext.HijackReplayUserInfo.get -> System.Text.Json.Serialization.Metadata.JsonTypeInfo<s2protocol.NET.Models.HijackReplayUserInfo>
-~s2protocol.NET.S2ProtocolJsonSerializerContext.ICollectionAttributeEventScope.get -> System.Text.Json.Serialization.Metadata.JsonTypeInfo<System.Collections.Generic.ICollection<s2protocol.NET.Models.AttributeEventScope>>
-~s2protocol.NET.S2ProtocolJsonSerializerContext.ICollectionDetailsPlayer.get -> System.Text.Json.Serialization.Metadata.JsonTypeInfo<System.Collections.Generic.ICollection<s2protocol.NET.Models.DetailsPlayer>>
-~s2protocol.NET.S2ProtocolJsonSerializerContext.ICollectionGameEvent.get -> System.Text.Json.Serialization.Metadata.JsonTypeInfo<System.Collections.Generic.ICollection<s2protocol.NET.Models.GameEvent>>
-~s2protocol.NET.S2ProtocolJsonSerializerContext.ICollectionInt32.get -> System.Text.Json.Serialization.Metadata.JsonTypeInfo<System.Collections.Generic.ICollection<int>>
-~s2protocol.NET.S2ProtocolJsonSerializerContext.ICollectionMessageEvent.get -> System.Text.Json.Serialization.Metadata.JsonTypeInfo<System.Collections.Generic.ICollection<s2protocol.NET.Models.MessageEvent>>
-~s2protocol.NET.S2ProtocolJsonSerializerContext.ICollectionMetadataPlayer.get -> System.Text.Json.Serialization.Metadata.JsonTypeInfo<System.Collections.Generic.ICollection<s2protocol.NET.Models.MetadataPlayer>>
-~s2protocol.NET.S2ProtocolJsonSerializerContext.ICollectionSelectionDeltaEventDeltaSubGroup.get -> System.Text.Json.Serialization.Metadata.JsonTypeInfo<System.Collections.Generic.ICollection<s2protocol.NET.Models.SelectionDeltaEventDeltaSubGroup>>
-~s2protocol.NET.S2ProtocolJsonSerializerContext.ICollectionSlot.get -> System.Text.Json.Serialization.Metadata.JsonTypeInfo<System.Collections.Generic.ICollection<s2protocol.NET.Models.Slot>>
-~s2protocol.NET.S2ProtocolJsonSerializerContext.ICollectionSlotDescription.get -> System.Text.Json.Serialization.Metadata.JsonTypeInfo<System.Collections.Generic.ICollection<s2protocol.NET.Models.SlotDescription>>
-~s2protocol.NET.S2ProtocolJsonSerializerContext.ICollectionString.get -> System.Text.Json.Serialization.Metadata.JsonTypeInfo<System.Collections.Generic.ICollection<string>>
-~s2protocol.NET.S2ProtocolJsonSerializerContext.ICollectionTrackerEvent.get -> System.Text.Json.Serialization.Metadata.JsonTypeInfo<System.Collections.Generic.ICollection<s2protocol.NET.Models.TrackerEvent>>
-~s2protocol.NET.S2ProtocolJsonSerializerContext.ICollectionUnitPosition.get -> System.Text.Json.Serialization.Metadata.JsonTypeInfo<System.Collections.Generic.ICollection<s2protocol.NET.Models.UnitPosition>>
-~s2protocol.NET.S2ProtocolJsonSerializerContext.ICollectionUserInitialData.get -> System.Text.Json.Serialization.Metadata.JsonTypeInfo<System.Collections.Generic.ICollection<s2protocol.NET.Models.UserInitialData>>
-~s2protocol.NET.S2ProtocolJsonSerializerContext.Initdata.get -> System.Text.Json.Serialization.Metadata.JsonTypeInfo<s2protocol.NET.Models.Initdata>
-~s2protocol.NET.S2ProtocolJsonSerializerContext.Int32.get -> System.Text.Json.Serialization.Metadata.JsonTypeInfo<int>
-~s2protocol.NET.S2ProtocolJsonSerializerContext.Int64.get -> System.Text.Json.Serialization.Metadata.JsonTypeInfo<long>
-~s2protocol.NET.S2ProtocolJsonSerializerContext.IReadOnlyListHijackReplayUserInfo.get -> System.Text.Json.Serialization.Metadata.JsonTypeInfo<System.Collections.Generic.IReadOnlyList<s2protocol.NET.Models.HijackReplayUserInfo>>
-~s2protocol.NET.S2ProtocolJsonSerializerContext.IReadOnlyListInt64.get -> System.Text.Json.Serialization.Metadata.JsonTypeInfo<System.Collections.Generic.IReadOnlyList<long>>
-~s2protocol.NET.S2ProtocolJsonSerializerContext.KeyValuePairInt32BigInteger.get -> System.Text.Json.Serialization.Metadata.JsonTypeInfo<System.Collections.Generic.KeyValuePair<int, System.Numerics.BigInteger>>
-~s2protocol.NET.S2ProtocolJsonSerializerContext.LoadingProgressMessageEvent.get -> System.Text.Json.Serialization.Metadata.JsonTypeInfo<s2protocol.NET.Models.LoadingProgressMessageEvent>
-~s2protocol.NET.S2ProtocolJsonSerializerContext.LobbyState.get -> System.Text.Json.Serialization.Metadata.JsonTypeInfo<s2protocol.NET.Models.LobbyState>
-~s2protocol.NET.S2ProtocolJsonSerializerContext.MessageEvent.get -> System.Text.Json.Serialization.Metadata.JsonTypeInfo<s2protocol.NET.Models.MessageEvent>
-~s2protocol.NET.S2ProtocolJsonSerializerContext.MessageEvents.get -> System.Text.Json.Serialization.Metadata.JsonTypeInfo<s2protocol.NET.Models.MessageEvents>
-~s2protocol.NET.S2ProtocolJsonSerializerContext.MessageEventType.get -> System.Text.Json.Serialization.Metadata.JsonTypeInfo<s2protocol.NET.Models.MessageEventType>
-~s2protocol.NET.S2ProtocolJsonSerializerContext.MetadataPlayer.get -> System.Text.Json.Serialization.Metadata.JsonTypeInfo<s2protocol.NET.Models.MetadataPlayer>
-~s2protocol.NET.S2ProtocolJsonSerializerContext.NullableBoolean.get -> System.Text.Json.Serialization.Metadata.JsonTypeInfo<bool?>
-~s2protocol.NET.S2ProtocolJsonSerializerContext.NullableGameEventAbility.get -> System.Text.Json.Serialization.Metadata.JsonTypeInfo<s2protocol.NET.Models.GameEventAbility?>
-~s2protocol.NET.S2ProtocolJsonSerializerContext.NullableInt32.get -> System.Text.Json.Serialization.Metadata.JsonTypeInfo<int?>
-~s2protocol.NET.S2ProtocolJsonSerializerContext.NullableInt64.get -> System.Text.Json.Serialization.Metadata.JsonTypeInfo<long?>
-~s2protocol.NET.S2ProtocolJsonSerializerContext.PingMessageEvent.get -> System.Text.Json.Serialization.Metadata.JsonTypeInfo<s2protocol.NET.Models.PingMessageEvent>
-~s2protocol.NET.S2ProtocolJsonSerializerContext.PlayerColor.get -> System.Text.Json.Serialization.Metadata.JsonTypeInfo<s2protocol.NET.Models.PlayerColor>
-~s2protocol.NET.S2ProtocolJsonSerializerContext.ReconnectNotifyMessageEvent.get -> System.Text.Json.Serialization.Metadata.JsonTypeInfo<s2protocol.NET.Models.ReconnectNotifyMessageEvent>
-~s2protocol.NET.S2ProtocolJsonSerializerContext.ReplayMetadata.get -> System.Text.Json.Serialization.Metadata.JsonTypeInfo<s2protocol.NET.Models.ReplayMetadata>
-~s2protocol.NET.S2ProtocolJsonSerializerContext.SAchievementAwardedEvent.get -> System.Text.Json.Serialization.Metadata.JsonTypeInfo<s2protocol.NET.Models.SAchievementAwardedEvent>
-~s2protocol.NET.S2ProtocolJsonSerializerContext.SAddAbsoluteGameSpeedEvent.get -> System.Text.Json.Serialization.Metadata.JsonTypeInfo<s2protocol.NET.Models.SAddAbsoluteGameSpeedEvent>
-~s2protocol.NET.S2ProtocolJsonSerializerContext.SAICommunicateEvent.get -> System.Text.Json.Serialization.Metadata.JsonTypeInfo<s2protocol.NET.Models.SAICommunicateEvent>
-~s2protocol.NET.S2ProtocolJsonSerializerContext.SAllianceEvent.get -> System.Text.Json.Serialization.Metadata.JsonTypeInfo<s2protocol.NET.Models.SAllianceEvent>
-~s2protocol.NET.S2ProtocolJsonSerializerContext.SBankFileEvent.get -> System.Text.Json.Serialization.Metadata.JsonTypeInfo<s2protocol.NET.Models.SBankFileEvent>
-~s2protocol.NET.S2ProtocolJsonSerializerContext.SBankKeyEvent.get -> System.Text.Json.Serialization.Metadata.JsonTypeInfo<s2protocol.NET.Models.SBankKeyEvent>
-~s2protocol.NET.S2ProtocolJsonSerializerContext.SBankSectionEvent.get -> System.Text.Json.Serialization.Metadata.JsonTypeInfo<s2protocol.NET.Models.SBankSectionEvent>
-~s2protocol.NET.S2ProtocolJsonSerializerContext.SBankSignatureEvent.get -> System.Text.Json.Serialization.Metadata.JsonTypeInfo<s2protocol.NET.Models.SBankSignatureEvent>
-~s2protocol.NET.S2ProtocolJsonSerializerContext.SBankValueEvent.get -> System.Text.Json.Serialization.Metadata.JsonTypeInfo<s2protocol.NET.Models.SBankValueEvent>
-~s2protocol.NET.S2ProtocolJsonSerializerContext.SBroadcastCheatEvent.get -> System.Text.Json.Serialization.Metadata.JsonTypeInfo<s2protocol.NET.Models.SBroadcastCheatEvent>
-~s2protocol.NET.S2ProtocolJsonSerializerContext.Sc2Replay.get -> System.Text.Json.Serialization.Metadata.JsonTypeInfo<s2protocol.NET.Sc2Replay>
-~s2protocol.NET.S2ProtocolJsonSerializerContext.SCameraSaveEvent.get -> System.Text.Json.Serialization.Metadata.JsonTypeInfo<s2protocol.NET.Models.SCameraSaveEvent>
-~s2protocol.NET.S2ProtocolJsonSerializerContext.SCameraUpdateEvent.get -> System.Text.Json.Serialization.Metadata.JsonTypeInfo<s2protocol.NET.Models.SCameraUpdateEvent>
-~s2protocol.NET.S2ProtocolJsonSerializerContext.SCatalogModifyEvent.get -> System.Text.Json.Serialization.Metadata.JsonTypeInfo<s2protocol.NET.Models.SCatalogModifyEvent>
-~s2protocol.NET.S2ProtocolJsonSerializerContext.SCmdEvent.get -> System.Text.Json.Serialization.Metadata.JsonTypeInfo<s2protocol.NET.Models.SCmdEvent>
-~s2protocol.NET.S2ProtocolJsonSerializerContext.SCmdUpdateTargetPointEvent.get -> System.Text.Json.Serialization.Metadata.JsonTypeInfo<s2protocol.NET.Models.SCmdUpdateTargetPointEvent>
-~s2protocol.NET.S2ProtocolJsonSerializerContext.SCmdUpdateTargetUnitEvent.get -> System.Text.Json.Serialization.Metadata.JsonTypeInfo<s2protocol.NET.Models.SCmdUpdateTargetUnitEvent>
-~s2protocol.NET.S2ProtocolJsonSerializerContext.SCommandManagerResetEvent.get -> System.Text.Json.Serialization.Metadata.JsonTypeInfo<s2protocol.NET.Models.SCommandManagerResetEvent>
-~s2protocol.NET.S2ProtocolJsonSerializerContext.SCommandManagerStateEvent.get -> System.Text.Json.Serialization.Metadata.JsonTypeInfo<s2protocol.NET.Models.SCommandManagerStateEvent>
-~s2protocol.NET.S2ProtocolJsonSerializerContext.SControlGroupUpdateEvent.get -> System.Text.Json.Serialization.Metadata.JsonTypeInfo<s2protocol.NET.Models.SControlGroupUpdateEvent>
-~s2protocol.NET.S2ProtocolJsonSerializerContext.SDecrementGameTimeRemainingEvent.get -> System.Text.Json.Serialization.Metadata.JsonTypeInfo<s2protocol.NET.Models.SDecrementGameTimeRemainingEvent>
-~s2protocol.NET.S2ProtocolJsonSerializerContext.SelectionDeltaEventDelta.get -> System.Text.Json.Serialization.Metadata.JsonTypeInfo<s2protocol.NET.Models.SelectionDeltaEventDelta>
-~s2protocol.NET.S2ProtocolJsonSerializerContext.SelectionDeltaEventDeltaSubGroup.get -> System.Text.Json.Serialization.Metadata.JsonTypeInfo<s2protocol.NET.Models.SelectionDeltaEventDeltaSubGroup>
-~s2protocol.NET.S2ProtocolJsonSerializerContext.SelectionSyncCheckEventData.get -> System.Text.Json.Serialization.Metadata.JsonTypeInfo<s2protocol.NET.Models.SelectionSyncCheckEventData>
-~s2protocol.NET.S2ProtocolJsonSerializerContext.ServerPingMessageEvent.get -> System.Text.Json.Serialization.Metadata.JsonTypeInfo<s2protocol.NET.Models.ServerPingMessageEvent>
-~s2protocol.NET.S2ProtocolJsonSerializerContext.SGameCheatEvent.get -> System.Text.Json.Serialization.Metadata.JsonTypeInfo<s2protocol.NET.Models.SGameCheatEvent>
-~s2protocol.NET.S2ProtocolJsonSerializerContext.SGameUserJoinEvent.get -> System.Text.Json.Serialization.Metadata.JsonTypeInfo<s2protocol.NET.Models.SGameUserJoinEvent>
-~s2protocol.NET.S2ProtocolJsonSerializerContext.SGameUserLeaveEvent.get -> System.Text.Json.Serialization.Metadata.JsonTypeInfo<s2protocol.NET.Models.SGameUserLeaveEvent>
-~s2protocol.NET.S2ProtocolJsonSerializerContext.SHeroTalentTreeSelectedEvent.get -> System.Text.Json.Serialization.Metadata.JsonTypeInfo<s2protocol.NET.Models.SHeroTalentTreeSelectedEvent>
-~s2protocol.NET.S2ProtocolJsonSerializerContext.SHeroTalentTreeSelectionPanelToggledEvent.get -> System.Text.Json.Serialization.Metadata.JsonTypeInfo<s2protocol.NET.Models.SHeroTalentTreeSelectionPanelToggledEvent>
-~s2protocol.NET.S2ProtocolJsonSerializerContext.SHijackReplayGameEvent.get -> System.Text.Json.Serialization.Metadata.JsonTypeInfo<s2protocol.NET.Models.SHijackReplayGameEvent>
-~s2protocol.NET.S2ProtocolJsonSerializerContext.SLagMessageEvent.get -> System.Text.Json.Serialization.Metadata.JsonTypeInfo<s2protocol.NET.Models.SLagMessageEvent>
-~s2protocol.NET.S2ProtocolJsonSerializerContext.SLoadGameDoneEvent.get -> System.Text.Json.Serialization.Metadata.JsonTypeInfo<s2protocol.NET.Models.SLoadGameDoneEvent>
-~s2protocol.NET.S2ProtocolJsonSerializerContext.Slot.get -> System.Text.Json.Serialization.Metadata.JsonTypeInfo<s2protocol.NET.Models.Slot>
-~s2protocol.NET.S2ProtocolJsonSerializerContext.SlotDescription.get -> System.Text.Json.Serialization.Metadata.JsonTypeInfo<s2protocol.NET.Models.SlotDescription>
-~s2protocol.NET.S2ProtocolJsonSerializerContext.SPeerSetSyncLoadingTimeEvent.get -> System.Text.Json.Serialization.Metadata.JsonTypeInfo<s2protocol.NET.Models.SPeerSetSyncLoadingTimeEvent>
-~s2protocol.NET.S2ProtocolJsonSerializerContext.SPeerSetSyncPlayingTimeEvent.get -> System.Text.Json.Serialization.Metadata.JsonTypeInfo<s2protocol.NET.Models.SPeerSetSyncPlayingTimeEvent>
-~s2protocol.NET.S2ProtocolJsonSerializerContext.SPlayerLeaveEvent.get -> System.Text.Json.Serialization.Metadata.JsonTypeInfo<s2protocol.NET.Models.SPlayerLeaveEvent>
-~s2protocol.NET.S2ProtocolJsonSerializerContext.SPlayerSetupEvent.get -> System.Text.Json.Serialization.Metadata.JsonTypeInfo<s2protocol.NET.Models.SPlayerSetupEvent>
-~s2protocol.NET.S2ProtocolJsonSerializerContext.SPlayerStatsEvent.get -> System.Text.Json.Serialization.Metadata.JsonTypeInfo<s2protocol.NET.Models.SPlayerStatsEvent>
-~s2protocol.NET.S2ProtocolJsonSerializerContext.SResourceRequestCancelEvent.get -> System.Text.Json.Serialization.Metadata.JsonTypeInfo<s2protocol.NET.Models.SResourceRequestCancelEvent>
-~s2protocol.NET.S2ProtocolJsonSerializerContext.SResourceRequestEvent.get -> System.Text.Json.Serialization.Metadata.JsonTypeInfo<s2protocol.NET.Models.SResourceRequestEvent>
-~s2protocol.NET.S2ProtocolJsonSerializerContext.SResourceRequestFulfillEvent.get -> System.Text.Json.Serialization.Metadata.JsonTypeInfo<s2protocol.NET.Models.SResourceRequestFulfillEvent>
-~s2protocol.NET.S2ProtocolJsonSerializerContext.SResourceTradeEvent.get -> System.Text.Json.Serialization.Metadata.JsonTypeInfo<s2protocol.NET.Models.SResourceTradeEvent>
-~s2protocol.NET.S2ProtocolJsonSerializerContext.SSaveGameDoneEvent.get -> System.Text.Json.Serialization.Metadata.JsonTypeInfo<s2protocol.NET.Models.SSaveGameDoneEvent>
-~s2protocol.NET.S2ProtocolJsonSerializerContext.SSaveGameEvent.get -> System.Text.Json.Serialization.Metadata.JsonTypeInfo<s2protocol.NET.Models.SSaveGameEvent>
-~s2protocol.NET.S2ProtocolJsonSerializerContext.SSelectionDeltaEvent.get -> System.Text.Json.Serialization.Metadata.JsonTypeInfo<s2protocol.NET.Models.SSelectionDeltaEvent>
-~s2protocol.NET.S2ProtocolJsonSerializerContext.SSelectionSyncCheckEvent.get -> System.Text.Json.Serialization.Metadata.JsonTypeInfo<s2protocol.NET.Models.SSelectionSyncCheckEvent>
-~s2protocol.NET.S2ProtocolJsonSerializerContext.SSetAbsoluteGameSpeedEvent.get -> System.Text.Json.Serialization.Metadata.JsonTypeInfo<s2protocol.NET.Models.SSetAbsoluteGameSpeedEvent>
-~s2protocol.NET.S2ProtocolJsonSerializerContext.SSetSyncLoadingTimeEvent.get -> System.Text.Json.Serialization.Metadata.JsonTypeInfo<s2protocol.NET.Models.SSetSyncLoadingTimeEvent>
-~s2protocol.NET.S2ProtocolJsonSerializerContext.SSetSyncPlayingTimeEvent.get -> System.Text.Json.Serialization.Metadata.JsonTypeInfo<s2protocol.NET.Models.SSetSyncPlayingTimeEvent>
-~s2protocol.NET.S2ProtocolJsonSerializerContext.STriggerAbortMissionEvent.get -> System.Text.Json.Serialization.Metadata.JsonTypeInfo<s2protocol.NET.Models.STriggerAbortMissionEvent>
-~s2protocol.NET.S2ProtocolJsonSerializerContext.STriggerAnimLengthQueryByNameEvent.get -> System.Text.Json.Serialization.Metadata.JsonTypeInfo<s2protocol.NET.Models.STriggerAnimLengthQueryByNameEvent>
-~s2protocol.NET.S2ProtocolJsonSerializerContext.STriggerAnimLengthQueryByPropsEvent.get -> System.Text.Json.Serialization.Metadata.JsonTypeInfo<s2protocol.NET.Models.STriggerAnimLengthQueryByPropsEvent>
-~s2protocol.NET.S2ProtocolJsonSerializerContext.STriggerAnimOffsetEvent.get -> System.Text.Json.Serialization.Metadata.JsonTypeInfo<s2protocol.NET.Models.STriggerAnimOffsetEvent>
-~s2protocol.NET.S2ProtocolJsonSerializerContext.STriggerBattleReportPanelExitEvent.get -> System.Text.Json.Serialization.Metadata.JsonTypeInfo<s2protocol.NET.Models.STriggerBattleReportPanelExitEvent>
-~s2protocol.NET.S2ProtocolJsonSerializerContext.STriggerBattleReportPanelPlayMissionEvent.get -> System.Text.Json.Serialization.Metadata.JsonTypeInfo<s2protocol.NET.Models.STriggerBattleReportPanelPlayMissionEvent>
-~s2protocol.NET.S2ProtocolJsonSerializerContext.STriggerBattleReportPanelPlaySceneEvent.get -> System.Text.Json.Serialization.Metadata.JsonTypeInfo<s2protocol.NET.Models.STriggerBattleReportPanelPlaySceneEvent>
-~s2protocol.NET.S2ProtocolJsonSerializerContext.STriggerBattleReportPanelSelectionChangedEvent.get -> System.Text.Json.Serialization.Metadata.JsonTypeInfo<s2protocol.NET.Models.STriggerBattleReportPanelSelectionChangedEvent>
-~s2protocol.NET.S2ProtocolJsonSerializerContext.STriggerButtonPressedEvent.get -> System.Text.Json.Serialization.Metadata.JsonTypeInfo<s2protocol.NET.Models.STriggerButtonPressedEvent>
-~s2protocol.NET.S2ProtocolJsonSerializerContext.STriggerCameraMoveEvent.get -> System.Text.Json.Serialization.Metadata.JsonTypeInfo<s2protocol.NET.Models.STriggerCameraMoveEvent>
-~s2protocol.NET.S2ProtocolJsonSerializerContext.STriggerChatMessageEvent.get -> System.Text.Json.Serialization.Metadata.JsonTypeInfo<s2protocol.NET.Models.STriggerChatMessageEvent>
-~s2protocol.NET.S2ProtocolJsonSerializerContext.STriggerCommandErrorEvent.get -> System.Text.Json.Serialization.Metadata.JsonTypeInfo<s2protocol.NET.Models.STriggerCommandErrorEvent>
-~s2protocol.NET.S2ProtocolJsonSerializerContext.STriggerConversationSkippedEvent.get -> System.Text.Json.Serialization.Metadata.JsonTypeInfo<s2protocol.NET.Models.STriggerConversationSkippedEvent>
-~s2protocol.NET.S2ProtocolJsonSerializerContext.STriggerCustomDialogDismissedEvent.get -> System.Text.Json.Serialization.Metadata.JsonTypeInfo<s2protocol.NET.Models.STriggerCustomDialogDismissedEvent>
-~s2protocol.NET.S2ProtocolJsonSerializerContext.STriggerCutsceneBookmarkFiredEvent.get -> System.Text.Json.Serialization.Metadata.JsonTypeInfo<s2protocol.NET.Models.STriggerCutsceneBookmarkFiredEvent>
-~s2protocol.NET.S2ProtocolJsonSerializerContext.STriggerCutsceneConversationLineEvent.get -> System.Text.Json.Serialization.Metadata.JsonTypeInfo<s2protocol.NET.Models.STriggerCutsceneConversationLineEvent>
-~s2protocol.NET.S2ProtocolJsonSerializerContext.STriggerCutsceneConversationLineMissingEvent.get -> System.Text.Json.Serialization.Metadata.JsonTypeInfo<s2protocol.NET.Models.STriggerCutsceneConversationLineMissingEvent>
-~s2protocol.NET.S2ProtocolJsonSerializerContext.STriggerCutsceneEndSceneFiredEvent.get -> System.Text.Json.Serialization.Metadata.JsonTypeInfo<s2protocol.NET.Models.STriggerCutsceneEndSceneFiredEvent>
-~s2protocol.NET.S2ProtocolJsonSerializerContext.STriggerDialogControlEvent.get -> System.Text.Json.Serialization.Metadata.JsonTypeInfo<s2protocol.NET.Models.STriggerDialogControlEvent>
-~s2protocol.NET.S2ProtocolJsonSerializerContext.STriggerGameCreditsFinishedEvent.get -> System.Text.Json.Serialization.Metadata.JsonTypeInfo<s2protocol.NET.Models.STriggerGameCreditsFinishedEvent>
-~s2protocol.NET.S2ProtocolJsonSerializerContext.STriggerGameMenuItemSelectedEvent.get -> System.Text.Json.Serialization.Metadata.JsonTypeInfo<s2protocol.NET.Models.STriggerGameMenuItemSelectedEvent>
-~s2protocol.NET.S2ProtocolJsonSerializerContext.STriggerHotkeyPressedEvent.get -> System.Text.Json.Serialization.Metadata.JsonTypeInfo<s2protocol.NET.Models.STriggerHotkeyPressedEvent>
-~s2protocol.NET.S2ProtocolJsonSerializerContext.STriggerKeyPressedEvent.get -> System.Text.Json.Serialization.Metadata.JsonTypeInfo<s2protocol.NET.Models.STriggerKeyPressedEvent>
-~s2protocol.NET.S2ProtocolJsonSerializerContext.STriggerMercenaryPanelExitEvent.get -> System.Text.Json.Serialization.Metadata.JsonTypeInfo<s2protocol.NET.Models.STriggerMercenaryPanelExitEvent>
-~s2protocol.NET.S2ProtocolJsonSerializerContext.STriggerMercenaryPanelPurchaseEvent.get -> System.Text.Json.Serialization.Metadata.JsonTypeInfo<s2protocol.NET.Models.STriggerMercenaryPanelPurchaseEvent>
-~s2protocol.NET.S2ProtocolJsonSerializerContext.STriggerMercenaryPanelSelectionChangedEvent.get -> System.Text.Json.Serialization.Metadata.JsonTypeInfo<s2protocol.NET.Models.STriggerMercenaryPanelSelectionChangedEvent>
-~s2protocol.NET.S2ProtocolJsonSerializerContext.STriggerMouseClickedEvent.get -> System.Text.Json.Serialization.Metadata.JsonTypeInfo<s2protocol.NET.Models.STriggerMouseClickedEvent>
-~s2protocol.NET.S2ProtocolJsonSerializerContext.STriggerMouseMovedEvent.get -> System.Text.Json.Serialization.Metadata.JsonTypeInfo<s2protocol.NET.Models.STriggerMouseMovedEvent>
-~s2protocol.NET.S2ProtocolJsonSerializerContext.STriggerMouseWheelEvent.get -> System.Text.Json.Serialization.Metadata.JsonTypeInfo<s2protocol.NET.Models.STriggerMouseWheelEvent>
-~s2protocol.NET.S2ProtocolJsonSerializerContext.STriggerMovieFinishedEvent.get -> System.Text.Json.Serialization.Metadata.JsonTypeInfo<s2protocol.NET.Models.STriggerMovieFinishedEvent>
-~s2protocol.NET.S2ProtocolJsonSerializerContext.STriggerMovieFunctionEvent.get -> System.Text.Json.Serialization.Metadata.JsonTypeInfo<s2protocol.NET.Models.STriggerMovieFunctionEvent>
-~s2protocol.NET.S2ProtocolJsonSerializerContext.STriggerMovieStartedEvent.get -> System.Text.Json.Serialization.Metadata.JsonTypeInfo<s2protocol.NET.Models.STriggerMovieStartedEvent>
-~s2protocol.NET.S2ProtocolJsonSerializerContext.STriggerPingEvent.get -> System.Text.Json.Serialization.Metadata.JsonTypeInfo<s2protocol.NET.Models.STriggerPingEvent>
-~s2protocol.NET.S2ProtocolJsonSerializerContext.STriggerPlanetMissionLaunchedEvent.get -> System.Text.Json.Serialization.Metadata.JsonTypeInfo<s2protocol.NET.Models.STriggerPlanetMissionLaunchedEvent>
-~s2protocol.NET.S2ProtocolJsonSerializerContext.STriggerPlanetMissionSelectedEvent.get -> System.Text.Json.Serialization.Metadata.JsonTypeInfo<s2protocol.NET.Models.STriggerPlanetMissionSelectedEvent>
-~s2protocol.NET.S2ProtocolJsonSerializerContext.STriggerPlanetPanelBirthCompleteEvent.get -> System.Text.Json.Serialization.Metadata.JsonTypeInfo<s2protocol.NET.Models.STriggerPlanetPanelBirthCompleteEvent>
-~s2protocol.NET.S2ProtocolJsonSerializerContext.STriggerPlanetPanelCanceledEvent.get -> System.Text.Json.Serialization.Metadata.JsonTypeInfo<s2protocol.NET.Models.STriggerPlanetPanelCanceledEvent>
-~s2protocol.NET.S2ProtocolJsonSerializerContext.STriggerPlanetPanelDeathCompleteEvent.get -> System.Text.Json.Serialization.Metadata.JsonTypeInfo<s2protocol.NET.Models.STriggerPlanetPanelDeathCompleteEvent>
-~s2protocol.NET.S2ProtocolJsonSerializerContext.STriggerPlanetPanelReplayEvent.get -> System.Text.Json.Serialization.Metadata.JsonTypeInfo<s2protocol.NET.Models.STriggerPlanetPanelReplayEvent>
-~s2protocol.NET.S2ProtocolJsonSerializerContext.STriggerPortraitLoadedEvent.get -> System.Text.Json.Serialization.Metadata.JsonTypeInfo<s2protocol.NET.Models.STriggerPortraitLoadedEvent>
-~s2protocol.NET.S2ProtocolJsonSerializerContext.STriggerProfilerLoggingFinishedEvent.get -> System.Text.Json.Serialization.Metadata.JsonTypeInfo<s2protocol.NET.Models.STriggerProfilerLoggingFinishedEvent>
-~s2protocol.NET.S2ProtocolJsonSerializerContext.STriggerPurchaseExitEvent.get -> System.Text.Json.Serialization.Metadata.JsonTypeInfo<s2protocol.NET.Models.STriggerPurchaseExitEvent>
-~s2protocol.NET.S2ProtocolJsonSerializerContext.STriggerPurchaseMadeEvent.get -> System.Text.Json.Serialization.Metadata.JsonTypeInfo<s2protocol.NET.Models.STriggerPurchaseMadeEvent>
-~s2protocol.NET.S2ProtocolJsonSerializerContext.STriggerPurchasePanelSelectedPurchaseCategoryChangedEvent.get -> System.Text.Json.Serialization.Metadata.JsonTypeInfo<s2protocol.NET.Models.STriggerPurchasePanelSelectedPurchaseCategoryChangedEvent>
-~s2protocol.NET.S2ProtocolJsonSerializerContext.STriggerPurchasePanelSelectedPurchaseItemChangedEvent.get -> System.Text.Json.Serialization.Metadata.JsonTypeInfo<s2protocol.NET.Models.STriggerPurchasePanelSelectedPurchaseItemChangedEvent>
-~s2protocol.NET.S2ProtocolJsonSerializerContext.STriggerReplySelectedEvent.get -> System.Text.Json.Serialization.Metadata.JsonTypeInfo<s2protocol.NET.Models.STriggerReplySelectedEvent>
-~s2protocol.NET.S2ProtocolJsonSerializerContext.STriggerResearchPanelExitEvent.get -> System.Text.Json.Serialization.Metadata.JsonTypeInfo<s2protocol.NET.Models.STriggerResearchPanelExitEvent>
-~s2protocol.NET.S2ProtocolJsonSerializerContext.STriggerResearchPanelPurchaseEvent.get -> System.Text.Json.Serialization.Metadata.JsonTypeInfo<s2protocol.NET.Models.STriggerResearchPanelPurchaseEvent>
-~s2protocol.NET.S2ProtocolJsonSerializerContext.STriggerResearchPanelSelectionChangedEvent.get -> System.Text.Json.Serialization.Metadata.JsonTypeInfo<s2protocol.NET.Models.STriggerResearchPanelSelectionChangedEvent>
-~s2protocol.NET.S2ProtocolJsonSerializerContext.STriggerSkippedEvent.get -> System.Text.Json.Serialization.Metadata.JsonTypeInfo<s2protocol.NET.Models.STriggerSkippedEvent>
-~s2protocol.NET.S2ProtocolJsonSerializerContext.STriggerSoundLengthQueryEvent.get -> System.Text.Json.Serialization.Metadata.JsonTypeInfo<s2protocol.NET.Models.STriggerSoundLengthQueryEvent>
-~s2protocol.NET.S2ProtocolJsonSerializerContext.STriggerSoundLengthSyncEvent.get -> System.Text.Json.Serialization.Metadata.JsonTypeInfo<s2protocol.NET.Models.STriggerSoundLengthSyncEvent>
-~s2protocol.NET.S2ProtocolJsonSerializerContext.STriggerSoundOffsetEvent.get -> System.Text.Json.Serialization.Metadata.JsonTypeInfo<s2protocol.NET.Models.STriggerSoundOffsetEvent>
-~s2protocol.NET.S2ProtocolJsonSerializerContext.STriggerSoundtrackDoneEvent.get -> System.Text.Json.Serialization.Metadata.JsonTypeInfo<s2protocol.NET.Models.STriggerSoundtrackDoneEvent>
-~s2protocol.NET.S2ProtocolJsonSerializerContext.STriggerTargetModeUpdateEvent.get -> System.Text.Json.Serialization.Metadata.JsonTypeInfo<s2protocol.NET.Models.STriggerTargetModeUpdateEvent>
-~s2protocol.NET.S2ProtocolJsonSerializerContext.STriggerTransmissionCompleteEvent.get -> System.Text.Json.Serialization.Metadata.JsonTypeInfo<s2protocol.NET.Models.STriggerTransmissionCompleteEvent>
-~s2protocol.NET.S2ProtocolJsonSerializerContext.STriggerTransmissionOffsetEvent.get -> System.Text.Json.Serialization.Metadata.JsonTypeInfo<s2protocol.NET.Models.STriggerTransmissionOffsetEvent>
-~s2protocol.NET.S2ProtocolJsonSerializerContext.STriggerVictoryPanelExitEvent.get -> System.Text.Json.Serialization.Metadata.JsonTypeInfo<s2protocol.NET.Models.STriggerVictoryPanelExitEvent>
-~s2protocol.NET.S2ProtocolJsonSerializerContext.STriggerVictoryPanelPlayMissionAgainEvent.get -> System.Text.Json.Serialization.Metadata.JsonTypeInfo<s2protocol.NET.Models.STriggerVictoryPanelPlayMissionAgainEvent>
-~s2protocol.NET.S2ProtocolJsonSerializerContext.String.get -> System.Text.Json.Serialization.Metadata.JsonTypeInfo<string>
-~s2protocol.NET.S2ProtocolJsonSerializerContext.SUnitBornEvent.get -> System.Text.Json.Serialization.Metadata.JsonTypeInfo<s2protocol.NET.Models.SUnitBornEvent>
-~s2protocol.NET.S2ProtocolJsonSerializerContext.SUnitClickEvent.get -> System.Text.Json.Serialization.Metadata.JsonTypeInfo<s2protocol.NET.Models.SUnitClickEvent>
-~s2protocol.NET.S2ProtocolJsonSerializerContext.SUnitDiedEvent.get -> System.Text.Json.Serialization.Metadata.JsonTypeInfo<s2protocol.NET.Models.SUnitDiedEvent>
-~s2protocol.NET.S2ProtocolJsonSerializerContext.SUnitDoneEvent.get -> System.Text.Json.Serialization.Metadata.JsonTypeInfo<s2protocol.NET.Models.SUnitDoneEvent>
-~s2protocol.NET.S2ProtocolJsonSerializerContext.SUnitHighlightEvent.get -> System.Text.Json.Serialization.Metadata.JsonTypeInfo<s2protocol.NET.Models.SUnitHighlightEvent>
-~s2protocol.NET.S2ProtocolJsonSerializerContext.SUnitInitEvent.get -> System.Text.Json.Serialization.Metadata.JsonTypeInfo<s2protocol.NET.Models.SUnitInitEvent>
-~s2protocol.NET.S2ProtocolJsonSerializerContext.SUnitOwnerChangeEvent.get -> System.Text.Json.Serialization.Metadata.JsonTypeInfo<s2protocol.NET.Models.SUnitOwnerChangeEvent>
-~s2protocol.NET.S2ProtocolJsonSerializerContext.SUnitPositionsEvent.get -> System.Text.Json.Serialization.Metadata.JsonTypeInfo<s2protocol.NET.Models.SUnitPositionsEvent>
-~s2protocol.NET.S2ProtocolJsonSerializerContext.SUnitTypeChangeEvent.get -> System.Text.Json.Serialization.Metadata.JsonTypeInfo<s2protocol.NET.Models.SUnitTypeChangeEvent>
-~s2protocol.NET.S2ProtocolJsonSerializerContext.SUpgradeEvent.get -> System.Text.Json.Serialization.Metadata.JsonTypeInfo<s2protocol.NET.Models.SUpgradeEvent>
-~s2protocol.NET.S2ProtocolJsonSerializerContext.SUserFinishedLoadingSyncEvent.get -> System.Text.Json.Serialization.Metadata.JsonTypeInfo<s2protocol.NET.Models.SUserFinishedLoadingSyncEvent>
-~s2protocol.NET.S2ProtocolJsonSerializerContext.SUserOptionsEvent.get -> System.Text.Json.Serialization.Metadata.JsonTypeInfo<s2protocol.NET.Models.SUserOptionsEvent>
-~s2protocol.NET.S2ProtocolJsonSerializerContext.Toon.get -> System.Text.Json.Serialization.Metadata.JsonTypeInfo<s2protocol.NET.Models.Toon>
-~s2protocol.NET.S2ProtocolJsonSerializerContext.TrackerEvent.get -> System.Text.Json.Serialization.Metadata.JsonTypeInfo<s2protocol.NET.Models.TrackerEvent>
-~s2protocol.NET.S2ProtocolJsonSerializerContext.TrackerEvents.get -> System.Text.Json.Serialization.Metadata.JsonTypeInfo<s2protocol.NET.Models.TrackerEvents>
-~s2protocol.NET.S2ProtocolJsonSerializerContext.TrackerEventType.get -> System.Text.Json.Serialization.Metadata.JsonTypeInfo<s2protocol.NET.Models.TrackerEventType>
-~s2protocol.NET.S2ProtocolJsonSerializerContext.UnitPosition.get -> System.Text.Json.Serialization.Metadata.JsonTypeInfo<s2protocol.NET.Models.UnitPosition>
-~s2protocol.NET.S2ProtocolJsonSerializerContext.UnknownGameEvent.get -> System.Text.Json.Serialization.Metadata.JsonTypeInfo<s2protocol.NET.Models.UnknownGameEvent>
-~s2protocol.NET.S2ProtocolJsonSerializerContext.UnknownMessageEvent.get -> System.Text.Json.Serialization.Metadata.JsonTypeInfo<s2protocol.NET.Models.UnknownMessageEvent>
-~s2protocol.NET.S2ProtocolJsonSerializerContext.UnknownTrackerEvent.get -> System.Text.Json.Serialization.Metadata.JsonTypeInfo<s2protocol.NET.Models.UnknownTrackerEvent>
-~s2protocol.NET.S2ProtocolJsonSerializerContext.UserInitialData.get -> System.Text.Json.Serialization.Metadata.JsonTypeInfo<s2protocol.NET.Models.UserInitialData>
-~s2protocol.NET.S2ProtocolJsonSerializerContext.Version.get -> System.Text.Json.Serialization.Metadata.JsonTypeInfo<System.Version>

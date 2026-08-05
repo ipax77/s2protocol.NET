@@ -39,6 +39,7 @@ The decoder is feature-complete for the currently bundled StarCraft II protocol 
   - Decide whether the complete `Sc2Replay` graph supports serialization only or full round-tripping.
   - If round-tripping is supported, add polymorphic metadata or converters for game and tracker events and test the complete graph.
   - Document the supported JSON contract and its AOT behavior.
+  - Keep the complete generated context in `s2cli`; decoder consumers opt in with an application-local context so the core package stays small.
 
 - [x] Resolve pre-1.0 API baggage.
   - Decide whether to remove the obsolete built-in parallel decoding helpers before v1.0.

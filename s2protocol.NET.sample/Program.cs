@@ -24,8 +24,8 @@ Console.WriteLine($"attributeEvents={sc2Replay.AttributeEvents?.Attributes.Count
 
 GC.KeepAlive(sc2Replay);
 
-string json = JsonSerializer.Serialize(sc2Replay, S2ProtocolJsonSerializerContext.Default.Sc2Replay);
-Sc2Replay roundTripped = JsonSerializer.Deserialize(json, S2ProtocolJsonSerializerContext.Default.Sc2Replay)
+string json = JsonSerializer.Serialize(sc2Replay, SampleJsonSerializerContext.Default.Sc2Replay);
+Sc2Replay roundTripped = JsonSerializer.Deserialize(json, SampleJsonSerializerContext.Default.Sc2Replay)
     ?? throw new InvalidOperationException("The canonical replay JSON could not be deserialized.");
 Console.WriteLine($"jsonRoundTripTrackerEvents={roundTripped.TrackerEvents?.BaseTrackerEvents.Count ?? 0}");
 

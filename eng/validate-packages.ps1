@@ -1,6 +1,7 @@
 param(
     [string] $ArtifactsPath = (Join-Path $PSScriptRoot '..' 'artifacts'),
-    [string] $Version = '1.0.0'
+    [string] $Version = '1.0.0',
+    [long] $MaximumCorePackageBytes = 250KB
 )
 
 $ErrorActionPreference = 'Stop'
@@ -42,6 +43,8 @@ foreach ($id in @('s2protocol.NET', 's2cli')) {
     Assert-True (-not ($package.Entries -match '\.SC2Replay$|(^|/)obj/|s2protocol\.NET\.tests')) "$id contains unintended files."
 
     if ($id -eq 's2protocol.NET') {
+        $packageLength = (Get-Item -LiteralPath $packagePath).Length
+        Assert-True ($packageLength -le $MaximumCorePackageBytes) "Core package is $packageLength bytes; the limit is $MaximumCorePackageBytes bytes."
         Assert-True ($package.Entries -contains 'lib/net10.0/s2protocol.NET.dll') 'Library assembly is missing.'
         Assert-True ($package.Entries -contains 'lib/net10.0/s2protocol.NET.xml') 'Library XML docs are missing.'
         Assert-True (-not ($package.Entries -match '^lib/(?!net10\.0/)')) 'Library package contains a target other than net10.0.'

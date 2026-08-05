@@ -23,7 +23,6 @@ public record Sc2Replay : IJsonOnDeserialized
         Header = header;
     }
 
-    [JsonConstructor]
 #pragma warning disable CS1591 // Missing XML comment for publicly visible type or member
 #pragma warning disable CS8618 // Non-nullable field must contain a non-null value when exiting constructor. Consider declaring as nullable.
     public Sc2Replay()
@@ -31,6 +30,32 @@ public record Sc2Replay : IJsonOnDeserialized
 #pragma warning restore CS1591 // Missing XML comment for publicly visible type or member
     {
 
+    }
+
+    /// <summary>Creates a complete replay graph for JSON deserialization.</summary>
+    [JsonConstructor]
+    public Sc2Replay(
+        string fileName,
+        Header header,
+        Initdata? initdata,
+        Details? details,
+        ReplayMetadata? metadata,
+        MessageEvents? messageEvents,
+        TrackerEvents? trackerEvents,
+        GameEvents? gameEvents,
+        AttributeEvents? attributeEvents)
+    {
+        ArgumentNullException.ThrowIfNull(fileName);
+        ArgumentNullException.ThrowIfNull(header);
+        FileName = fileName;
+        Header = header;
+        Initdata = initdata;
+        Details = details;
+        Metadata = metadata;
+        MessageEvents = messageEvents;
+        TrackerEvents = trackerEvents;
+        GameEvents = gameEvents;
+        AttributeEvents = attributeEvents;
     }
     /// <summary>Replay FileName</summary>
     ///
