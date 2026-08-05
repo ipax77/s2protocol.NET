@@ -159,19 +159,13 @@ The pre-release workflow benchmarks full, tracker-only, message-only, attribute-
 
 <details open="open"><summary>v1.0.0</summary>
 
->- Freeze the public API with a reviewed analyzer baseline and package validation against v0.9.8
+>- Freeze the public API with a reviewed analyzer baseline and package validation against v0.9.6
 >- Preserve tracker events in one ordered store with lazy mutable category views and retained unknown events
 >- Add canonical, polymorphic, AOT-safe JSON round-tripping for the complete replay graph and use it from `s2cli`
 >- Remove the obsolete decoder-owned parallel APIs, decoder disposal, misspelled attribute/extraction APIs, and `EngineException`
 >- Correct `SCmdUpdateTargetUnitEvent`, make successful asynchronous decode results non-nullable, and target `net10.0`
 >- Add the build 97563 / game 5.0.16 replay and broaden ordered-event, JSON, archive, stream, and cancellation tests
 >- Pin SDK 10.0.302 and add coverage, package, Native AOT, vulnerability, performance, and 30-replay stress gates
->- Produce deterministic `1.0.0` packages and `.snupkg` symbols; publish only from a validated `v1.0.0` tag
-
-</details>
-
-<details><summary>v0.9.8</summary>
-
 >- Decode selection delta and command manager state game events into their strongly typed models
 >- Add strongly typed coverage for all 105 game-event names in the bundled Blizzard protocols
 >- Preserve historical game-event layouts and expose dialog choices, camera/mouse coordinates, and millisecond decrement data
@@ -185,6 +179,7 @@ The pre-release workflow benchmarks full, tracker-only, message-only, attribute-
 >- Preserve every AttributeEvents record, including repeated scope and attribute IDs, with Blizzard-compatible value decoding
 >- Add corrected AttributeEvents API aliases while preserving the existing source and JSON contracts
 >- Reduce transient AttributeEvents allocations and add an attribute-events-only benchmark
+>- Produce deterministic `1.0.0` packages and `.snupkg` symbols; publish only from a validated `v1.0.0` tag
 
 </details>
 
