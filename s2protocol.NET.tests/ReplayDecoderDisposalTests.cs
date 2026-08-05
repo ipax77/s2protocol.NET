@@ -23,13 +23,20 @@ public sealed class ReplayDecoderDisposalTests
     [Fact]
     public async Task PathDecodeReleasesFileOnSuccessAsync()
     {
-        string replayPath = GetReplayPath();
-        using ReplayDecoder decoder = new();
+        string replayPath = CreateTemporaryReplay(await File.ReadAllBytesAsync(GetReplayPath()));
+        try
+        {
+            using ReplayDecoder decoder = new();
 
-        await decoder.DecodeAsync(replayPath, HeaderOnly);
+            await decoder.DecodeAsync(replayPath, HeaderOnly);
 
-        using FileStream exclusive = File.Open(replayPath, FileMode.Open, FileAccess.Read, FileShare.None);
-        Assert.True(exclusive.CanRead);
+            using FileStream exclusive = File.Open(replayPath, FileMode.Open, FileAccess.Read, FileShare.None);
+            Assert.True(exclusive.CanRead);
+        }
+        finally
+        {
+            File.Delete(replayPath);
+        }
     }
 
     [Fact]
@@ -56,16 +63,23 @@ public sealed class ReplayDecoderDisposalTests
     [Fact]
     public async Task PathDecodeReleasesFileOnCancellationAsync()
     {
-        string replayPath = GetReplayPath();
-        using ReplayDecoder decoder = new();
-        using CancellationTokenSource cancellation = new();
-        await cancellation.CancelAsync();
+        string replayPath = CreateTemporaryReplay(await File.ReadAllBytesAsync(GetReplayPath()));
+        try
+        {
+            using ReplayDecoder decoder = new();
+            using CancellationTokenSource cancellation = new();
+            await cancellation.CancelAsync();
 
-        await Assert.ThrowsAnyAsync<OperationCanceledException>(
-            () => decoder.DecodeAsync(replayPath, HeaderOnly, cancellation.Token));
+            await Assert.ThrowsAnyAsync<OperationCanceledException>(
+                () => decoder.DecodeAsync(replayPath, HeaderOnly, cancellation.Token));
 
-        using FileStream exclusive = File.Open(replayPath, FileMode.Open, FileAccess.Read, FileShare.None);
-        Assert.True(exclusive.CanRead);
+            using FileStream exclusive = File.Open(replayPath, FileMode.Open, FileAccess.Read, FileShare.None);
+            Assert.True(exclusive.CanRead);
+        }
+        finally
+        {
+            File.Delete(replayPath);
+        }
     }
 
     [Fact]

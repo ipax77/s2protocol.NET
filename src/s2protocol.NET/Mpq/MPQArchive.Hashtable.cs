@@ -1,4 +1,5 @@
 using System.Globalization;
+using System.Buffers.Binary;
 using System.Runtime.InteropServices;
 using System.Text;
 
@@ -8,17 +9,17 @@ public sealed partial class MPQArchive
 {
     private T[] ReadTable<T>(string tableType) where T : struct
     {
-        uint tableOffset;
+        ulong tableOffset;
         uint tableEntries;
 
         if (tableType == "hash")
         {
-            tableOffset = _header.HashTableOffset;
+            tableOffset = GetTableOffset(_header.HashTableOffset, _header.HashTableOffsetHigh);
             tableEntries = _header.HashTableEntries;
         }
         else if (tableType == "block")
         {
-            tableOffset = _header.BlockTableOffset;
+            tableOffset = GetTableOffset(_header.BlockTableOffset, _header.BlockTableOffsetHigh);
             tableEntries = _header.BlockTableEntries;
         }
         else
@@ -28,15 +29,17 @@ public sealed partial class MPQArchive
 
         uint key = Hash($"({tableType} table)", "TABLE");
 
-        long tableSize = tableEntries * 16;
-        _reader.BaseStream.Seek(tableOffset + _headerOffset, SeekOrigin.Begin);
-        byte[] encryptedData = _reader.ReadBytes((int)tableSize);
-        byte[] decryptedData = DecryptTable(encryptedData, key);
+        int tableSize = checked((int)((long)tableEntries * 16));
+        ValidateArchiveRange(tableOffset, (ulong)tableSize, $"{tableType} table");
+        _reader.BaseStream.Seek(checked(_headerOffset + (long)tableOffset), SeekOrigin.Begin);
+        byte[] tableData = new byte[tableSize];
+        _reader.BaseStream.ReadExactly(tableData);
+        DecryptTable(tableData, key);
 
         T[] entries = new T[(int)tableEntries];
         for (int i = 0; i < entries.Length; i++)
         {
-            entries[i] = MemoryMarshal.Read<T>(decryptedData.AsSpan(i * 16, 16));
+            entries[i] = MemoryMarshal.Read<T>(tableData.AsSpan(i * 16, 16));
         }
 
         return entries;
@@ -67,27 +70,23 @@ public sealed partial class MPQArchive
         return seed1;
     }
 
-    private static byte[] DecryptTable(byte[] data, uint key)
+    private static void DecryptTable(Span<byte> data, uint key)
     {
         uint seed1 = key;
         uint seed2 = 0xEEEEEEEE;
-        byte[] result = new byte[data.Length];
-
         for (int i = 0; i < data.Length / 4; i++)
         {
             seed2 = (seed2 + StormBuffer[0x400 + (seed1 & 0xFF)]) & 0xFFFFFFFF;
 
-            uint value = BitConverter.ToUInt32(data, i * 4);
+            Span<byte> word = data.Slice(i * sizeof(uint), sizeof(uint));
+            uint value = BinaryPrimitives.ReadUInt32LittleEndian(word);
             value = (value ^ (seed1 + seed2)) & 0xFFFFFFFF;
 
             seed1 = ((~seed1 << 21) + 0x11111111 | (seed1 >> 11)) & 0xFFFFFFFF;
             seed2 = (value + seed2 + (seed2 << 5) + 3) & 0xFFFFFFFF;
 
-            byte[] valueBytes = BitConverter.GetBytes(value);
-            Buffer.BlockCopy(valueBytes, 0, result, i * 4, 4);
+            BinaryPrimitives.WriteUInt32LittleEndian(word, value);
         }
-
-        return result;
     }
 
 #pragma warning disable CA1303 // Do not pass literals as localized parameters

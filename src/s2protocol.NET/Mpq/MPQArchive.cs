@@ -43,6 +43,12 @@ public sealed partial class MPQArchive : IDisposable
     /// </summary>
     private MPQArchive(Stream stream, string archivePath, bool readFiles, bool leaveOpen)
     {
+        ArgumentNullException.ThrowIfNull(stream);
+        if (!stream.CanRead || !stream.CanSeek)
+        {
+            throw new ArgumentException("Archive stream must be readable and seekable.", nameof(stream));
+        }
+
         _archivePath = archivePath;
         _reader = new BinaryReader(stream, Encoding.UTF8, leaveOpen);
 
@@ -51,6 +57,7 @@ public sealed partial class MPQArchive : IDisposable
             (_header, _userDataHeader, _headerOffset) = ReadHeader();
             _hashTable = ReadTable<MPQHashTableEntry>("hash");
             _blockTable = ReadTable<MPQBlockTableEntry>("block");
+            ValidateTables();
             if (readFiles)
             {
                 _files = ReadFile("(listfile)");
@@ -60,6 +67,51 @@ public sealed partial class MPQArchive : IDisposable
         {
             _reader.Dispose();
             throw;
+        }
+    }
+
+    private void ValidateTables()
+    {
+        foreach (MPQHashTableEntry entry in _hashTable)
+        {
+            if (entry.BlockIndex != MpqHashEntryEmpty &&
+                entry.BlockIndex != MpqHashEntryDeleted &&
+                entry.BlockIndex >= _blockTable.Length)
+            {
+                throw new InvalidDataException($"MPQ hash table contains invalid block index {entry.BlockIndex}.");
+            }
+        }
+
+        foreach (MPQBlockTableEntry entry in _blockTable)
+        {
+            if ((entry.Flags & MpqFileExists) == 0)
+            {
+                continue;
+            }
+
+            if (entry.FileSize > MaximumFileSize)
+            {
+                throw new InvalidDataException(
+                    $"MPQ file declaration exceeds the {MaximumFileSize}-byte safety limit.");
+            }
+
+            ValidateArchiveRange(entry.FileOffset, entry.CompressedSize, "file data");
+        }
+    }
+
+    private void ValidateArchiveRange(ulong relativeOffset, ulong length, string description)
+    {
+        ulong archiveSize = _header.ArchiveSize;
+        if (relativeOffset > archiveSize || length > archiveSize - relativeOffset)
+        {
+            throw new InvalidDataException($"MPQ {description} lies outside the declared archive.");
+        }
+
+        ulong absoluteOffset = checked((ulong)_headerOffset + relativeOffset);
+        ulong streamLength = checked((ulong)_reader.BaseStream.Length);
+        if (absoluteOffset > streamLength || length > streamLength - absoluteOffset)
+        {
+            throw new InvalidDataException($"MPQ {description} lies outside the input stream.");
         }
     }
 

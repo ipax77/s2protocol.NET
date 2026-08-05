@@ -70,9 +70,10 @@ public class CurruptedErrorTests
         }
         catch (DecodeException ex)
         {
-            Assert.Equal("Value cannot be null. (Parameter 'trackerEvents')", ex.Message);
+            Assert.Equal("MPQ archive is truncated.", ex.Message);
+            Assert.IsType<InvalidDataException>(ex.InnerException);
         }
 
         decoder.Dispose();
-    }  
+    }
 }

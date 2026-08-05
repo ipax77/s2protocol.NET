@@ -16,7 +16,7 @@ The decoder is feature-complete for the currently bundled StarCraft II protocol 
   - Replace the missing-file `ArgumentNullException` with an appropriate argument or file exception.
   - Add file-handle, stream-ownership, exception, and cancellation tests.
 
-- [ ] Harden MPQ handling for untrusted or malformed archives.
+- [x] Harden MPQ handling for untrusted or malformed archives.
   - Reject rooted paths and traversal segments before extracting archive entries to disk.
   - Validate header sizes, table counts, block indexes, sector tables, offsets, and lengths before allocating or slicing.
   - Make async decompression verify the exact decompressed length, matching the synchronous path.
