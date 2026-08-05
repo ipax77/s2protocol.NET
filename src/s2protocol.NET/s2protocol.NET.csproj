@@ -9,12 +9,8 @@
     <PackageReadmeFile>README.md</PackageReadmeFile>
     <RepositoryUrl>https://github.com/ipax77/s2protocol.NET</RepositoryUrl>
     <PackageTags>Starcraft2;Blizzard;s2protocol;Replay;Replays;Decoder;C#;Dotnet;Library;Parser</PackageTags>
-    <AssemblyVersion>0.9.6.0</AssemblyVersion>
     <Owners>Philipp Hetzner</Owners>
     <Authors>Philipp Hetzner</Authors>
-    <Version>0.9.6</Version>
-	  <FileVersion>0.9.6.0</FileVersion>
-    <PackageVersion>0.9.6</PackageVersion>
     <PackageLicenseExpression>MIT</PackageLicenseExpression>
     <EnforceCodeStyleInBuild>true</EnforceCodeStyleInBuild>
     <EnableNETAnalyzers>true</EnableNETAnalyzers>
@@ -30,7 +26,11 @@
     <LangVersion>14</LangVersion>
     <WarningsNotAsErrors></WarningsNotAsErrors>
     <DisabledWarnings></DisabledWarnings>
-    <NoWarn>CS1591</NoWarn>
+    <!-- The System.Text.Json source generator emits oblivious metadata signatures; keep API presence enforcement active. -->
+    <NoWarn>CS1591;RS0041</NoWarn>
+    <EnablePackageValidation>true</EnablePackageValidation>
+    <PackageValidationBaselineVersion>0.9.6</PackageValidationBaselineVersion>
+    <ApiCompatSuppressionFile>$(MSBuildProjectDirectory)\CompatibilitySuppressions.xml</ApiCompatSuppressionFile>
   </PropertyGroup>
 
   <ItemGroup>
@@ -44,12 +44,17 @@
       <Pack>True</Pack>
       <PackagePath>.</PackagePath>
     </None>
+    <None Include="..\..\LICENSE">
+      <Pack>True</Pack>
+      <PackagePath>.</PackagePath>
+    </None>
   </ItemGroup>
 
   <ItemGroup>
     <!-- SharpZipLib preserves MPQ BZip2 support. It does not currently advertise AOT compatibility metadata, so
          VerifyReferenceAotCompatibility is intentionally not enabled by default. -->
     <PackageReference Include="SharpZipLib" Version="1.4.2" />
+    <PackageReference Include="Microsoft.CodeAnalysis.PublicApiAnalyzers" Version="5.6.0" PrivateAssets="all" />
   </ItemGroup>
 
   <ItemGroup>

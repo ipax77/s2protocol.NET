@@ -1,4 +1,5 @@
 ﻿using System.Numerics;
+using System.Text.Json.Serialization;
 
 namespace s2protocol.NET.Models;
 
@@ -374,21 +375,27 @@ public sealed class SlotDescription(KeyValuePair<int, BigInteger> allowedRaces,
 
     /// <summary>InitData SlotDescription AllowedRaces</summary>
     ///
+    [JsonConverter(typeof(BitArrayJsonConverter))]
     public KeyValuePair<int, BigInteger> AllowedRaces { get; init; } = allowedRaces;
     /// <summary>InitData SlotDescription AllowedColors</summary>
     ///
+    [JsonConverter(typeof(BitArrayJsonConverter))]
     public KeyValuePair<int, BigInteger> AllowedColors { get; init; } = allowedColors;
     /// <summary>InitData SlotDescription AllowedAIBuilds</summary>
     ///
+    [JsonConverter(typeof(BitArrayJsonConverter))]
     public KeyValuePair<int, BigInteger> AllowedAIBuilds { get; init; } = allowedAIBuilds;
     /// <summary>InitData SlotDescription AllowedDifficulty</summary>
     ///
+    [JsonConverter(typeof(BitArrayJsonConverter))]
     public KeyValuePair<int, BigInteger> AllowedDifficulty { get; init; } = allowedDifficulty;
     /// <summary>InitData SlotDescription AllowedObserveTypes</summary>
     ///
+    [JsonConverter(typeof(BitArrayJsonConverter))]
     public KeyValuePair<int, BigInteger> AllowedObserveTypes { get; init; } = allowedObserveTypes;
     /// <summary>InitData SlotDescription AllowedControls</summary>
     ///
+    [JsonConverter(typeof(BitArrayJsonConverter))]
     public KeyValuePair<int, BigInteger> AllowedControls { get; init; } = allowedControls;
 }
 

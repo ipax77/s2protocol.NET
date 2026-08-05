@@ -3,6 +3,26 @@
 ///
 public sealed class SUnitPositionsEvent : TrackerEvent
 {
+    [System.Text.Json.Serialization.JsonConstructor]
+    public SUnitPositionsEvent(
+        int playerId,
+        int eventId,
+        int bits,
+        int gameloop,
+        int firstUnitIndex,
+        ICollection<UnitPosition> unitPositions,
+        int unitIndex,
+        int x,
+        int y) : base(playerId, eventId, TrackerEventType.SUnitPositionsEvent, bits, gameloop)
+    {
+        ArgumentNullException.ThrowIfNull(unitPositions);
+        FirstUnitIndex = firstUnitIndex;
+        UnitPositions = unitPositions;
+        UnitIndex = unitIndex;
+        X = x;
+        Y = y;
+    }
+
     /// <summary>Record <c>SUnitPositionsEvent</c> constructor</summary>
     /// <comment>Only units that have inflicted or taken damage are mentioned in unit position events, and they occur periodically with a limit of 256 units mentioned per event.</comment>
     /// 
@@ -11,11 +31,21 @@ public sealed class SUnitPositionsEvent : TrackerEvent
                                int bits,
                                int gameloop,
                                int firstUnitIndex,
-                               int[] items) : base(playerId, eventId, TrackerEventType.SUnitPositionsEvent, bits, gameloop)
+                               int[] items)
+        : this(playerId, eventId, bits, gameloop, firstUnitIndex, (IReadOnlyList<int>)items)
+    {
+    }
+
+    internal SUnitPositionsEvent(int playerId,
+                                 int eventId,
+                                 int bits,
+                                 int gameloop,
+                                 int firstUnitIndex,
+                                 IReadOnlyList<int> items) : base(playerId, eventId, TrackerEventType.SUnitPositionsEvent, bits, gameloop)
     {
         FirstUnitIndex = firstUnitIndex;
 
-        if (items is null || items.Length < 3 || items.Length % 3 != 0)
+        if (items is null || items.Count < 3 || items.Count % 3 != 0)
         {
             UnitPositions = [];
             UnitIndex = firstUnitIndex;
@@ -24,13 +54,13 @@ public sealed class SUnitPositionsEvent : TrackerEvent
             return;
         }
 
-        var positions = new UnitPosition[items.Length / 3];
+        var positions = new UnitPosition[items.Count / 3];
 
         var unitIndex = firstUnitIndex;
         var lastX = 0;
         var lastY = 0;
 
-        for (var i = 0; i < items.Length; i += 3)
+        for (var i = 0; i < items.Count; i += 3)
         {
             unitIndex += items[i];
 

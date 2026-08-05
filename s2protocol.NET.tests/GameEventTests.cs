@@ -14,9 +14,48 @@ public sealed class GameEventTests
         ?? throw new InvalidOperationException("Could not resolve the test assembly path.");
 
     [Fact]
+    public async Task ValidReplayCorpusContainsNoUnknownGameEventsAsync()
+    {
+        string replayDirectory = Path.Combine(AssemblyPath, "replays");
+        string[] replayPaths = Directory.GetFiles(replayDirectory, "*.SC2Replay", SearchOption.TopDirectoryOnly)
+            .Where(path => !Path.GetFileName(path).Contains("Error", StringComparison.OrdinalIgnoreCase)
+                && !string.Equals(Path.GetFileName(path), "test.SC2Replay", StringComparison.OrdinalIgnoreCase))
+            .Order(StringComparer.Ordinal)
+            .ToArray();
+
+        foreach (string replayPath in replayPaths)
+        {
+            ReplayDecoder decoder = new();
+            Sc2Replay replay;
+            try
+            {
+                replay = Assert.IsType<Sc2Replay>(await decoder.DecodeAsync(
+                    replayPath,
+                    new ReplayDecoderOptions
+                    {
+                        Initdata = false,
+                        Details = false,
+                        Metadata = false,
+                        MessageEvents = false,
+                        TrackerEvents = false,
+                        GameEvents = true,
+                        AttributeEvents = false,
+                    }));
+            }
+            catch (DecodeException exception)
+            {
+                throw new InvalidOperationException($"Failed to decode {Path.GetFileName(replayPath)}.", exception);
+            }
+
+            GameEvents gameEvents = Assert.IsType<GameEvents>(replay.GameEvents);
+            Assert.DoesNotContain(gameEvents.BaseGameEvents, gameEvent => gameEvent is UnknownGameEvent);
+        }
+    }
+
+    [Fact]
     public async Task CommandsAreStronglyTypedAsync()
     {
-        using ReplayDecoder decoder = new();
+        ReplayDecoder decoder = new();
         Sc2Replay replay = Assert.IsType<Sc2Replay>(await decoder.DecodeAsync(
             Path.Combine(AssemblyPath, "replays", "test6.SC2Replay"),
             new ReplayDecoderOptions
@@ -43,9 +82,71 @@ public sealed class GameEventTests
     }
 
     [Fact]
+    public async Task SelectionDeltasAreStronglyTypedAsync()
+    {
+        ReplayDecoder decoder = new();
+        Sc2Replay replay = Assert.IsType<Sc2Replay>(await decoder.DecodeAsync(
+            Path.Combine(AssemblyPath, "replays", "test6.SC2Replay"),
+            new ReplayDecoderOptions
+            {
+                Initdata = false,
+                Details = false,
+                Metadata = false,
+                MessageEvents = false,
+                TrackerEvents = false,
+                GameEvents = true,
+                AttributeEvents = false,
+            }));
+
+        GameEvents gameEvents = Assert.IsType<GameEvents>(replay.GameEvents);
+        SSelectionDeltaEvent selection = gameEvents.BaseGameEvents
+            .OfType<SSelectionDeltaEvent>()
+            .First(selection => selection.ControlGroupId == 10);
+
+        Assert.Equal(2, selection.Gameloop);
+        Assert.Equal(0, selection.UserId);
+        Assert.Equal([69730305], selection.Delta.AddUnitTags);
+        Assert.Empty(selection.Delta.ZeroIndices);
+        Assert.Equal(0, selection.Delta.SubgroupIndex);
+        SelectionDeltaEventDeltaSubGroup subgroup = Assert.Single(selection.Delta.AddSubgroups);
+        Assert.Equal(3023, subgroup.UnitLink);
+        Assert.Equal(0, subgroup.SubgroupPriority);
+        Assert.Equal(1, subgroup.Count);
+        Assert.Equal(1, subgroup.IntraSubgroupPriority);
+    }
+
+    [Fact]
+    public async Task CommandManagerStatesAreStronglyTypedAsync()
+    {
+        ReplayDecoder decoder = new();
+        Sc2Replay replay = Assert.IsType<Sc2Replay>(await decoder.DecodeAsync(
+            Path.Combine(AssemblyPath, "replays", "test6.SC2Replay"),
+            new ReplayDecoderOptions
+            {
+                Initdata = false,
+                Details = false,
+                Metadata = false,
+                MessageEvents = false,
+                TrackerEvents = false,
+                GameEvents = true,
+                AttributeEvents = false,
+            }));
+
+        GameEvents gameEvents = Assert.IsType<GameEvents>(replay.GameEvents);
+        SCommandManagerStateEvent commandState = gameEvents.BaseGameEvents
+            .OfType<SCommandManagerStateEvent>()
+            .First();
+
+        Assert.Equal(228, commandState.Gameloop);
+        Assert.Equal(5, commandState.UserId);
+        Assert.Equal(1, commandState.State);
+        Assert.Equal(2, commandState.Sequence);
+    }
+
+    [Fact]
     public async Task UnitTargetCommandsExposeTargetUnitTagAsync()
     {
-        using ReplayDecoder decoder = new();
+        ReplayDecoder decoder = new();
         Sc2Replay replay = Assert.IsType<Sc2Replay>(await decoder.DecodeAsync(
             Path.Combine(AssemblyPath, "replays", "karax-target.SC2Replay"),
             new ReplayDecoderOptions

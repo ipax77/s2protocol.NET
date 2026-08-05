@@ -25,7 +25,8 @@ internal sealed record S2TypeInfo(string TypeName, int Number)
             _ => S2DecodeKind.Unknown,
         };
 
-        List<IDecodeParameter> parameters = [];
+        IDecodeParameter[] parameters = new IDecodeParameter[Elements.Count];
+        int parameterIndex = 0;
 
         foreach (var element in Elements)
         {
@@ -34,20 +35,20 @@ internal sealed record S2TypeInfo(string TypeName, int Number)
                 case S2TypeInfoTypeElement bounds:
                     if (bounds.Bounds.Max == -1)
                     {
-                        parameters.Add(new TypeIdParameter((int)bounds.Bounds.Min));
+                        parameters[parameterIndex++] = new TypeIdParameter((int)bounds.Bounds.Min);
                     }
                     else
                     {
-                        parameters.Add(new BoundsParameter(bounds.Bounds.Min, bounds.Bounds.Max));
+                        parameters[parameterIndex++] = new BoundsParameter(bounds.Bounds.Min, bounds.Bounds.Max);
                     }
                     break;
 
                 case S2TypeInfoMElement mElement:
-                    parameters.Add(new FieldListParameter(
+                    parameters[parameterIndex++] = new FieldListParameter(
                         mElement.Elements.ConvertAll(e =>
                             new DecodeField(e.TypeName, (int)e.Bounds.Min, e.Bounds.Max)
                         )
-                    ));
+                    );
                     break;
 
                 case DsTypeInfoChoiceElemet choiceElem:
@@ -56,7 +57,7 @@ internal sealed record S2TypeInfo(string TypeName, int Number)
                     {
                         choices[kv.Key] = new DecodeChoice(kv.Value.TypeName, kv.Value.Number);
                     }
-                    parameters.Add(new ChoiceParameter(choices));
+                    parameters[parameterIndex++] = new ChoiceParameter(choices);
                     break;
 
                 default:
@@ -64,7 +65,7 @@ internal sealed record S2TypeInfo(string TypeName, int Number)
             }
         }
 
-        Parameters = [.. parameters];
+        Parameters = parameters;
     }
 }
 

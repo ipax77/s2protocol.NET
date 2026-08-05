@@ -233,6 +233,234 @@ public sealed partial record S2ProtocolVersion
         }
     }
 
+    private static SCommandManagerStateEvent ReadSCommandManagerStateEvent(
+        TypedProtocolDecoder decoder,
+        int typeId,
+        int userId,
+        int eventId,
+        int bits,
+        int gameloop)
+    {
+        SCommandManagerStateEventReadState state = default;
+        decoder.ReadStruct(typeId, ref state);
+        return new SCommandManagerStateEvent(
+            userId,
+            eventId,
+            bits,
+            gameloop,
+            state.State,
+            state.Sequence);
+    }
+
+    private struct SCommandManagerStateEventReadState : IStructFieldReader
+    {
+        public int State;
+        public int? Sequence;
+
+        public bool ReadField(TypedProtocolDecoder decoder, string name, int fieldTypeId)
+        {
+            switch (name)
+            {
+                case "m_state":
+                    State = decoder.ReadInt(fieldTypeId);
+                    return true;
+                case "m_sequence":
+                    Sequence = decoder.ReadNullableInt(fieldTypeId);
+                    return true;
+                default:
+                    return false;
+            }
+        }
+    }
+
+    private static SSelectionDeltaEvent ReadSSelectionDeltaEvent(
+        TypedProtocolDecoder decoder,
+        int typeId,
+        int userId,
+        int eventId,
+        int bits,
+        int gameloop)
+    {
+        SSelectionDeltaEventReadState state = default;
+        decoder.ReadStruct(typeId, ref state);
+
+        ICollection<int> addUnitTags = state.AddUnitTags is { } unitTags
+            ? unitTags
+            : Array.Empty<int>();
+        ICollection<SelectionDeltaEventDeltaSubGroup> addSubgroups =
+            state.AddSubgroups is { } subgroups
+                ? subgroups
+                : Array.Empty<SelectionDeltaEventDeltaSubGroup>();
+        ICollection<int> zeroIndices = state.ZeroIndices is { } indices
+            ? indices
+            : Array.Empty<int>();
+        SelectionDeltaEventDelta delta = new(
+            addUnitTags,
+            addSubgroups,
+            zeroIndices,
+            state.SubgroupIndex);
+
+        return new SSelectionDeltaEvent(
+            userId,
+            eventId,
+            bits,
+            gameloop,
+            delta,
+            state.ControlGroupId);
+    }
+
+    private struct SSelectionDeltaEventReadState : IStructFieldReader
+    {
+        public List<int>? AddUnitTags;
+        public List<SelectionDeltaEventDeltaSubGroup>? AddSubgroups;
+        public List<int>? ZeroIndices;
+        public int SubgroupIndex;
+        public int ControlGroupId;
+
+        public bool ReadField(TypedProtocolDecoder decoder, string name, int fieldTypeId)
+        {
+            switch (name)
+            {
+                case "m_delta":
+                    SelectionDeltaReadState delta = default;
+                    decoder.ReadStruct(fieldTypeId, ref delta);
+                    AddUnitTags = delta.AddUnitTags;
+                    AddSubgroups = delta.AddSubgroups;
+                    ZeroIndices = delta.ZeroIndices;
+                    SubgroupIndex = delta.SubgroupIndex;
+                    return true;
+                case "m_controlGroupId":
+                    ControlGroupId = decoder.ReadInt(fieldTypeId);
+                    return true;
+                default:
+                    return false;
+            }
+        }
+    }
+
+    private struct SelectionDeltaReadState : IStructFieldReader
+    {
+        public List<int>? AddUnitTags;
+        public List<SelectionDeltaEventDeltaSubGroup>? AddSubgroups;
+        public List<int>? ZeroIndices;
+        public int SubgroupIndex;
+
+        public bool ReadField(TypedProtocolDecoder decoder, string name, int fieldTypeId)
+        {
+            switch (name)
+            {
+                case "m_addUnitTags":
+                    IntArrayReader unitTagReader = default;
+                    decoder.ReadArray(fieldTypeId, ref unitTagReader);
+                    AddUnitTags = unitTagReader.Values;
+                    return true;
+                case "m_addSubgroups":
+                    SelectionSubgroupArrayReader subgroupReader = default;
+                    decoder.ReadArray(fieldTypeId, ref subgroupReader);
+                    AddSubgroups = subgroupReader.Values;
+                    return true;
+                case "m_removeMask":
+                    if (decoder.IsChoice(fieldTypeId))
+                    {
+                        SelectionRemoveMaskChoiceHandler removeMask = default;
+                        decoder.ReadChoice(fieldTypeId, ref removeMask);
+                        ZeroIndices = removeMask.ZeroIndices;
+                    }
+                    else
+                    {
+                        SelectionLegacyRemoveMaskReadState removeMask = default;
+                        decoder.ReadStruct(fieldTypeId, ref removeMask);
+                    }
+                    return true;
+                case "m_subgroupIndex":
+                    SubgroupIndex = decoder.ReadInt(fieldTypeId);
+                    return true;
+                default:
+                    return false;
+            }
+        }
+    }
+
+    private struct SelectionLegacyRemoveMaskReadState : IStructFieldReader
+    {
+        public bool ReadField(TypedProtocolDecoder decoder, string name, int fieldTypeId) => false;
+    }
+
+    private struct IntArrayReader : IArrayItemReader
+    {
+        public List<int>? Values;
+
+        public bool ReadItem(TypedProtocolDecoder decoder, int itemTypeId)
+        {
+            (Values ??= []).Add(decoder.ReadInt(itemTypeId));
+            return true;
+        }
+    }
+
+    private struct SelectionSubgroupArrayReader : IArrayItemReader
+    {
+        public List<SelectionDeltaEventDeltaSubGroup>? Values;
+
+        public bool ReadItem(TypedProtocolDecoder decoder, int itemTypeId)
+        {
+            SelectionSubgroupReadState state = default;
+            decoder.ReadStruct(itemTypeId, ref state);
+            (Values ??= []).Add(new SelectionDeltaEventDeltaSubGroup(
+                state.UnitLink,
+                state.SubgroupPriority,
+                state.Count,
+                state.IntraSubgroupPriority));
+            return true;
+        }
+    }
+
+    private struct SelectionSubgroupReadState : IStructFieldReader
+    {
+        public int UnitLink;
+        public int SubgroupPriority;
+        public int Count;
+        public int IntraSubgroupPriority;
+
+        public bool ReadField(TypedProtocolDecoder decoder, string name, int fieldTypeId)
+        {
+            switch (name)
+            {
+                case "m_unitLink":
+                    UnitLink = decoder.ReadInt(fieldTypeId);
+                    return true;
+                case "m_subgroupPriority":
+                    SubgroupPriority = decoder.ReadInt(fieldTypeId);
+                    return true;
+                case "m_count":
+                    Count = decoder.ReadInt(fieldTypeId);
+                    return true;
+                case "m_intraSubgroupPriority":
+                    IntraSubgroupPriority = decoder.ReadInt(fieldTypeId);
+                    return true;
+                default:
+                    return false;
+            }
+        }
+    }
+
+    private struct SelectionRemoveMaskChoiceHandler : IChoiceHandler
+    {
+        public List<int>? ZeroIndices;
+
+        public bool HandleChoice(TypedProtocolDecoder decoder, string name, int choiceTypeId)
+        {
+            if (name != "ZeroIndices")
+            {
+                return false;
+            }
+
+            IntArrayReader reader = default;
+            decoder.ReadArray(choiceTypeId, ref reader);
+            ZeroIndices = reader.Values;
+            return true;
+        }
+    }
+
     private static SHijackReplayGameEvent ReadSHijackReplayGameEvent(
         TypedProtocolDecoder decoder,
         int typeId,

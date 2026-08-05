@@ -6,16 +6,7 @@ internal static partial class Parse
 {
     internal static TrackerEvents Tracker(IEnumerable<Dictionary<string, object?>> trackerEvents)
     {
-        var playerSetupEvents = new List<SPlayerSetupEvent>();
-        var playerStatsEvents = new List<SPlayerStatsEvent>();
-        var unitBornEvents = new List<SUnitBornEvent>();
-        var unitDiedEvents = new List<SUnitDiedEvent>();
-        var unitOwnerChangeEvents = new List<SUnitOwnerChangeEvent>();
-        var unitPositionsEvents = new List<SUnitPositionsEvent>();
-        var unitTypeChangeEvents = new List<SUnitTypeChangeEvent>();
-        var upgradeEvents = new List<SUpgradeEvent>();
-        var unitInitEvents = new List<SUnitInitEvent>();
-        var unitDoneEvents = new List<SUnitDoneEvent>();
+        TrackerEventStore events = new();
 
         foreach (var eventDic in trackerEvents)
         {
@@ -24,65 +15,10 @@ internal static partial class Parse
                 continue;
             }
 
-            var parsedEvent = GetTrackerEventTyped(cleanEventDic as Dictionary<string, object>);
-
-            switch (parsedEvent)
-            {
-                case SPlayerSetupEvent e:
-                    playerSetupEvents.Add(e);
-                    break;
-
-                case SPlayerStatsEvent e:
-                    playerStatsEvents.Add(e);
-                    break;
-
-                case SUnitBornEvent e:
-                    unitBornEvents.Add(e);
-                    break;
-
-                case SUnitDiedEvent e:
-                    unitDiedEvents.Add(e);
-                    break;
-
-                case SUnitOwnerChangeEvent e:
-                    unitOwnerChangeEvents.Add(e);
-                    break;
-
-                case SUnitPositionsEvent e:
-                    unitPositionsEvents.Add(e);
-                    break;
-
-                case SUnitTypeChangeEvent e:
-                    unitTypeChangeEvents.Add(e);
-                    break;
-
-                case SUpgradeEvent e:
-                    upgradeEvents.Add(e);
-                    break;
-
-                case SUnitInitEvent e:
-                    unitInitEvents.Add(e);
-                    break;
-
-                case SUnitDoneEvent e:
-                    unitDoneEvents.Add(e);
-                    break;
-            }
+            events.Add(GetTrackerEventTyped((Dictionary<string, object>)(object)cleanEventDic));
         }
 
-        var events = new TrackerEvents(
-            playerSetupEvents.ToArray(),
-            playerStatsEvents.ToArray(),
-            unitBornEvents.ToArray(),
-            unitDiedEvents.ToArray(),
-            unitOwnerChangeEvents.ToArray(),
-            unitPositionsEvents.ToArray(),
-            unitTypeChangeEvents.ToArray(),
-            upgradeEvents.ToArray(),
-            unitInitEvents.ToArray(),
-            unitDoneEvents.ToArray());
-
-        return events;
+        return new TrackerEvents(events);
     }
 
     internal static TrackerEvent GetTrackerEventTyped(Dictionary<string, object> eventDic)
@@ -112,67 +48,58 @@ internal static partial class Parse
             header.EventId,
             header.EventType,
             header.Bits,
-            header.Gameloop);
+            header.Gameloop,
+            header.EventTypeName);
     }
 
     internal static void SetTrackerEventsUnitConnections(TrackerEvents trackerEvents)
     {
-        var diedByUnitIndex = new Dictionary<int, SUnitDiedEvent>();
-        var doneByUnitIndex = new Dictionary<int, SUnitDoneEvent>();
-        var bornByUnitTag = new Dictionary<UnitTag, SUnitBornEvent>();
-        var initByUnitTag = new Dictionary<UnitTag, SUnitInitEvent>();
+        var diedByUnitIndex = new Dictionary<int, SUnitDiedEvent>(trackerEvents.SUnitDiedEvents.Count);
+        var doneByUnitIndex = new Dictionary<int, SUnitDoneEvent>(trackerEvents.SUnitDoneEvents.Count);
+        var bornByUnitTag = new Dictionary<UnitTag, SUnitBornEvent>(trackerEvents.SUnitBornEvents.Count);
+        var initByUnitTag = new Dictionary<UnitTag, SUnitInitEvent>(trackerEvents.SUnitInitEvents.Count);
 
-        foreach (var e in trackerEvents.SUnitDiedEvents)
+        foreach (TrackerEvent trackerEvent in trackerEvents.BaseTrackerEvents)
         {
-            diedByUnitIndex.TryAdd(e.UnitIndex, e);
-        }
-
-        foreach (var e in trackerEvents.SUnitDoneEvents)
-        {
-            doneByUnitIndex.TryAdd(e.UnitIndex, e);
-        }
-
-        foreach (var e in trackerEvents.SUnitBornEvents)
-        {
-            bornByUnitTag.TryAdd(new UnitTag(e.UnitTagIndex, e.UnitTagRecycle), e);
-        }
-
-        foreach (var e in trackerEvents.SUnitInitEvents)
-        {
-            initByUnitTag.TryAdd(new UnitTag(e.UnitTagIndex, e.UnitTagRecycle), e);
-        }
-
-        foreach (var e in trackerEvents.SUnitBornEvents)
-        {
-            diedByUnitIndex.TryGetValue(e.UnitIndex, out var diedEvent);
-            e.SUnitDiedEvent = diedEvent;
-        }
-
-        foreach (var e in trackerEvents.SUnitInitEvents)
-        {
-            diedByUnitIndex.TryGetValue(e.UnitIndex, out var diedEvent);
-            doneByUnitIndex.TryGetValue(e.UnitIndex, out var doneEvent);
-
-            e.SUnitDiedEvent = diedEvent;
-            e.SUnitDoneEvent = doneEvent;
-        }
-
-        foreach (var e in trackerEvents.SUnitDiedEvents)
-        {
-            if (e.KillerUnitTagIndex is null || e.KillerUnitTagRecycle is null)
+            switch (trackerEvent)
             {
-                continue;
+                case SUnitDiedEvent e:
+                    diedByUnitIndex.TryAdd(e.UnitIndex, e);
+                    break;
+                case SUnitDoneEvent e:
+                    doneByUnitIndex.TryAdd(e.UnitIndex, e);
+                    break;
+                case SUnitBornEvent e:
+                    bornByUnitTag.TryAdd(new UnitTag(e.UnitTagIndex, e.UnitTagRecycle), e);
+                    break;
+                case SUnitInitEvent e:
+                    initByUnitTag.TryAdd(new UnitTag(e.UnitTagIndex, e.UnitTagRecycle), e);
+                    break;
             }
+        }
 
-            var killerTag = new UnitTag(
-                e.KillerUnitTagIndex.Value,
-                e.KillerUnitTagRecycle.Value);
-
-            bornByUnitTag.TryGetValue(killerTag, out var bornEvent);
-            initByUnitTag.TryGetValue(killerTag, out var initEvent);
-
-            e.KillerUnitBornEvent = bornEvent;
-            e.KillerUnitInitEvent = initEvent;
+        foreach (TrackerEvent trackerEvent in trackerEvents.BaseTrackerEvents)
+        {
+            switch (trackerEvent)
+            {
+                case SUnitBornEvent e:
+                    diedByUnitIndex.TryGetValue(e.UnitIndex, out var diedEvent);
+                    e.SUnitDiedEvent = diedEvent;
+                    break;
+                case SUnitInitEvent e:
+                    diedByUnitIndex.TryGetValue(e.UnitIndex, out var initDiedEvent);
+                    doneByUnitIndex.TryGetValue(e.UnitIndex, out var doneEvent);
+                    e.SUnitDiedEvent = initDiedEvent;
+                    e.SUnitDoneEvent = doneEvent;
+                    break;
+                case SUnitDiedEvent e when e.KillerUnitTagIndex is not null && e.KillerUnitTagRecycle is not null:
+                    var killerTag = new UnitTag(e.KillerUnitTagIndex.Value, e.KillerUnitTagRecycle.Value);
+                    bornByUnitTag.TryGetValue(killerTag, out var bornEvent);
+                    initByUnitTag.TryGetValue(killerTag, out var initEvent);
+                    e.KillerUnitBornEvent = bornEvent;
+                    e.KillerUnitInitEvent = initEvent;
+                    break;
+            }
         }
     }
 
@@ -333,7 +260,7 @@ internal static partial class Parse
     {
         int type = GetInt(pydic, "m_type");
         int? userId = GetNullableInt(pydic, "m_userId");
-        int slotId = GetInt(pydic, "m_slotId");
+        int? slotId = GetNullableInt(pydic, "m_slotId");
         return new SPlayerSetupEvent(header.PlayerId,
                                      header.EventId,
                                      header.Bits,
@@ -347,7 +274,8 @@ internal static partial class Parse
     {
         var playerId = GetInt(pydic, "m_playerId");
         var eventId = GetInt(pydic, "_eventid");
-        var eventType = GetTrackerEventType(GetString(pydic, "_event"));
+        string eventTypeName = GetString(pydic, "_event");
+        var eventType = GetTrackerEventType(eventTypeName);
         var bits = GetInt(pydic, "_bits");
         var gameloop = GetInt(pydic, "_gameloop");
 
@@ -356,7 +284,8 @@ internal static partial class Parse
             eventId,
             eventType,
             bits,
-            gameloop);
+            gameloop,
+            eventTypeName);
     }
 
     private static TrackerEventType GetTrackerEventType(string eventType) => eventType switch
@@ -379,7 +308,8 @@ internal static partial class Parse
     int EventId,
     TrackerEventType EventType,
     int Bits,
-    int Gameloop);
+    int Gameloop,
+    string EventTypeName);
 
     private readonly record struct UnitTag(int Index, int Recycle);
 }

@@ -1,0 +1,1508 @@
+#nullable enable
+s2protocol.NET.Sc2Replay.Sc2Replay(string! fileName, s2protocol.NET.Models.Header! header, s2protocol.NET.Models.Initdata? initdata, s2protocol.NET.Models.Details? details, s2protocol.NET.Models.ReplayMetadata? metadata, s2protocol.NET.Models.MessageEvents? messageEvents, s2protocol.NET.Models.TrackerEvents? trackerEvents, s2protocol.NET.Models.GameEvents? gameEvents, s2protocol.NET.Models.AttributeEvents? attributeEvents) -> void
+override s2protocol.NET.Models.BitArrayJsonConverter.Read(ref System.Text.Json.Utf8JsonReader reader, System.Type! typeToConvert, System.Text.Json.JsonSerializerOptions! options) -> System.Collections.Generic.KeyValuePair<int, System.Numerics.BigInteger>
+override s2protocol.NET.Models.BitArrayJsonConverter.Write(System.Text.Json.Utf8JsonWriter! writer, System.Collections.Generic.KeyValuePair<int, System.Numerics.BigInteger> value, System.Text.Json.JsonSerializerOptions! options) -> void
+s2protocol.NET.Models.BitArrayJsonConverter
+s2protocol.NET.Models.BitArrayJsonConverter.BitArrayJsonConverter() -> void
+override s2protocol.NET.Models.GameCheatEventData.GetHashCode() -> int
+override s2protocol.NET.Models.GameEventAbility.GetHashCode() -> int
+override s2protocol.NET.Models.GameEventPoint2D.GetHashCode() -> int
+override s2protocol.NET.Models.GameEventPoint3D.GetHashCode() -> int
+override s2protocol.NET.Models.HijackReplayUserInfo.Equals(object? obj) -> bool
+override s2protocol.NET.Models.HijackReplayUserInfo.GetHashCode() -> int
+override s2protocol.NET.Models.HijackReplayUserInfo.ToString() -> string!
+override s2protocol.NET.Models.SelectionDeltaEventDelta.Equals(object? obj) -> bool
+override s2protocol.NET.Models.SelectionDeltaEventDelta.GetHashCode() -> int
+override s2protocol.NET.Models.SelectionDeltaEventDelta.ToString() -> string!
+override s2protocol.NET.Models.SelectionDeltaEventDeltaSubGroup.Equals(object? obj) -> bool
+override s2protocol.NET.Models.SelectionDeltaEventDeltaSubGroup.GetHashCode() -> int
+override s2protocol.NET.Models.SelectionDeltaEventDeltaSubGroup.ToString() -> string!
+override s2protocol.NET.Models.SelectionSyncCheckEventData.GetHashCode() -> int
+override s2protocol.NET.ReplayDecoderOptions.Equals(object? obj) -> bool
+override s2protocol.NET.ReplayDecoderOptions.GetHashCode() -> int
+override s2protocol.NET.ReplayDecoderOptions.ToString() -> string!
+override s2protocol.NET.S2Protocol.S2ProtocolVersion.Equals(object? obj) -> bool
+override s2protocol.NET.S2Protocol.S2ProtocolVersion.GetHashCode() -> int
+override s2protocol.NET.S2Protocol.S2ProtocolVersion.ToString() -> string!
+override s2protocol.NET.Sc2Replay.Equals(object? obj) -> bool
+override s2protocol.NET.Sc2Replay.GetHashCode() -> int
+override s2protocol.NET.Sc2Replay.ToString() -> string!
+s2protocol.NET.DecodeException
+s2protocol.NET.DecodeException.DecodeException() -> void
+s2protocol.NET.DecodeException.DecodeException(string! message) -> void
+s2protocol.NET.DecodeException.DecodeException(string! message, System.Exception! innerExeption) -> void
+s2protocol.NET.Models.AttributeEvents
+s2protocol.NET.Models.AttributeEvents.AttributeEvents(int source, int mapNamespace, System.Collections.Generic.ICollection<s2protocol.NET.Models.AttributeEventScope!>! attributes) -> void
+s2protocol.NET.Models.AttributeEvents.Attributes.get -> System.Collections.Generic.ICollection<s2protocol.NET.Models.AttributeEventScope!>!
+s2protocol.NET.Models.AttributeEvents.Attributes.init -> void
+s2protocol.NET.Models.AttributeEvents.MapNamespace.get -> int
+s2protocol.NET.Models.AttributeEvents.MapNamespace.init -> void
+s2protocol.NET.Models.AttributeEvents.Source.get -> int
+s2protocol.NET.Models.AttributeEvents.Source.init -> void
+s2protocol.NET.Models.AttributeEventScope
+s2protocol.NET.Models.AttributeEventScope.AttributeEventScope(int scope, int attributeId, int namespace, string! value) -> void
+s2protocol.NET.Models.AttributeEventScope.AttributeId.get -> int
+s2protocol.NET.Models.AttributeEventScope.AttributeId.init -> void
+s2protocol.NET.Models.AttributeEventScope.Namespace.get -> int
+s2protocol.NET.Models.AttributeEventScope.Namespace.init -> void
+s2protocol.NET.Models.AttributeEventScope.Scope.get -> int
+s2protocol.NET.Models.AttributeEventScope.Scope.init -> void
+s2protocol.NET.Models.AttributeEventScope.Value.get -> string!
+s2protocol.NET.Models.AttributeEventScope.Value.init -> void
+s2protocol.NET.Models.ChatMessageEvent
+s2protocol.NET.Models.ChatMessageEvent.ChatMessageEvent(int recipient, int userId, string! message, int eventId, int bits, int gameloop) -> void
+s2protocol.NET.Models.ChatMessageEvent.ChatMessageEvent(int recipient, int userId, string! message, int gameloop) -> void
+s2protocol.NET.Models.ChatMessageEvent.Message.get -> string!
+s2protocol.NET.Models.ChatMessageEvent.Message.init -> void
+s2protocol.NET.Models.ChatMessageEvent.Recipient.get -> int
+s2protocol.NET.Models.ChatMessageEvent.Recipient.init -> void
+s2protocol.NET.Models.Details
+s2protocol.NET.Models.Details.CampaignIndex.get -> int
+s2protocol.NET.Models.Details.CampaignIndex.init -> void
+s2protocol.NET.Models.Details.DateTimeUTC.get -> System.DateTime
+s2protocol.NET.Models.Details.DateTimeUTC.init -> void
+s2protocol.NET.Models.Details.DefaultDifficulty.get -> int
+s2protocol.NET.Models.Details.DefaultDifficulty.init -> void
+s2protocol.NET.Models.Details.Description.get -> string!
+s2protocol.NET.Models.Details.Description.init -> void
+s2protocol.NET.Models.Details.Details(int campaignIndex, int defaultDifficulty, string! description, string! difficulty, bool disableRecoverGame, int gameSpeed, string! imageFilePath, bool isBlizzardMap, string! mapFileName, bool miniSave, bool restartAsTransitionMap, long timeLocalOffset, long timeUTC, string! title, System.Collections.Generic.ICollection<s2protocol.NET.Models.DetailsPlayer!>! players) -> void
+s2protocol.NET.Models.Details.Difficulty.get -> string!
+s2protocol.NET.Models.Details.Difficulty.init -> void
+s2protocol.NET.Models.Details.DisableRecoverGame.get -> bool
+s2protocol.NET.Models.Details.DisableRecoverGame.init -> void
+s2protocol.NET.Models.Details.GameSpeed.get -> int
+s2protocol.NET.Models.Details.GameSpeed.init -> void
+s2protocol.NET.Models.Details.ImageFilePath.get -> string!
+s2protocol.NET.Models.Details.ImageFilePath.init -> void
+s2protocol.NET.Models.Details.IsBlizzardMap.get -> bool
+s2protocol.NET.Models.Details.IsBlizzardMap.init -> void
+s2protocol.NET.Models.Details.MapFileName.get -> string!
+s2protocol.NET.Models.Details.MapFileName.init -> void
+s2protocol.NET.Models.Details.MiniSave.get -> bool
+s2protocol.NET.Models.Details.MiniSave.init -> void
+s2protocol.NET.Models.Details.Players.get -> System.Collections.Generic.ICollection<s2protocol.NET.Models.DetailsPlayer!>!
+s2protocol.NET.Models.Details.Players.init -> void
+s2protocol.NET.Models.Details.RestartAsTransitionMap.get -> bool
+s2protocol.NET.Models.Details.RestartAsTransitionMap.init -> void
+s2protocol.NET.Models.Details.TimeLocalOffset.get -> long
+s2protocol.NET.Models.Details.TimeLocalOffset.init -> void
+s2protocol.NET.Models.Details.TimeUTC.get -> long
+s2protocol.NET.Models.Details.TimeUTC.init -> void
+s2protocol.NET.Models.Details.Title.get -> string!
+s2protocol.NET.Models.Details.Title.init -> void
+s2protocol.NET.Models.DetailsPlayer
+s2protocol.NET.Models.DetailsPlayer.ClanName.get -> string?
+s2protocol.NET.Models.DetailsPlayer.ClanName.init -> void
+s2protocol.NET.Models.DetailsPlayer.Color.get -> s2protocol.NET.Models.PlayerColor!
+s2protocol.NET.Models.DetailsPlayer.Color.init -> void
+s2protocol.NET.Models.DetailsPlayer.Control.get -> int
+s2protocol.NET.Models.DetailsPlayer.Control.init -> void
+s2protocol.NET.Models.DetailsPlayer.DetailsPlayer(s2protocol.NET.Models.PlayerColor! color, int control, int handicap, string! hero, string! name, int observe, string! race, int result, int teamId, s2protocol.NET.Models.Toon! toon, int workingSetSlotId) -> void
+s2protocol.NET.Models.DetailsPlayer.Handicap.get -> int
+s2protocol.NET.Models.DetailsPlayer.Handicap.init -> void
+s2protocol.NET.Models.DetailsPlayer.Hero.get -> string!
+s2protocol.NET.Models.DetailsPlayer.Hero.init -> void
+s2protocol.NET.Models.DetailsPlayer.Name.get -> string!
+s2protocol.NET.Models.DetailsPlayer.Name.init -> void
+s2protocol.NET.Models.DetailsPlayer.Observe.get -> int
+s2protocol.NET.Models.DetailsPlayer.Observe.init -> void
+s2protocol.NET.Models.DetailsPlayer.Race.get -> string!
+s2protocol.NET.Models.DetailsPlayer.Race.init -> void
+s2protocol.NET.Models.DetailsPlayer.Result.get -> int
+s2protocol.NET.Models.DetailsPlayer.Result.init -> void
+s2protocol.NET.Models.DetailsPlayer.TeamId.get -> int
+s2protocol.NET.Models.DetailsPlayer.TeamId.init -> void
+s2protocol.NET.Models.DetailsPlayer.Toon.get -> s2protocol.NET.Models.Toon!
+s2protocol.NET.Models.DetailsPlayer.Toon.init -> void
+s2protocol.NET.Models.DetailsPlayer.WorkingSetSlotId.get -> int
+s2protocol.NET.Models.DetailsPlayer.WorkingSetSlotId.init -> void
+s2protocol.NET.Models.DialogControlEventDataKind
+s2protocol.NET.Models.DialogControlEventDataKind.Checked = 1 -> s2protocol.NET.Models.DialogControlEventDataKind
+s2protocol.NET.Models.DialogControlEventDataKind.MouseButton = 5 -> s2protocol.NET.Models.DialogControlEventDataKind
+s2protocol.NET.Models.DialogControlEventDataKind.None = 0 -> s2protocol.NET.Models.DialogControlEventDataKind
+s2protocol.NET.Models.DialogControlEventDataKind.SelectionChanged = 3 -> s2protocol.NET.Models.DialogControlEventDataKind
+s2protocol.NET.Models.DialogControlEventDataKind.TextChanged = 4 -> s2protocol.NET.Models.DialogControlEventDataKind
+s2protocol.NET.Models.DialogControlEventDataKind.ValueChanged = 2 -> s2protocol.NET.Models.DialogControlEventDataKind
+s2protocol.NET.Models.GameCheatEventData
+s2protocol.NET.Models.GameCheatEventData.Arguments.get -> string!
+s2protocol.NET.Models.GameCheatEventData.Arguments.init -> void
+s2protocol.NET.Models.GameCheatEventData.Deconstruct(out s2protocol.NET.Models.GameEventPoint2D Point, out long Time, out string! Verb, out string! Arguments) -> void
+s2protocol.NET.Models.GameCheatEventData.Equals(s2protocol.NET.Models.GameCheatEventData other) -> bool
+s2protocol.NET.Models.GameCheatEventData.GameCheatEventData() -> void
+s2protocol.NET.Models.GameCheatEventData.GameCheatEventData(s2protocol.NET.Models.GameEventPoint2D Point, long Time, string! Verb, string! Arguments) -> void
+s2protocol.NET.Models.GameCheatEventData.Point.get -> s2protocol.NET.Models.GameEventPoint2D
+s2protocol.NET.Models.GameCheatEventData.Point.init -> void
+s2protocol.NET.Models.GameCheatEventData.Time.get -> long
+s2protocol.NET.Models.GameCheatEventData.Time.init -> void
+s2protocol.NET.Models.GameCheatEventData.Verb.get -> string!
+s2protocol.NET.Models.GameCheatEventData.Verb.init -> void
+s2protocol.NET.Models.GameDescription
+s2protocol.NET.Models.GameDescription.CacheHandles.get -> System.Collections.Generic.ICollection<string!>!
+s2protocol.NET.Models.GameDescription.CacheHandles.init -> void
+s2protocol.NET.Models.GameDescription.DefaultAIBuild.get -> int
+s2protocol.NET.Models.GameDescription.DefaultAIBuild.init -> void
+s2protocol.NET.Models.GameDescription.DefaultDifficulty.get -> int
+s2protocol.NET.Models.GameDescription.DefaultDifficulty.init -> void
+s2protocol.NET.Models.GameDescription.GameCacheName.get -> string!
+s2protocol.NET.Models.GameDescription.GameCacheName.init -> void
+s2protocol.NET.Models.GameDescription.GameDescription(int maxRaces, int maxTeams, bool hasExtensionMod, int maxColors, bool isBlizzardMap, s2protocol.NET.Models.GameOptions! gameOptions, int defaultDifficulty, bool isCoopMode, string! mapFileName, int defaultAIBuild, int gameType, bool hasNonBlizzardExtensionMod, long randomValue, int maxObservers, bool isRealtimeMode, int maxUsers, long modFileSyncChecksum, long mapFileSyncChecksum, int maxPlayers, System.Collections.Generic.ICollection<string!>! cacheHandles, int gameSpeed, int maxControls, string! gameCacheName, string! mapAuthorName, System.Collections.Generic.ICollection<s2protocol.NET.Models.SlotDescription!>! slotDescriptions, int mapSizeY, int mapSizeX, bool isPremadeFFA) -> void
+s2protocol.NET.Models.GameDescription.GameOptions.get -> s2protocol.NET.Models.GameOptions!
+s2protocol.NET.Models.GameDescription.GameOptions.init -> void
+s2protocol.NET.Models.GameDescription.GameSpeed.get -> int
+s2protocol.NET.Models.GameDescription.GameSpeed.init -> void
+s2protocol.NET.Models.GameDescription.GameType.get -> int
+s2protocol.NET.Models.GameDescription.GameType.init -> void
+s2protocol.NET.Models.GameDescription.HasExtensionMod.get -> bool
+s2protocol.NET.Models.GameDescription.HasExtensionMod.init -> void
+s2protocol.NET.Models.GameDescription.HasNonBlizzardExtensionMod.get -> bool
+s2protocol.NET.Models.GameDescription.HasNonBlizzardExtensionMod.init -> void
+s2protocol.NET.Models.GameDescription.IsBlizzardMap.get -> bool
+s2protocol.NET.Models.GameDescription.IsBlizzardMap.init -> void
+s2protocol.NET.Models.GameDescription.IsCoopMode.get -> bool
+s2protocol.NET.Models.GameDescription.IsCoopMode.init -> void
+s2protocol.NET.Models.GameDescription.IsPremadeFFA.get -> bool
+s2protocol.NET.Models.GameDescription.IsPremadeFFA.init -> void
+s2protocol.NET.Models.GameDescription.IsRealtimeMode.get -> bool
+s2protocol.NET.Models.GameDescription.IsRealtimeMode.init -> void
+s2protocol.NET.Models.GameDescription.MapAuthorName.get -> string!
+s2protocol.NET.Models.GameDescription.MapAuthorName.init -> void
+s2protocol.NET.Models.GameDescription.MapFileName.get -> string!
+s2protocol.NET.Models.GameDescription.MapFileName.init -> void
+s2protocol.NET.Models.GameDescription.MapFileSyncChecksum.get -> long
+s2protocol.NET.Models.GameDescription.MapFileSyncChecksum.init -> void
+s2protocol.NET.Models.GameDescription.MapSizeX.get -> int
+s2protocol.NET.Models.GameDescription.MapSizeX.init -> void
+s2protocol.NET.Models.GameDescription.MapSizeY.get -> int
+s2protocol.NET.Models.GameDescription.MapSizeY.init -> void
+s2protocol.NET.Models.GameDescription.MaxColors.get -> int
+s2protocol.NET.Models.GameDescription.MaxColors.init -> void
+s2protocol.NET.Models.GameDescription.MaxControls.get -> int
+s2protocol.NET.Models.GameDescription.MaxControls.init -> void
+s2protocol.NET.Models.GameDescription.MaxObservers.get -> int
+s2protocol.NET.Models.GameDescription.MaxObservers.init -> void
+s2protocol.NET.Models.GameDescription.MaxPlayers.get -> int
+s2protocol.NET.Models.GameDescription.MaxPlayers.init -> void
+s2protocol.NET.Models.GameDescription.MaxRaces.get -> int
+s2protocol.NET.Models.GameDescription.MaxRaces.init -> void
+s2protocol.NET.Models.GameDescription.MaxTeams.get -> int
+s2protocol.NET.Models.GameDescription.MaxTeams.init -> void
+s2protocol.NET.Models.GameDescription.MaxUsers.get -> int
+s2protocol.NET.Models.GameDescription.MaxUsers.init -> void
+s2protocol.NET.Models.GameDescription.ModFileSyncChecksum.get -> long
+s2protocol.NET.Models.GameDescription.ModFileSyncChecksum.init -> void
+s2protocol.NET.Models.GameDescription.RandomValue.get -> long
+s2protocol.NET.Models.GameDescription.RandomValue.init -> void
+s2protocol.NET.Models.GameDescription.SlotDescriptions.get -> System.Collections.Generic.ICollection<s2protocol.NET.Models.SlotDescription!>!
+s2protocol.NET.Models.GameDescription.SlotDescriptions.init -> void
+s2protocol.NET.Models.GameEvent
+s2protocol.NET.Models.GameEvent.Bits.get -> int
+s2protocol.NET.Models.GameEvent.EventId.get -> int
+s2protocol.NET.Models.GameEvent.EventType.get -> s2protocol.NET.Models.GameEventType
+s2protocol.NET.Models.GameEvent.GameEvent(int userId, int eventId, s2protocol.NET.Models.GameEventType eventType, int bits, int gameloop) -> void
+s2protocol.NET.Models.GameEvent.Gameloop.get -> int
+s2protocol.NET.Models.GameEvent.UserId.get -> int
+s2protocol.NET.Models.GameEventAbility
+s2protocol.NET.Models.GameEventAbility.AbilCmdData.get -> int?
+s2protocol.NET.Models.GameEventAbility.AbilCmdData.init -> void
+s2protocol.NET.Models.GameEventAbility.AbilCmdIndex.get -> int
+s2protocol.NET.Models.GameEventAbility.AbilCmdIndex.init -> void
+s2protocol.NET.Models.GameEventAbility.AbilLink.get -> int
+s2protocol.NET.Models.GameEventAbility.AbilLink.init -> void
+s2protocol.NET.Models.GameEventAbility.Deconstruct(out int AbilLink, out int AbilCmdIndex, out int? AbilCmdData) -> void
+s2protocol.NET.Models.GameEventAbility.Equals(s2protocol.NET.Models.GameEventAbility other) -> bool
+s2protocol.NET.Models.GameEventAbility.GameEventAbility() -> void
+s2protocol.NET.Models.GameEventAbility.GameEventAbility(int AbilLink, int AbilCmdIndex, int? AbilCmdData) -> void
+s2protocol.NET.Models.GameEventPoint2D
+s2protocol.NET.Models.GameEventPoint2D.Deconstruct(out long X, out long Y) -> void
+s2protocol.NET.Models.GameEventPoint2D.Equals(s2protocol.NET.Models.GameEventPoint2D other) -> bool
+s2protocol.NET.Models.GameEventPoint2D.GameEventPoint2D() -> void
+s2protocol.NET.Models.GameEventPoint2D.GameEventPoint2D(long X, long Y) -> void
+s2protocol.NET.Models.GameEventPoint2D.X.get -> long
+s2protocol.NET.Models.GameEventPoint2D.X.init -> void
+s2protocol.NET.Models.GameEventPoint2D.Y.get -> long
+s2protocol.NET.Models.GameEventPoint2D.Y.init -> void
+s2protocol.NET.Models.GameEventPoint3D
+s2protocol.NET.Models.GameEventPoint3D.Deconstruct(out long X, out long Y, out long Z) -> void
+s2protocol.NET.Models.GameEventPoint3D.Equals(s2protocol.NET.Models.GameEventPoint3D other) -> bool
+s2protocol.NET.Models.GameEventPoint3D.GameEventPoint3D() -> void
+s2protocol.NET.Models.GameEventPoint3D.GameEventPoint3D(long X, long Y, long Z) -> void
+s2protocol.NET.Models.GameEventPoint3D.X.get -> long
+s2protocol.NET.Models.GameEventPoint3D.X.init -> void
+s2protocol.NET.Models.GameEventPoint3D.Y.get -> long
+s2protocol.NET.Models.GameEventPoint3D.Y.init -> void
+s2protocol.NET.Models.GameEventPoint3D.Z.get -> long
+s2protocol.NET.Models.GameEventPoint3D.Z.init -> void
+s2protocol.NET.Models.GameEvents
+s2protocol.NET.Models.GameEvents.BaseGameEvents.get -> System.Collections.Generic.ICollection<s2protocol.NET.Models.GameEvent!>!
+s2protocol.NET.Models.GameEvents.BaseGameEvents.init -> void
+s2protocol.NET.Models.GameEvents.GameEvents(System.Collections.Generic.ICollection<s2protocol.NET.Models.GameEvent!>! baseGameEvents) -> void
+s2protocol.NET.Models.GameEvents.GetGameEvents<T>() -> System.Collections.Generic.ICollection<T>!
+s2protocol.NET.Models.GameEventType
+s2protocol.NET.Models.GameEventType.None = 0 -> s2protocol.NET.Models.GameEventType
+s2protocol.NET.Models.GameEventType.SAchievementAwardedEvent = 34 -> s2protocol.NET.Models.GameEventType
+s2protocol.NET.Models.GameEventType.SAddAbsoluteGameSpeedEvent = 50 -> s2protocol.NET.Models.GameEventType
+s2protocol.NET.Models.GameEventType.SAICommunicateEvent = 48 -> s2protocol.NET.Models.GameEventType
+s2protocol.NET.Models.GameEventType.SAllianceEvent = 52 -> s2protocol.NET.Models.GameEventType
+s2protocol.NET.Models.GameEventType.SBankFileEvent = 1 -> s2protocol.NET.Models.GameEventType
+s2protocol.NET.Models.GameEventType.SBankKeyEvent = 2 -> s2protocol.NET.Models.GameEventType
+s2protocol.NET.Models.GameEventType.SBankSectionEvent = 3 -> s2protocol.NET.Models.GameEventType
+s2protocol.NET.Models.GameEventType.SBankSignatureEvent = 4 -> s2protocol.NET.Models.GameEventType
+s2protocol.NET.Models.GameEventType.SBankValueEvent = 5 -> s2protocol.NET.Models.GameEventType
+s2protocol.NET.Models.GameEventType.SBroadcastCheatEvent = 51 -> s2protocol.NET.Models.GameEventType
+s2protocol.NET.Models.GameEventType.SCameraSaveEvent = 27 -> s2protocol.NET.Models.GameEventType
+s2protocol.NET.Models.GameEventType.SCameraUpdateEvent = 6 -> s2protocol.NET.Models.GameEventType
+s2protocol.NET.Models.GameEventType.SCatalogModifyEvent = 97 -> s2protocol.NET.Models.GameEventType
+s2protocol.NET.Models.GameEventType.SCmdEvent = 7 -> s2protocol.NET.Models.GameEventType
+s2protocol.NET.Models.GameEventType.SCmdUpdateTargetPointEvent = 8 -> s2protocol.NET.Models.GameEventType
+s2protocol.NET.Models.GameEventType.SCmdUpdateTargetUnitEvent = 20 -> s2protocol.NET.Models.GameEventType
+s2protocol.NET.Models.GameEventType.SCommandManagerResetEvent = 44 -> s2protocol.NET.Models.GameEventType
+s2protocol.NET.Models.GameEventType.SCommandManagerStateEvent = 9 -> s2protocol.NET.Models.GameEventType
+s2protocol.NET.Models.GameEventType.SControlGroupUpdateEvent = 10 -> s2protocol.NET.Models.GameEventType
+s2protocol.NET.Models.GameEventType.SDecrementGameTimeRemainingEvent = 23 -> s2protocol.NET.Models.GameEventType
+s2protocol.NET.Models.GameEventType.SGameCheatEvent = 45 -> s2protocol.NET.Models.GameEventType
+s2protocol.NET.Models.GameEventType.SGameUserJoinEvent = 40 -> s2protocol.NET.Models.GameEventType
+s2protocol.NET.Models.GameEventType.SGameUserLeaveEvent = 11 -> s2protocol.NET.Models.GameEventType
+s2protocol.NET.Models.GameEventType.SHeroTalentTreeSelectedEvent = 98 -> s2protocol.NET.Models.GameEventType
+s2protocol.NET.Models.GameEventType.SHeroTalentTreeSelectionPanelToggledEvent = 100 -> s2protocol.NET.Models.GameEventType
+s2protocol.NET.Models.GameEventType.SHijackReplayGameEvent = 39 -> s2protocol.NET.Models.GameEventType
+s2protocol.NET.Models.GameEventType.SLagMessageEvent = 103 -> s2protocol.NET.Models.GameEventType
+s2protocol.NET.Models.GameEventType.SLoadGameDoneEvent = 43 -> s2protocol.NET.Models.GameEventType
+s2protocol.NET.Models.GameEventType.SPeerSetSyncLoadingTimeEvent = 101 -> s2protocol.NET.Models.GameEventType
+s2protocol.NET.Models.GameEventType.SPeerSetSyncPlayingTimeEvent = 102 -> s2protocol.NET.Models.GameEventType
+s2protocol.NET.Models.GameEventType.SPlayerLeaveEvent = 104 -> s2protocol.NET.Models.GameEventType
+s2protocol.NET.Models.GameEventType.SResourceRequestCancelEvent = 70 -> s2protocol.NET.Models.GameEventType
+s2protocol.NET.Models.GameEventType.SResourceRequestEvent = 68 -> s2protocol.NET.Models.GameEventType
+s2protocol.NET.Models.GameEventType.SResourceRequestFulfillEvent = 69 -> s2protocol.NET.Models.GameEventType
+s2protocol.NET.Models.GameEventType.SResourceTradeEvent = 47 -> s2protocol.NET.Models.GameEventType
+s2protocol.NET.Models.GameEventType.SSaveGameDoneEvent = 42 -> s2protocol.NET.Models.GameEventType
+s2protocol.NET.Models.GameEventType.SSaveGameEvent = 41 -> s2protocol.NET.Models.GameEventType
+s2protocol.NET.Models.GameEventType.SSelectionDeltaEvent = 12 -> s2protocol.NET.Models.GameEventType
+s2protocol.NET.Models.GameEventType.SSelectionSyncCheckEvent = 46 -> s2protocol.NET.Models.GameEventType
+s2protocol.NET.Models.GameEventType.SSetAbsoluteGameSpeedEvent = 49 -> s2protocol.NET.Models.GameEventType
+s2protocol.NET.Models.GameEventType.SSetSyncLoadingTimeEvent = 13 -> s2protocol.NET.Models.GameEventType
+s2protocol.NET.Models.GameEventType.SSetSyncPlayingTimeEvent = 14 -> s2protocol.NET.Models.GameEventType
+s2protocol.NET.Models.GameEventType.STriggerAbortMissionEvent = 56 -> s2protocol.NET.Models.GameEventType
+s2protocol.NET.Models.GameEventType.STriggerAnimLengthQueryByNameEvent = 94 -> s2protocol.NET.Models.GameEventType
+s2protocol.NET.Models.GameEventType.STriggerAnimLengthQueryByPropsEvent = 95 -> s2protocol.NET.Models.GameEventType
+s2protocol.NET.Models.GameEventType.STriggerAnimOffsetEvent = 96 -> s2protocol.NET.Models.GameEventType
+s2protocol.NET.Models.GameEventType.STriggerBattleReportPanelExitEvent = 79 -> s2protocol.NET.Models.GameEventType
+s2protocol.NET.Models.GameEventType.STriggerBattleReportPanelPlayMissionEvent = 80 -> s2protocol.NET.Models.GameEventType
+s2protocol.NET.Models.GameEventType.STriggerBattleReportPanelPlaySceneEvent = 81 -> s2protocol.NET.Models.GameEventType
+s2protocol.NET.Models.GameEventType.STriggerBattleReportPanelSelectionChangedEvent = 82 -> s2protocol.NET.Models.GameEventType
+s2protocol.NET.Models.GameEventType.STriggerButtonPressedEvent = 36 -> s2protocol.NET.Models.GameEventType
+s2protocol.NET.Models.GameEventType.STriggerCameraMoveEvent = 105 -> s2protocol.NET.Models.GameEventType
+s2protocol.NET.Models.GameEventType.STriggerChatMessageEvent = 24 -> s2protocol.NET.Models.GameEventType
+s2protocol.NET.Models.GameEventType.STriggerCommandErrorEvent = 74 -> s2protocol.NET.Models.GameEventType
+s2protocol.NET.Models.GameEventType.STriggerConversationSkippedEvent = 61 -> s2protocol.NET.Models.GameEventType
+s2protocol.NET.Models.GameEventType.STriggerCustomDialogDismissedEvent = 87 -> s2protocol.NET.Models.GameEventType
+s2protocol.NET.Models.GameEventType.STriggerCutsceneBookmarkFiredEvent = 28 -> s2protocol.NET.Models.GameEventType
+s2protocol.NET.Models.GameEventType.STriggerCutsceneConversationLineEvent = 92 -> s2protocol.NET.Models.GameEventType
+s2protocol.NET.Models.GameEventType.STriggerCutsceneConversationLineMissingEvent = 93 -> s2protocol.NET.Models.GameEventType
+s2protocol.NET.Models.GameEventType.STriggerCutsceneEndSceneFiredEvent = 29 -> s2protocol.NET.Models.GameEventType
+s2protocol.NET.Models.GameEventType.STriggerDialogControlEvent = 15 -> s2protocol.NET.Models.GameEventType
+s2protocol.NET.Models.GameEventType.STriggerGameCreditsFinishedEvent = 91 -> s2protocol.NET.Models.GameEventType
+s2protocol.NET.Models.GameEventType.STriggerGameMenuItemSelectedEvent = 37 -> s2protocol.NET.Models.GameEventType
+s2protocol.NET.Models.GameEventType.STriggerHotkeyPressedEvent = 62 -> s2protocol.NET.Models.GameEventType
+s2protocol.NET.Models.GameEventType.STriggerKeyPressedEvent = 21 -> s2protocol.NET.Models.GameEventType
+s2protocol.NET.Models.GameEventType.STriggerMercenaryPanelExitEvent = 75 -> s2protocol.NET.Models.GameEventType
+s2protocol.NET.Models.GameEventType.STriggerMercenaryPanelPurchaseEvent = 76 -> s2protocol.NET.Models.GameEventType
+s2protocol.NET.Models.GameEventType.STriggerMercenaryPanelSelectionChangedEvent = 77 -> s2protocol.NET.Models.GameEventType
+s2protocol.NET.Models.GameEventType.STriggerMouseClickedEvent = 25 -> s2protocol.NET.Models.GameEventType
+s2protocol.NET.Models.GameEventType.STriggerMouseMovedEvent = 38 -> s2protocol.NET.Models.GameEventType
+s2protocol.NET.Models.GameEventType.STriggerMouseWheelEvent = 88 -> s2protocol.NET.Models.GameEventType
+s2protocol.NET.Models.GameEventType.STriggerMovieFinishedEvent = 85 -> s2protocol.NET.Models.GameEventType
+s2protocol.NET.Models.GameEventType.STriggerMovieFunctionEvent = 65 -> s2protocol.NET.Models.GameEventType
+s2protocol.NET.Models.GameEventType.STriggerMovieStartedEvent = 84 -> s2protocol.NET.Models.GameEventType
+s2protocol.NET.Models.GameEventType.STriggerPingEvent = 16 -> s2protocol.NET.Models.GameEventType
+s2protocol.NET.Models.GameEventType.STriggerPlanetMissionLaunchedEvent = 59 -> s2protocol.NET.Models.GameEventType
+s2protocol.NET.Models.GameEventType.STriggerPlanetMissionSelectedEvent = 64 -> s2protocol.NET.Models.GameEventType
+s2protocol.NET.Models.GameEventType.STriggerPlanetPanelBirthCompleteEvent = 66 -> s2protocol.NET.Models.GameEventType
+s2protocol.NET.Models.GameEventType.STriggerPlanetPanelCanceledEvent = 60 -> s2protocol.NET.Models.GameEventType
+s2protocol.NET.Models.GameEventType.STriggerPlanetPanelDeathCompleteEvent = 67 -> s2protocol.NET.Models.GameEventType
+s2protocol.NET.Models.GameEventType.STriggerPlanetPanelReplayEvent = 63 -> s2protocol.NET.Models.GameEventType
+s2protocol.NET.Models.GameEventType.STriggerPortraitLoadedEvent = 86 -> s2protocol.NET.Models.GameEventType
+s2protocol.NET.Models.GameEventType.STriggerProfilerLoggingFinishedEvent = 99 -> s2protocol.NET.Models.GameEventType
+s2protocol.NET.Models.GameEventType.STriggerPurchaseExitEvent = 58 -> s2protocol.NET.Models.GameEventType
+s2protocol.NET.Models.GameEventType.STriggerPurchaseMadeEvent = 57 -> s2protocol.NET.Models.GameEventType
+s2protocol.NET.Models.GameEventType.STriggerPurchasePanelSelectedPurchaseCategoryChangedEvent = 90 -> s2protocol.NET.Models.GameEventType
+s2protocol.NET.Models.GameEventType.STriggerPurchasePanelSelectedPurchaseItemChangedEvent = 89 -> s2protocol.NET.Models.GameEventType
+s2protocol.NET.Models.GameEventType.STriggerReplySelectedEvent = 54 -> s2protocol.NET.Models.GameEventType
+s2protocol.NET.Models.GameEventType.STriggerResearchPanelExitEvent = 71 -> s2protocol.NET.Models.GameEventType
+s2protocol.NET.Models.GameEventType.STriggerResearchPanelPurchaseEvent = 72 -> s2protocol.NET.Models.GameEventType
+s2protocol.NET.Models.GameEventType.STriggerResearchPanelSelectionChangedEvent = 73 -> s2protocol.NET.Models.GameEventType
+s2protocol.NET.Models.GameEventType.STriggerSkippedEvent = 55 -> s2protocol.NET.Models.GameEventType
+s2protocol.NET.Models.GameEventType.STriggerSoundLengthQueryEvent = 30 -> s2protocol.NET.Models.GameEventType
+s2protocol.NET.Models.GameEventType.STriggerSoundLengthSyncEvent = 17 -> s2protocol.NET.Models.GameEventType
+s2protocol.NET.Models.GameEventType.STriggerSoundOffsetEvent = 31 -> s2protocol.NET.Models.GameEventType
+s2protocol.NET.Models.GameEventType.STriggerSoundtrackDoneEvent = 26 -> s2protocol.NET.Models.GameEventType
+s2protocol.NET.Models.GameEventType.STriggerTargetModeUpdateEvent = 32 -> s2protocol.NET.Models.GameEventType
+s2protocol.NET.Models.GameEventType.STriggerTransmissionCompleteEvent = 33 -> s2protocol.NET.Models.GameEventType
+s2protocol.NET.Models.GameEventType.STriggerTransmissionOffsetEvent = 35 -> s2protocol.NET.Models.GameEventType
+s2protocol.NET.Models.GameEventType.STriggerVictoryPanelExitEvent = 78 -> s2protocol.NET.Models.GameEventType
+s2protocol.NET.Models.GameEventType.STriggerVictoryPanelPlayMissionAgainEvent = 83 -> s2protocol.NET.Models.GameEventType
+s2protocol.NET.Models.GameEventType.SUnitClickEvent = 22 -> s2protocol.NET.Models.GameEventType
+s2protocol.NET.Models.GameEventType.SUnitHighlightEvent = 53 -> s2protocol.NET.Models.GameEventType
+s2protocol.NET.Models.GameEventType.SUserFinishedLoadingSyncEvent = 18 -> s2protocol.NET.Models.GameEventType
+s2protocol.NET.Models.GameEventType.SUserOptionsEvent = 19 -> s2protocol.NET.Models.GameEventType
+s2protocol.NET.Models.GameOptions
+s2protocol.NET.Models.GameOptions.AdvancedSharedControl.get -> bool
+s2protocol.NET.Models.GameOptions.AdvancedSharedControl.init -> void
+s2protocol.NET.Models.GameOptions.Amm.get -> bool
+s2protocol.NET.Models.GameOptions.Amm.init -> void
+s2protocol.NET.Models.GameOptions.BattleNet.get -> bool
+s2protocol.NET.Models.GameOptions.BattleNet.init -> void
+s2protocol.NET.Models.GameOptions.BuildCoachEnabled.get -> bool
+s2protocol.NET.Models.GameOptions.BuildCoachEnabled.init -> void
+s2protocol.NET.Models.GameOptions.ClientDebugFlags.get -> long
+s2protocol.NET.Models.GameOptions.ClientDebugFlags.init -> void
+s2protocol.NET.Models.GameOptions.Competitive.get -> bool
+s2protocol.NET.Models.GameOptions.Competitive.init -> void
+s2protocol.NET.Models.GameOptions.Cooperative.get -> bool
+s2protocol.NET.Models.GameOptions.Cooperative.init -> void
+s2protocol.NET.Models.GameOptions.Fog.get -> int
+s2protocol.NET.Models.GameOptions.Fog.init -> void
+s2protocol.NET.Models.GameOptions.GameOptions(bool competitive, bool practice, bool lockTeams, bool amm, bool battleNet, int fog, bool noVictoryOrDefeat, bool heroDuplicatesAllowed, int userDifficulty, bool advancedSharedControl, bool cooperative, long clientDebugFlags, int observers, bool teamsTogether, bool randomRaces, bool buildCoachEnabled) -> void
+s2protocol.NET.Models.GameOptions.HeroDuplicatesAllowed.get -> bool
+s2protocol.NET.Models.GameOptions.HeroDuplicatesAllowed.init -> void
+s2protocol.NET.Models.GameOptions.LockTeams.get -> bool
+s2protocol.NET.Models.GameOptions.LockTeams.init -> void
+s2protocol.NET.Models.GameOptions.NoVictoryOrDefeat.get -> bool
+s2protocol.NET.Models.GameOptions.NoVictoryOrDefeat.init -> void
+s2protocol.NET.Models.GameOptions.Observers.get -> int
+s2protocol.NET.Models.GameOptions.Observers.init -> void
+s2protocol.NET.Models.GameOptions.Practice.get -> bool
+s2protocol.NET.Models.GameOptions.Practice.init -> void
+s2protocol.NET.Models.GameOptions.RandomRaces.get -> bool
+s2protocol.NET.Models.GameOptions.RandomRaces.init -> void
+s2protocol.NET.Models.GameOptions.TeamsTogether.get -> bool
+s2protocol.NET.Models.GameOptions.TeamsTogether.init -> void
+s2protocol.NET.Models.GameOptions.UserDifficulty.get -> int
+s2protocol.NET.Models.GameOptions.UserDifficulty.init -> void
+s2protocol.NET.Models.Header
+s2protocol.NET.Models.Header.BaseBuild.get -> int
+s2protocol.NET.Models.Header.BaseBuild.init -> void
+s2protocol.NET.Models.Header.Build.get -> int
+s2protocol.NET.Models.Header.Build.init -> void
+s2protocol.NET.Models.Header.CompatibilityHash.get -> string!
+s2protocol.NET.Models.Header.CompatibilityHash.init -> void
+s2protocol.NET.Models.Header.DataBuildNum.get -> int
+s2protocol.NET.Models.Header.DataBuildNum.init -> void
+s2protocol.NET.Models.Header.ElapsedGameLoops.get -> int
+s2protocol.NET.Models.Header.ElapsedGameLoops.init -> void
+s2protocol.NET.Models.Header.Flags.get -> int
+s2protocol.NET.Models.Header.Flags.init -> void
+s2protocol.NET.Models.Header.Header(int dataBuildNum, int elapsedGameLoops, bool useScaledTime, System.Version! version, string! signature, string! ngpdRootKey, string! compatibilityHash, int type, int flags, int build, int baseBuild) -> void
+s2protocol.NET.Models.Header.NgpdRootKey.get -> string!
+s2protocol.NET.Models.Header.NgpdRootKey.init -> void
+s2protocol.NET.Models.Header.Signature.get -> string!
+s2protocol.NET.Models.Header.Signature.init -> void
+s2protocol.NET.Models.Header.Type.get -> int
+s2protocol.NET.Models.Header.Type.init -> void
+s2protocol.NET.Models.Header.UseScaledTime.get -> bool
+s2protocol.NET.Models.Header.UseScaledTime.init -> void
+s2protocol.NET.Models.Header.Version.get -> System.Version!
+s2protocol.NET.Models.Header.Version.init -> void
+s2protocol.NET.Models.HijackReplayUserInfo
+s2protocol.NET.Models.HijackReplayUserInfo.<Clone>$() -> s2protocol.NET.Models.HijackReplayUserInfo!
+s2protocol.NET.Models.HijackReplayUserInfo.ClanLogo.get -> string?
+s2protocol.NET.Models.HijackReplayUserInfo.ClanLogo.init -> void
+s2protocol.NET.Models.HijackReplayUserInfo.ClanTag.get -> string?
+s2protocol.NET.Models.HijackReplayUserInfo.ClanTag.init -> void
+s2protocol.NET.Models.HijackReplayUserInfo.Deconstruct(out int GameUserId, out int Observe, out string! Name, out string? ToonHandle, out string? ClanTag, out string? ClanLogo) -> void
+s2protocol.NET.Models.HijackReplayUserInfo.Equals(s2protocol.NET.Models.HijackReplayUserInfo? other) -> bool
+s2protocol.NET.Models.HijackReplayUserInfo.GameUserId.get -> int
+s2protocol.NET.Models.HijackReplayUserInfo.GameUserId.init -> void
+s2protocol.NET.Models.HijackReplayUserInfo.HijackReplayUserInfo(int GameUserId, int Observe, string! Name, string? ToonHandle, string? ClanTag, string? ClanLogo) -> void
+s2protocol.NET.Models.HijackReplayUserInfo.Name.get -> string!
+s2protocol.NET.Models.HijackReplayUserInfo.Name.init -> void
+s2protocol.NET.Models.HijackReplayUserInfo.Observe.get -> int
+s2protocol.NET.Models.HijackReplayUserInfo.Observe.init -> void
+s2protocol.NET.Models.HijackReplayUserInfo.ToonHandle.get -> string?
+s2protocol.NET.Models.HijackReplayUserInfo.ToonHandle.init -> void
+s2protocol.NET.Models.Initdata
+s2protocol.NET.Models.Initdata.GameDescription.get -> s2protocol.NET.Models.GameDescription!
+s2protocol.NET.Models.Initdata.GameDescription.init -> void
+s2protocol.NET.Models.Initdata.Initdata(System.Collections.Generic.ICollection<s2protocol.NET.Models.UserInitialData!>! userInitialData, s2protocol.NET.Models.LobbyState! lobbyState, s2protocol.NET.Models.GameDescription! gameDescription) -> void
+s2protocol.NET.Models.Initdata.LobbyState.get -> s2protocol.NET.Models.LobbyState!
+s2protocol.NET.Models.Initdata.LobbyState.init -> void
+s2protocol.NET.Models.Initdata.UserInitialData.get -> System.Collections.Generic.ICollection<s2protocol.NET.Models.UserInitialData!>!
+s2protocol.NET.Models.Initdata.UserInitialData.init -> void
+s2protocol.NET.Models.LoadingProgressMessageEvent
+s2protocol.NET.Models.LoadingProgressMessageEvent.LoadingProgressMessageEvent(int progress, int userId, int eventId, int bits, int gameloop) -> void
+s2protocol.NET.Models.LoadingProgressMessageEvent.Progress.get -> int
+s2protocol.NET.Models.LoadingProgressMessageEvent.Progress.init -> void
+s2protocol.NET.Models.LobbyState
+s2protocol.NET.Models.LobbyState.DefaultAIBuild.get -> int
+s2protocol.NET.Models.LobbyState.DefaultAIBuild.init -> void
+s2protocol.NET.Models.LobbyState.DefaultDifficulty.get -> int
+s2protocol.NET.Models.LobbyState.DefaultDifficulty.init -> void
+s2protocol.NET.Models.LobbyState.GameDuration.get -> int
+s2protocol.NET.Models.LobbyState.GameDuration.init -> void
+s2protocol.NET.Models.LobbyState.HostUserId.get -> int?
+s2protocol.NET.Models.LobbyState.HostUserId.init -> void
+s2protocol.NET.Models.LobbyState.IsSinglePlayer.get -> bool
+s2protocol.NET.Models.LobbyState.IsSinglePlayer.init -> void
+s2protocol.NET.Models.LobbyState.LobbyState(int maxUsers, System.Collections.Generic.ICollection<s2protocol.NET.Models.Slot!>! slots, int defaultDifficulty, bool isSinglePlayer, int phase, int? hostUserId, int maxObservers, int defaultAIBuild, int pickedMapTag, long randomSeed, int gameDuration) -> void
+s2protocol.NET.Models.LobbyState.MaxObservers.get -> int
+s2protocol.NET.Models.LobbyState.MaxObservers.init -> void
+s2protocol.NET.Models.LobbyState.MaxUsers.get -> int
+s2protocol.NET.Models.LobbyState.MaxUsers.init -> void
+s2protocol.NET.Models.LobbyState.Phase.get -> int
+s2protocol.NET.Models.LobbyState.Phase.init -> void
+s2protocol.NET.Models.LobbyState.PickedMapTag.get -> int
+s2protocol.NET.Models.LobbyState.PickedMapTag.init -> void
+s2protocol.NET.Models.LobbyState.RandomSeed.get -> long
+s2protocol.NET.Models.LobbyState.RandomSeed.init -> void
+s2protocol.NET.Models.LobbyState.Slots.get -> System.Collections.Generic.ICollection<s2protocol.NET.Models.Slot!>!
+s2protocol.NET.Models.LobbyState.Slots.init -> void
+s2protocol.NET.Models.MessageEvent
+s2protocol.NET.Models.MessageEvent.Bits.get -> int
+s2protocol.NET.Models.MessageEvent.EventId.get -> int
+s2protocol.NET.Models.MessageEvent.EventType.get -> s2protocol.NET.Models.MessageEventType
+s2protocol.NET.Models.MessageEvent.Gameloop.get -> int
+s2protocol.NET.Models.MessageEvent.Gameloop.init -> void
+s2protocol.NET.Models.MessageEvent.MessageEvent(int userId, int eventId, s2protocol.NET.Models.MessageEventType eventType, int bits, int gameloop) -> void
+s2protocol.NET.Models.MessageEvent.UserId.get -> int
+s2protocol.NET.Models.MessageEvent.UserId.init -> void
+s2protocol.NET.Models.MessageEvents
+s2protocol.NET.Models.MessageEvents.BaseMessageEvents.get -> System.Collections.Generic.ICollection<s2protocol.NET.Models.MessageEvent!>!
+s2protocol.NET.Models.MessageEvents.ChatMessages.get -> System.Collections.Generic.ICollection<s2protocol.NET.Models.ChatMessageEvent!>!
+s2protocol.NET.Models.MessageEvents.ChatMessages.init -> void
+s2protocol.NET.Models.MessageEvents.MessageEvents(System.Collections.Generic.ICollection<s2protocol.NET.Models.ChatMessageEvent!>! chatMessages, System.Collections.Generic.ICollection<s2protocol.NET.Models.PingMessageEvent!>! pingMessages) -> void
+s2protocol.NET.Models.MessageEvents.MessageEvents(System.Collections.Generic.ICollection<s2protocol.NET.Models.MessageEvent!>! baseMessageEvents) -> void
+s2protocol.NET.Models.MessageEvents.PingMessages.get -> System.Collections.Generic.ICollection<s2protocol.NET.Models.PingMessageEvent!>!
+s2protocol.NET.Models.MessageEvents.PingMessages.init -> void
+s2protocol.NET.Models.MessageEventType
+s2protocol.NET.Models.MessageEventType.ChatMessageEvent = 1 -> s2protocol.NET.Models.MessageEventType
+s2protocol.NET.Models.MessageEventType.LoadingProgressMessageEvent = 3 -> s2protocol.NET.Models.MessageEventType
+s2protocol.NET.Models.MessageEventType.None = 0 -> s2protocol.NET.Models.MessageEventType
+s2protocol.NET.Models.MessageEventType.PingMessageEvent = 2 -> s2protocol.NET.Models.MessageEventType
+s2protocol.NET.Models.MessageEventType.ReconnectNotifyMessageEvent = 5 -> s2protocol.NET.Models.MessageEventType
+s2protocol.NET.Models.MessageEventType.ServerPingMessageEvent = 4 -> s2protocol.NET.Models.MessageEventType
+s2protocol.NET.Models.MetadataPlayer
+s2protocol.NET.Models.MetadataPlayer.APM.get -> double
+s2protocol.NET.Models.MetadataPlayer.APM.init -> void
+s2protocol.NET.Models.MetadataPlayer.AssignedRace.get -> string!
+s2protocol.NET.Models.MetadataPlayer.AssignedRace.init -> void
+s2protocol.NET.Models.MetadataPlayer.MetadataPlayer(double apm, string! assignedRace, int playerID, string! result, string! selectedRace) -> void
+s2protocol.NET.Models.MetadataPlayer.PlayerID.get -> int
+s2protocol.NET.Models.MetadataPlayer.PlayerID.init -> void
+s2protocol.NET.Models.MetadataPlayer.Result.get -> string!
+s2protocol.NET.Models.MetadataPlayer.Result.init -> void
+s2protocol.NET.Models.MetadataPlayer.SelectedRace.get -> string!
+s2protocol.NET.Models.MetadataPlayer.SelectedRace.init -> void
+s2protocol.NET.Models.PingMessageEvent
+s2protocol.NET.Models.PingMessageEvent.PingMessageEvent(int recipient, int userId, int eventId, int bits, int gameloop, long x, long y) -> void
+s2protocol.NET.Models.PingMessageEvent.PingMessageEvent(int recipient, int userId, int gameloop, long x, long y) -> void
+s2protocol.NET.Models.PingMessageEvent.Recipient.get -> int
+s2protocol.NET.Models.PingMessageEvent.Recipient.init -> void
+s2protocol.NET.Models.PingMessageEvent.X.get -> long
+s2protocol.NET.Models.PingMessageEvent.X.init -> void
+s2protocol.NET.Models.PingMessageEvent.Y.get -> long
+s2protocol.NET.Models.PingMessageEvent.Y.init -> void
+s2protocol.NET.Models.PlayerColor
+s2protocol.NET.Models.PlayerColor.A.get -> int
+s2protocol.NET.Models.PlayerColor.A.init -> void
+s2protocol.NET.Models.PlayerColor.B.get -> int
+s2protocol.NET.Models.PlayerColor.B.init -> void
+s2protocol.NET.Models.PlayerColor.G.get -> int
+s2protocol.NET.Models.PlayerColor.G.init -> void
+s2protocol.NET.Models.PlayerColor.PlayerColor(int a, int b, int g, int r) -> void
+s2protocol.NET.Models.PlayerColor.R.get -> int
+s2protocol.NET.Models.PlayerColor.R.init -> void
+s2protocol.NET.Models.ReconnectNotifyMessageEvent
+s2protocol.NET.Models.ReconnectNotifyMessageEvent.ReconnectNotifyMessageEvent(int status, int userId, int eventId, int bits, int gameloop) -> void
+s2protocol.NET.Models.ReconnectNotifyMessageEvent.Status.get -> int
+s2protocol.NET.Models.ReconnectNotifyMessageEvent.Status.init -> void
+s2protocol.NET.Models.ReplayMetadata
+s2protocol.NET.Models.ReplayMetadata.BaseBuild.get -> string!
+s2protocol.NET.Models.ReplayMetadata.BaseBuild.init -> void
+s2protocol.NET.Models.ReplayMetadata.DataBuild.get -> string!
+s2protocol.NET.Models.ReplayMetadata.DataBuild.init -> void
+s2protocol.NET.Models.ReplayMetadata.DataVersion.get -> string!
+s2protocol.NET.Models.ReplayMetadata.DataVersion.init -> void
+s2protocol.NET.Models.ReplayMetadata.Duration.get -> int
+s2protocol.NET.Models.ReplayMetadata.Duration.init -> void
+s2protocol.NET.Models.ReplayMetadata.GameVersion.get -> System.Version!
+s2protocol.NET.Models.ReplayMetadata.GameVersion.init -> void
+s2protocol.NET.Models.ReplayMetadata.IsNotAvailable.get -> bool
+s2protocol.NET.Models.ReplayMetadata.IsNotAvailable.init -> void
+s2protocol.NET.Models.ReplayMetadata.Players.get -> System.Collections.Generic.ICollection<s2protocol.NET.Models.MetadataPlayer!>!
+s2protocol.NET.Models.ReplayMetadata.Players.init -> void
+s2protocol.NET.Models.ReplayMetadata.ReplayMetadata(string! baseBuild, string! dataBuild, string! dataVersion, int duration, System.Version! gameVersion, bool isNotAvailable, string! title, System.Collections.Generic.ICollection<s2protocol.NET.Models.MetadataPlayer!>! players) -> void
+s2protocol.NET.Models.ReplayMetadata.Title.get -> string!
+s2protocol.NET.Models.ReplayMetadata.Title.init -> void
+s2protocol.NET.Models.SAchievementAwardedEvent
+s2protocol.NET.Models.SAchievementAwardedEvent.AchievementLink.get -> int
+s2protocol.NET.Models.SAchievementAwardedEvent.SAchievementAwardedEvent(int userId, int eventId, int bits, int gameloop, int achievementLink) -> void
+s2protocol.NET.Models.SAddAbsoluteGameSpeedEvent
+s2protocol.NET.Models.SAddAbsoluteGameSpeedEvent.Delta.get -> int
+s2protocol.NET.Models.SAddAbsoluteGameSpeedEvent.SAddAbsoluteGameSpeedEvent(int userId, int eventId, int bits, int gameloop, int delta) -> void
+s2protocol.NET.Models.SAICommunicateEvent
+s2protocol.NET.Models.SAICommunicateEvent.Ally.get -> int
+s2protocol.NET.Models.SAICommunicateEvent.Autocast.get -> int?
+s2protocol.NET.Models.SAICommunicateEvent.Beacon.get -> int
+s2protocol.NET.Models.SAICommunicateEvent.Build.get -> int?
+s2protocol.NET.Models.SAICommunicateEvent.Flags.get -> int?
+s2protocol.NET.Models.SAICommunicateEvent.SAICommunicateEvent(int userId, int eventId, int bits, int gameloop, int beacon, int ally, int? autocast, int? flags, int? build, long targetUnitTag, int targetUnitSnapshotUnitLink, int? targetUnitSnapshotPlayerId, int? targetUnitSnapshotUpkeepPlayerId, int? targetUnitSnapshotControlPlayerId, s2protocol.NET.Models.GameEventPoint3D targetPoint) -> void
+s2protocol.NET.Models.SAICommunicateEvent.TargetPoint.get -> s2protocol.NET.Models.GameEventPoint3D
+s2protocol.NET.Models.SAICommunicateEvent.TargetUnitSnapshotControlPlayerId.get -> int?
+s2protocol.NET.Models.SAICommunicateEvent.TargetUnitSnapshotPlayerId.get -> int?
+s2protocol.NET.Models.SAICommunicateEvent.TargetUnitSnapshotUnitLink.get -> int
+s2protocol.NET.Models.SAICommunicateEvent.TargetUnitSnapshotUpkeepPlayerId.get -> int?
+s2protocol.NET.Models.SAICommunicateEvent.TargetUnitTag.get -> long
+s2protocol.NET.Models.SAllianceEvent
+s2protocol.NET.Models.SAllianceEvent.Alliance.get -> long
+s2protocol.NET.Models.SAllianceEvent.Control.get -> long
+s2protocol.NET.Models.SAllianceEvent.SAllianceEvent(int userId, int eventId, int bits, int gameloop, long alliance, long control) -> void
+s2protocol.NET.Models.SBankFileEvent
+s2protocol.NET.Models.SBankFileEvent.Name.get -> string!
+s2protocol.NET.Models.SBankFileEvent.SBankFileEvent(int userId, int eventId, int bits, int gameloop, string! name) -> void
+s2protocol.NET.Models.SBankKeyEvent
+s2protocol.NET.Models.SBankKeyEvent.Data.get -> string!
+s2protocol.NET.Models.SBankKeyEvent.Name.get -> string!
+s2protocol.NET.Models.SBankKeyEvent.SBankKeyEvent(int userId, int eventId, int bits, int gameloop, string! name, string! data, int type) -> void
+s2protocol.NET.Models.SBankKeyEvent.Type.get -> int
+s2protocol.NET.Models.SBankSectionEvent
+s2protocol.NET.Models.SBankSectionEvent.Name.get -> string!
+s2protocol.NET.Models.SBankSectionEvent.SBankSectionEvent(int userId, int eventId, int bits, int gameloop, string! name) -> void
+s2protocol.NET.Models.SBankSignatureEvent
+s2protocol.NET.Models.SBankSignatureEvent.SBankSignatureEvent(int userId, int eventId, int bits, int gameloop, string! toonHandle, System.Collections.Generic.ICollection<int>! signature) -> void
+s2protocol.NET.Models.SBankSignatureEvent.Signature.get -> System.Collections.Generic.ICollection<int>!
+s2protocol.NET.Models.SBankSignatureEvent.ToonHandle.get -> string!
+s2protocol.NET.Models.SBankValueEvent
+s2protocol.NET.Models.SBankValueEvent.Data.get -> string!
+s2protocol.NET.Models.SBankValueEvent.Name.get -> string!
+s2protocol.NET.Models.SBankValueEvent.SBankValueEvent(int userId, int eventId, int bits, int gameloop, string! name, string! data, int type) -> void
+s2protocol.NET.Models.SBankValueEvent.Type.get -> int
+s2protocol.NET.Models.SBroadcastCheatEvent
+s2protocol.NET.Models.SBroadcastCheatEvent.Arguments.get -> string!
+s2protocol.NET.Models.SBroadcastCheatEvent.SBroadcastCheatEvent(int userId, int eventId, int bits, int gameloop, string! verb, string! arguments) -> void
+s2protocol.NET.Models.SBroadcastCheatEvent.Verb.get -> string!
+s2protocol.NET.Models.SCameraSaveEvent
+s2protocol.NET.Models.SCameraSaveEvent.SCameraSaveEvent(int userId, int eventId, int bits, int gameloop, int which, long targetX, long targetY) -> void
+s2protocol.NET.Models.SCameraSaveEvent.TargetX.get -> long
+s2protocol.NET.Models.SCameraSaveEvent.TargetY.get -> long
+s2protocol.NET.Models.SCameraSaveEvent.Which.get -> int
+s2protocol.NET.Models.SCameraUpdateEvent
+s2protocol.NET.Models.SCameraUpdateEvent.Distance.get -> int?
+s2protocol.NET.Models.SCameraUpdateEvent.Follow.get -> bool
+s2protocol.NET.Models.SCameraUpdateEvent.Pitch.get -> int?
+s2protocol.NET.Models.SCameraUpdateEvent.Reason.get -> string?
+s2protocol.NET.Models.SCameraUpdateEvent.SCameraUpdateEvent(int userId, int eventId, int bits, int gameloop, string? reason, int? distance, long? targetX, long? targetY, int? yaw, int? pitch, bool follow) -> void
+s2protocol.NET.Models.SCameraUpdateEvent.TargetX.get -> long?
+s2protocol.NET.Models.SCameraUpdateEvent.TargetY.get -> long?
+s2protocol.NET.Models.SCameraUpdateEvent.Yaw.get -> int?
+s2protocol.NET.Models.SCatalogModifyEvent
+s2protocol.NET.Models.SCatalogModifyEvent.Catalog.get -> int
+s2protocol.NET.Models.SCatalogModifyEvent.Entry.get -> int
+s2protocol.NET.Models.SCatalogModifyEvent.Field.get -> string!
+s2protocol.NET.Models.SCatalogModifyEvent.SCatalogModifyEvent(int userId, int eventId, int bits, int gameloop, int catalog, int entry, string! field, string! value) -> void
+s2protocol.NET.Models.SCatalogModifyEvent.Value.get -> string!
+s2protocol.NET.Models.SCmdEvent
+s2protocol.NET.Models.SCmdEvent.AbilCmdData.get -> string?
+s2protocol.NET.Models.SCmdEvent.AbilCmdIndex.get -> int
+s2protocol.NET.Models.SCmdEvent.AbilLink.get -> int
+s2protocol.NET.Models.SCmdEvent.CmdFlags.get -> int
+s2protocol.NET.Models.SCmdEvent.OtherUnit.get -> int?
+s2protocol.NET.Models.SCmdEvent.SCmdEvent(int userId, int eventId, int bits, int gameloop, int? unitGroup, int abilLink, int abilCmdIndex, string? abilCmdData, long? targetX, long? targetY, long? targetZ, int cmdFlags, int sequence, int? otherUnit, int? targetUnitTag = null) -> void
+s2protocol.NET.Models.SCmdEvent.Sequence.get -> int
+s2protocol.NET.Models.SCmdEvent.TargetUnitTag.get -> int?
+s2protocol.NET.Models.SCmdEvent.TargetX.get -> long?
+s2protocol.NET.Models.SCmdEvent.TargetY.get -> long?
+s2protocol.NET.Models.SCmdEvent.TargetZ.get -> long?
+s2protocol.NET.Models.SCmdEvent.UnitGroup.get -> int?
+s2protocol.NET.Models.SCmdUpdateTargetPointEvent
+s2protocol.NET.Models.SCmdUpdateTargetPointEvent.SCmdUpdateTargetPointEvent(int userId, int eventId, int bits, int gameloop, long targetX, long targetY, long targetZ) -> void
+s2protocol.NET.Models.SCmdUpdateTargetPointEvent.TargetX.get -> long
+s2protocol.NET.Models.SCmdUpdateTargetPointEvent.TargetY.get -> long
+s2protocol.NET.Models.SCmdUpdateTargetPointEvent.TargetZ.get -> long
+s2protocol.NET.Models.SCmdUpdateTargetUnitEvent
+s2protocol.NET.Models.SCmdUpdateTargetUnitEvent.SCmdUpdateTargetUnitEvent(int userId, int eventId, int bits, int gameloop, int snapshotControlPlayerId, long snapshotPointX, long snapshotPointY, long snapshotPointZ, int snapshotUpkeepPlayerId, int timer, int targetUnitFlags, int snapshotUnitLink, int tag) -> void
+s2protocol.NET.Models.SCmdUpdateTargetUnitEvent.SnapshotControlPlayerId.get -> int
+s2protocol.NET.Models.SCmdUpdateTargetUnitEvent.SnapshotPointX.get -> long
+s2protocol.NET.Models.SCmdUpdateTargetUnitEvent.SnapshotPointY.get -> long
+s2protocol.NET.Models.SCmdUpdateTargetUnitEvent.SnapshotPointZ.get -> long
+s2protocol.NET.Models.SCmdUpdateTargetUnitEvent.SnapshotUnitLink.get -> int
+s2protocol.NET.Models.SCmdUpdateTargetUnitEvent.SnapshotUpkeepPlayerId.get -> int
+s2protocol.NET.Models.SCmdUpdateTargetUnitEvent.Tag.get -> int
+s2protocol.NET.Models.SCmdUpdateTargetUnitEvent.TargetUnitFlags.get -> int
+s2protocol.NET.Models.SCmdUpdateTargetUnitEvent.Timer.get -> int
+s2protocol.NET.Models.SCommandManagerResetEvent
+s2protocol.NET.Models.SCommandManagerResetEvent.SCommandManagerResetEvent(int userId, int eventId, int bits, int gameloop, long sequence) -> void
+s2protocol.NET.Models.SCommandManagerResetEvent.Sequence.get -> long
+s2protocol.NET.Models.SCommandManagerStateEvent
+s2protocol.NET.Models.SCommandManagerStateEvent.SCommandManagerStateEvent(int userId, int eventId, int bits, int gameloop, int state, int? sequence) -> void
+s2protocol.NET.Models.SCommandManagerStateEvent.Sequence.get -> int?
+s2protocol.NET.Models.SCommandManagerStateEvent.State.get -> int
+s2protocol.NET.Models.SControlGroupUpdateEvent
+s2protocol.NET.Models.SControlGroupUpdateEvent.ControlGroupUpdate.get -> int
+s2protocol.NET.Models.SControlGroupUpdateEvent.SControlGroupUpdateEvent(int userId, int eventId, int bits, int gameloop, int controlGroupUpdate) -> void
+s2protocol.NET.Models.SDecrementGameTimeRemainingEvent
+s2protocol.NET.Models.SDecrementGameTimeRemainingEvent.DecrementMilliseconds.get -> long?
+s2protocol.NET.Models.SDecrementGameTimeRemainingEvent.DecrementSeconds.get -> int
+s2protocol.NET.Models.SDecrementGameTimeRemainingEvent.SDecrementGameTimeRemainingEvent(int userId, int eventId, int bits, int gameloop, int decrementSeconds) -> void
+s2protocol.NET.Models.SDecrementGameTimeRemainingEvent.SDecrementGameTimeRemainingEvent(int userId, int eventId, int bits, int gameloop, int decrementSeconds, long? decrementMilliseconds) -> void
+s2protocol.NET.Models.SelectionDeltaEventDelta
+s2protocol.NET.Models.SelectionDeltaEventDelta.AddSubgroups.get -> System.Collections.Generic.ICollection<s2protocol.NET.Models.SelectionDeltaEventDeltaSubGroup!>!
+s2protocol.NET.Models.SelectionDeltaEventDelta.AddSubgroups.init -> void
+s2protocol.NET.Models.SelectionDeltaEventDelta.AddUnitTags.get -> System.Collections.Generic.ICollection<int>!
+s2protocol.NET.Models.SelectionDeltaEventDelta.AddUnitTags.init -> void
+s2protocol.NET.Models.SelectionDeltaEventDelta.SelectionDeltaEventDelta() -> void
+s2protocol.NET.Models.SelectionDeltaEventDelta.SelectionDeltaEventDelta(s2protocol.NET.Models.SelectionDeltaEventDelta! original) -> void
+s2protocol.NET.Models.SelectionDeltaEventDelta.SelectionDeltaEventDelta(System.Collections.Generic.ICollection<int>! addUnitTags, System.Collections.Generic.ICollection<s2protocol.NET.Models.SelectionDeltaEventDeltaSubGroup!>! addSubgroups, System.Collections.Generic.ICollection<int>! zeroIndices, int subgroupIndex) -> void
+s2protocol.NET.Models.SelectionDeltaEventDelta.SubgroupIndex.get -> int
+s2protocol.NET.Models.SelectionDeltaEventDelta.SubgroupIndex.init -> void
+s2protocol.NET.Models.SelectionDeltaEventDelta.ZeroIndices.get -> System.Collections.Generic.ICollection<int>!
+s2protocol.NET.Models.SelectionDeltaEventDelta.ZeroIndices.init -> void
+s2protocol.NET.Models.SelectionDeltaEventDeltaSubGroup
+s2protocol.NET.Models.SelectionDeltaEventDeltaSubGroup.Count.get -> int
+s2protocol.NET.Models.SelectionDeltaEventDeltaSubGroup.Count.init -> void
+s2protocol.NET.Models.SelectionDeltaEventDeltaSubGroup.IntraSubgroupPriority.get -> int
+s2protocol.NET.Models.SelectionDeltaEventDeltaSubGroup.IntraSubgroupPriority.init -> void
+s2protocol.NET.Models.SelectionDeltaEventDeltaSubGroup.SelectionDeltaEventDeltaSubGroup() -> void
+s2protocol.NET.Models.SelectionDeltaEventDeltaSubGroup.SelectionDeltaEventDeltaSubGroup(int unitLink, int subgroupPriority, int count, int intraSubgroupPriority) -> void
+s2protocol.NET.Models.SelectionDeltaEventDeltaSubGroup.SelectionDeltaEventDeltaSubGroup(s2protocol.NET.Models.SelectionDeltaEventDeltaSubGroup! original) -> void
+s2protocol.NET.Models.SelectionDeltaEventDeltaSubGroup.SubgroupPriority.get -> int
+s2protocol.NET.Models.SelectionDeltaEventDeltaSubGroup.SubgroupPriority.init -> void
+s2protocol.NET.Models.SelectionDeltaEventDeltaSubGroup.UnitLink.get -> int
+s2protocol.NET.Models.SelectionDeltaEventDeltaSubGroup.UnitLink.init -> void
+s2protocol.NET.Models.SelectionSyncCheckEventData
+s2protocol.NET.Models.SelectionSyncCheckEventData.ActiveSubgroupIndex.get -> int
+s2protocol.NET.Models.SelectionSyncCheckEventData.ActiveSubgroupIndex.init -> void
+s2protocol.NET.Models.SelectionSyncCheckEventData.Count.get -> int
+s2protocol.NET.Models.SelectionSyncCheckEventData.Count.init -> void
+s2protocol.NET.Models.SelectionSyncCheckEventData.Deconstruct(out int Count, out int SubgroupCount, out int ActiveSubgroupIndex, out long UnitTagsChecksum, out long SubgroupIndicesChecksum, out long SubgroupsChecksum) -> void
+s2protocol.NET.Models.SelectionSyncCheckEventData.Equals(s2protocol.NET.Models.SelectionSyncCheckEventData other) -> bool
+s2protocol.NET.Models.SelectionSyncCheckEventData.SelectionSyncCheckEventData() -> void
+s2protocol.NET.Models.SelectionSyncCheckEventData.SelectionSyncCheckEventData(int Count, int SubgroupCount, int ActiveSubgroupIndex, long UnitTagsChecksum, long SubgroupIndicesChecksum, long SubgroupsChecksum) -> void
+s2protocol.NET.Models.SelectionSyncCheckEventData.SubgroupCount.get -> int
+s2protocol.NET.Models.SelectionSyncCheckEventData.SubgroupCount.init -> void
+s2protocol.NET.Models.SelectionSyncCheckEventData.SubgroupIndicesChecksum.get -> long
+s2protocol.NET.Models.SelectionSyncCheckEventData.SubgroupIndicesChecksum.init -> void
+s2protocol.NET.Models.SelectionSyncCheckEventData.SubgroupsChecksum.get -> long
+s2protocol.NET.Models.SelectionSyncCheckEventData.SubgroupsChecksum.init -> void
+s2protocol.NET.Models.SelectionSyncCheckEventData.UnitTagsChecksum.get -> long
+s2protocol.NET.Models.SelectionSyncCheckEventData.UnitTagsChecksum.init -> void
+s2protocol.NET.Models.ServerPingMessageEvent
+s2protocol.NET.Models.ServerPingMessageEvent.ServerPingMessageEvent(int userId, int eventId, int bits, int gameloop) -> void
+s2protocol.NET.Models.SGameCheatEvent
+s2protocol.NET.Models.SGameCheatEvent.Data.get -> s2protocol.NET.Models.GameCheatEventData
+s2protocol.NET.Models.SGameCheatEvent.SGameCheatEvent(int userId, int eventId, int bits, int gameloop, s2protocol.NET.Models.GameCheatEventData data) -> void
+s2protocol.NET.Models.SGameUserJoinEvent
+s2protocol.NET.Models.SGameUserJoinEvent.ClanLogo.get -> string?
+s2protocol.NET.Models.SGameUserJoinEvent.ClanTag.get -> string?
+s2protocol.NET.Models.SGameUserJoinEvent.Hijack.get -> bool
+s2protocol.NET.Models.SGameUserJoinEvent.HijackCloneGameUserId.get -> int?
+s2protocol.NET.Models.SGameUserJoinEvent.Name.get -> string!
+s2protocol.NET.Models.SGameUserJoinEvent.Observe.get -> int
+s2protocol.NET.Models.SGameUserJoinEvent.SGameUserJoinEvent(int userId, int eventId, int bits, int gameloop, int observe, string! name, string? toonHandle, string? clanTag, string? clanLogo, bool hijack, int? hijackCloneGameUserId) -> void
+s2protocol.NET.Models.SGameUserJoinEvent.ToonHandle.get -> string?
+s2protocol.NET.Models.SGameUserLeaveEvent
+s2protocol.NET.Models.SGameUserLeaveEvent.LeaveReason.get -> int
+s2protocol.NET.Models.SGameUserLeaveEvent.SGameUserLeaveEvent(int userId, int eventId, int bits, int gameloop, int leaveReason) -> void
+s2protocol.NET.Models.SHeroTalentTreeSelectedEvent
+s2protocol.NET.Models.SHeroTalentTreeSelectedEvent.Index.get -> long
+s2protocol.NET.Models.SHeroTalentTreeSelectedEvent.SHeroTalentTreeSelectedEvent(int userId, int eventId, int bits, int gameloop, long index) -> void
+s2protocol.NET.Models.SHeroTalentTreeSelectionPanelToggledEvent
+s2protocol.NET.Models.SHeroTalentTreeSelectionPanelToggledEvent.SHeroTalentTreeSelectionPanelToggledEvent(int userId, int eventId, int bits, int gameloop, bool shown) -> void
+s2protocol.NET.Models.SHeroTalentTreeSelectionPanelToggledEvent.Shown.get -> bool
+s2protocol.NET.Models.SHijackReplayGameEvent
+s2protocol.NET.Models.SHijackReplayGameEvent.Method.get -> int
+s2protocol.NET.Models.SHijackReplayGameEvent.SHijackReplayGameEvent(int userId, int eventId, int bits, int gameloop, System.Collections.Generic.IReadOnlyList<s2protocol.NET.Models.HijackReplayUserInfo!>! userInfos, int method) -> void
+s2protocol.NET.Models.SHijackReplayGameEvent.UserInfos.get -> System.Collections.Generic.IReadOnlyList<s2protocol.NET.Models.HijackReplayUserInfo!>!
+s2protocol.NET.Models.SLagMessageEvent
+s2protocol.NET.Models.SLagMessageEvent.LaggingPlayerId.get -> int
+s2protocol.NET.Models.SLagMessageEvent.SLagMessageEvent(int userId, int eventId, int bits, int gameloop, int laggingPlayerId) -> void
+s2protocol.NET.Models.SLoadGameDoneEvent
+s2protocol.NET.Models.SLoadGameDoneEvent.SLoadGameDoneEvent(int userId, int eventId, int bits, int gameloop) -> void
+s2protocol.NET.Models.Slot
+s2protocol.NET.Models.Slot.ACEnemyRace.get -> int
+s2protocol.NET.Models.Slot.ACEnemyRace.init -> void
+s2protocol.NET.Models.Slot.ACEnemyWaveType.get -> int
+s2protocol.NET.Models.Slot.ACEnemyWaveType.init -> void
+s2protocol.NET.Models.Slot.AiBuild.get -> int
+s2protocol.NET.Models.Slot.AiBuild.init -> void
+s2protocol.NET.Models.Slot.Artifacts.get -> System.Collections.Generic.ICollection<string!>!
+s2protocol.NET.Models.Slot.Artifacts.init -> void
+s2protocol.NET.Models.Slot.BrutalPlusDifficulty.get -> int
+s2protocol.NET.Models.Slot.BrutalPlusDifficulty.init -> void
+s2protocol.NET.Models.Slot.ColorPref.get -> int?
+s2protocol.NET.Models.Slot.ColorPref.init -> void
+s2protocol.NET.Models.Slot.Commander.get -> string!
+s2protocol.NET.Models.Slot.Commander.init -> void
+s2protocol.NET.Models.Slot.CommanderLevel.get -> int
+s2protocol.NET.Models.Slot.CommanderLevel.init -> void
+s2protocol.NET.Models.Slot.CommanderMasteryLevel.get -> int
+s2protocol.NET.Models.Slot.CommanderMasteryLevel.init -> void
+s2protocol.NET.Models.Slot.CommanderMasteryTalents.get -> System.Collections.Generic.ICollection<int>!
+s2protocol.NET.Models.Slot.CommanderMasteryTalents.init -> void
+s2protocol.NET.Models.Slot.Control.get -> int
+s2protocol.NET.Models.Slot.Control.init -> void
+s2protocol.NET.Models.Slot.Difficulty.get -> int
+s2protocol.NET.Models.Slot.Difficulty.init -> void
+s2protocol.NET.Models.Slot.Handicap.get -> int
+s2protocol.NET.Models.Slot.Handicap.init -> void
+s2protocol.NET.Models.Slot.HasSilencePenalty.get -> bool
+s2protocol.NET.Models.Slot.HasSilencePenalty.init -> void
+s2protocol.NET.Models.Slot.Hero.get -> string!
+s2protocol.NET.Models.Slot.Hero.init -> void
+s2protocol.NET.Models.Slot.Licenses.get -> System.Collections.Generic.ICollection<int>!
+s2protocol.NET.Models.Slot.Licenses.init -> void
+s2protocol.NET.Models.Slot.LogoIndex.get -> int
+s2protocol.NET.Models.Slot.LogoIndex.init -> void
+s2protocol.NET.Models.Slot.Mount.get -> string!
+s2protocol.NET.Models.Slot.Mount.init -> void
+s2protocol.NET.Models.Slot.Observe.get -> int
+s2protocol.NET.Models.Slot.Observe.init -> void
+s2protocol.NET.Models.Slot.RacePref.get -> int?
+s2protocol.NET.Models.Slot.RacePref.init -> void
+s2protocol.NET.Models.Slot.RetryMutationIndexes.get -> System.Collections.Generic.ICollection<int>!
+s2protocol.NET.Models.Slot.RetryMutationIndexes.init -> void
+s2protocol.NET.Models.Slot.RewardOverrides.get -> System.Collections.Generic.ICollection<int>!
+s2protocol.NET.Models.Slot.RewardOverrides.init -> void
+s2protocol.NET.Models.Slot.Rewards.get -> System.Collections.Generic.ICollection<int>!
+s2protocol.NET.Models.Slot.Rewards.init -> void
+s2protocol.NET.Models.Slot.SelectedCommanderPrestige.get -> int
+s2protocol.NET.Models.Slot.SelectedCommanderPrestige.init -> void
+s2protocol.NET.Models.Slot.Skin.get -> string!
+s2protocol.NET.Models.Slot.Skin.init -> void
+s2protocol.NET.Models.Slot.Slot(int aCEnemyRace, string! toonHandle, System.Collections.Generic.ICollection<int>! rewardOverrides, int? userId, string! skin, System.Collections.Generic.ICollection<int>! commanderMasteryTalents, int aiBuild, int teamId, System.Collections.Generic.ICollection<int>! rewards, int commanderLevel, int logoIndex, System.Collections.Generic.ICollection<string!>! artifacts, int difficulty, int? tandemLeaderId, int commanderMasteryLevel, int trophyId, int brutalPlusDifficulty, int? racePref, int? tandemId, string! hero, string! commander, string! mount, int handicap, int observe, int aCEnemyWaveType, int control, System.Collections.Generic.ICollection<int>! licenses, int? colorPref, bool hasSilencePenalty, int workingSetSlotId, System.Collections.Generic.ICollection<int>! retryMutationIndexes, int selectedCommanderPrestige) -> void
+s2protocol.NET.Models.Slot.TandemId.get -> int?
+s2protocol.NET.Models.Slot.TandemId.init -> void
+s2protocol.NET.Models.Slot.TandemLeaderId.get -> int?
+s2protocol.NET.Models.Slot.TandemLeaderId.init -> void
+s2protocol.NET.Models.Slot.TeamId.get -> int
+s2protocol.NET.Models.Slot.TeamId.init -> void
+s2protocol.NET.Models.Slot.ToonHandle.get -> string!
+s2protocol.NET.Models.Slot.ToonHandle.init -> void
+s2protocol.NET.Models.Slot.TrophyId.get -> int
+s2protocol.NET.Models.Slot.TrophyId.init -> void
+s2protocol.NET.Models.Slot.UserId.get -> int?
+s2protocol.NET.Models.Slot.UserId.init -> void
+s2protocol.NET.Models.Slot.WorkingSetSlotId.get -> int
+s2protocol.NET.Models.Slot.WorkingSetSlotId.init -> void
+s2protocol.NET.Models.SlotDescription
+s2protocol.NET.Models.SlotDescription.AllowedAIBuilds.get -> System.Collections.Generic.KeyValuePair<int, System.Numerics.BigInteger>
+s2protocol.NET.Models.SlotDescription.AllowedAIBuilds.init -> void
+s2protocol.NET.Models.SlotDescription.AllowedColors.get -> System.Collections.Generic.KeyValuePair<int, System.Numerics.BigInteger>
+s2protocol.NET.Models.SlotDescription.AllowedColors.init -> void
+s2protocol.NET.Models.SlotDescription.AllowedControls.get -> System.Collections.Generic.KeyValuePair<int, System.Numerics.BigInteger>
+s2protocol.NET.Models.SlotDescription.AllowedControls.init -> void
+s2protocol.NET.Models.SlotDescription.AllowedDifficulty.get -> System.Collections.Generic.KeyValuePair<int, System.Numerics.BigInteger>
+s2protocol.NET.Models.SlotDescription.AllowedDifficulty.init -> void
+s2protocol.NET.Models.SlotDescription.AllowedObserveTypes.get -> System.Collections.Generic.KeyValuePair<int, System.Numerics.BigInteger>
+s2protocol.NET.Models.SlotDescription.AllowedObserveTypes.init -> void
+s2protocol.NET.Models.SlotDescription.AllowedRaces.get -> System.Collections.Generic.KeyValuePair<int, System.Numerics.BigInteger>
+s2protocol.NET.Models.SlotDescription.AllowedRaces.init -> void
+s2protocol.NET.Models.SlotDescription.SlotDescription(System.Collections.Generic.KeyValuePair<int, System.Numerics.BigInteger> allowedRaces, System.Collections.Generic.KeyValuePair<int, System.Numerics.BigInteger> allowedColors, System.Collections.Generic.KeyValuePair<int, System.Numerics.BigInteger> allowedAIBuilds, System.Collections.Generic.KeyValuePair<int, System.Numerics.BigInteger> allowedDifficulty, System.Collections.Generic.KeyValuePair<int, System.Numerics.BigInteger> allowedObserveTypes, System.Collections.Generic.KeyValuePair<int, System.Numerics.BigInteger> allowedControls) -> void
+s2protocol.NET.Models.SPeerSetSyncLoadingTimeEvent
+s2protocol.NET.Models.SPeerSetSyncLoadingTimeEvent.SPeerSetSyncLoadingTimeEvent(int userId, int eventId, int bits, int gameloop, long syncTime) -> void
+s2protocol.NET.Models.SPeerSetSyncLoadingTimeEvent.SyncTime.get -> long
+s2protocol.NET.Models.SPeerSetSyncPlayingTimeEvent
+s2protocol.NET.Models.SPeerSetSyncPlayingTimeEvent.SPeerSetSyncPlayingTimeEvent(int userId, int eventId, int bits, int gameloop, long syncTime) -> void
+s2protocol.NET.Models.SPeerSetSyncPlayingTimeEvent.SyncTime.get -> long
+s2protocol.NET.Models.SPlayerLeaveEvent
+s2protocol.NET.Models.SPlayerLeaveEvent.SPlayerLeaveEvent(int userId, int eventId, int bits, int gameloop) -> void
+s2protocol.NET.Models.SPlayerSetupEvent
+s2protocol.NET.Models.SPlayerSetupEvent.SlotId.get -> int?
+s2protocol.NET.Models.SPlayerSetupEvent.SPlayerSetupEvent(int playerId, int eventId, int bits, int gameloop, int type, int? userId, int? slotId) -> void
+s2protocol.NET.Models.SPlayerSetupEvent.Type.get -> int
+s2protocol.NET.Models.SPlayerSetupEvent.UserId.get -> int?
+s2protocol.NET.Models.SPlayerStatsEvent
+s2protocol.NET.Models.SPlayerStatsEvent.FoodMade.get -> int
+s2protocol.NET.Models.SPlayerStatsEvent.FoodUsed.get -> int
+s2protocol.NET.Models.SPlayerStatsEvent.MineralsCollectionRate.get -> int
+s2protocol.NET.Models.SPlayerStatsEvent.MineralsCurrent.get -> int
+s2protocol.NET.Models.SPlayerStatsEvent.MineralsFriendlyFireArmy.get -> int
+s2protocol.NET.Models.SPlayerStatsEvent.MineralsFriendlyFireEconomy.get -> int
+s2protocol.NET.Models.SPlayerStatsEvent.MineralsFriendlyFireTechnology.get -> int
+s2protocol.NET.Models.SPlayerStatsEvent.MineralsKilledArmy.get -> int
+s2protocol.NET.Models.SPlayerStatsEvent.MineralsKilledEconomy.get -> int
+s2protocol.NET.Models.SPlayerStatsEvent.MineralsKilledTechnology.get -> int
+s2protocol.NET.Models.SPlayerStatsEvent.MineralsLostArmy.get -> int
+s2protocol.NET.Models.SPlayerStatsEvent.MineralsLostEconomy.get -> int
+s2protocol.NET.Models.SPlayerStatsEvent.MineralsLostTechnology.get -> int
+s2protocol.NET.Models.SPlayerStatsEvent.MineralsUsedActiveForces.get -> int
+s2protocol.NET.Models.SPlayerStatsEvent.MineralsUsedCurrentArmy.get -> int
+s2protocol.NET.Models.SPlayerStatsEvent.MineralsUsedCurrentEconomy.get -> int
+s2protocol.NET.Models.SPlayerStatsEvent.MineralsUsedCurrentTechnology.get -> int
+s2protocol.NET.Models.SPlayerStatsEvent.MineralsUsedInProgressArmy.get -> int
+s2protocol.NET.Models.SPlayerStatsEvent.MineralsUsedInProgressEconomy.get -> int
+s2protocol.NET.Models.SPlayerStatsEvent.MineralsUsedInProgressTechnology.get -> int
+s2protocol.NET.Models.SPlayerStatsEvent.SPlayerStatsEvent(int playerId, int eventId, int bits, int gameloop, int vespeneUsedCurrentTechnology, int vespeneFriendlyFireArmy, int mineralsFriendlyFireTechnology, int mineralsUsedCurrentEconomy, int vespeneLostEconomy, int mineralsUsedCurrentArmy, int vespeneUsedInProgressArmy, int vespeneCollectionRate, int mineralsUsedInProgressTechnology, int mineralsCollectionRate, int workersActiveCount, int mineralsUsedInProgressArmy, int vespeneLostArmy, int mineralsKilledEconomy, int mineralsUsedCurrentTechnology, int mineralsKilledArmy, int mineralsLostEconomy, int mineralsCurrent, int mineralsLostArmy, int vespeneKilledArmy, int vespeneKilledTechnology, int vespeneKilledEconomy, int mineralsUsedActiveForces, int vespeneUsedCurrentArmy, int mineralsFriendlyFireArmy, int vespeneUsedActiveForces, int vespeneCurrent, int mineralsLostTechnology, int mineralsUsedInProgressEconomy, int mineralsFriendlyFireEconomy, int vespeneUsedInProgressTechnology, int foodMade, int mineralsKilledTechnology, int vespeneLostTechnology, int vespeneFriendlyFireEconomy, int vespeneUsedInProgressEconomy, int vespeneUsedCurrentEconomy, int vespeneFriendlyFireTechnology, int foodUsed) -> void
+s2protocol.NET.Models.SPlayerStatsEvent.VespeneCollectionRate.get -> int
+s2protocol.NET.Models.SPlayerStatsEvent.VespeneCurrent.get -> int
+s2protocol.NET.Models.SPlayerStatsEvent.VespeneFriendlyFireArmy.get -> int
+s2protocol.NET.Models.SPlayerStatsEvent.VespeneFriendlyFireEconomy.get -> int
+s2protocol.NET.Models.SPlayerStatsEvent.VespeneFriendlyFireTechnology.get -> int
+s2protocol.NET.Models.SPlayerStatsEvent.VespeneKilledArmy.get -> int
+s2protocol.NET.Models.SPlayerStatsEvent.VespeneKilledEconomy.get -> int
+s2protocol.NET.Models.SPlayerStatsEvent.VespeneKilledTechnology.get -> int
+s2protocol.NET.Models.SPlayerStatsEvent.VespeneLostArmy.get -> int
+s2protocol.NET.Models.SPlayerStatsEvent.VespeneLostEconomy.get -> int
+s2protocol.NET.Models.SPlayerStatsEvent.VespeneLostTechnology.get -> int
+s2protocol.NET.Models.SPlayerStatsEvent.VespeneUsedActiveForces.get -> int
+s2protocol.NET.Models.SPlayerStatsEvent.VespeneUsedCurrentArmy.get -> int
+s2protocol.NET.Models.SPlayerStatsEvent.VespeneUsedCurrentEconomy.get -> int
+s2protocol.NET.Models.SPlayerStatsEvent.VespeneUsedCurrentTechnology.get -> int
+s2protocol.NET.Models.SPlayerStatsEvent.VespeneUsedInProgressArmy.get -> int
+s2protocol.NET.Models.SPlayerStatsEvent.VespeneUsedInProgressEconomy.get -> int
+s2protocol.NET.Models.SPlayerStatsEvent.VespeneUsedInProgressTechnology.get -> int
+s2protocol.NET.Models.SPlayerStatsEvent.WorkersActiveCount.get -> int
+s2protocol.NET.Models.SResourceRequestCancelEvent
+s2protocol.NET.Models.SResourceRequestCancelEvent.CancelRequestId.get -> long
+s2protocol.NET.Models.SResourceRequestCancelEvent.SResourceRequestCancelEvent(int userId, int eventId, int bits, int gameloop, long cancelRequestId) -> void
+s2protocol.NET.Models.SResourceRequestEvent
+s2protocol.NET.Models.SResourceRequestEvent.Resources.get -> System.Collections.Generic.IReadOnlyList<long>!
+s2protocol.NET.Models.SResourceRequestEvent.SResourceRequestEvent(int userId, int eventId, int bits, int gameloop, System.Collections.Generic.IReadOnlyList<long>! resources) -> void
+s2protocol.NET.Models.SResourceRequestFulfillEvent
+s2protocol.NET.Models.SResourceRequestFulfillEvent.FulfillRequestId.get -> long
+s2protocol.NET.Models.SResourceRequestFulfillEvent.SResourceRequestFulfillEvent(int userId, int eventId, int bits, int gameloop, long fulfillRequestId) -> void
+s2protocol.NET.Models.SResourceTradeEvent
+s2protocol.NET.Models.SResourceTradeEvent.RecipientId.get -> int
+s2protocol.NET.Models.SResourceTradeEvent.Resources.get -> System.Collections.Generic.IReadOnlyList<long>!
+s2protocol.NET.Models.SResourceTradeEvent.SResourceTradeEvent(int userId, int eventId, int bits, int gameloop, int recipientId, System.Collections.Generic.IReadOnlyList<long>! resources) -> void
+s2protocol.NET.Models.SSaveGameDoneEvent
+s2protocol.NET.Models.SSaveGameDoneEvent.SSaveGameDoneEvent(int userId, int eventId, int bits, int gameloop) -> void
+s2protocol.NET.Models.SSaveGameEvent
+s2protocol.NET.Models.SSaveGameEvent.Automatic.get -> bool
+s2protocol.NET.Models.SSaveGameEvent.Description.get -> string!
+s2protocol.NET.Models.SSaveGameEvent.FileName.get -> string!
+s2protocol.NET.Models.SSaveGameEvent.Name.get -> string!
+s2protocol.NET.Models.SSaveGameEvent.Overwrite.get -> bool
+s2protocol.NET.Models.SSaveGameEvent.SSaveGameEvent(int userId, int eventId, int bits, int gameloop, string! fileName, bool automatic, bool overwrite, string! name, string! description) -> void
+s2protocol.NET.Models.SSelectionDeltaEvent
+s2protocol.NET.Models.SSelectionDeltaEvent.ControlGroupId.get -> int
+s2protocol.NET.Models.SSelectionDeltaEvent.Delta.get -> s2protocol.NET.Models.SelectionDeltaEventDelta!
+s2protocol.NET.Models.SSelectionDeltaEvent.SSelectionDeltaEvent(int userId, int eventId, int bits, int gameloop, s2protocol.NET.Models.SelectionDeltaEventDelta! delta, int controlGroupId) -> void
+s2protocol.NET.Models.SSelectionSyncCheckEvent
+s2protocol.NET.Models.SSelectionSyncCheckEvent.ControlGroupId.get -> int
+s2protocol.NET.Models.SSelectionSyncCheckEvent.SelectionSyncData.get -> s2protocol.NET.Models.SelectionSyncCheckEventData
+s2protocol.NET.Models.SSelectionSyncCheckEvent.SSelectionSyncCheckEvent(int userId, int eventId, int bits, int gameloop, int controlGroupId, s2protocol.NET.Models.SelectionSyncCheckEventData selectionSyncData) -> void
+s2protocol.NET.Models.SSetAbsoluteGameSpeedEvent
+s2protocol.NET.Models.SSetAbsoluteGameSpeedEvent.Speed.get -> int
+s2protocol.NET.Models.SSetAbsoluteGameSpeedEvent.SSetAbsoluteGameSpeedEvent(int userId, int eventId, int bits, int gameloop, int speed) -> void
+s2protocol.NET.Models.SSetSyncLoadingTimeEvent
+s2protocol.NET.Models.SSetSyncLoadingTimeEvent.SSetSyncLoadingTimeEvent(int userId, int eventId, int bits, int gameloop, int syncTime) -> void
+s2protocol.NET.Models.SSetSyncLoadingTimeEvent.SyncTime.get -> int
+s2protocol.NET.Models.SSetSyncPlayingTimeEvent
+s2protocol.NET.Models.SSetSyncPlayingTimeEvent.SSetSyncPlayingTimeEvent(int userId, int eventId, int bits, int gameloop, int syncTime) -> void
+s2protocol.NET.Models.SSetSyncPlayingTimeEvent.SyncTime.get -> int
+s2protocol.NET.Models.STriggerAbortMissionEvent
+s2protocol.NET.Models.STriggerAbortMissionEvent.STriggerAbortMissionEvent(int userId, int eventId, int bits, int gameloop) -> void
+s2protocol.NET.Models.STriggerAnimLengthQueryByNameEvent
+s2protocol.NET.Models.STriggerAnimLengthQueryByNameEvent.FinishGameLoop.get -> long
+s2protocol.NET.Models.STriggerAnimLengthQueryByNameEvent.LengthMs.get -> long
+s2protocol.NET.Models.STriggerAnimLengthQueryByNameEvent.QueryId.get -> int
+s2protocol.NET.Models.STriggerAnimLengthQueryByNameEvent.STriggerAnimLengthQueryByNameEvent(int userId, int eventId, int bits, int gameloop, int queryId, long lengthMs, long finishGameLoop) -> void
+s2protocol.NET.Models.STriggerAnimLengthQueryByPropsEvent
+s2protocol.NET.Models.STriggerAnimLengthQueryByPropsEvent.LengthMs.get -> long
+s2protocol.NET.Models.STriggerAnimLengthQueryByPropsEvent.QueryId.get -> int
+s2protocol.NET.Models.STriggerAnimLengthQueryByPropsEvent.STriggerAnimLengthQueryByPropsEvent(int userId, int eventId, int bits, int gameloop, int queryId, long lengthMs) -> void
+s2protocol.NET.Models.STriggerAnimOffsetEvent
+s2protocol.NET.Models.STriggerAnimOffsetEvent.AnimWaitQueryId.get -> int
+s2protocol.NET.Models.STriggerAnimOffsetEvent.STriggerAnimOffsetEvent(int userId, int eventId, int bits, int gameloop, int animWaitQueryId) -> void
+s2protocol.NET.Models.STriggerBattleReportPanelExitEvent
+s2protocol.NET.Models.STriggerBattleReportPanelExitEvent.STriggerBattleReportPanelExitEvent(int userId, int eventId, int bits, int gameloop) -> void
+s2protocol.NET.Models.STriggerBattleReportPanelPlayMissionEvent
+s2protocol.NET.Models.STriggerBattleReportPanelPlayMissionEvent.BattleReportId.get -> long
+s2protocol.NET.Models.STriggerBattleReportPanelPlayMissionEvent.DifficultyLevel.get -> long
+s2protocol.NET.Models.STriggerBattleReportPanelPlayMissionEvent.STriggerBattleReportPanelPlayMissionEvent(int userId, int eventId, int bits, int gameloop, long battleReportId, long difficultyLevel) -> void
+s2protocol.NET.Models.STriggerBattleReportPanelPlaySceneEvent
+s2protocol.NET.Models.STriggerBattleReportPanelPlaySceneEvent.BattleReportId.get -> long
+s2protocol.NET.Models.STriggerBattleReportPanelPlaySceneEvent.STriggerBattleReportPanelPlaySceneEvent(int userId, int eventId, int bits, int gameloop, long battleReportId) -> void
+s2protocol.NET.Models.STriggerBattleReportPanelSelectionChangedEvent
+s2protocol.NET.Models.STriggerBattleReportPanelSelectionChangedEvent.BattleReportId.get -> long
+s2protocol.NET.Models.STriggerBattleReportPanelSelectionChangedEvent.STriggerBattleReportPanelSelectionChangedEvent(int userId, int eventId, int bits, int gameloop, long battleReportId) -> void
+s2protocol.NET.Models.STriggerButtonPressedEvent
+s2protocol.NET.Models.STriggerButtonPressedEvent.Button.get -> int
+s2protocol.NET.Models.STriggerButtonPressedEvent.STriggerButtonPressedEvent(int userId, int eventId, int bits, int gameloop, int button) -> void
+s2protocol.NET.Models.STriggerCameraMoveEvent
+s2protocol.NET.Models.STriggerCameraMoveEvent.Reason.get -> int
+s2protocol.NET.Models.STriggerCameraMoveEvent.STriggerCameraMoveEvent(int userId, int eventId, int bits, int gameloop, int reason) -> void
+s2protocol.NET.Models.STriggerChatMessageEvent
+s2protocol.NET.Models.STriggerChatMessageEvent.ChatMessage.get -> string!
+s2protocol.NET.Models.STriggerChatMessageEvent.STriggerChatMessageEvent(int userId, int eventId, int bits, int gameloop, string! chatMessage) -> void
+s2protocol.NET.Models.STriggerCommandErrorEvent
+s2protocol.NET.Models.STriggerCommandErrorEvent.Abil.get -> s2protocol.NET.Models.GameEventAbility?
+s2protocol.NET.Models.STriggerCommandErrorEvent.Error.get -> long
+s2protocol.NET.Models.STriggerCommandErrorEvent.STriggerCommandErrorEvent(int userId, int eventId, int bits, int gameloop, long error, s2protocol.NET.Models.GameEventAbility? abil) -> void
+s2protocol.NET.Models.STriggerConversationSkippedEvent
+s2protocol.NET.Models.STriggerConversationSkippedEvent.SkipType.get -> int
+s2protocol.NET.Models.STriggerConversationSkippedEvent.STriggerConversationSkippedEvent(int userId, int eventId, int bits, int gameloop, int skipType) -> void
+s2protocol.NET.Models.STriggerCustomDialogDismissedEvent
+s2protocol.NET.Models.STriggerCustomDialogDismissedEvent.Result.get -> long
+s2protocol.NET.Models.STriggerCustomDialogDismissedEvent.STriggerCustomDialogDismissedEvent(int userId, int eventId, int bits, int gameloop, long result) -> void
+s2protocol.NET.Models.STriggerCutsceneBookmarkFiredEvent
+s2protocol.NET.Models.STriggerCutsceneBookmarkFiredEvent.BookmarkName.get -> string!
+s2protocol.NET.Models.STriggerCutsceneBookmarkFiredEvent.CutsceneId.get -> long
+s2protocol.NET.Models.STriggerCutsceneBookmarkFiredEvent.STriggerCutsceneBookmarkFiredEvent(int userId, int eventId, int bits, int gameloop, long cutsceneId, string! bookmarkName) -> void
+s2protocol.NET.Models.STriggerCutsceneConversationLineEvent
+s2protocol.NET.Models.STriggerCutsceneConversationLineEvent.AltConversationLine.get -> string!
+s2protocol.NET.Models.STriggerCutsceneConversationLineEvent.ConversationLine.get -> string!
+s2protocol.NET.Models.STriggerCutsceneConversationLineEvent.CutsceneId.get -> long
+s2protocol.NET.Models.STriggerCutsceneConversationLineEvent.STriggerCutsceneConversationLineEvent(int userId, int eventId, int bits, int gameloop, long cutsceneId, string! conversationLine, string! altConversationLine) -> void
+s2protocol.NET.Models.STriggerCutsceneConversationLineMissingEvent
+s2protocol.NET.Models.STriggerCutsceneConversationLineMissingEvent.ConversationLine.get -> string!
+s2protocol.NET.Models.STriggerCutsceneConversationLineMissingEvent.CutsceneId.get -> long
+s2protocol.NET.Models.STriggerCutsceneConversationLineMissingEvent.STriggerCutsceneConversationLineMissingEvent(int userId, int eventId, int bits, int gameloop, long cutsceneId, string! conversationLine) -> void
+s2protocol.NET.Models.STriggerCutsceneEndSceneFiredEvent
+s2protocol.NET.Models.STriggerCutsceneEndSceneFiredEvent.CutsceneId.get -> long
+s2protocol.NET.Models.STriggerCutsceneEndSceneFiredEvent.STriggerCutsceneEndSceneFiredEvent(int userId, int eventId, int bits, int gameloop, long cutsceneId) -> void
+s2protocol.NET.Models.STriggerDialogControlEvent
+s2protocol.NET.Models.STriggerDialogControlEvent.Checked.get -> bool?
+s2protocol.NET.Models.STriggerDialogControlEvent.ControlId.get -> long
+s2protocol.NET.Models.STriggerDialogControlEvent.EventDataKind.get -> s2protocol.NET.Models.DialogControlEventDataKind
+s2protocol.NET.Models.STriggerDialogControlEvent.EventTypeId.get -> long
+s2protocol.NET.Models.STriggerDialogControlEvent.MouseButton.get -> int?
+s2protocol.NET.Models.STriggerDialogControlEvent.SelectionChanged.get -> long?
+s2protocol.NET.Models.STriggerDialogControlEvent.STriggerDialogControlEvent(int userId, int eventId, int bits, int gameloop, long controlId, int? mouseButton, string? textChanged, long eventTypeId) -> void
+s2protocol.NET.Models.STriggerDialogControlEvent.STriggerDialogControlEvent(int userId, int eventId, int bits, int gameloop, long controlId, int? mouseButton, string? textChanged, long eventTypeId, s2protocol.NET.Models.DialogControlEventDataKind eventDataKind, bool? checked, long? valueChanged, long? selectionChanged) -> void
+s2protocol.NET.Models.STriggerDialogControlEvent.TextChanged.get -> string?
+s2protocol.NET.Models.STriggerDialogControlEvent.ValueChanged.get -> long?
+s2protocol.NET.Models.STriggerGameCreditsFinishedEvent
+s2protocol.NET.Models.STriggerGameCreditsFinishedEvent.STriggerGameCreditsFinishedEvent(int userId, int eventId, int bits, int gameloop) -> void
+s2protocol.NET.Models.STriggerGameMenuItemSelectedEvent
+s2protocol.NET.Models.STriggerGameMenuItemSelectedEvent.GameMenuItemIndex.get -> long
+s2protocol.NET.Models.STriggerGameMenuItemSelectedEvent.STriggerGameMenuItemSelectedEvent(int userId, int eventId, int bits, int gameloop, long gameMenuItemIndex) -> void
+s2protocol.NET.Models.STriggerHotkeyPressedEvent
+s2protocol.NET.Models.STriggerHotkeyPressedEvent.Down.get -> bool
+s2protocol.NET.Models.STriggerHotkeyPressedEvent.Hotkey.get -> long
+s2protocol.NET.Models.STriggerHotkeyPressedEvent.STriggerHotkeyPressedEvent(int userId, int eventId, int bits, int gameloop, long hotkey, bool down) -> void
+s2protocol.NET.Models.STriggerKeyPressedEvent
+s2protocol.NET.Models.STriggerKeyPressedEvent.Flags.get -> int
+s2protocol.NET.Models.STriggerKeyPressedEvent.Key.get -> int
+s2protocol.NET.Models.STriggerKeyPressedEvent.STriggerKeyPressedEvent(int userId, int eventId, int bits, int gameloop, int flags, int key) -> void
+s2protocol.NET.Models.STriggerMercenaryPanelExitEvent
+s2protocol.NET.Models.STriggerMercenaryPanelExitEvent.STriggerMercenaryPanelExitEvent(int userId, int eventId, int bits, int gameloop) -> void
+s2protocol.NET.Models.STriggerMercenaryPanelPurchaseEvent
+s2protocol.NET.Models.STriggerMercenaryPanelPurchaseEvent.STriggerMercenaryPanelPurchaseEvent(int userId, int eventId, int bits, int gameloop) -> void
+s2protocol.NET.Models.STriggerMercenaryPanelSelectionChangedEvent
+s2protocol.NET.Models.STriggerMercenaryPanelSelectionChangedEvent.MercenaryId.get -> long
+s2protocol.NET.Models.STriggerMercenaryPanelSelectionChangedEvent.STriggerMercenaryPanelSelectionChangedEvent(int userId, int eventId, int bits, int gameloop, long mercenaryId) -> void
+s2protocol.NET.Models.STriggerMouseClickedEvent
+s2protocol.NET.Models.STriggerMouseClickedEvent.Button.get -> int
+s2protocol.NET.Models.STriggerMouseClickedEvent.Down.get -> bool
+s2protocol.NET.Models.STriggerMouseClickedEvent.Flags.get -> int
+s2protocol.NET.Models.STriggerMouseClickedEvent.PosUIX.get -> long
+s2protocol.NET.Models.STriggerMouseClickedEvent.PosUIY.get -> long
+s2protocol.NET.Models.STriggerMouseClickedEvent.PosWorldX.get -> long?
+s2protocol.NET.Models.STriggerMouseClickedEvent.PosWorldY.get -> long?
+s2protocol.NET.Models.STriggerMouseClickedEvent.PosWorldZ.get -> long?
+s2protocol.NET.Models.STriggerMouseClickedEvent.STriggerMouseClickedEvent(int userId, int eventId, int bits, int gameloop, bool down, int button, int flags, long posUIX, long posUIY) -> void
+s2protocol.NET.Models.STriggerMouseClickedEvent.STriggerMouseClickedEvent(int userId, int eventId, int bits, int gameloop, bool down, int button, int flags, long posUIX, long posUIY, long? posWorldX, long? posWorldY, long? posWorldZ) -> void
+s2protocol.NET.Models.STriggerMouseMovedEvent
+s2protocol.NET.Models.STriggerMouseMovedEvent.Flags.get -> int
+s2protocol.NET.Models.STriggerMouseMovedEvent.PosUIX.get -> long
+s2protocol.NET.Models.STriggerMouseMovedEvent.PosUIY.get -> long
+s2protocol.NET.Models.STriggerMouseMovedEvent.PosWorldX.get -> long?
+s2protocol.NET.Models.STriggerMouseMovedEvent.PosWorldY.get -> long?
+s2protocol.NET.Models.STriggerMouseMovedEvent.PosWorldZ.get -> long?
+s2protocol.NET.Models.STriggerMouseMovedEvent.STriggerMouseMovedEvent(int userId, int eventId, int bits, int gameloop, int flags, long posUIX, long posUIY, long? posWorldX, long? posWorldY, long? posWorldZ) -> void
+s2protocol.NET.Models.STriggerMouseMovedEvent.STriggerMouseMovedEvent(int userId, int eventId, int bits, int gameloop, int flags, long posX, long posY) -> void
+s2protocol.NET.Models.STriggerMouseWheelEvent
+s2protocol.NET.Models.STriggerMouseWheelEvent.Flags.get -> int
+s2protocol.NET.Models.STriggerMouseWheelEvent.STriggerMouseWheelEvent(int userId, int eventId, int bits, int gameloop, int wheelSpin, int flags) -> void
+s2protocol.NET.Models.STriggerMouseWheelEvent.WheelSpin.get -> int
+s2protocol.NET.Models.STriggerMovieFinishedEvent
+s2protocol.NET.Models.STriggerMovieFinishedEvent.STriggerMovieFinishedEvent(int userId, int eventId, int bits, int gameloop) -> void
+s2protocol.NET.Models.STriggerMovieFunctionEvent
+s2protocol.NET.Models.STriggerMovieFunctionEvent.FunctionName.get -> string!
+s2protocol.NET.Models.STriggerMovieFunctionEvent.STriggerMovieFunctionEvent(int userId, int eventId, int bits, int gameloop, string! functionName) -> void
+s2protocol.NET.Models.STriggerMovieStartedEvent
+s2protocol.NET.Models.STriggerMovieStartedEvent.STriggerMovieStartedEvent(int userId, int eventId, int bits, int gameloop) -> void
+s2protocol.NET.Models.STriggerPingEvent
+s2protocol.NET.Models.STriggerPingEvent.Option.get -> long
+s2protocol.NET.Models.STriggerPingEvent.PingedMinimap.get -> bool
+s2protocol.NET.Models.STriggerPingEvent.PointX.get -> long
+s2protocol.NET.Models.STriggerPingEvent.PointY.get -> long
+s2protocol.NET.Models.STriggerPingEvent.STriggerPingEvent(int userId, int eventId, int bits, int gameloop, bool pingedMinimap, int unitLink, bool unitIsUnderConstruction, long option, int unit, long unitX, long unitY, long unitZ, int? unitControlPlayerId, long pointX, long pointY, int? unitUpkeepPlayerId) -> void
+s2protocol.NET.Models.STriggerPingEvent.Unit.get -> int
+s2protocol.NET.Models.STriggerPingEvent.UnitControlPlayerId.get -> int?
+s2protocol.NET.Models.STriggerPingEvent.UnitIsUnderConstruction.get -> bool
+s2protocol.NET.Models.STriggerPingEvent.UnitLink.get -> int
+s2protocol.NET.Models.STriggerPingEvent.UnitUpkeepPlayerId.get -> int?
+s2protocol.NET.Models.STriggerPingEvent.UnitX.get -> long
+s2protocol.NET.Models.STriggerPingEvent.UnitY.get -> long
+s2protocol.NET.Models.STriggerPingEvent.UnitZ.get -> long
+s2protocol.NET.Models.STriggerPlanetMissionLaunchedEvent
+s2protocol.NET.Models.STriggerPlanetMissionLaunchedEvent.DifficultyLevel.get -> long
+s2protocol.NET.Models.STriggerPlanetMissionLaunchedEvent.STriggerPlanetMissionLaunchedEvent(int userId, int eventId, int bits, int gameloop, long difficultyLevel) -> void
+s2protocol.NET.Models.STriggerPlanetMissionSelectedEvent
+s2protocol.NET.Models.STriggerPlanetMissionSelectedEvent.PlanetId.get -> long
+s2protocol.NET.Models.STriggerPlanetMissionSelectedEvent.STriggerPlanetMissionSelectedEvent(int userId, int eventId, int bits, int gameloop, long planetId) -> void
+s2protocol.NET.Models.STriggerPlanetPanelBirthCompleteEvent
+s2protocol.NET.Models.STriggerPlanetPanelBirthCompleteEvent.STriggerPlanetPanelBirthCompleteEvent(int userId, int eventId, int bits, int gameloop) -> void
+s2protocol.NET.Models.STriggerPlanetPanelCanceledEvent
+s2protocol.NET.Models.STriggerPlanetPanelCanceledEvent.STriggerPlanetPanelCanceledEvent(int userId, int eventId, int bits, int gameloop) -> void
+s2protocol.NET.Models.STriggerPlanetPanelDeathCompleteEvent
+s2protocol.NET.Models.STriggerPlanetPanelDeathCompleteEvent.STriggerPlanetPanelDeathCompleteEvent(int userId, int eventId, int bits, int gameloop) -> void
+s2protocol.NET.Models.STriggerPlanetPanelReplayEvent
+s2protocol.NET.Models.STriggerPlanetPanelReplayEvent.STriggerPlanetPanelReplayEvent(int userId, int eventId, int bits, int gameloop) -> void
+s2protocol.NET.Models.STriggerPortraitLoadedEvent
+s2protocol.NET.Models.STriggerPortraitLoadedEvent.PortraitId.get -> long
+s2protocol.NET.Models.STriggerPortraitLoadedEvent.STriggerPortraitLoadedEvent(int userId, int eventId, int bits, int gameloop, long portraitId) -> void
+s2protocol.NET.Models.STriggerProfilerLoggingFinishedEvent
+s2protocol.NET.Models.STriggerProfilerLoggingFinishedEvent.STriggerProfilerLoggingFinishedEvent(int userId, int eventId, int bits, int gameloop) -> void
+s2protocol.NET.Models.STriggerPurchaseExitEvent
+s2protocol.NET.Models.STriggerPurchaseExitEvent.STriggerPurchaseExitEvent(int userId, int eventId, int bits, int gameloop) -> void
+s2protocol.NET.Models.STriggerPurchaseMadeEvent
+s2protocol.NET.Models.STriggerPurchaseMadeEvent.PurchaseItemId.get -> long
+s2protocol.NET.Models.STriggerPurchaseMadeEvent.STriggerPurchaseMadeEvent(int userId, int eventId, int bits, int gameloop, long purchaseItemId) -> void
+s2protocol.NET.Models.STriggerPurchasePanelSelectedPurchaseCategoryChangedEvent
+s2protocol.NET.Models.STriggerPurchasePanelSelectedPurchaseCategoryChangedEvent.PurchaseCategoryId.get -> long
+s2protocol.NET.Models.STriggerPurchasePanelSelectedPurchaseCategoryChangedEvent.STriggerPurchasePanelSelectedPurchaseCategoryChangedEvent(int userId, int eventId, int bits, int gameloop, long purchaseCategoryId) -> void
+s2protocol.NET.Models.STriggerPurchasePanelSelectedPurchaseItemChangedEvent
+s2protocol.NET.Models.STriggerPurchasePanelSelectedPurchaseItemChangedEvent.PurchaseItemId.get -> long
+s2protocol.NET.Models.STriggerPurchasePanelSelectedPurchaseItemChangedEvent.STriggerPurchasePanelSelectedPurchaseItemChangedEvent(int userId, int eventId, int bits, int gameloop, long purchaseItemId) -> void
+s2protocol.NET.Models.STriggerReplySelectedEvent
+s2protocol.NET.Models.STriggerReplySelectedEvent.ConversationId.get -> long
+s2protocol.NET.Models.STriggerReplySelectedEvent.ReplyId.get -> long
+s2protocol.NET.Models.STriggerReplySelectedEvent.STriggerReplySelectedEvent(int userId, int eventId, int bits, int gameloop, long conversationId, long replyId) -> void
+s2protocol.NET.Models.STriggerResearchPanelExitEvent
+s2protocol.NET.Models.STriggerResearchPanelExitEvent.STriggerResearchPanelExitEvent(int userId, int eventId, int bits, int gameloop) -> void
+s2protocol.NET.Models.STriggerResearchPanelPurchaseEvent
+s2protocol.NET.Models.STriggerResearchPanelPurchaseEvent.STriggerResearchPanelPurchaseEvent(int userId, int eventId, int bits, int gameloop) -> void
+s2protocol.NET.Models.STriggerResearchPanelSelectionChangedEvent
+s2protocol.NET.Models.STriggerResearchPanelSelectionChangedEvent.ResearchItemId.get -> long
+s2protocol.NET.Models.STriggerResearchPanelSelectionChangedEvent.STriggerResearchPanelSelectionChangedEvent(int userId, int eventId, int bits, int gameloop, long researchItemId) -> void
+s2protocol.NET.Models.STriggerSkippedEvent
+s2protocol.NET.Models.STriggerSkippedEvent.STriggerSkippedEvent(int userId, int eventId, int bits, int gameloop) -> void
+s2protocol.NET.Models.STriggerSoundLengthQueryEvent
+s2protocol.NET.Models.STriggerSoundLengthQueryEvent.Length.get -> int
+s2protocol.NET.Models.STriggerSoundLengthQueryEvent.SoundHash.get -> long
+s2protocol.NET.Models.STriggerSoundLengthQueryEvent.STriggerSoundLengthQueryEvent(int userId, int eventId, int bits, int gameloop, long soundHash, int length) -> void
+s2protocol.NET.Models.STriggerSoundLengthSyncEvent
+s2protocol.NET.Models.STriggerSoundLengthSyncEvent.STriggerSoundLengthSyncEvent(int userId, int eventId, int bits, int gameloop) -> void
+s2protocol.NET.Models.STriggerSoundOffsetEvent
+s2protocol.NET.Models.STriggerSoundOffsetEvent.Sound.get -> int
+s2protocol.NET.Models.STriggerSoundOffsetEvent.STriggerSoundOffsetEvent(int userId, int eventId, int bits, int gameloop, int sound) -> void
+s2protocol.NET.Models.STriggerSoundtrackDoneEvent
+s2protocol.NET.Models.STriggerSoundtrackDoneEvent.Soundtrack.get -> int
+s2protocol.NET.Models.STriggerSoundtrackDoneEvent.STriggerSoundtrackDoneEvent(int userId, int eventId, int bits, int gameloop, int soundtrack) -> void
+s2protocol.NET.Models.STriggerTargetModeUpdateEvent
+s2protocol.NET.Models.STriggerTargetModeUpdateEvent.AbilCmdIndex.get -> int
+s2protocol.NET.Models.STriggerTargetModeUpdateEvent.AbilLink.get -> int
+s2protocol.NET.Models.STriggerTargetModeUpdateEvent.State.get -> int
+s2protocol.NET.Models.STriggerTargetModeUpdateEvent.STriggerTargetModeUpdateEvent(int userId, int eventId, int bits, int gameloop, int abilCmdIndex, int abilLink, int state) -> void
+s2protocol.NET.Models.STriggerTransmissionCompleteEvent
+s2protocol.NET.Models.STriggerTransmissionCompleteEvent.STriggerTransmissionCompleteEvent(int userId, int eventId, int bits, int gameloop, long transmissionId) -> void
+s2protocol.NET.Models.STriggerTransmissionCompleteEvent.TransmissionId.get -> long
+s2protocol.NET.Models.STriggerTransmissionOffsetEvent
+s2protocol.NET.Models.STriggerTransmissionOffsetEvent.AchievementLink.get -> int
+s2protocol.NET.Models.STriggerTransmissionOffsetEvent.STriggerTransmissionOffsetEvent(int userId, int eventId, int bits, int gameloop, int achievementLink) -> void
+s2protocol.NET.Models.STriggerVictoryPanelExitEvent
+s2protocol.NET.Models.STriggerVictoryPanelExitEvent.STriggerVictoryPanelExitEvent(int userId, int eventId, int bits, int gameloop) -> void
+s2protocol.NET.Models.STriggerVictoryPanelPlayMissionAgainEvent
+s2protocol.NET.Models.STriggerVictoryPanelPlayMissionAgainEvent.DifficultyLevel.get -> long
+s2protocol.NET.Models.STriggerVictoryPanelPlayMissionAgainEvent.STriggerVictoryPanelPlayMissionAgainEvent(int userId, int eventId, int bits, int gameloop, long difficultyLevel) -> void
+s2protocol.NET.Models.SUnitBornEvent
+s2protocol.NET.Models.SUnitBornEvent.ControlPlayerId.get -> int
+s2protocol.NET.Models.SUnitBornEvent.CreatorAbilityName.get -> string?
+s2protocol.NET.Models.SUnitBornEvent.CreatorUnitTagIndex.get -> int?
+s2protocol.NET.Models.SUnitBornEvent.CreatorUnitTagRecycle.get -> int?
+s2protocol.NET.Models.SUnitBornEvent.SUnitBornEvent(int playerId, int eventId, int bits, int gameloop, int unitTagIndex, int unitTagRecycle, string? creatorAbilityName, int? creatorUnitTagRecycle, int controlPlayerId, int x, int y, int upkeepPlayerId, string! unitTypeName, int? creatorUnitTagIndex) -> void
+s2protocol.NET.Models.SUnitBornEvent.SUnitDiedEvent.get -> s2protocol.NET.Models.SUnitDiedEvent?
+s2protocol.NET.Models.SUnitBornEvent.UnitIndex.get -> int
+s2protocol.NET.Models.SUnitBornEvent.UnitTagIndex.get -> int
+s2protocol.NET.Models.SUnitBornEvent.UnitTagRecycle.get -> int
+s2protocol.NET.Models.SUnitBornEvent.UnitTypeName.get -> string!
+s2protocol.NET.Models.SUnitBornEvent.UpkeepPlayerId.get -> int
+s2protocol.NET.Models.SUnitBornEvent.X.get -> int
+s2protocol.NET.Models.SUnitBornEvent.Y.get -> int
+s2protocol.NET.Models.SUnitClickEvent
+s2protocol.NET.Models.SUnitClickEvent.SUnitClickEvent(int userId, int eventId, int bits, int gameloop, int unitTag) -> void
+s2protocol.NET.Models.SUnitClickEvent.UnitTag.get -> int
+s2protocol.NET.Models.SUnitDiedEvent
+s2protocol.NET.Models.SUnitDiedEvent.KillerPlayerId.get -> int?
+s2protocol.NET.Models.SUnitDiedEvent.KillerUnitBornEvent.get -> s2protocol.NET.Models.SUnitBornEvent?
+s2protocol.NET.Models.SUnitDiedEvent.KillerUnitInitEvent.get -> s2protocol.NET.Models.SUnitInitEvent?
+s2protocol.NET.Models.SUnitDiedEvent.KillerUnitTagIndex.get -> int?
+s2protocol.NET.Models.SUnitDiedEvent.KillerUnitTagRecycle.get -> int?
+s2protocol.NET.Models.SUnitDiedEvent.SUnitDiedEvent(int playerId, int eventId, int bits, int gameloop, int unitTagIndex, int unitTagRecycle, int? killerPlayerId, int x, int y, int? killerUnitTagRecycle, int? killerUnitTagIndex) -> void
+s2protocol.NET.Models.SUnitDiedEvent.UnitIndex.get -> int
+s2protocol.NET.Models.SUnitDiedEvent.UnitTagIndex.get -> int
+s2protocol.NET.Models.SUnitDiedEvent.UnitTagRecycle.get -> int
+s2protocol.NET.Models.SUnitDiedEvent.X.get -> int
+s2protocol.NET.Models.SUnitDiedEvent.Y.get -> int
+s2protocol.NET.Models.SUnitDoneEvent
+s2protocol.NET.Models.SUnitDoneEvent.SUnitDoneEvent(int playerId, int eventId, int bits, int gameloop, int unitTagIndex, int unitTagRecycle) -> void
+s2protocol.NET.Models.SUnitDoneEvent.UnitIndex.get -> int
+s2protocol.NET.Models.SUnitDoneEvent.UnitTagIndex.get -> int
+s2protocol.NET.Models.SUnitDoneEvent.UnitTagRecycle.get -> int
+s2protocol.NET.Models.SUnitHighlightEvent
+s2protocol.NET.Models.SUnitHighlightEvent.Flags.get -> int
+s2protocol.NET.Models.SUnitHighlightEvent.SUnitHighlightEvent(int userId, int eventId, int bits, int gameloop, long unitTag, int flags) -> void
+s2protocol.NET.Models.SUnitHighlightEvent.UnitTag.get -> long
+s2protocol.NET.Models.SUnitInitEvent
+s2protocol.NET.Models.SUnitInitEvent.ControlPlayerId.get -> int
+s2protocol.NET.Models.SUnitInitEvent.ControlPlayerId.init -> void
+s2protocol.NET.Models.SUnitInitEvent.SUnitDiedEvent.get -> s2protocol.NET.Models.SUnitDiedEvent?
+s2protocol.NET.Models.SUnitInitEvent.SUnitDoneEvent.get -> s2protocol.NET.Models.SUnitDoneEvent?
+s2protocol.NET.Models.SUnitInitEvent.SUnitInitEvent(int playerId, int eventId, int bits, int gameloop, int unitTagIndex, int unitTagRecycle, int controlPlayerId, int x, int y, int upkeepPlayerId, string! unitTypeName) -> void
+s2protocol.NET.Models.SUnitInitEvent.UnitIndex.get -> int
+s2protocol.NET.Models.SUnitInitEvent.UnitTagIndex.get -> int
+s2protocol.NET.Models.SUnitInitEvent.UnitTagIndex.init -> void
+s2protocol.NET.Models.SUnitInitEvent.UnitTagRecycle.get -> int
+s2protocol.NET.Models.SUnitInitEvent.UnitTagRecycle.init -> void
+s2protocol.NET.Models.SUnitInitEvent.UnitTypeName.get -> string!
+s2protocol.NET.Models.SUnitInitEvent.UnitTypeName.init -> void
+s2protocol.NET.Models.SUnitInitEvent.UpkeepPlayerId.get -> int
+s2protocol.NET.Models.SUnitInitEvent.UpkeepPlayerId.init -> void
+s2protocol.NET.Models.SUnitInitEvent.X.get -> int
+s2protocol.NET.Models.SUnitInitEvent.X.init -> void
+s2protocol.NET.Models.SUnitInitEvent.Y.get -> int
+s2protocol.NET.Models.SUnitInitEvent.Y.init -> void
+s2protocol.NET.Models.SUnitOwnerChangeEvent
+s2protocol.NET.Models.SUnitOwnerChangeEvent.ControlPlayerId.get -> int
+s2protocol.NET.Models.SUnitOwnerChangeEvent.SUnitOwnerChangeEvent(int playerId, int eventId, int bits, int gameloop, int unitTagIndex, int unitTagRecycle, int controlPlayerId, int upkeepPlayerId) -> void
+s2protocol.NET.Models.SUnitOwnerChangeEvent.UnitIndex.get -> int
+s2protocol.NET.Models.SUnitOwnerChangeEvent.UnitTagIndex.get -> int
+s2protocol.NET.Models.SUnitOwnerChangeEvent.UnitTagRecycle.get -> int
+s2protocol.NET.Models.SUnitOwnerChangeEvent.UpkeepPlayerId.get -> int
+s2protocol.NET.Models.SUnitPositionsEvent
+s2protocol.NET.Models.SUnitPositionsEvent.FirstUnitIndex.get -> int
+s2protocol.NET.Models.SUnitPositionsEvent.FirstUnitIndex.init -> void
+s2protocol.NET.Models.SUnitPositionsEvent.SUnitPositionsEvent(int playerId, int eventId, int bits, int gameloop, int firstUnitIndex, int[]! items) -> void
+s2protocol.NET.Models.SUnitPositionsEvent.SUnitPositionsEvent(int playerId, int eventId, int bits, int gameloop, int firstUnitIndex, System.Collections.Generic.ICollection<s2protocol.NET.Models.UnitPosition!>! unitPositions, int unitIndex, int x, int y) -> void
+s2protocol.NET.Models.SUnitPositionsEvent.UnitIndex.get -> int
+s2protocol.NET.Models.SUnitPositionsEvent.UnitIndex.init -> void
+s2protocol.NET.Models.SUnitPositionsEvent.UnitPositions.get -> System.Collections.Generic.ICollection<s2protocol.NET.Models.UnitPosition!>!
+s2protocol.NET.Models.SUnitPositionsEvent.UnitPositions.init -> void
+s2protocol.NET.Models.SUnitPositionsEvent.X.get -> int
+s2protocol.NET.Models.SUnitPositionsEvent.X.init -> void
+s2protocol.NET.Models.SUnitPositionsEvent.Y.get -> int
+s2protocol.NET.Models.SUnitPositionsEvent.Y.init -> void
+s2protocol.NET.Models.SUnitTypeChangeEvent
+s2protocol.NET.Models.SUnitTypeChangeEvent.SUnitTypeChangeEvent(int playerId, int eventId, int bits, int gameloop, int unitTagIndex, int unitTagRecycle, string! unitTypeName) -> void
+s2protocol.NET.Models.SUnitTypeChangeEvent.UnitIndex.get -> int
+s2protocol.NET.Models.SUnitTypeChangeEvent.UnitTagIndex.get -> int
+s2protocol.NET.Models.SUnitTypeChangeEvent.UnitTagRecycle.get -> int
+s2protocol.NET.Models.SUnitTypeChangeEvent.UnitTypeName.get -> string!
+s2protocol.NET.Models.SUpgradeEvent
+s2protocol.NET.Models.SUpgradeEvent.Count.get -> int
+s2protocol.NET.Models.SUpgradeEvent.SUpgradeEvent(int playerId, int eventId, int bits, int gameloop, int count, string! upgradeTypeName) -> void
+s2protocol.NET.Models.SUpgradeEvent.UpgradeTypeName.get -> string!
+s2protocol.NET.Models.SUserFinishedLoadingSyncEvent
+s2protocol.NET.Models.SUserFinishedLoadingSyncEvent.SUserFinishedLoadingSyncEvent(int userId, int eventId, int bits, int gameloop) -> void
+s2protocol.NET.Models.SUserOptionsEvent
+s2protocol.NET.Models.SUserOptionsEvent.BaseBuildNum.get -> int
+s2protocol.NET.Models.SUserOptionsEvent.BuildNum.get -> int
+s2protocol.NET.Models.SUserOptionsEvent.CameraFollow.get -> bool
+s2protocol.NET.Models.SUserOptionsEvent.DebugPauseEnabled.get -> bool
+s2protocol.NET.Models.SUserOptionsEvent.DevelopmentCheatsEnabled.get -> bool
+s2protocol.NET.Models.SUserOptionsEvent.GameFullyDownloaded.get -> bool
+s2protocol.NET.Models.SUserOptionsEvent.HotkeyProfile.get -> string!
+s2protocol.NET.Models.SUserOptionsEvent.IsMapToMapTransition.get -> bool
+s2protocol.NET.Models.SUserOptionsEvent.MultiplayerCheatsEnabled.get -> bool
+s2protocol.NET.Models.SUserOptionsEvent.PlatformMac.get -> bool
+s2protocol.NET.Models.SUserOptionsEvent.StartingRally.get -> bool
+s2protocol.NET.Models.SUserOptionsEvent.SUserOptionsEvent(int userId, int eventId, int bits, int gameloop, bool testCheatsEnabled, bool multiplayerCheatsEnabled, bool gameFullyDownloaded, string! hotkeyProfile, bool useGalaxyAsserts, bool debugPauseEnabled, bool cameraFollow, bool isMapToMapTransition, int buildNum, int versionFlags, bool developmentCheatsEnabled, bool platformMac, int baseBuildNum, bool syncChecksummingEnabled) -> void
+s2protocol.NET.Models.SUserOptionsEvent.SUserOptionsEvent(int userId, int eventId, int bits, int gameloop, bool testCheatsEnabled, bool multiplayerCheatsEnabled, bool gameFullyDownloaded, string! hotkeyProfile, bool useGalaxyAsserts, bool debugPauseEnabled, bool cameraFollow, bool isMapToMapTransition, int buildNum, int versionFlags, bool developmentCheatsEnabled, bool platformMac, int baseBuildNum, bool syncChecksummingEnabled, bool startingRally, bool useAIBeacons) -> void
+s2protocol.NET.Models.SUserOptionsEvent.SyncChecksummingEnabled.get -> bool
+s2protocol.NET.Models.SUserOptionsEvent.TestCheatsEnabled.get -> bool
+s2protocol.NET.Models.SUserOptionsEvent.UseAIBeacons.get -> bool
+s2protocol.NET.Models.SUserOptionsEvent.UseGalaxyAsserts.get -> bool
+s2protocol.NET.Models.SUserOptionsEvent.VersionFlags.get -> int
+s2protocol.NET.Models.Toon
+s2protocol.NET.Models.Toon.Id.get -> int
+s2protocol.NET.Models.Toon.Id.init -> void
+s2protocol.NET.Models.Toon.ProgramId.get -> string!
+s2protocol.NET.Models.Toon.ProgramId.init -> void
+s2protocol.NET.Models.Toon.Realm.get -> int
+s2protocol.NET.Models.Toon.Realm.init -> void
+s2protocol.NET.Models.Toon.Region.get -> int
+s2protocol.NET.Models.Toon.Region.init -> void
+s2protocol.NET.Models.Toon.Toon(int id, string! programId, int realm, int region) -> void
+s2protocol.NET.Models.TrackerEvent
+s2protocol.NET.Models.TrackerEvent.Bits.get -> int
+s2protocol.NET.Models.TrackerEvent.EventId.get -> int
+s2protocol.NET.Models.TrackerEvent.EventType.get -> s2protocol.NET.Models.TrackerEventType
+s2protocol.NET.Models.TrackerEvent.Gameloop.get -> int
+s2protocol.NET.Models.TrackerEvent.PlayerId.get -> int
+s2protocol.NET.Models.TrackerEvent.TrackerEvent(int playerId, int eventId, s2protocol.NET.Models.TrackerEventType eventType, int bits, int gameloop) -> void
+s2protocol.NET.Models.TrackerEvents
+s2protocol.NET.Models.TrackerEvents.BaseTrackerEvents.get -> System.Collections.Generic.ICollection<s2protocol.NET.Models.TrackerEvent!>!
+s2protocol.NET.Models.TrackerEvents.SPlayerSetupEvents.get -> System.Collections.Generic.ICollection<s2protocol.NET.Models.SPlayerSetupEvent!>!
+s2protocol.NET.Models.TrackerEvents.SPlayerStatsEvents.get -> System.Collections.Generic.ICollection<s2protocol.NET.Models.SPlayerStatsEvent!>!
+s2protocol.NET.Models.TrackerEvents.SUnitBornEvents.get -> System.Collections.Generic.ICollection<s2protocol.NET.Models.SUnitBornEvent!>!
+s2protocol.NET.Models.TrackerEvents.SUnitDiedEvents.get -> System.Collections.Generic.ICollection<s2protocol.NET.Models.SUnitDiedEvent!>!
+s2protocol.NET.Models.TrackerEvents.SUnitDoneEvents.get -> System.Collections.Generic.ICollection<s2protocol.NET.Models.SUnitDoneEvent!>!
+s2protocol.NET.Models.TrackerEvents.SUnitInitEvents.get -> System.Collections.Generic.ICollection<s2protocol.NET.Models.SUnitInitEvent!>!
+s2protocol.NET.Models.TrackerEvents.SUnitOwnerChangeEvents.get -> System.Collections.Generic.ICollection<s2protocol.NET.Models.SUnitOwnerChangeEvent!>!
+s2protocol.NET.Models.TrackerEvents.SUnitPositionsEvents.get -> System.Collections.Generic.ICollection<s2protocol.NET.Models.SUnitPositionsEvent!>!
+s2protocol.NET.Models.TrackerEvents.SUnitTypeChangeEvents.get -> System.Collections.Generic.ICollection<s2protocol.NET.Models.SUnitTypeChangeEvent!>!
+s2protocol.NET.Models.TrackerEvents.SUpgradeEvents.get -> System.Collections.Generic.ICollection<s2protocol.NET.Models.SUpgradeEvent!>!
+s2protocol.NET.Models.TrackerEvents.TrackerEvents(s2protocol.NET.Models.SPlayerSetupEvent![]! sPlayerSetupEvents, s2protocol.NET.Models.SPlayerStatsEvent![]! sPlayerStatsEvents, s2protocol.NET.Models.SUnitBornEvent![]! sUnitBornEvents, s2protocol.NET.Models.SUnitDiedEvent![]! sUnitDiedEvents, s2protocol.NET.Models.SUnitOwnerChangeEvent![]! sUnitOwnerChangeEvents, s2protocol.NET.Models.SUnitPositionsEvent![]! sUnitPositionsEvents, s2protocol.NET.Models.SUnitTypeChangeEvent![]! sUnitTypeChangeEvents, s2protocol.NET.Models.SUpgradeEvent![]! sUpgradeEvents, s2protocol.NET.Models.SUnitInitEvent![]! sUnitInitEvents, s2protocol.NET.Models.SUnitDoneEvent![]! sUnitDoneEvents) -> void
+s2protocol.NET.Models.TrackerEvents.TrackerEvents(System.Collections.Generic.ICollection<s2protocol.NET.Models.TrackerEvent!>! baseTrackerEvents) -> void
+s2protocol.NET.Models.TrackerEventType
+s2protocol.NET.Models.TrackerEventType.None = 0 -> s2protocol.NET.Models.TrackerEventType
+s2protocol.NET.Models.TrackerEventType.SPlayerSetupEvent = 1 -> s2protocol.NET.Models.TrackerEventType
+s2protocol.NET.Models.TrackerEventType.SPlayerStatsEvent = 2 -> s2protocol.NET.Models.TrackerEventType
+s2protocol.NET.Models.TrackerEventType.SUnitBornEvent = 3 -> s2protocol.NET.Models.TrackerEventType
+s2protocol.NET.Models.TrackerEventType.SUnitDiedEvent = 4 -> s2protocol.NET.Models.TrackerEventType
+s2protocol.NET.Models.TrackerEventType.SUnitDoneEvent = 10 -> s2protocol.NET.Models.TrackerEventType
+s2protocol.NET.Models.TrackerEventType.SUnitInitEvent = 9 -> s2protocol.NET.Models.TrackerEventType
+s2protocol.NET.Models.TrackerEventType.SUnitOwnerChangeEvent = 5 -> s2protocol.NET.Models.TrackerEventType
+s2protocol.NET.Models.TrackerEventType.SUnitPositionsEvent = 6 -> s2protocol.NET.Models.TrackerEventType
+s2protocol.NET.Models.TrackerEventType.SUnitTypeChangeEvent = 7 -> s2protocol.NET.Models.TrackerEventType
+s2protocol.NET.Models.TrackerEventType.SUpgradeEvent = 8 -> s2protocol.NET.Models.TrackerEventType
+s2protocol.NET.Models.UnitPosition
+s2protocol.NET.Models.UnitPosition.UnitIndex.get -> int
+s2protocol.NET.Models.UnitPosition.UnitPosition(int unitIndex, int x, int y) -> void
+s2protocol.NET.Models.UnitPosition.X.get -> int
+s2protocol.NET.Models.UnitPosition.Y.get -> int
+s2protocol.NET.Models.UnknownGameEvent
+s2protocol.NET.Models.UnknownGameEvent.EventTypeName.get -> string!
+s2protocol.NET.Models.UnknownGameEvent.UnknownGameEvent(int userId, int eventId, int bits, int gameloop, string! eventTypeName) -> void
+s2protocol.NET.Models.UnknownMessageEvent
+s2protocol.NET.Models.UnknownMessageEvent.EventTypeName.get -> string!
+s2protocol.NET.Models.UnknownMessageEvent.UnknownMessageEvent(int userId, int eventId, int bits, int gameloop, string! eventTypeName) -> void
+s2protocol.NET.Models.UnknownTrackerEvent
+s2protocol.NET.Models.UnknownTrackerEvent.EventTypeName.get -> string!
+s2protocol.NET.Models.UnknownTrackerEvent.UnknownTrackerEvent(int playerId, int eventId, s2protocol.NET.Models.TrackerEventType eventType, int bits, int gameloop, string! eventTypeName = "") -> void
+s2protocol.NET.Models.UserInitialData
+s2protocol.NET.Models.UserInitialData.ClanLogo.get -> string!
+s2protocol.NET.Models.UserInitialData.ClanLogo.init -> void
+s2protocol.NET.Models.UserInitialData.ClanTag.get -> string!
+s2protocol.NET.Models.UserInitialData.ClanTag.init -> void
+s2protocol.NET.Models.UserInitialData.CombinedRaceLevels.get -> long
+s2protocol.NET.Models.UserInitialData.CombinedRaceLevels.init -> void
+s2protocol.NET.Models.UserInitialData.CustomInterface.get -> bool
+s2protocol.NET.Models.UserInitialData.CustomInterface.init -> void
+s2protocol.NET.Models.UserInitialData.Examine.get -> bool
+s2protocol.NET.Models.UserInitialData.Examine.init -> void
+s2protocol.NET.Models.UserInitialData.Hero.get -> string!
+s2protocol.NET.Models.UserInitialData.Hero.init -> void
+s2protocol.NET.Models.UserInitialData.HighestLeague.get -> int
+s2protocol.NET.Models.UserInitialData.HighestLeague.init -> void
+s2protocol.NET.Models.UserInitialData.Mount.get -> string!
+s2protocol.NET.Models.UserInitialData.Mount.init -> void
+s2protocol.NET.Models.UserInitialData.Name.get -> string!
+s2protocol.NET.Models.UserInitialData.Name.init -> void
+s2protocol.NET.Models.UserInitialData.Observe.get -> int
+s2protocol.NET.Models.UserInitialData.Observe.init -> void
+s2protocol.NET.Models.UserInitialData.RacePreference.get -> int?
+s2protocol.NET.Models.UserInitialData.RacePreference.init -> void
+s2protocol.NET.Models.UserInitialData.RandomSeed.get -> int
+s2protocol.NET.Models.UserInitialData.RandomSeed.init -> void
+s2protocol.NET.Models.UserInitialData.ScaledRating.get -> long?
+s2protocol.NET.Models.UserInitialData.ScaledRating.init -> void
+s2protocol.NET.Models.UserInitialData.Skin.get -> string!
+s2protocol.NET.Models.UserInitialData.Skin.init -> void
+s2protocol.NET.Models.UserInitialData.TeamPreference.get -> int?
+s2protocol.NET.Models.UserInitialData.TeamPreference.init -> void
+s2protocol.NET.Models.UserInitialData.TestAuto.get -> bool
+s2protocol.NET.Models.UserInitialData.TestAuto.init -> void
+s2protocol.NET.Models.UserInitialData.TestMap.get -> bool
+s2protocol.NET.Models.UserInitialData.TestMap.init -> void
+s2protocol.NET.Models.UserInitialData.TestType.get -> int
+s2protocol.NET.Models.UserInitialData.TestType.init -> void
+s2protocol.NET.Models.UserInitialData.ToonHandle.get -> string!
+s2protocol.NET.Models.UserInitialData.ToonHandle.init -> void
+s2protocol.NET.Models.UserInitialData.UserInitialData(string! mount, string! skin, int observe, int? teamPreference, string! toonHandle, long combinedRaceLevels, int highestLeague, string! clanTag, bool testMap, bool testAuto, bool examine, int testType, bool customInterface, string! clanLogo, string! name, int? racePreference, int randomSeed, string! hero, long? scaledRating) -> void
+s2protocol.NET.Mpq.MPQArchive
+s2protocol.NET.Mpq.MPQArchive.Dispose() -> void
+s2protocol.NET.Mpq.MPQArchive.Extract() -> System.Collections.Generic.Dictionary<string!, byte[]!>!
+s2protocol.NET.Mpq.MPQArchive.ExtractFiles(params string![]! filenames) -> System.Collections.Generic.Dictionary<string!, byte[]!>!
+s2protocol.NET.Mpq.MPQArchive.ExtractFilesToDisk(params string![]! filenames) -> void
+s2protocol.NET.Mpq.MPQArchive.ExtractToDisk() -> void
+s2protocol.NET.Mpq.MPQArchive.GetUserDataHeaderContent() -> byte[]!
+s2protocol.NET.Mpq.MPQArchive.MPQArchive(string! archivePath, bool readFiles = true) -> void
+s2protocol.NET.Mpq.MPQArchive.MPQArchive(System.IO.Stream! stream, bool readFiles = true) -> void
+s2protocol.NET.Mpq.MPQArchive.PrintBlockTable() -> string!
+s2protocol.NET.Mpq.MPQArchive.PrintFiles() -> string!
+s2protocol.NET.Mpq.MPQArchive.PrintHashTable() -> string!
+s2protocol.NET.Mpq.MPQArchive.PrintHeaders() -> void
+s2protocol.NET.Mpq.MPQArchive.ReadFile(string! filename, bool forceDecompress = false, System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken)) -> System.ReadOnlyMemory<byte>?
+s2protocol.NET.Mpq.MPQArchive.ReadFileAsync(string! filename, bool forceDecompress = false, System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken)) -> System.Threading.Tasks.Task<System.ReadOnlyMemory<byte>?>!
+s2protocol.NET.ReplayDecoder
+s2protocol.NET.ReplayDecoder.DecodeAsync(string! replayPath, s2protocol.NET.ReplayDecoderOptions? options = null, System.Threading.CancellationToken token = default(System.Threading.CancellationToken)) -> System.Threading.Tasks.Task<s2protocol.NET.Sc2Replay!>!
+s2protocol.NET.ReplayDecoder.DecodeAsync(System.IO.Stream! stream, s2protocol.NET.ReplayDecoderOptions? options = null, System.Threading.CancellationToken token = default(System.Threading.CancellationToken)) -> System.Threading.Tasks.Task<s2protocol.NET.Sc2Replay!>!
+s2protocol.NET.ReplayDecoder.ReplayDecoder() -> void
+s2protocol.NET.ReplayDecoderOptions
+s2protocol.NET.ReplayDecoderOptions.AttributeEvents.get -> bool
+s2protocol.NET.ReplayDecoderOptions.AttributeEvents.set -> void
+s2protocol.NET.ReplayDecoderOptions.Details.get -> bool
+s2protocol.NET.ReplayDecoderOptions.Details.set -> void
+s2protocol.NET.ReplayDecoderOptions.GameEvents.get -> bool
+s2protocol.NET.ReplayDecoderOptions.GameEvents.set -> void
+s2protocol.NET.ReplayDecoderOptions.Initdata.get -> bool
+s2protocol.NET.ReplayDecoderOptions.Initdata.set -> void
+s2protocol.NET.ReplayDecoderOptions.MessageEvents.get -> bool
+s2protocol.NET.ReplayDecoderOptions.MessageEvents.set -> void
+s2protocol.NET.ReplayDecoderOptions.Metadata.get -> bool
+s2protocol.NET.ReplayDecoderOptions.Metadata.set -> void
+s2protocol.NET.ReplayDecoderOptions.ReplayDecoderOptions() -> void
+s2protocol.NET.ReplayDecoderOptions.ReplayDecoderOptions(s2protocol.NET.ReplayDecoderOptions! original) -> void
+s2protocol.NET.ReplayDecoderOptions.TrackerEvents.get -> bool
+s2protocol.NET.ReplayDecoderOptions.TrackerEvents.set -> void
+s2protocol.NET.S2Protocol.Models.S2ProtocolEnums
+s2protocol.NET.S2Protocol.Models.S2ProtocolEnums.AttributeNamespace
+s2protocol.NET.S2Protocol.Models.S2ProtocolEnums.AttributeNamespace.BLIZZARD = 999 -> s2protocol.NET.S2Protocol.Models.S2ProtocolEnums.AttributeNamespace
+s2protocol.NET.S2Protocol.Models.S2ProtocolEnums.AttributeNamespace.None = 0 -> s2protocol.NET.S2Protocol.Models.S2ProtocolEnums.AttributeNamespace
+s2protocol.NET.S2Protocol.Models.S2ProtocolEnums.Attributes
+s2protocol.NET.S2Protocol.Models.S2ProtocolEnums.Attributes.ACTIVE_ROUND = 4017 -> s2protocol.NET.S2Protocol.Models.S2ProtocolEnums.Attributes
+s2protocol.NET.S2Protocol.Models.S2ProtocolEnums.Attributes.ACTIVE_TEAM = 4012 -> s2protocol.NET.S2Protocol.Models.S2ProtocolEnums.Attributes
+s2protocol.NET.S2Protocol.Models.S2ProtocolEnums.Attributes.AI_BUILD_FIRST = 3100 -> s2protocol.NET.S2Protocol.Models.S2ProtocolEnums.Attributes
+s2protocol.NET.S2Protocol.Models.S2ProtocolEnums.Attributes.AI_BUILD_LAST = 3300 -> s2protocol.NET.S2Protocol.Models.S2ProtocolEnums.Attributes
+s2protocol.NET.S2Protocol.Models.S2ProtocolEnums.Attributes.AI_RACE = 3005 -> s2protocol.NET.S2Protocol.Models.S2ProtocolEnums.Attributes
+s2protocol.NET.S2Protocol.Models.S2ProtocolEnums.Attributes.AI_SKILL = 3004 -> s2protocol.NET.S2Protocol.Models.S2ProtocolEnums.Attributes
+s2protocol.NET.S2Protocol.Models.S2ProtocolEnums.Attributes.CAN_READY = 4009 -> s2protocol.NET.S2Protocol.Models.S2ProtocolEnums.Attributes
+s2protocol.NET.S2Protocol.Models.S2ProtocolEnums.Attributes.COMMANDER = 3013 -> s2protocol.NET.S2Protocol.Models.S2ProtocolEnums.Attributes
+s2protocol.NET.S2Protocol.Models.S2ProtocolEnums.Attributes.COMMANDER_LEVEL = 3014 -> s2protocol.NET.S2Protocol.Models.S2ProtocolEnums.Attributes
+s2protocol.NET.S2Protocol.Models.S2ProtocolEnums.Attributes.COMMANDER_MASTERY_LEVEL = 3016 -> s2protocol.NET.S2Protocol.Models.S2ProtocolEnums.Attributes
+s2protocol.NET.S2Protocol.Models.S2ProtocolEnums.Attributes.COMMANDER_MASTERY_TALENT_FIRST = 5000 -> s2protocol.NET.S2Protocol.Models.S2ProtocolEnums.Attributes
+s2protocol.NET.S2Protocol.Models.S2ProtocolEnums.Attributes.COMMANDER_MASTERY_TALENT_LAST = 5005 -> s2protocol.NET.S2Protocol.Models.S2ProtocolEnums.Attributes
+s2protocol.NET.S2Protocol.Models.S2ProtocolEnums.Attributes.CONTROLLER = 500 -> s2protocol.NET.S2Protocol.Models.S2ProtocolEnums.Attributes
+s2protocol.NET.S2Protocol.Models.S2ProtocolEnums.Attributes.FIRST_ACTIVE_TEAM = 4020 -> s2protocol.NET.S2Protocol.Models.S2ProtocolEnums.Attributes
+s2protocol.NET.S2Protocol.Models.S2ProtocolEnums.Attributes.GAME_DURATION = 3015 -> s2protocol.NET.S2Protocol.Models.S2ProtocolEnums.Attributes
+s2protocol.NET.S2Protocol.Models.S2ProtocolEnums.Attributes.GAME_MODE = 3009 -> s2protocol.NET.S2Protocol.Models.S2ProtocolEnums.Attributes
+s2protocol.NET.S2Protocol.Models.S2ProtocolEnums.Attributes.GAME_SPEED = 3000 -> s2protocol.NET.S2Protocol.Models.S2ProtocolEnums.Attributes
+s2protocol.NET.S2Protocol.Models.S2ProtocolEnums.Attributes.HANDICAP = 3003 -> s2protocol.NET.S2Protocol.Models.S2ProtocolEnums.Attributes
+s2protocol.NET.S2Protocol.Models.S2ProtocolEnums.Attributes.IS_PREMADE_GAME = 1001 -> s2protocol.NET.S2Protocol.Models.S2ProtocolEnums.Attributes
+s2protocol.NET.S2Protocol.Models.S2ProtocolEnums.Attributes.LOBBY_DELAY = 3006 -> s2protocol.NET.S2Protocol.Models.S2ProtocolEnums.Attributes
+s2protocol.NET.S2Protocol.Models.S2ProtocolEnums.Attributes.LOBBY_MODE = 4010 -> s2protocol.NET.S2Protocol.Models.S2ProtocolEnums.Attributes
+s2protocol.NET.S2Protocol.Models.S2ProtocolEnums.Attributes.LOBBY_PHASE = 4015 -> s2protocol.NET.S2Protocol.Models.S2ProtocolEnums.Attributes
+s2protocol.NET.S2Protocol.Models.S2ProtocolEnums.Attributes.LOCKED_ALLIANCES = 3010 -> s2protocol.NET.S2Protocol.Models.S2ProtocolEnums.Attributes
+s2protocol.NET.S2Protocol.Models.S2ProtocolEnums.Attributes.NONE = 0 -> s2protocol.NET.S2Protocol.Models.S2ProtocolEnums.Attributes
+s2protocol.NET.S2Protocol.Models.S2ProtocolEnums.Attributes.PARTICIPANT_ROLE = 3007 -> s2protocol.NET.S2Protocol.Models.S2ProtocolEnums.Attributes
+s2protocol.NET.S2Protocol.Models.S2ProtocolEnums.Attributes.PARTIES_PREMADE = 2001 -> s2protocol.NET.S2Protocol.Models.S2ProtocolEnums.Attributes
+s2protocol.NET.S2Protocol.Models.S2ProtocolEnums.Attributes.PARTIES_PREMADE_1V1 = 2002 -> s2protocol.NET.S2Protocol.Models.S2ProtocolEnums.Attributes
+s2protocol.NET.S2Protocol.Models.S2ProtocolEnums.Attributes.PARTIES_PREMADE_2V2 = 2003 -> s2protocol.NET.S2Protocol.Models.S2ProtocolEnums.Attributes
+s2protocol.NET.S2Protocol.Models.S2ProtocolEnums.Attributes.PARTIES_PREMADE_3V3 = 2004 -> s2protocol.NET.S2Protocol.Models.S2ProtocolEnums.Attributes
+s2protocol.NET.S2Protocol.Models.S2ProtocolEnums.Attributes.PARTIES_PREMADE_4V4 = 2005 -> s2protocol.NET.S2Protocol.Models.S2ProtocolEnums.Attributes
+s2protocol.NET.S2Protocol.Models.S2ProtocolEnums.Attributes.PARTIES_PREMADE_5V5 = 2007 -> s2protocol.NET.S2Protocol.Models.S2ProtocolEnums.Attributes
+s2protocol.NET.S2Protocol.Models.S2ProtocolEnums.Attributes.PARTIES_PREMADE_6V6 = 2008 -> s2protocol.NET.S2Protocol.Models.S2ProtocolEnums.Attributes
+s2protocol.NET.S2Protocol.Models.S2ProtocolEnums.Attributes.PARTIES_PREMADE_FFA = 2006 -> s2protocol.NET.S2Protocol.Models.S2ProtocolEnums.Attributes
+s2protocol.NET.S2Protocol.Models.S2ProtocolEnums.Attributes.PARTIES_PRIVATE = 2000 -> s2protocol.NET.S2Protocol.Models.S2ProtocolEnums.Attributes
+s2protocol.NET.S2Protocol.Models.S2ProtocolEnums.Attributes.PARTIES_PRIVATE_CUSTOM = 2018 -> s2protocol.NET.S2Protocol.Models.S2ProtocolEnums.Attributes
+s2protocol.NET.S2Protocol.Models.S2ProtocolEnums.Attributes.PARTIES_PRIVATE_CUSTOM_TANDEM = 2024 -> s2protocol.NET.S2Protocol.Models.S2ProtocolEnums.Attributes
+s2protocol.NET.S2Protocol.Models.S2ProtocolEnums.Attributes.PARTIES_PRIVATE_EIGHT = 2019 -> s2protocol.NET.S2Protocol.Models.S2ProtocolEnums.Attributes
+s2protocol.NET.S2Protocol.Models.S2ProtocolEnums.Attributes.PARTIES_PRIVATE_ELEVEN = 2022 -> s2protocol.NET.S2Protocol.Models.S2ProtocolEnums.Attributes
+s2protocol.NET.S2Protocol.Models.S2ProtocolEnums.Attributes.PARTIES_PRIVATE_FFA = 2017 -> s2protocol.NET.S2Protocol.Models.S2ProtocolEnums.Attributes
+s2protocol.NET.S2Protocol.Models.S2ProtocolEnums.Attributes.PARTIES_PRIVATE_FFA_TANDEM = 2023 -> s2protocol.NET.S2Protocol.Models.S2ProtocolEnums.Attributes
+s2protocol.NET.S2Protocol.Models.S2ProtocolEnums.Attributes.PARTIES_PRIVATE_FIVE = 2014 -> s2protocol.NET.S2Protocol.Models.S2ProtocolEnums.Attributes
+s2protocol.NET.S2Protocol.Models.S2ProtocolEnums.Attributes.PARTIES_PRIVATE_FOUR = 2013 -> s2protocol.NET.S2Protocol.Models.S2ProtocolEnums.Attributes
+s2protocol.NET.S2Protocol.Models.S2ProtocolEnums.Attributes.PARTIES_PRIVATE_NINE = 2020 -> s2protocol.NET.S2Protocol.Models.S2ProtocolEnums.Attributes
+s2protocol.NET.S2Protocol.Models.S2ProtocolEnums.Attributes.PARTIES_PRIVATE_ONE = 2010 -> s2protocol.NET.S2Protocol.Models.S2ProtocolEnums.Attributes
+s2protocol.NET.S2Protocol.Models.S2ProtocolEnums.Attributes.PARTIES_PRIVATE_SEVEN = 2016 -> s2protocol.NET.S2Protocol.Models.S2ProtocolEnums.Attributes
+s2protocol.NET.S2Protocol.Models.S2ProtocolEnums.Attributes.PARTIES_PRIVATE_SIX = 2015 -> s2protocol.NET.S2Protocol.Models.S2ProtocolEnums.Attributes
+s2protocol.NET.S2Protocol.Models.S2ProtocolEnums.Attributes.PARTIES_PRIVATE_TEN = 2021 -> s2protocol.NET.S2Protocol.Models.S2ProtocolEnums.Attributes
+s2protocol.NET.S2Protocol.Models.S2ProtocolEnums.Attributes.PARTIES_PRIVATE_THREE = 2012 -> s2protocol.NET.S2Protocol.Models.S2ProtocolEnums.Attributes
+s2protocol.NET.S2Protocol.Models.S2ProtocolEnums.Attributes.PARTIES_PRIVATE_TWO = 2011 -> s2protocol.NET.S2Protocol.Models.S2ProtocolEnums.Attributes
+s2protocol.NET.S2Protocol.Models.S2ProtocolEnums.Attributes.PARTY_COLOR = 3002 -> s2protocol.NET.S2Protocol.Models.S2ProtocolEnums.Attributes
+s2protocol.NET.S2Protocol.Models.S2ProtocolEnums.Attributes.PLAYER_LOGO = 3011 -> s2protocol.NET.S2Protocol.Models.S2ProtocolEnums.Attributes
+s2protocol.NET.S2Protocol.Models.S2ProtocolEnums.Attributes.PRIVACY_OPTION = 4000 -> s2protocol.NET.S2Protocol.Models.S2ProtocolEnums.Attributes
+s2protocol.NET.S2Protocol.Models.S2ProtocolEnums.Attributes.RACE = 3001 -> s2protocol.NET.S2Protocol.Models.S2ProtocolEnums.Attributes
+s2protocol.NET.S2Protocol.Models.S2ProtocolEnums.Attributes.READYING_COUNT_DEPRECATED = 4016 -> s2protocol.NET.S2Protocol.Models.S2ProtocolEnums.Attributes
+s2protocol.NET.S2Protocol.Models.S2ProtocolEnums.Attributes.READY_MODE = 4018 -> s2protocol.NET.S2Protocol.Models.S2ProtocolEnums.Attributes
+s2protocol.NET.S2Protocol.Models.S2ProtocolEnums.Attributes.READY_ORDER_DEPRECATED = 4011 -> s2protocol.NET.S2Protocol.Models.S2ProtocolEnums.Attributes
+s2protocol.NET.S2Protocol.Models.S2ProtocolEnums.Attributes.READY_REQUIREMENTS = 4019 -> s2protocol.NET.S2Protocol.Models.S2ProtocolEnums.Attributes
+s2protocol.NET.S2Protocol.Models.S2ProtocolEnums.Attributes.RULES = 1000 -> s2protocol.NET.S2Protocol.Models.S2ProtocolEnums.Attributes
+s2protocol.NET.S2Protocol.Models.S2ProtocolEnums.Attributes.TANDEM_LEADER = 3012 -> s2protocol.NET.S2Protocol.Models.S2ProtocolEnums.Attributes
+s2protocol.NET.S2Protocol.Models.S2ProtocolEnums.Attributes.USING_CUSTOM_OBSERVER_UI = 4001 -> s2protocol.NET.S2Protocol.Models.S2ProtocolEnums.Attributes
+s2protocol.NET.S2Protocol.Models.S2ProtocolEnums.Attributes.WATCHER_TYPE = 3008 -> s2protocol.NET.S2Protocol.Models.S2ProtocolEnums.Attributes
+s2protocol.NET.S2Protocol.S2ProtocolVersion
+s2protocol.NET.S2Protocol.S2ProtocolVersion.<Clone>$() -> s2protocol.NET.S2Protocol.S2ProtocolVersion!
+s2protocol.NET.S2Protocol.S2ProtocolVersion.DecodeReplayDetails(System.ReadOnlyMemory<byte> content) -> s2protocol.NET.Models.Details!
+s2protocol.NET.S2Protocol.S2ProtocolVersion.DecodeReplayGameEvents(System.ReadOnlyMemory<byte> content) -> s2protocol.NET.Models.GameEvents!
+s2protocol.NET.S2Protocol.S2ProtocolVersion.DecodeReplayHeader(System.ReadOnlyMemory<byte> content) -> s2protocol.NET.Models.Header!
+s2protocol.NET.S2Protocol.S2ProtocolVersion.DecodeReplayInitData(System.ReadOnlyMemory<byte> content) -> s2protocol.NET.Models.Initdata?
+s2protocol.NET.S2Protocol.S2ProtocolVersion.DecodeReplayMessageEvents(System.ReadOnlyMemory<byte> content) -> s2protocol.NET.Models.MessageEvents!
+s2protocol.NET.S2Protocol.S2ProtocolVersion.DecodeReplayTrackerEvents(System.ReadOnlyMemory<byte> content) -> s2protocol.NET.Models.TrackerEvents!
+s2protocol.NET.S2Protocol.S2ProtocolVersion.Equals(s2protocol.NET.S2Protocol.S2ProtocolVersion? other) -> bool
+s2protocol.NET.S2Protocol.S2ProtocolVersion.GameDetailsTypeId.get -> int?
+s2protocol.NET.S2Protocol.S2ProtocolVersion.GameDetailsTypeId.set -> void
+s2protocol.NET.S2Protocol.S2ProtocolVersion.GameEventIdTypeId.get -> int?
+s2protocol.NET.S2Protocol.S2ProtocolVersion.GameEventIdTypeId.set -> void
+s2protocol.NET.S2Protocol.S2ProtocolVersion.MessageEventIdTypeId.get -> int?
+s2protocol.NET.S2Protocol.S2ProtocolVersion.MessageEventIdTypeId.set -> void
+s2protocol.NET.S2Protocol.S2ProtocolVersion.ReplayHeaderTypeId.get -> int?
+s2protocol.NET.S2Protocol.S2ProtocolVersion.ReplayHeaderTypeId.set -> void
+s2protocol.NET.S2Protocol.S2ProtocolVersion.ReplayInitDataTypeId.get -> int?
+s2protocol.NET.S2Protocol.S2ProtocolVersion.ReplayInitDataTypeId.set -> void
+s2protocol.NET.S2Protocol.S2ProtocolVersion.ReplayUserIdTypeId.get -> int?
+s2protocol.NET.S2Protocol.S2ProtocolVersion.ReplayUserIdTypeId.set -> void
+s2protocol.NET.S2Protocol.S2ProtocolVersion.S2ProtocolVersion() -> void
+s2protocol.NET.S2Protocol.S2ProtocolVersion.SVarUint32TypeId.get -> int?
+s2protocol.NET.S2Protocol.S2ProtocolVersion.SVarUint32TypeId.set -> void
+s2protocol.NET.S2Protocol.S2ProtocolVersion.TrackerEventIdTypeId.get -> int?
+s2protocol.NET.S2Protocol.S2ProtocolVersion.TrackerEventIdTypeId.set -> void
+s2protocol.NET.S2Protocol.S2ProtocolVersion.Version.get -> int
+s2protocol.NET.S2Protocol.S2ProtocolVersion.Version.set -> void
+s2protocol.NET.S2Protocol.TypeInfoLoader
+s2protocol.NET.Sc2Replay
+s2protocol.NET.Sc2Replay.AttributeEvents.get -> s2protocol.NET.Models.AttributeEvents?
+s2protocol.NET.Sc2Replay.ChatMessages.get -> System.Collections.Generic.ICollection<s2protocol.NET.Models.ChatMessageEvent!>?
+s2protocol.NET.Sc2Replay.Details.get -> s2protocol.NET.Models.Details?
+s2protocol.NET.Sc2Replay.FileName.get -> string!
+s2protocol.NET.Sc2Replay.FileName.init -> void
+s2protocol.NET.Sc2Replay.GameEvents.get -> s2protocol.NET.Models.GameEvents?
+s2protocol.NET.Sc2Replay.Header.get -> s2protocol.NET.Models.Header!
+s2protocol.NET.Sc2Replay.Header.init -> void
+s2protocol.NET.Sc2Replay.Initdata.get -> s2protocol.NET.Models.Initdata?
+s2protocol.NET.Sc2Replay.MessageEvents.get -> s2protocol.NET.Models.MessageEvents?
+s2protocol.NET.Sc2Replay.Metadata.get -> s2protocol.NET.Models.ReplayMetadata?
+s2protocol.NET.Sc2Replay.PingMessages.get -> System.Collections.Generic.ICollection<s2protocol.NET.Models.PingMessageEvent!>?
+s2protocol.NET.Sc2Replay.Sc2Replay() -> void
+s2protocol.NET.Sc2Replay.Sc2Replay(object! header, string! fileName) -> void
+s2protocol.NET.Sc2Replay.Sc2Replay(s2protocol.NET.Sc2Replay! original) -> void
+s2protocol.NET.Sc2Replay.TrackerEvents.get -> s2protocol.NET.Models.TrackerEvents?
+static s2protocol.NET.Models.GameCheatEventData.operator !=(s2protocol.NET.Models.GameCheatEventData left, s2protocol.NET.Models.GameCheatEventData right) -> bool
+static s2protocol.NET.Models.GameCheatEventData.operator ==(s2protocol.NET.Models.GameCheatEventData left, s2protocol.NET.Models.GameCheatEventData right) -> bool
+static s2protocol.NET.Models.GameEventAbility.operator !=(s2protocol.NET.Models.GameEventAbility left, s2protocol.NET.Models.GameEventAbility right) -> bool
+static s2protocol.NET.Models.GameEventAbility.operator ==(s2protocol.NET.Models.GameEventAbility left, s2protocol.NET.Models.GameEventAbility right) -> bool
+static s2protocol.NET.Models.GameEventPoint2D.operator !=(s2protocol.NET.Models.GameEventPoint2D left, s2protocol.NET.Models.GameEventPoint2D right) -> bool
+static s2protocol.NET.Models.GameEventPoint2D.operator ==(s2protocol.NET.Models.GameEventPoint2D left, s2protocol.NET.Models.GameEventPoint2D right) -> bool
+static s2protocol.NET.Models.GameEventPoint3D.operator !=(s2protocol.NET.Models.GameEventPoint3D left, s2protocol.NET.Models.GameEventPoint3D right) -> bool
+static s2protocol.NET.Models.GameEventPoint3D.operator ==(s2protocol.NET.Models.GameEventPoint3D left, s2protocol.NET.Models.GameEventPoint3D right) -> bool
+static s2protocol.NET.Models.HijackReplayUserInfo.operator !=(s2protocol.NET.Models.HijackReplayUserInfo? left, s2protocol.NET.Models.HijackReplayUserInfo? right) -> bool
+static s2protocol.NET.Models.HijackReplayUserInfo.operator ==(s2protocol.NET.Models.HijackReplayUserInfo? left, s2protocol.NET.Models.HijackReplayUserInfo? right) -> bool
+static s2protocol.NET.Models.SelectionDeltaEventDelta.operator !=(s2protocol.NET.Models.SelectionDeltaEventDelta? left, s2protocol.NET.Models.SelectionDeltaEventDelta? right) -> bool
+static s2protocol.NET.Models.SelectionDeltaEventDelta.operator ==(s2protocol.NET.Models.SelectionDeltaEventDelta? left, s2protocol.NET.Models.SelectionDeltaEventDelta? right) -> bool
+static s2protocol.NET.Models.SelectionDeltaEventDeltaSubGroup.operator !=(s2protocol.NET.Models.SelectionDeltaEventDeltaSubGroup? left, s2protocol.NET.Models.SelectionDeltaEventDeltaSubGroup? right) -> bool
+static s2protocol.NET.Models.SelectionDeltaEventDeltaSubGroup.operator ==(s2protocol.NET.Models.SelectionDeltaEventDeltaSubGroup? left, s2protocol.NET.Models.SelectionDeltaEventDeltaSubGroup? right) -> bool
+static s2protocol.NET.Models.SelectionSyncCheckEventData.operator !=(s2protocol.NET.Models.SelectionSyncCheckEventData left, s2protocol.NET.Models.SelectionSyncCheckEventData right) -> bool
+static s2protocol.NET.Models.SelectionSyncCheckEventData.operator ==(s2protocol.NET.Models.SelectionSyncCheckEventData left, s2protocol.NET.Models.SelectionSyncCheckEventData right) -> bool
+static s2protocol.NET.ReplayDecoderOptions.operator !=(s2protocol.NET.ReplayDecoderOptions? left, s2protocol.NET.ReplayDecoderOptions? right) -> bool
+static s2protocol.NET.ReplayDecoderOptions.operator ==(s2protocol.NET.ReplayDecoderOptions? left, s2protocol.NET.ReplayDecoderOptions? right) -> bool
+static s2protocol.NET.S2Protocol.S2ProtocolVersion.DecodeReplayAttributeEvents(System.ReadOnlyMemory<byte> content) -> s2protocol.NET.Models.AttributeEvents!
+static s2protocol.NET.S2Protocol.S2ProtocolVersion.DecodeReplayAttributeEventsRaw(byte[]! content) -> System.Collections.Generic.Dictionary<string!, object!>!
+static s2protocol.NET.S2Protocol.S2ProtocolVersion.DecodeReplayAttributeEventsRaw(System.ReadOnlyMemory<byte> content) -> System.Collections.Generic.Dictionary<string!, object!>!
+static s2protocol.NET.S2Protocol.S2ProtocolVersion.operator !=(s2protocol.NET.S2Protocol.S2ProtocolVersion? left, s2protocol.NET.S2Protocol.S2ProtocolVersion? right) -> bool
+static s2protocol.NET.S2Protocol.S2ProtocolVersion.operator ==(s2protocol.NET.S2Protocol.S2ProtocolVersion? left, s2protocol.NET.S2Protocol.S2ProtocolVersion? right) -> bool
+static s2protocol.NET.S2Protocol.S2ProtocolVersion.UnitTag(int unitTagIndex, int unitTagRecycle) -> int
+static s2protocol.NET.S2Protocol.S2ProtocolVersion.UnitTagIndex(int unitTag) -> int
+static s2protocol.NET.S2Protocol.S2ProtocolVersion.UnitTagRecycle(int unitTag) -> int
+static s2protocol.NET.S2Protocol.TypeInfoLoader.GetLatestVersion() -> s2protocol.NET.S2Protocol.S2ProtocolVersion!
+static s2protocol.NET.S2Protocol.TypeInfoLoader.LoadTypeInfos(int protocolVersion) -> s2protocol.NET.S2Protocol.S2ProtocolVersion!
+static s2protocol.NET.Sc2Replay.operator !=(s2protocol.NET.Sc2Replay? left, s2protocol.NET.Sc2Replay? right) -> bool
+static s2protocol.NET.Sc2Replay.operator ==(s2protocol.NET.Sc2Replay? left, s2protocol.NET.Sc2Replay? right) -> bool
+virtual s2protocol.NET.Models.SelectionDeltaEventDelta.<Clone>$() -> s2protocol.NET.Models.SelectionDeltaEventDelta!
+virtual s2protocol.NET.Models.SelectionDeltaEventDelta.EqualityContract.get -> System.Type!
+virtual s2protocol.NET.Models.SelectionDeltaEventDelta.Equals(s2protocol.NET.Models.SelectionDeltaEventDelta? other) -> bool
+virtual s2protocol.NET.Models.SelectionDeltaEventDelta.PrintMembers(System.Text.StringBuilder! builder) -> bool
+virtual s2protocol.NET.Models.SelectionDeltaEventDeltaSubGroup.<Clone>$() -> s2protocol.NET.Models.SelectionDeltaEventDeltaSubGroup!
+virtual s2protocol.NET.Models.SelectionDeltaEventDeltaSubGroup.EqualityContract.get -> System.Type!
+virtual s2protocol.NET.Models.SelectionDeltaEventDeltaSubGroup.Equals(s2protocol.NET.Models.SelectionDeltaEventDeltaSubGroup? other) -> bool
+virtual s2protocol.NET.Models.SelectionDeltaEventDeltaSubGroup.PrintMembers(System.Text.StringBuilder! builder) -> bool
+virtual s2protocol.NET.ReplayDecoderOptions.<Clone>$() -> s2protocol.NET.ReplayDecoderOptions!
+virtual s2protocol.NET.ReplayDecoderOptions.EqualityContract.get -> System.Type!
+virtual s2protocol.NET.ReplayDecoderOptions.Equals(s2protocol.NET.ReplayDecoderOptions? other) -> bool
+virtual s2protocol.NET.ReplayDecoderOptions.PrintMembers(System.Text.StringBuilder! builder) -> bool
+virtual s2protocol.NET.Sc2Replay.<Clone>$() -> s2protocol.NET.Sc2Replay!
+virtual s2protocol.NET.Sc2Replay.EqualityContract.get -> System.Type!
+virtual s2protocol.NET.Sc2Replay.Equals(s2protocol.NET.Sc2Replay? other) -> bool
+virtual s2protocol.NET.Sc2Replay.PrintMembers(System.Text.StringBuilder! builder) -> bool
+~override s2protocol.NET.Models.GameCheatEventData.Equals(object obj) -> bool
+~override s2protocol.NET.Models.GameCheatEventData.ToString() -> string
+~override s2protocol.NET.Models.GameEventAbility.Equals(object obj) -> bool
+~override s2protocol.NET.Models.GameEventAbility.ToString() -> string
+~override s2protocol.NET.Models.GameEventPoint2D.Equals(object obj) -> bool
+~override s2protocol.NET.Models.GameEventPoint2D.ToString() -> string
+~override s2protocol.NET.Models.GameEventPoint3D.Equals(object obj) -> bool
+~override s2protocol.NET.Models.GameEventPoint3D.ToString() -> string
+~override s2protocol.NET.Models.SelectionSyncCheckEventData.Equals(object obj) -> bool
+~override s2protocol.NET.Models.SelectionSyncCheckEventData.ToString() -> string

@@ -22,7 +22,37 @@ public sealed class SUserOptionsEvent : GameEvent
                              bool developmentCheatsEnabled,
                              bool platformMac,
                              int baseBuildNum,
-                             bool syncChecksummingEnabled) : base(userId, eventId, GameEventType.SUserOptionsEvent, bits, gameloop)
+                             bool syncChecksummingEnabled)
+        : this(userId, eventId, bits, gameloop, testCheatsEnabled, multiplayerCheatsEnabled,
+            gameFullyDownloaded, hotkeyProfile, useGalaxyAsserts, debugPauseEnabled, cameraFollow,
+            isMapToMapTransition, buildNum, versionFlags, developmentCheatsEnabled, platformMac,
+            baseBuildNum, syncChecksummingEnabled, false, false)
+    {
+    }
+
+    /// <summary>Creates user options including fields found only in historical protocol variants.</summary>
+    [System.Text.Json.Serialization.JsonConstructor]
+    public SUserOptionsEvent(
+        int userId,
+        int eventId,
+        int bits,
+        int gameloop,
+        bool testCheatsEnabled,
+        bool multiplayerCheatsEnabled,
+        bool gameFullyDownloaded,
+        string hotkeyProfile,
+        bool useGalaxyAsserts,
+        bool debugPauseEnabled,
+        bool cameraFollow,
+        bool isMapToMapTransition,
+        int buildNum,
+        int versionFlags,
+        bool developmentCheatsEnabled,
+        bool platformMac,
+        int baseBuildNum,
+        bool syncChecksummingEnabled,
+        bool startingRally,
+        bool useAIBeacons) : base(userId, eventId, GameEventType.SUserOptionsEvent, bits, gameloop)
     {
         TestCheatsEnabled = testCheatsEnabled;
         MultiplayerCheatsEnabled = multiplayerCheatsEnabled;
@@ -38,6 +68,8 @@ public sealed class SUserOptionsEvent : GameEvent
         PlatformMac = platformMac;
         BaseBuildNum = baseBuildNum;
         SyncChecksummingEnabled = syncChecksummingEnabled;
+        StartingRally = startingRally;
+        UseAIBeacons = useAIBeacons;
     }
 
 
@@ -84,5 +116,11 @@ public sealed class SUserOptionsEvent : GameEvent
     /// <summary>Event SyncChecksummingEnabled</summary>
     ///
     public bool SyncChecksummingEnabled { get; }
+
+    /// <summary>Whether the historical starting-rally option was enabled.</summary>
+    public bool StartingRally { get; }
+
+    /// <summary>Whether the historical AI-beacon option was enabled.</summary>
+    public bool UseAIBeacons { get; }
 
 }

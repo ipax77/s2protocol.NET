@@ -1,12 +1,13 @@
 
 using s2protocol.NET.Models;
+using s2protocol.NET.Parser;
 using System.Text.Json.Serialization;
 
 namespace s2protocol.NET;
 
 /// <summary>Record <c>Sc2Replay</c> Starcaft2 replay model</summary>
 ///
-public record Sc2Replay
+public record Sc2Replay : IJsonOnDeserialized
 {
     /// <summary>Record <c>Sc2Replay</c> constructor</summary>
     ///
@@ -22,7 +23,6 @@ public record Sc2Replay
         Header = header;
     }
 
-    [JsonConstructor]
 #pragma warning disable CS1591 // Missing XML comment for publicly visible type or member
 #pragma warning disable CS8618 // Non-nullable field must contain a non-null value when exiting constructor. Consider declaring as nullable.
     public Sc2Replay()
@@ -30,6 +30,32 @@ public record Sc2Replay
 #pragma warning restore CS1591 // Missing XML comment for publicly visible type or member
     {
 
+    }
+
+    /// <summary>Creates a complete replay graph for JSON deserialization.</summary>
+    [JsonConstructor]
+    public Sc2Replay(
+        string fileName,
+        Header header,
+        Initdata? initdata,
+        Details? details,
+        ReplayMetadata? metadata,
+        MessageEvents? messageEvents,
+        TrackerEvents? trackerEvents,
+        GameEvents? gameEvents,
+        AttributeEvents? attributeEvents)
+    {
+        ArgumentNullException.ThrowIfNull(fileName);
+        ArgumentNullException.ThrowIfNull(header);
+        FileName = fileName;
+        Header = header;
+        Initdata = initdata;
+        Details = details;
+        Metadata = metadata;
+        MessageEvents = messageEvents;
+        TrackerEvents = trackerEvents;
+        GameEvents = gameEvents;
+        AttributeEvents = attributeEvents;
     }
     /// <summary>Replay FileName</summary>
     ///
@@ -50,14 +76,18 @@ public record Sc2Replay
     ///
     [JsonInclude]
     public ReplayMetadata? Metadata { get; internal set; }
+    /// <summary>Replay message events in stream order.</summary>
+    ///
+    [JsonInclude]
+    public MessageEvents? MessageEvents { get; internal set; }
     /// <summary>Replay chat messages</summary>
     ///
-    [JsonInclude]
-    public ICollection<ChatMessageEvent>? ChatMessages { get; internal set; }
+    [JsonIgnore]
+    public ICollection<ChatMessageEvent>? ChatMessages => MessageEvents?.ChatMessages;
     /// <summary>Replay ping messages</summary>
     ///
-    [JsonInclude]
-    public ICollection<PingMessageEvent>? PingMessages { get; internal set; }
+    [JsonIgnore]
+    public ICollection<PingMessageEvent>? PingMessages => MessageEvents?.PingMessages;
     /// <summary>Replay TrackerEvents</summary>
     ///
     [JsonInclude]
@@ -70,4 +100,15 @@ public record Sc2Replay
     ///
     [JsonInclude]
     public AttributeEvents? AttributeEvents { get; internal set; }
+
+    void IJsonOnDeserialized.OnDeserialized()
+    {
+        if (TrackerEvents is null)
+        {
+            return;
+        }
+
+        ReplayDecoder.SetTrackerEventUnitIndexes(TrackerEvents);
+        Parse.SetTrackerEventsUnitConnections(TrackerEvents);
+    }
 }

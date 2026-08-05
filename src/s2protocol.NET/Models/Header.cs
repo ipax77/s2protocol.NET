@@ -5,12 +5,12 @@
 /// <remarks>Record <c>Header</c> constructor</remarks>
 ///
 public sealed class Header(
-    int protocol,
+    int dataBuildNum,
     int elapsedGameLoops,
     bool useScaledTime,
     Version version,
     string signature,
-    string rootKey,
+    string ngpdRootKey,
     string compatibilityHash,
     int type,
     int flags,
@@ -19,10 +19,10 @@ public sealed class Header(
 {
     /// <summary>Replay DataBuildNum</summary>
     ///
-    public int DataBuildNum { get; init; } = protocol;
+    public int DataBuildNum { get; init; } = dataBuildNum;
     /// <summary>Replay NgpdRootKey</summary>
     ///
-    public string NgpdRootKey { get; init; } = rootKey;
+    public string NgpdRootKey { get; init; } = ngpdRootKey;
     /// <summary>Replay ElapsedGameLoops</summary>
     ///
     public int ElapsedGameLoops { get; init; } = elapsedGameLoops;

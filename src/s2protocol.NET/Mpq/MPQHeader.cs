@@ -13,9 +13,9 @@ internal struct MPQHeader
     public uint BlockTableEntries;      // 4 bytes
 
     // Extended header fields (only present if FormatVersion == 1)
-    public uint ExtendedBlockTableOffset;
-    public uint HashTableOffsetHigh;
-    public uint BlockTableOffsetHigh;
+    public ulong ExtendedBlockTableOffset;
+    public ushort HashTableOffsetHigh;
+    public ushort BlockTableOffsetHigh;
 
     // Additional: user data header offset (e.g. 1024)
     public uint Offset;

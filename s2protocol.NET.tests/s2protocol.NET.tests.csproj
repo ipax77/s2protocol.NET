@@ -35,6 +35,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\src\s2protocol.NET\s2protocol.NET.csproj" />
+    <ProjectReference Include="..\src\s2cli\s2cli.csproj" />
   </ItemGroup>
 
   <ItemGroup>
@@ -68,6 +69,12 @@
     <None Update="replays\test9.SC2Replay">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>       
+    <None Update="replays\test10.SC2Replay">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Update="replays\test11.SC2Replay">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
     <None Update="replays\testError.SC2Replay">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>    

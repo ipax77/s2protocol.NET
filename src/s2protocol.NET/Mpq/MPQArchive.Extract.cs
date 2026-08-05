@@ -53,10 +53,10 @@ public sealed partial class MPQArchive
         var fileNames = text.Split(separatorArray0, StringSplitOptions.RemoveEmptyEntries);
         foreach (var file in fileNames)
         {
+            string fullPath = GetSafeExtractionPath(outputDir, file);
             ReadOnlyMemory<byte>? data = ReadFile(file);
             if (!data.HasValue) continue;
 
-            string fullPath = Path.Combine(outputDir, file.Replace('/', Path.DirectorySeparatorChar));
             Directory.CreateDirectory(Path.GetDirectoryName(fullPath)!);
             File.WriteAllBytes(fullPath, data.Value.Span);
         }
@@ -69,15 +69,16 @@ public sealed partial class MPQArchive
     /// directory,  preserving the directory structure indicated by the file paths. If a file cannot be read, it is
     /// skipped.</remarks>
     /// <param name="filenames">An array of file names to extract. Each file name should be a valid relative path.</param>
-    public void ExtractFilesToDisc(params string[] filenames)
+    public void ExtractFilesToDisk(params string[] filenames)
     {
         ArgumentNullException.ThrowIfNull(filenames);
+        string outputDirectory = Directory.GetCurrentDirectory();
         foreach (var file in filenames)
         {
+            string outputPath = GetSafeExtractionPath(outputDirectory, file);
             ReadOnlyMemory<byte>? data = ReadFile(file);
             if (!data.HasValue) continue;
 
-            string outputPath = Path.Combine(Directory.GetCurrentDirectory(), file.Replace('/', Path.DirectorySeparatorChar));
             Directory.CreateDirectory(Path.GetDirectoryName(outputPath)!);
             File.WriteAllBytes(outputPath, data.Value.Span);
         }
@@ -114,6 +115,35 @@ public sealed partial class MPQArchive
             result[file] = data?.ToArray() ?? Array.Empty<byte>();
         }
         return result;
+    }
+
+    private static string GetSafeExtractionPath(string outputDirectory, string archivePath)
+    {
+        ArgumentException.ThrowIfNullOrWhiteSpace(archivePath);
+
+        string normalizedPath = archivePath
+            .Replace('\\', Path.DirectorySeparatorChar)
+            .Replace('/', Path.DirectorySeparatorChar);
+        if (Path.IsPathRooted(normalizedPath))
+        {
+            throw new InvalidDataException($"Archive entry '{archivePath}' uses a rooted path.");
+        }
+
+        string[] segments = normalizedPath.Split(Path.DirectorySeparatorChar);
+        if (segments.Any(segment => segment == ".."))
+        {
+            throw new InvalidDataException($"Archive entry '{archivePath}' contains a traversal segment.");
+        }
+
+        string root = Path.GetFullPath(outputDirectory);
+        string fullPath = Path.GetFullPath(Path.Combine(root, normalizedPath));
+        string rootPrefix = Path.EndsInDirectorySeparator(root) ? root : root + Path.DirectorySeparatorChar;
+        if (!fullPath.StartsWith(rootPrefix, StringComparison.OrdinalIgnoreCase))
+        {
+            throw new InvalidDataException($"Archive entry '{archivePath}' escapes the output directory.");
+        }
+
+        return fullPath;
     }
 
     /// <summary>

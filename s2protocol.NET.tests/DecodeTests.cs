@@ -26,7 +26,7 @@ public class DecodeTests
         {
             return;
         }
-        using ReplayDecoder decoder = new();
+        ReplayDecoder decoder = new();
         ReplayDecoderOptions options = new ReplayDecoderOptions()
         {
             Initdata = false,
@@ -41,11 +41,9 @@ public class DecodeTests
         Assert.True(replay != null, "Sc2Replay was null");
         if (replay == null)
         {
-            decoder.Dispose();
             return;
         }
         Assert.True(replay.Header.BaseBuild > 0, "Could not get replay.Header BaseBuild");
-        decoder.Dispose();
     }
 
     [Theory]
@@ -63,7 +61,7 @@ public class DecodeTests
         {
             return;
         }
-        using ReplayDecoder decoder = new();
+        ReplayDecoder decoder = new();
         ReplayDecoderOptions options = new ReplayDecoderOptions()
         {
             Initdata = false,
@@ -78,18 +76,14 @@ public class DecodeTests
         Assert.True(replay != null, "Sc2Replay was null");
         if (replay == null)
         {
-            decoder.Dispose();
             return;
         }
         Assert.True(replay.Details != null, "Could not get replay.Details");
         if (replay.Details == null)
         {
-            decoder.Dispose();
             return;
         }
         Assert.True(replay.Details.DateTimeUTC != DateTime.MinValue, "Could not get replay.Details DateTimeUTC");
-
-        decoder.Dispose();
     }
 
     [Theory]
@@ -107,7 +101,7 @@ public class DecodeTests
         {
             return;
         }
-        using ReplayDecoder decoder = new();
+        ReplayDecoder decoder = new();
         ReplayDecoderOptions options = new ReplayDecoderOptions()
         {
             Initdata = false,
@@ -122,18 +116,14 @@ public class DecodeTests
         Assert.True(replay != null, "Sc2Replay was null");
         if (replay == null)
         {
-            decoder.Dispose();
             return;
         }
         Assert.True(replay.Metadata != null, "Could not get replay.Metadata");
         if (replay.Metadata == null)
         {
-            decoder.Dispose();
             return;
         }
         Assert.True(replay.Metadata.BaseBuild.Length > 0, "Could not get replay.Metadata BaseBuild");
-
-        decoder.Dispose();
     }
 
     [Theory]
@@ -145,7 +135,7 @@ public class DecodeTests
         {
             return;
         }
-        using ReplayDecoder decoder = new();
+        ReplayDecoder decoder = new();
         ReplayDecoderOptions options = new ReplayDecoderOptions()
         {
             Initdata = false,
@@ -160,18 +150,14 @@ public class DecodeTests
         Assert.True(replay != null, "Sc2Replay was null");
         if (replay == null)
         {
-            decoder.Dispose();
             return;
         }
         Assert.True(replay.ChatMessages != null, "Could not get replay.ChatMessages");
         if (replay.ChatMessages == null)
         {
-            decoder.Dispose();
             return;
         }
         Assert.True(replay.ChatMessages.Count > 0, "Could not get replay.ChatMessages");
-
-        decoder.Dispose();
     }
 
     [Theory]
@@ -190,7 +176,7 @@ public class DecodeTests
         {
             return;
         }
-        using ReplayDecoder decoder = new();
+        ReplayDecoder decoder = new();
         ReplayDecoderOptions options = new ReplayDecoderOptions()
         {
             Initdata = false,
@@ -205,13 +191,11 @@ public class DecodeTests
         Assert.True(replay != null, "Sc2Replay was null");
         if (replay == null)
         {
-            decoder.Dispose();
             return;
         }
         Assert.True(replay.TrackerEvents != null, "Could not get replay.TrackerEvents");
         if (replay.TrackerEvents == null)
         {
-            decoder.Dispose();
             return;
         }
         Assert.True(replay.TrackerEvents.SUnitBornEvents.Count > 0, "Could not get replay.TrackerEvents SUnitBornEvents");
@@ -229,8 +213,6 @@ public class DecodeTests
         var positionsEvent = replay.TrackerEvents.SUnitPositionsEvents.First();
         Assert.True(positionsEvent.FirstUnitIndex >= 0);
         Assert.NotEmpty(positionsEvent.UnitPositions);
-
-        decoder.Dispose();
     }
 
     [Theory]
@@ -249,7 +231,7 @@ public class DecodeTests
         {
             return;
         }
-        using ReplayDecoder decoder = new();
+        ReplayDecoder decoder = new();
         ReplayDecoderOptions options = new ReplayDecoderOptions()
         {
             Initdata = true,
@@ -264,16 +246,13 @@ public class DecodeTests
         Assert.True(replay != null, "Sc2Replay was null");
         if (replay == null)
         {
-            decoder.Dispose();
             return;
         }
         Assert.True(replay.Initdata != null, "Could not get replay.TrackerEvents");
         if (replay.Initdata == null)
         {
-            decoder.Dispose();
             return;
         }
-        decoder.Dispose();
     }
 
     [Theory]
@@ -292,7 +271,7 @@ public class DecodeTests
         {
             return;
         }
-        using ReplayDecoder decoder = new();
+        ReplayDecoder decoder = new();
         ReplayDecoderOptions options = new ReplayDecoderOptions()
         {
             Initdata = false,
@@ -307,16 +286,13 @@ public class DecodeTests
         Assert.True(replay != null, "Sc2Replay was null");
         if (replay == null)
         {
-            decoder.Dispose();
             return;
         }
         Assert.True(replay.GameEvents != null, "Could not get replay.GameEvents");
         if (replay.GameEvents == null)
         {
-            decoder.Dispose();
             return;
         }
-        decoder.Dispose();
     }
 
     [Theory]
@@ -335,7 +311,7 @@ public class DecodeTests
         {
             return;
         }
-        using ReplayDecoder decoder = new();
+        ReplayDecoder decoder = new();
         ReplayDecoderOptions options = new ReplayDecoderOptions()
         {
             Initdata = false,
@@ -350,15 +326,18 @@ public class DecodeTests
         Assert.True(replay != null, "Sc2Replay was null");
         if (replay == null)
         {
-            decoder.Dispose();
             return;
         }
-        Assert.True(replay.AttributeEvents != null, "Could not get replay.AttributeEvents");
-        if (replay.AttributeEvents == null)
+        var attributes = Assert.IsType<Models.AttributeEvents>(replay.AttributeEvents);
+        Assert.True(attributes.Source >= 0);
+        Assert.True(attributes.MapNamespace >= 0);
+        Assert.NotEmpty(attributes.Attributes);
+        Assert.All(attributes.Attributes, attribute =>
         {
-            decoder.Dispose();
-            return;
-        }
-        decoder.Dispose();
+            Assert.InRange(attribute.Scope, byte.MinValue, byte.MaxValue);
+            Assert.True(attribute.Namespace >= 0);
+            Assert.True(attribute.AttributeId >= 0);
+            Assert.NotNull(attribute.Value);
+        });
     }
 }

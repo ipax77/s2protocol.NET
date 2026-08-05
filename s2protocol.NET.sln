@@ -13,6 +13,8 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "s2protocol.NET.Benchmarks",
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "s2protocol.NET.sample", "s2protocol.NET.sample\s2protocol.NET.sample.csproj", "{17383090-C2D4-40D4-9EF3-112F1B103A49}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "s2cli", "src\s2cli\s2cli.csproj", "{C74CCB38-BB5D-46C0-8762-0DA1D2FD0C47}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -35,6 +37,10 @@ Global
 		{17383090-C2D4-40D4-9EF3-112F1B103A49}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{17383090-C2D4-40D4-9EF3-112F1B103A49}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{17383090-C2D4-40D4-9EF3-112F1B103A49}.Release|Any CPU.Build.0 = Release|Any CPU
+		{C74CCB38-BB5D-46C0-8762-0DA1D2FD0C47}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{C74CCB38-BB5D-46C0-8762-0DA1D2FD0C47}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{C74CCB38-BB5D-46C0-8762-0DA1D2FD0C47}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{C74CCB38-BB5D-46C0-8762-0DA1D2FD0C47}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -42,6 +48,7 @@ Global
 	GlobalSection(NestedProjects) = preSolution
 		{F5519D5E-1BC5-4097-B6A9-7611A6BABF79} = {B63F12FB-3E0B-4669-B949-77590A6EBD08}
 		{38645489-098A-4099-A61C-F59F003569CE} = {B63F12FB-3E0B-4669-B949-77590A6EBD08}
+		{C74CCB38-BB5D-46C0-8762-0DA1D2FD0C47} = {B63F12FB-3E0B-4669-B949-77590A6EBD08}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {45D33E80-0A34-427D-ADA3-94B4F0C46E93}

@@ -1,0 +1,62 @@
+{
+  "elapsedRegressionBudgetPercent": 20,
+  "allocatedBytesRegressionBudgetPercent": 2,
+  "scenarios": [
+    {
+      "name": "full",
+      "report": "s2protocol.NET.Benchmarks.SingleReplayDecodeBenchmarks-report.csv",
+      "method": "DecodeSingleReplay",
+      "parameters": { "DecodeMode": "Full", "DecodeSource": "FilePath" },
+      "baselineMeanNanoseconds": 25019205,
+      "baselineAllocatedBytes": 35598899
+    },
+    {
+      "name": "tracker-only",
+      "report": "s2protocol.NET.Benchmarks.SingleReplayDecodeBenchmarks-report.csv",
+      "method": "DecodeSingleReplay",
+      "parameters": { "DecodeMode": "TrackerEventsOnly", "DecodeSource": "FilePath" },
+      "baselineMeanNanoseconds": 16291150,
+      "baselineAllocatedBytes": 7028306
+    },
+    {
+      "name": "message-only",
+      "report": "s2protocol.NET.Benchmarks.SingleReplayDecodeBenchmarks-report.csv",
+      "method": "DecodeSingleReplay",
+      "parameters": { "DecodeMode": "MessageEventsOnly", "DecodeSource": "FilePath" },
+      "baselineMeanNanoseconds": 624289,
+      "baselineAllocatedBytes": 4578662
+    },
+    {
+      "name": "attribute-only",
+      "report": "s2protocol.NET.Benchmarks.SingleReplayDecodeBenchmarks-report.csv",
+      "method": "DecodeSingleReplay",
+      "parameters": { "DecodeMode": "AttributeEventsOnly", "DecodeSource": "FilePath" },
+      "baselineMeanNanoseconds": 792512,
+      "baselineAllocatedBytes": 4619653
+    },
+    {
+      "name": "parallel-1",
+      "report": "s2protocol.NET.Benchmarks.ParallelReplayDecodeBenchmarks-report.csv",
+      "method": "DecodeCorpusParallel",
+      "parameters": { "Threads": "1" },
+      "baselineMeanNanoseconds": 67642000,
+      "baselineAllocatedBytes": 101848187
+    },
+    {
+      "name": "parallel-2",
+      "report": "s2protocol.NET.Benchmarks.ParallelReplayDecodeBenchmarks-report.csv",
+      "method": "DecodeCorpusParallel",
+      "parameters": { "Threads": "2" },
+      "baselineMeanNanoseconds": 45852000,
+      "baselineAllocatedBytes": 101837701
+    },
+    {
+      "name": "parallel-4",
+      "report": "s2protocol.NET.Benchmarks.ParallelReplayDecodeBenchmarks-report.csv",
+      "method": "DecodeCorpusParallel",
+      "parameters": { "Threads": "4" },
+      "baselineMeanNanoseconds": 31525000,
+      "baselineAllocatedBytes": 101837701
+    }
+  ]
+}

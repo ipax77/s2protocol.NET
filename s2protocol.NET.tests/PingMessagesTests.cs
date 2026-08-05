@@ -21,7 +21,7 @@ public class PingMessagesTests
         {
             return;
         }
-        using ReplayDecoder decoder = new();
+        ReplayDecoder decoder = new();
         ReplayDecoderOptions options = new ReplayDecoderOptions()
         {
             Initdata = false,
@@ -36,7 +36,6 @@ public class PingMessagesTests
         Assert.True(replay != null, "Sc2Replay was null");
         if (replay == null)
         {
-            decoder.Dispose();
             return;
         }
         Assert.True(replay.PingMessages?.Count > 0);
@@ -47,6 +46,5 @@ public class PingMessagesTests
         }
         Assert.True(replay.PingMessages.All(a => a.Gameloop > 0), "Some gameloops were 0.");
         Assert.True(replay.PingMessages.All(a => a.X > 0 && a.Y > 0), "Some point coords were 0");
-        decoder.Dispose();
     }
 }

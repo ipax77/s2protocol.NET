@@ -3,6 +3,6 @@ using System.Text.Json.Serialization;
 
 namespace s2protocol.NET;
 
+[JsonSourceGenerationOptions(GenerationMode = JsonSourceGenerationMode.Metadata)]
 [JsonSerializable(typeof(ReplayMetadata))]
-[JsonSerializable(typeof(MetadataPlayer))]
-internal sealed partial class S2ProtocolJsonSerializerContext : JsonSerializerContext;
+internal sealed partial class ReplayMetadataJsonSerializerContext : JsonSerializerContext;

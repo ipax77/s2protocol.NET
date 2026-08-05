@@ -1,32 +1,121 @@
-name: .NET
+name: v1 gates
 
 on:
   push:
-    branches: [ main ]
+    branches: [main]
   pull_request:
-    branches: [ main ]
+    branches: [main]
+  workflow_dispatch:
+  workflow_call:
+    inputs:
+      run_performance:
+        type: boolean
+        default: false
+
+permissions:
+  contents: read
 
 jobs:
-  build:
-
+  build-test:
     runs-on: ubuntu-latest
-
     steps:
-    - uses: actions/checkout@v6
-    - name: Setup .NET
-      uses: actions/setup-dotnet@v5
-      with:
-        dotnet-version: '10.0.x'
-    - name: Restore dependencies
-      run: dotnet restore
-    - name: Build
-      run: dotnet build --no-restore
-    - name: Test
-      run: dotnet test --no-build --verbosity normal --logger "trx;LogFileName=test-results.trx" --results-directory "TestResults"
-    - name: Test Report
-      uses: dorny/test-reporter@v2
-      if: success() || failure()
-      with:
-        name: XUnit Tests
-        path: TestResults/test-*.trx
-        reporter: dotnet-trx
+      - uses: actions/checkout@v6
+      - uses: actions/setup-dotnet@v5
+        with:
+          global-json-file: global.json
+      - run: dotnet restore s2protocol.NET.sln
+      - run: dotnet build s2protocol.NET.sln --configuration Release --no-restore
+      - name: Test and collect Cobertura coverage
+        run: >-
+          dotnet test s2protocol.NET.tests/s2protocol.NET.tests.csproj
+          --configuration Release --no-build
+          --collect:"XPlat Code Coverage"
+          --logger "trx;LogFileName=test-results.trx"
+          --results-directory TestResults
+      - name: Enforce coverage floor
+        shell: pwsh
+        run: ./eng/check-coverage.ps1 -ResultsPath TestResults
+      - uses: actions/upload-artifact@v6
+        if: always()
+        with:
+          name: test-results
+          path: TestResults
+
+  package:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v6
+      - uses: actions/setup-dotnet@v5
+        with:
+          global-json-file: global.json
+      - run: dotnet restore s2protocol.NET.sln
+      - run: dotnet build s2protocol.NET.sln --configuration Release --no-restore
+      - run: dotnet pack src/s2protocol.NET/s2protocol.NET.csproj --configuration Release --no-build --output artifacts
+      - run: dotnet pack src/s2cli/s2cli.csproj --configuration Release --no-build --output artifacts
+      - name: Validate version and package contents
+        shell: pwsh
+        run: |
+          ./eng/validate-version.ps1
+          ./eng/validate-packages.ps1
+      - name: Install and smoke-test packaged CLI
+        run: |
+          dotnet tool install s2cli --tool-path .tools --add-source artifacts --version 1.0.0
+          ./.tools/s2cli --versions
+          ./.tools/s2cli --replay s2protocol.NET.tests/replays/test11.SC2Replay --header
+      - uses: actions/upload-artifact@v6
+        with:
+          name: nuget-packages
+          path: |
+            artifacts/*.nupkg
+            artifacts/*.snupkg
+
+  aot:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v6
+      - uses: actions/setup-dotnet@v5
+        with:
+          global-json-file: global.json
+      - run: dotnet restore s2protocol.NET.sample/s2protocol.NET.sample.csproj --runtime linux-x64
+      - name: Publish Linux Native AOT smoke app
+        run: >-
+          dotnet publish s2protocol.NET.sample/s2protocol.NET.sample.csproj
+          --configuration Release --runtime linux-x64 --self-contained
+          /p:PublishAot=true --output artifacts/aot
+      - name: Decode and JSON-round-trip latest replay
+        run: ./artifacts/aot/s2protocol.NET.sample s2protocol.NET.tests/replays/test11.SC2Replay
+
+  security:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v6
+      - uses: actions/setup-dotnet@v5
+        with:
+          global-json-file: global.json
+      - run: dotnet restore s2protocol.NET.sln
+      - name: Audit direct and transitive dependencies
+        shell: pwsh
+        run: ./eng/check-vulnerabilities.ps1
+
+  performance:
+    if: ${{ inputs.run_performance || github.event_name == 'workflow_dispatch' }}
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@v6
+      - uses: actions/setup-dotnet@v5
+        with:
+          global-json-file: global.json
+      - run: dotnet restore src/s2protocol.NET.Benchmarks/s2protocol.NET.Benchmarks.csproj
+      - name: Run full, focused, and parallel benchmarks
+        run: >-
+          dotnet run --project src/s2protocol.NET.Benchmarks/s2protocol.NET.Benchmarks.csproj
+          --configuration Release --no-restore -- --filter "*ReplayDecodeBenchmarks*"
+      - name: Enforce performance budgets
+        shell: pwsh
+        run: ./eng/check-performance.ps1 -SummaryPath $env:GITHUB_STEP_SUMMARY
+      - uses: actions/upload-artifact@v6
+        if: always()
+        with:
+          name: benchmark-reports
+          path: BenchmarkDotNet.Artifacts/results

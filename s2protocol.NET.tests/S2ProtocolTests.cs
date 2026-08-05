@@ -3,6 +3,7 @@ using System;
 using System.Linq;
 using System.Text.Json;
 using System.Text.RegularExpressions;
+using System.Threading.Tasks;
 using Xunit;
 
 namespace s2protocol.NET.tests;
@@ -104,6 +105,24 @@ public class S2ProtocolTests
         Assert.Same(canonical.GameEvents, alias.GameEvents);
         Assert.Same(canonical.MessageEvents, alias.MessageEvents);
         Assert.Same(canonical.TrackerEvents, alias.TrackerEvents);
+    }
+
+    [Fact]
+    public async Task ConcurrentAliasesShareCanonicalDecoderTables()
+    {
+        Task<S2ProtocolVersion>[] loads = Enumerable.Range(0, 64)
+            .Select(index => Task.Run(() => TypeInfoLoader.LoadTypeInfos(index % 2 == 0 ? 80949 : 97563)))
+            .ToArray();
+
+        S2ProtocolVersion[] protocols = await Task.WhenAll(loads);
+        S2ProtocolVersion first = protocols[0];
+        Assert.All(protocols, protocol =>
+        {
+            Assert.Same(first.TypeInfos, protocol.TypeInfos);
+            Assert.Same(first.GameEvents, protocol.GameEvents);
+            Assert.Same(first.MessageEvents, protocol.MessageEvents);
+            Assert.Same(first.TrackerEvents, protocol.TrackerEvents);
+        });
     }
 
     [Fact]

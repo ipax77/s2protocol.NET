@@ -12,7 +12,7 @@ namespace s2protocol.NET;
 /// <remarks>The <see cref="ReplayDecoder"/> class is designed to decode individual Starcraft II replay files with
 /// customizable decoding options. For large replay sets, prefer <see cref="DecodeAsync(string, ReplayDecoderOptions?, CancellationToken)"/>
 /// with caller-owned parallelism so the caller can control buffering, persistence, and memory use.</remarks>
-public sealed partial class ReplayDecoder : IDisposable
+public sealed partial class ReplayDecoder
 {
     /// <summary>Creates the decoder</summary>
     public ReplayDecoder()
@@ -23,172 +23,172 @@ public sealed partial class ReplayDecoder : IDisposable
     /// <param name="stream">The stream of the Starcraft2 replay</param>
     /// <param name="options">Optional decoding options</param>
     /// <param name="token">Optional CancellationToken</param>
-    public async Task<Sc2Replay?> DecodeAsync(Stream stream,
+    /// <remarks>The caller owns <paramref name="stream"/>; this method leaves it open.</remarks>
+    public async Task<Sc2Replay> DecodeAsync(Stream stream,
                                               ReplayDecoderOptions? options = null,
                                               CancellationToken token = default)
     {
-        MPQArchive archive = new(stream, false);
-        var replay = await DecodeAsync(archive, string.Empty, options, token)
-            .ConfigureAwait(false);
-        archive.Dispose();
-        return replay;
+        ArgumentNullException.ThrowIfNull(stream);
+
+        try
+        {
+            using MPQArchive archive = new(stream, false);
+            return await DecodeAsync(archive, string.Empty, options, token)
+                .ConfigureAwait(false);
+        }
+        catch (OperationCanceledException)
+        {
+            throw;
+        }
+        catch (Exception ex)
+        {
+            throw new DecodeException(ex.Message, ex);
+        }
     }
 
     /// <summary>Decode Starcraft2 replay</summary>
     /// <param name="replayPath">The path to the Starcraft2 replay</param>
     /// <param name="options">Optional decoding options</param>
     /// <param name="token">Optional CancellationToken</param>
-    public async Task<Sc2Replay?> DecodeAsync(string replayPath,
+    public async Task<Sc2Replay> DecodeAsync(string replayPath,
                                               ReplayDecoderOptions? options = null,
                                               CancellationToken token = default)
     {
+        ArgumentException.ThrowIfNullOrWhiteSpace(replayPath);
         if (!File.Exists(replayPath))
         {
-            throw new ArgumentNullException(nameof(replayPath), "Replay not found.");
+            throw new FileNotFoundException("Replay file was not found.", replayPath);
         }
-        MPQArchive archive = new(replayPath, false);
-        var replay = await DecodeAsync(archive, replayPath, options, token)
-            .ConfigureAwait(false);
-        archive.Dispose();
-        return replay;
+
+        try
+        {
+            using MPQArchive archive = new(replayPath, false);
+            return await DecodeAsync(archive, replayPath, options, token)
+                .ConfigureAwait(false);
+        }
+        catch (OperationCanceledException)
+        {
+            throw;
+        }
+        catch (Exception ex)
+        {
+            throw new DecodeException(ex.Message, ex);
+        }
     }
 
 #pragma warning disable CA1822 // Mark members as static
-    private async Task<Sc2Replay?> DecodeAsync(MPQArchive MPQArchive,
+    private async Task<Sc2Replay> DecodeAsync(MPQArchive MPQArchive,
                                                string replayPath,
                                                ReplayDecoderOptions? options = null,
                                                CancellationToken token = default)
 #pragma warning restore CA1822 // Mark members as static
     {
+        token.ThrowIfCancellationRequested();
+
         if (options == null)
         {
             options = new ReplayDecoderOptions();
         }
 
-        try
+        var headerContent = MPQArchive.GetUserDataHeaderContent();
+        ArgumentNullException.ThrowIfNull(headerContent);
+
+        var latestVersion = TypeInfoLoader.GetLatestVersion();
+        var header = latestVersion.DecodeReplayHeader(headerContent);
+        var s2protocol = TypeInfoLoader.LoadTypeInfos(header.BaseBuild);
+        ArgumentNullException.ThrowIfNull(s2protocol, nameof(s2protocol));
+
+        Sc2Replay replay = new(header, replayPath);
+
+        if (options.Initdata)
         {
-            var headerContent = MPQArchive.GetUserDataHeaderContent();
-            ArgumentNullException.ThrowIfNull(headerContent);
+            var init = await GetInitDataAsync(MPQArchive, s2protocol, token).ConfigureAwait(false);
+            ArgumentNullException.ThrowIfNull((object?)init, nameof(init));
 
-            var latestVersion = TypeInfoLoader.GetLatestVersion();
-            var header = latestVersion.DecodeReplayHeader(headerContent);
-            var s2protocol = TypeInfoLoader.LoadTypeInfos(header.BaseBuild);
-            ArgumentNullException.ThrowIfNull(s2protocol, nameof(s2protocol));
-
-            Sc2Replay replay = new(header, replayPath);
-
-            if (options.Initdata)
-            {
-                var init = await GetInitDataAsync(MPQArchive, s2protocol, token).ConfigureAwait(false);
-                ArgumentNullException.ThrowIfNull((object?)init, nameof(init));
-
-                replay.Initdata = init;
-            }
-
-            if (options.Details)
-            {
-                var details = await GetDetailsAsync(MPQArchive, s2protocol, token).ConfigureAwait(false);
-                ArgumentNullException.ThrowIfNull((object?)details, nameof(details));
-                replay.Details = details;
-            }
-
-            if (options.Metadata)
-            {
-                var metadata = await GetMetadataAsync(MPQArchive, token).ConfigureAwait(false);
-                ArgumentNullException.ThrowIfNull((object?)metadata, nameof(metadata));
-
-                replay.Metadata = metadata;
-            }
-
-            if (options.MessageEvents)
-            {
-                var messages = await GetMessagesAsync(MPQArchive, s2protocol, token).ConfigureAwait(false);
-                ArgumentNullException.ThrowIfNull((object?)messages, nameof(messages));
-                replay.ChatMessages = messages.ChatMessages;
-                replay.PingMessages = messages.PingMessages;
-            }
-
-            if (options.TrackerEvents)
-            {
-                var trackerEvents = await GetTrackereventsAsync(MPQArchive, s2protocol, token).ConfigureAwait(false);
-                ArgumentNullException.ThrowIfNull((object?)trackerEvents, nameof(trackerEvents));
-
-                replay.TrackerEvents = trackerEvents;
-
-                if (replay.TrackerEvents != null)
-                {
-                    SetTrackerEventUnitIndexes(replay.TrackerEvents);
-                    Parse.SetTrackerEventsUnitConnections(replay.TrackerEvents);
-                }
-            }
-
-            if (options.GameEvents)
-            {
-                var gameEventsRaw = await GetGameEventsAsync(MPQArchive, s2protocol, token).ConfigureAwait(false);
-                ArgumentNullException.ThrowIfNull((object?)gameEventsRaw, nameof(gameEventsRaw));
-                replay.GameEvents = gameEventsRaw;
-            }
-
-            if (options.AttributeEvents)
-            {
-                var attributeEvents = await GetAttributeEventsAsync(MPQArchive, token).ConfigureAwait(false);
-                ArgumentNullException.ThrowIfNull((object?)attributeEvents, nameof(attributeEvents));
-
-                replay.AttributeEvents = attributeEvents;
-            }
-
-
-
-            return replay;
+            replay.Initdata = init;
         }
-        catch (OperationCanceledException) { throw; }
-        catch (Exception ex)
+
+        if (options.Details)
         {
-            throw new DecodeException(ex.Message);
+            var details = await GetDetailsAsync(MPQArchive, s2protocol, token).ConfigureAwait(false);
+            ArgumentNullException.ThrowIfNull((object?)details, nameof(details));
+            replay.Details = details;
         }
+
+        if (options.Metadata)
+        {
+            var metadata = await GetMetadataAsync(MPQArchive, token).ConfigureAwait(false);
+            ArgumentNullException.ThrowIfNull((object?)metadata, nameof(metadata));
+
+            replay.Metadata = metadata;
+        }
+
+        if (options.MessageEvents)
+        {
+            var messages = await GetMessagesAsync(MPQArchive, s2protocol, token).ConfigureAwait(false);
+            ArgumentNullException.ThrowIfNull((object?)messages, nameof(messages));
+            replay.MessageEvents = messages;
+        }
+
+        if (options.TrackerEvents)
+        {
+            var trackerEvents = await GetTrackereventsAsync(MPQArchive, s2protocol, token).ConfigureAwait(false);
+            ArgumentNullException.ThrowIfNull((object?)trackerEvents, nameof(trackerEvents));
+
+            replay.TrackerEvents = trackerEvents;
+
+            if (replay.TrackerEvents != null)
+            {
+                SetTrackerEventUnitIndexes(replay.TrackerEvents);
+                Parse.SetTrackerEventsUnitConnections(replay.TrackerEvents);
+            }
+        }
+
+        if (options.GameEvents)
+        {
+            var gameEventsRaw = await GetGameEventsAsync(MPQArchive, s2protocol, token).ConfigureAwait(false);
+            ArgumentNullException.ThrowIfNull((object?)gameEventsRaw, nameof(gameEventsRaw));
+            replay.GameEvents = gameEventsRaw;
+        }
+
+        if (options.AttributeEvents)
+        {
+            var attributeEvents = await GetAttributeEventsAsync(MPQArchive, token).ConfigureAwait(false);
+            ArgumentNullException.ThrowIfNull((object?)attributeEvents, nameof(attributeEvents));
+
+            replay.AttributeEvents = attributeEvents;
+        }
+
+        return replay;
     }
 
-    private static void SetTrackerEventUnitIndexes(TrackerEvents trackerEvents)
+    internal static void SetTrackerEventUnitIndexes(TrackerEvents trackerEvents)
     {
-        foreach (var e in trackerEvents.SUnitBornEvents)
+        foreach (TrackerEvent trackerEvent in trackerEvents.BaseTrackerEvents)
         {
-            e.UnitIndex = GetUnitIndex(e.UnitTagIndex, e.UnitTagRecycle);
-        }
-
-        foreach (var e in trackerEvents.SUnitInitEvents)
-        {
-            e.UnitIndex = GetUnitIndex(e.UnitTagIndex, e.UnitTagRecycle);
-        }
-
-        foreach (var e in trackerEvents.SUnitDiedEvents)
-        {
-            e.UnitIndex = GetUnitIndex(e.UnitTagIndex, e.UnitTagRecycle);
-        }
-
-        foreach (var e in trackerEvents.SUnitDoneEvents)
-        {
-            e.UnitIndex = GetUnitIndex(e.UnitTagIndex, e.UnitTagRecycle);
-        }
-
-        foreach (var e in trackerEvents.SUnitOwnerChangeEvents)
-        {
-            e.UnitIndex = GetUnitIndex(e.UnitTagIndex, e.UnitTagRecycle);
+            switch (trackerEvent)
+            {
+                case SUnitBornEvent e:
+                    e.UnitIndex = GetUnitIndex(e.UnitTagIndex, e.UnitTagRecycle);
+                    break;
+                case SUnitInitEvent e:
+                    e.UnitIndex = GetUnitIndex(e.UnitTagIndex, e.UnitTagRecycle);
+                    break;
+                case SUnitDiedEvent e:
+                    e.UnitIndex = GetUnitIndex(e.UnitTagIndex, e.UnitTagRecycle);
+                    break;
+                case SUnitDoneEvent e:
+                    e.UnitIndex = GetUnitIndex(e.UnitTagIndex, e.UnitTagRecycle);
+                    break;
+                case SUnitOwnerChangeEvent e:
+                    e.UnitIndex = GetUnitIndex(e.UnitTagIndex, e.UnitTagRecycle);
+                    break;
+            }
         }
     }
 
     private static int GetUnitIndex(int unitTagIndex, int unitTagRecyle)
-    {
-        // todo: can be BitInterger
-        var unitTag = S2ProtocolVersion.UnitTag(unitTagIndex, unitTagRecyle);
-        if (unitTag is int intUnitTag)
-        {
-            return intUnitTag;
-        }
-        else
-        {
-            return 0;
-        }
-    }
+        => S2ProtocolVersion.UnitTag(unitTagIndex, unitTagRecyle);
 
     private static async Task<AttributeEvents?> GetAttributeEventsAsync(MPQArchive archive, CancellationToken token)
     {
@@ -245,7 +245,7 @@ public sealed partial class ReplayDecoder : IDisposable
         var meta_bytes = await archive.ReadFileAsync("replay.gamemetadata.json", false, token).ConfigureAwait(false);
         if (meta_bytes.HasValue)
         {
-            return JsonSerializer.Deserialize(meta_bytes.Value.Span, S2ProtocolJsonSerializerContext.Default.ReplayMetadata);
+            return JsonSerializer.Deserialize(meta_bytes.Value.Span, ReplayMetadataJsonSerializerContext.Default.ReplayMetadata);
         }
         return null;
     }
@@ -260,9 +260,4 @@ public sealed partial class ReplayDecoder : IDisposable
         return null;
     }
 
-    /// <summary>Suppress finalization for compatibility with <see cref="IDisposable"/>.</summary>
-    public void Dispose()
-    {
-        GC.SuppressFinalize(this);
-    }
 }

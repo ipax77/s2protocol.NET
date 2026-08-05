@@ -9,13 +9,13 @@ public sealed class SCmdUpdateTargetPointEvent : GameEvent
         int eventId,
         int bits,
         int gameloop,
-        long x,
-        long y,
-        long z) : base(userId, eventId, GameEventType.SCmdUpdateTargetPointEvent, bits, gameloop)
+        long targetX,
+        long targetY,
+        long targetZ) : base(userId, eventId, GameEventType.SCmdUpdateTargetPointEvent, bits, gameloop)
     {
-        TargetX = x;
-        TargetY = y;
-        TargetZ = z;
+        TargetX = targetX;
+        TargetY = targetY;
+        TargetZ = targetZ;
     }
 
     /// <summary>Event TargetX</summary>

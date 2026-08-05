@@ -214,6 +214,25 @@ internal abstract class TypedProtocolDecoder(ReadOnlyMemory<byte> contents, List
         ReadStructFields(fieldList, ref state);
     }
 
+    public bool ReadNullableStruct<TState>(int typeId, ref TState state)
+        where TState : struct, IStructFieldReader
+    {
+        S2TypeInfo typeInfo = GetTypeInfo(typeId);
+        if (typeInfo.DecodeKind == S2DecodeKind.Optional)
+        {
+            if (!TryReadOptionalTypeId(typeId, out int innerTypeId))
+            {
+                return false;
+            }
+
+            ReadStruct(innerTypeId, ref state);
+            return true;
+        }
+
+        ReadStruct(typeId, ref state);
+        return true;
+    }
+
     public void ReadChoice<THandler>(int typeId, ref THandler handler)
         where THandler : struct, IChoiceHandler
     {
@@ -293,6 +312,8 @@ internal abstract class TypedProtocolDecoder(ReadOnlyMemory<byte> contents, List
     }
 
     protected S2DecodeKind GetKind(int typeId) => GetTypeInfo(typeId).DecodeKind;
+
+    internal bool IsChoice(int typeId) => GetKind(typeId) == S2DecodeKind.Choice;
 
     protected S2TypeInfo GetTypeInfo(int typeId)
     {
@@ -481,8 +502,8 @@ internal sealed class BitPackedTypedDecoder(ReadOnlyMemory<byte> contents, List<
     protected override KeyValuePair<int, BigInteger> ReadBitArrayValue(BoundsParameter bounds)
     {
         long length = ReadIntValue(bounds);
-        long value = Buffer.ReadBits((int)length);
-        return new KeyValuePair<int, BigInteger>((int)length, new BigInteger(value));
+        BigInteger value = Buffer.ReadBigInteger((int)length);
+        return new KeyValuePair<int, BigInteger>((int)length, value);
     }
 
     protected override float ReadReal32Value()
