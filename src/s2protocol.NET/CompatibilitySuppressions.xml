@@ -24,13 +24,6 @@
   </Suppression>
   <Suppression>
     <DiagnosticId>CP0002</DiagnosticId>
-    <Target>M:s2protocol.NET.Models.AttributeEvents.#ctor</Target>
-    <Left>lib/net10.0/s2protocol.NET.dll</Left>
-    <Right>lib/net10.0/s2protocol.NET.dll</Right>
-    <IsBaselineSuppression>true</IsBaselineSuppression>
-  </Suppression>
-  <Suppression>
-    <DiagnosticId>CP0002</DiagnosticId>
     <Target>M:s2protocol.NET.Models.AttributeEvents.get_MapNameSpace</Target>
     <Left>lib/net10.0/s2protocol.NET.dll</Left>
     <Right>lib/net10.0/s2protocol.NET.dll</Right>
@@ -88,6 +81,20 @@
   <Suppression>
     <DiagnosticId>CP0002</DiagnosticId>
     <Target>M:s2protocol.NET.Models.AttributeEventScope.set_SopeId(System.Int32)</Target>
+    <Left>lib/net10.0/s2protocol.NET.dll</Left>
+    <Right>lib/net10.0/s2protocol.NET.dll</Right>
+    <IsBaselineSuppression>true</IsBaselineSuppression>
+  </Suppression>
+  <Suppression>
+    <DiagnosticId>CP0002</DiagnosticId>
+    <Target>M:s2protocol.NET.Models.SPlayerSetupEvent.#ctor(System.Int32,System.Int32,System.Int32,System.Int32,System.Int32,System.Nullable{System.Int32},System.Int32)</Target>
+    <Left>lib/net10.0/s2protocol.NET.dll</Left>
+    <Right>lib/net10.0/s2protocol.NET.dll</Right>
+    <IsBaselineSuppression>true</IsBaselineSuppression>
+  </Suppression>
+  <Suppression>
+    <DiagnosticId>CP0002</DiagnosticId>
+    <Target>M:s2protocol.NET.Models.SPlayerSetupEvent.get_SlotId</Target>
     <Left>lib/net10.0/s2protocol.NET.dll</Left>
     <Right>lib/net10.0/s2protocol.NET.dll</Right>
     <IsBaselineSuppression>true</IsBaselineSuppression>
