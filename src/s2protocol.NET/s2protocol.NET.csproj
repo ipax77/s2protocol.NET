@@ -29,7 +29,7 @@
     <!-- The System.Text.Json source generator emits oblivious metadata signatures; keep API presence enforcement active. -->
     <NoWarn>CS1591;RS0041</NoWarn>
     <EnablePackageValidation>true</EnablePackageValidation>
-    <PackageValidationBaselineVersion>0.9.8</PackageValidationBaselineVersion>
+    <PackageValidationBaselineVersion>0.9.6</PackageValidationBaselineVersion>
     <ApiCompatSuppressionFile>$(MSBuildProjectDirectory)\CompatibilitySuppressions.xml</ApiCompatSuppressionFile>
   </PropertyGroup>
 

@@ -108,5 +108,5 @@ There are currently no database interactions in this repository, so no database-
 - [ ] Release, CLI, package, Native AOT, security, and stress checks pass from a clean checkout.
 - [ ] The latest supported real replay and the historical replay corpus decode successfully.
 - [ ] Public API and JSON contracts are documented and protected by compatibility tests.
-- [ ] Performance is no worse than the accepted v0.9.8 baseline beyond agreed variance.
+- [ ] Performance is no worse than the accepted v0.9.6 baseline beyond agreed variance.
 - [ ] README limitations and examples match the shipped behavior.
