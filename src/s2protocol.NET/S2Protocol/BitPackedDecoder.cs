@@ -79,7 +79,7 @@ internal sealed class BitPackedDecoder : S2ProtocolDecoder
         if (parameters is [BoundsParameter bounds])
         {
             var length = ReadInt(bounds);
-            return (length, _buffer.ReadBits((int)length));
+            return (length, _buffer.ReadBigInteger((int)length));
         }
         throw new ArgumentException("Invalid parameters for _bitarray");
     }

@@ -4,7 +4,7 @@ The decoder is feature-complete for the currently bundled StarCraft II protocol 
 
 ## Release blockers
 
-- [ ] Support bit-packed bit arrays larger than 64 bits without truncation.
+- [x] Support bit-packed bit arrays larger than 64 bits without truncation.
   - `BitPackedBuffer.ReadBits` currently retains at most 64 bits, although typed models expose `BigInteger` values and protocol lengths can exceed 64 bits.
   - Cover zero, 64-bit, greater-than-64-bit, and high-bit-set values with synthetic tests.
   - Remove the `No BigInteger support` limitation from the README after verification.
@@ -109,4 +109,3 @@ There are currently no database interactions in this repository, so no database-
 - [ ] Public API and JSON contracts are documented and protected by compatibility tests.
 - [ ] Performance is no worse than the accepted v0.9.8 baseline beyond agreed variance.
 - [ ] README limitations and examples match the shipped behavior.
-

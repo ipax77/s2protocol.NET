@@ -1,4 +1,5 @@
 using System.Globalization;
+using System.Numerics;
 
 namespace s2protocol.NET.S2Protocol;
 
@@ -94,6 +95,37 @@ internal sealed class BitPackedBuffer
             _next >>= copyBits;
             _nextBits -= copyBits;
             skippedBits += copyBits;
+        }
+
+        return result;
+    }
+
+    public BigInteger ReadBigInteger(int bits)
+    {
+        if (bits < 0)
+            throw new ArgumentOutOfRangeException(nameof(bits), "Cannot read a negative number of bits.");
+
+        if (bits <= 64)
+            return new BigInteger((ulong)ReadBits(bits));
+
+        BigInteger result = BigInteger.Zero;
+        int consumedBits = 0;
+
+        while (consumedBits < bits)
+        {
+            int copyBits = Math.Min(bits - consumedBits, 64);
+            BigInteger copy = new((ulong)ReadBits(copyBits));
+
+            if (_bigEndian)
+            {
+                result = (result << copyBits) | copy;
+            }
+            else
+            {
+                result |= copy << consumedBits;
+            }
+
+            consumedBits += copyBits;
         }
 
         return result;

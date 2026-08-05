@@ -502,8 +502,8 @@ internal sealed class BitPackedTypedDecoder(ReadOnlyMemory<byte> contents, List<
     protected override KeyValuePair<int, BigInteger> ReadBitArrayValue(BoundsParameter bounds)
     {
         long length = ReadIntValue(bounds);
-        long value = Buffer.ReadBits((int)length);
-        return new KeyValuePair<int, BigInteger>((int)length, new BigInteger(value));
+        BigInteger value = Buffer.ReadBigInteger((int)length);
+        return new KeyValuePair<int, BigInteger>((int)length, value);
     }
 
     protected override float ReadReal32Value()

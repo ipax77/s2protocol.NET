@@ -65,7 +65,6 @@ All records in `replay.attributes.events` decode in stream order with the same g
 
 STriggerSoundLengthSyncEvent => no data
 SControlGroupUpdateEvent => no mask
-No BigInteger support
 
 # s2cli
 
