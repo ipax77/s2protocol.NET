@@ -1,0 +1,40 @@
+name: Performance regression
+
+on:
+  workflow_dispatch:
+
+jobs:
+  benchmark:
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+
+    steps:
+    - uses: actions/checkout@v6
+    - name: Setup .NET
+      uses: actions/setup-dotnet@v5
+      with:
+        dotnet-version: '10.0.x'
+    - name: Restore benchmark project
+      run: dotnet restore src/s2protocol.NET.Benchmarks/s2protocol.NET.Benchmarks.csproj
+    - name: Benchmark single-replay scenarios
+      run: >-
+        dotnet run --project src/s2protocol.NET.Benchmarks/s2protocol.NET.Benchmarks.csproj
+        --configuration Release --no-restore --
+        --filter "*SingleReplayDecodeBenchmarks*"
+    - name: Benchmark parallel scenarios
+      run: >-
+        dotnet run --project src/s2protocol.NET.Benchmarks/s2protocol.NET.Benchmarks.csproj
+        --configuration Release --no-restore --
+        --filter "*ParallelReplayDecodeBenchmarks*"
+    - name: Check performance budgets
+      shell: pwsh
+      run: >-
+        ./eng/check-performance.ps1
+        -SummaryPath $env:GITHUB_STEP_SUMMARY
+    - name: Upload benchmark reports
+      if: always()
+      uses: actions/upload-artifact@v6
+      with:
+        name: benchmark-reports
+        path: BenchmarkDotNet.Artifacts/results
+

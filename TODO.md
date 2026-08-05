@@ -97,7 +97,7 @@ All optimizations must be benchmarked against the existing full, tracker-only, m
 
 - [x] Review collection sizing and compatibility views for avoidable copies and repeated enumeration.
 
-- [ ] Define performance regression budgets for elapsed time and allocated bytes, then enforce or report them in the pre-release workflow.
+- [x] Define performance regression budgets for elapsed time and allocated bytes, then enforce or report them in the pre-release workflow.
 
 There are currently no database interactions in this repository, so no database-specific optimization work is required.
 

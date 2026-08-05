@@ -114,6 +114,8 @@ Decode-only process comparison using `test6.SC2Replay` (base build `88500`). Eac
 | `s2protocol.NET` v0.9.4 sample exe | 435.90 ms | 379.41 ms | 467.22 ms | 38.27 MB | 23.30 MB |
 | Blizzard Python `s2protocol` 5.0.15.95299.0 helper | 1,472.93 ms | 1,432.50 ms | 1,558.93 ms | 47.41 MB | 41.38 MB |
 
+The manual `Performance regression` workflow benchmarks full, tracker-only, message-only, attribute-only, and parallel decoding. The checked-in baseline allows up to 2% more allocated bytes (enforced) and 20% more elapsed time (reported because hosted-runner timing is hardware-sensitive). Raw BenchmarkDotNet reports are uploaded with every workflow run.
+
 # ChangeLog
 
 <details open="open"><summary>v0.9.8</summary>
