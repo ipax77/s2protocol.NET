@@ -89,7 +89,7 @@ All optimizations must be benchmarked against the existing full, tracker-only, m
 
 - [x] Replace linear MPQ hash-table scans with the format's hash/probing lookup algorithm.
 
-- [ ] Pool transient compressed buffers where ownership and lifetime are unambiguous.
+- [x] Pool transient compressed buffers where ownership and lifetime are unambiguous.
   - Do not pool buffers returned as `ReadOnlyMemory<byte>` unless ownership is represented safely.
 
 - [ ] Prevent duplicate protocol resource initialization during concurrent first use.

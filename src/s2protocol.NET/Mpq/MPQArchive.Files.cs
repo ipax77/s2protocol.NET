@@ -1,3 +1,4 @@
+using System.Buffers;
 using System.Buffers.Binary;
 using System.IO.Compression;
 using System.Text;
@@ -20,8 +21,20 @@ public sealed partial class MPQArchive
 
         cancellationToken.ThrowIfCancellationRequested();
         MPQBlockTableEntry blockEntry = block.Value;
-        byte[] rawData = ReadRawData(blockEntry);
-        return DecodeBlock(rawData, blockEntry, forceDecompress, cancellationToken);
+        int rawLength = checked((int)blockEntry.CompressedSize);
+        bool retainRawData = ShouldRetainRawData(blockEntry, forceDecompress);
+        byte[] rawData = ReadRawData(blockEntry, rentBuffer: !retainRawData);
+        try
+        {
+            return DecodeBlock(rawData, rawLength, blockEntry, forceDecompress, cancellationToken);
+        }
+        finally
+        {
+            if (!retainRawData && rawData.Length != 0)
+            {
+                ArrayPool<byte>.Shared.Return(rawData);
+            }
+        }
     }
 
     /// <summary>Asynchronously reads a file from the archive.</summary>
@@ -38,8 +51,21 @@ public sealed partial class MPQArchive
 
         cancellationToken.ThrowIfCancellationRequested();
         MPQBlockTableEntry blockEntry = block.Value;
-        byte[] rawData = await ReadRawDataAsync(blockEntry, cancellationToken).ConfigureAwait(false);
-        return await DecodeBlockAsync(rawData, blockEntry, forceDecompress, cancellationToken).ConfigureAwait(false);
+        int rawLength = checked((int)blockEntry.CompressedSize);
+        bool retainRawData = ShouldRetainRawData(blockEntry, forceDecompress);
+        byte[] rawData = await ReadRawDataAsync(blockEntry, !retainRawData, cancellationToken).ConfigureAwait(false);
+        try
+        {
+            return await DecodeBlockAsync(rawData, rawLength, blockEntry, forceDecompress, cancellationToken)
+                .ConfigureAwait(false);
+        }
+        finally
+        {
+            if (!retainRawData && rawData.Length != 0)
+            {
+                ArrayPool<byte>.Shared.Return(rawData);
+            }
+        }
     }
 
     private MPQBlockTableEntry? GetBlockEntry(string filename)
@@ -71,7 +97,12 @@ public sealed partial class MPQArchive
         return blockEntry;
     }
 
-    private byte[] ReadRawData(MPQBlockTableEntry blockEntry)
+    private static bool ShouldRetainRawData(MPQBlockTableEntry blockEntry, bool forceDecompress)
+        => (blockEntry.Flags & MpqFileSingleUnit) != 0 &&
+           ((blockEntry.Flags & MpqFileCompress) == 0 ||
+            (!forceDecompress && blockEntry.CompressedSize >= blockEntry.FileSize));
+
+    private byte[] ReadRawData(MPQBlockTableEntry blockEntry, bool rentBuffer)
     {
         int compressedSize = checked((int)blockEntry.CompressedSize);
         if (compressedSize == 0)
@@ -81,12 +112,27 @@ public sealed partial class MPQArchive
 
         ValidateArchiveRange(blockEntry.FileOffset, blockEntry.CompressedSize, "file data");
         _reader.BaseStream.Position = checked(_headerOffset + blockEntry.FileOffset);
-        byte[] rawData = new byte[compressedSize];
-        _reader.BaseStream.ReadExactly(rawData);
-        return rawData;
+        byte[] rawData = rentBuffer ? ArrayPool<byte>.Shared.Rent(compressedSize) : new byte[compressedSize];
+        try
+        {
+            _reader.BaseStream.ReadExactly(rawData.AsSpan(0, compressedSize));
+            return rawData;
+        }
+        catch
+        {
+            if (rentBuffer)
+            {
+                ArrayPool<byte>.Shared.Return(rawData);
+            }
+
+            throw;
+        }
     }
 
-    private async Task<byte[]> ReadRawDataAsync(MPQBlockTableEntry blockEntry, CancellationToken cancellationToken)
+    private async Task<byte[]> ReadRawDataAsync(
+        MPQBlockTableEntry blockEntry,
+        bool rentBuffer,
+        CancellationToken cancellationToken)
     {
         int compressedSize = checked((int)blockEntry.CompressedSize);
         if (compressedSize == 0)
@@ -96,13 +142,27 @@ public sealed partial class MPQArchive
 
         ValidateArchiveRange(blockEntry.FileOffset, blockEntry.CompressedSize, "file data");
         _reader.BaseStream.Position = checked(_headerOffset + blockEntry.FileOffset);
-        byte[] rawData = new byte[compressedSize];
-        await _reader.BaseStream.ReadExactlyAsync(rawData, cancellationToken).ConfigureAwait(false);
-        return rawData;
+        byte[] rawData = rentBuffer ? ArrayPool<byte>.Shared.Rent(compressedSize) : new byte[compressedSize];
+        try
+        {
+            await _reader.BaseStream.ReadExactlyAsync(rawData.AsMemory(0, compressedSize), cancellationToken)
+                .ConfigureAwait(false);
+            return rawData;
+        }
+        catch
+        {
+            if (rentBuffer)
+            {
+                ArrayPool<byte>.Shared.Return(rawData);
+            }
+
+            throw;
+        }
     }
 
     private ReadOnlyMemory<byte> DecodeBlock(
         byte[] rawData,
+        int rawLength,
         MPQBlockTableEntry blockEntry,
         bool forceDecompress,
         CancellationToken cancellationToken)
@@ -110,7 +170,7 @@ public sealed partial class MPQArchive
         int fileSize = checked((int)blockEntry.FileSize);
         if (fileSize == 0)
         {
-            if (rawData.Length != 0)
+            if (rawLength != 0)
             {
                 throw new InvalidDataException("Empty MPQ file has non-empty archived data.");
             }
@@ -118,7 +178,7 @@ public sealed partial class MPQArchive
             return ReadOnlyMemory<byte>.Empty;
         }
 
-        if (rawData.Length == 0)
+        if (rawLength == 0)
         {
             throw new InvalidDataException("MPQ file data is empty.");
         }
@@ -129,20 +189,20 @@ public sealed partial class MPQArchive
                 (forceDecompress || blockEntry.CompressedSize < blockEntry.FileSize))
             {
                 byte[] result = new byte[fileSize];
-                Decompress(rawData, 0, rawData.Length, result, 0, fileSize);
+                Decompress(rawData, 0, rawLength, result, 0, fileSize);
                 return result;
             }
 
-            if (rawData.Length != fileSize)
+            if (rawLength != fileSize)
             {
                 throw new InvalidDataException(
-                    $"MPQ file length mismatch. Expected {fileSize} bytes, got {rawData.Length} bytes.");
+                    $"MPQ file length mismatch. Expected {fileSize} bytes, got {rawLength} bytes.");
             }
 
-            return rawData;
+            return rawData.AsMemory(0, rawLength);
         }
 
-        SectorLayout layout = ReadSectorLayout(rawData, blockEntry);
+        SectorLayout layout = ReadSectorLayout(rawData, rawLength, blockEntry);
         byte[] output = new byte[fileSize];
         int bytesCopied = 0;
 
@@ -162,6 +222,7 @@ public sealed partial class MPQArchive
 
     private async Task<ReadOnlyMemory<byte>> DecodeBlockAsync(
         byte[] rawData,
+        int rawLength,
         MPQBlockTableEntry blockEntry,
         bool forceDecompress,
         CancellationToken cancellationToken)
@@ -169,7 +230,7 @@ public sealed partial class MPQArchive
         int fileSize = checked((int)blockEntry.FileSize);
         if (fileSize == 0)
         {
-            if (rawData.Length != 0)
+            if (rawLength != 0)
             {
                 throw new InvalidDataException("Empty MPQ file has non-empty archived data.");
             }
@@ -177,7 +238,7 @@ public sealed partial class MPQArchive
             return ReadOnlyMemory<byte>.Empty;
         }
 
-        if (rawData.Length == 0)
+        if (rawLength == 0)
         {
             throw new InvalidDataException("MPQ file data is empty.");
         }
@@ -188,21 +249,21 @@ public sealed partial class MPQArchive
                 (forceDecompress || blockEntry.CompressedSize < blockEntry.FileSize))
             {
                 byte[] result = new byte[fileSize];
-                await DecompressAsync(rawData, 0, rawData.Length, result, 0, fileSize, cancellationToken)
+                await DecompressAsync(rawData, 0, rawLength, result, 0, fileSize, cancellationToken)
                     .ConfigureAwait(false);
                 return result;
             }
 
-            if (rawData.Length != fileSize)
+            if (rawLength != fileSize)
             {
                 throw new InvalidDataException(
-                    $"MPQ file length mismatch. Expected {fileSize} bytes, got {rawData.Length} bytes.");
+                    $"MPQ file length mismatch. Expected {fileSize} bytes, got {rawLength} bytes.");
             }
 
-            return rawData;
+            return rawData.AsMemory(0, rawLength);
         }
 
-        SectorLayout layout = ReadSectorLayout(rawData, blockEntry);
+        SectorLayout layout = ReadSectorLayout(rawData, rawLength, blockEntry);
         byte[] output = new byte[fileSize];
         int bytesCopied = 0;
 
@@ -229,7 +290,7 @@ public sealed partial class MPQArchive
         return output;
     }
 
-    private SectorLayout ReadSectorLayout(byte[] rawData, MPQBlockTableEntry blockEntry)
+    private SectorLayout ReadSectorLayout(byte[] rawData, int rawLength, MPQBlockTableEntry blockEntry)
     {
         int fileSize = checked((int)blockEntry.FileSize);
         int sectorSize = checked(512 << _header.SectorSizeShift);
@@ -238,7 +299,7 @@ public sealed partial class MPQArchive
         int tableEntries = checked(sectorCount + 1 + (hasSectorChecksum ? 1 : 0));
         int tableSize = checked(tableEntries * sizeof(int));
 
-        if (rawData.Length < tableSize)
+        if (rawLength < tableSize)
         {
             throw new InvalidDataException("MPQ sector table is truncated.");
         }
@@ -248,7 +309,7 @@ public sealed partial class MPQArchive
         for (int i = 0; i < tableEntries; i++)
         {
             int position = BinaryPrimitives.ReadInt32LittleEndian(rawData.AsSpan(i * sizeof(int), sizeof(int)));
-            if (position < previous || position > rawData.Length)
+            if (position < previous || position > rawLength)
             {
                 throw new InvalidDataException("MPQ sector table contains an invalid offset.");
             }
@@ -257,7 +318,7 @@ public sealed partial class MPQArchive
             previous = position;
         }
 
-        if (positions[0] != tableSize || positions[^1] != rawData.Length)
+        if (positions[0] != tableSize || positions[^1] != rawLength)
         {
             throw new InvalidDataException("MPQ sector table does not cover the archived block exactly.");
         }
