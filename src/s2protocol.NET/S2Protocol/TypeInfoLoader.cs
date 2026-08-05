@@ -17,7 +17,7 @@ public static partial class TypeInfoLoader
     private static readonly Dictionary<int, int> _protocolPayloadMap = new();
     private static int[] _protocolVersions = [];
     private static readonly Dictionary<int, S2ProtocolVersion> _typeInfoCache = new();
-    private static readonly Dictionary<int, S2ProtocolVersion> _canonicalTypeInfoCache = new();
+    private static readonly Dictionary<int, Lazy<S2ProtocolVersion>> _canonicalTypeInfoCache = new();
     private static readonly object _initLock = new();
     private static readonly object _typeInfoCacheLock = new();
     private static int _latestProtocolVersion;
@@ -159,21 +159,21 @@ public static partial class TypeInfoLoader
             }
         }
 
-        var canonicalVersionNumber = _protocolPayloadMap[usedVersion];
+        int canonicalVersionNumber = _protocolPayloadMap[usedVersion];
+        Lazy<S2ProtocolVersion> canonicalVersion;
         lock (_typeInfoCacheLock)
         {
-            if (_canonicalTypeInfoCache.TryGetValue(canonicalVersionNumber, out var cachedCanonicalVersion))
+            if (!_canonicalTypeInfoCache.TryGetValue(canonicalVersionNumber, out canonicalVersion!))
             {
-                return CacheVersion(usedVersion, canonicalVersionNumber, cachedCanonicalVersion);
+                string resourceName = _protocolResourceMap[canonicalVersionNumber];
+                canonicalVersion = new Lazy<S2ProtocolVersion>(
+                    () => LoadCanonicalVersion(resourceName),
+                    LazyThreadSafetyMode.ExecutionAndPublication);
+                _canonicalTypeInfoCache.Add(canonicalVersionNumber, canonicalVersion);
             }
         }
 
-        var resourceName = _protocolResourceMap[canonicalVersionNumber];
-        var canonicalVersion = LoadResourceContent(resourceName);
-        foreach (var typeInfo in canonicalVersion.TypeInfos)
-        {
-            typeInfo.BuildDecoderMetadata();
-        }
+        S2ProtocolVersion loadedCanonicalVersion = canonicalVersion.Value;
 
         lock (_typeInfoCacheLock)
         {
@@ -182,14 +182,19 @@ public static partial class TypeInfoLoader
                 return cachedVersion;
             }
 
-            if (!_canonicalTypeInfoCache.TryGetValue(canonicalVersionNumber, out var cachedCanonicalVersion))
-            {
-                cachedCanonicalVersion = canonicalVersion;
-                _canonicalTypeInfoCache.Add(canonicalVersionNumber, cachedCanonicalVersion);
-            }
-
-            return CacheVersion(usedVersion, canonicalVersionNumber, cachedCanonicalVersion);
+            return CacheVersion(usedVersion, canonicalVersionNumber, loadedCanonicalVersion);
         }
+    }
+
+    private static S2ProtocolVersion LoadCanonicalVersion(string resourceName)
+    {
+        S2ProtocolVersion canonicalVersion = LoadResourceContent(resourceName);
+        foreach (S2TypeInfo typeInfo in canonicalVersion.TypeInfos)
+        {
+            typeInfo.BuildDecoderMetadata();
+        }
+
+        return canonicalVersion;
     }
 
     private static S2ProtocolVersion CacheVersion(

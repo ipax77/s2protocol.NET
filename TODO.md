@@ -92,7 +92,7 @@ All optimizations must be benchmarked against the existing full, tracker-only, m
 - [x] Pool transient compressed buffers where ownership and lifetime are unambiguous.
   - Do not pool buffers returned as `ReadOnlyMemory<byte>` unless ownership is represented safely.
 
-- [ ] Prevent duplicate protocol resource initialization during concurrent first use.
+- [x] Prevent duplicate protocol resource initialization during concurrent first use.
   - Ensure only one thread deserializes and builds decoder metadata for each canonical protocol payload.
 
 - [ ] Review collection sizing and compatibility views for avoidable copies and repeated enumeration.
