@@ -31,6 +31,8 @@ Sc2Replay? replay = await decoder.DecodeAsync(stream);
 Console.WriteLine(replay?.Header.BaseBuild);
 ```
 
+`DecodeAsync(Stream)` leaves the caller-owned stream open. The caller remains responsible for disposing it.
+
 Optional options:
 ```csharp
 ReplayDecoder decoder = new();

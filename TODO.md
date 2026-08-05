@@ -9,7 +9,7 @@ The decoder is feature-complete for the currently bundled StarCraft II protocol 
   - Cover zero, 64-bit, greater-than-64-bit, and high-bit-set values with synthetic tests.
   - Remove the `No BigInteger support` limitation from the README after verification.
 
-- [ ] Guarantee archive disposal on success, failure, and cancellation.
+- [x] Guarantee archive disposal on success, failure, and cancellation.
   - Use deterministic disposal around both `ReplayDecoder.DecodeAsync` overloads.
   - Decide and document whether `DecodeAsync(Stream)` leaves the caller-owned stream open.
   - Preserve the original exception as the `InnerException` of `DecodeException`.
