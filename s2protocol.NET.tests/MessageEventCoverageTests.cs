@@ -45,6 +45,11 @@ public partial class MessageEventCoverageTests
                 Assert.NotEqual(MessageEventType.None, decoded.EventType);
                 Assert.Equal(eventId, decoded.EventId);
                 Assert.Equal(encoded.Length * 8, decoded.Bits);
+
+                string json = JsonSerializer.Serialize<MessageEvent>(decoded);
+                MessageEvent roundTripped = Assert.IsAssignableFrom<MessageEvent>(JsonSerializer.Deserialize<MessageEvent>(json));
+                Assert.Equal(decoded.GetType(), roundTripped.GetType());
+                Assert.Equal(json, JsonSerializer.Serialize<MessageEvent>(roundTripped));
             }
         }
 
@@ -182,7 +187,7 @@ public partial class MessageEventCoverageTests
     }
 
     [Fact]
-    public void UnifiedCollectionSerializesConcretePayloadsAndLegacyProperties()
+    public void UnifiedCollectionSerializesOnlyCanonicalOrderedPayloads()
     {
         MessageEvents events = new([], []);
         events.BaseMessageEvents.Add(new LoadingProgressMessageEvent(42, 1, 2, 24, 3));
@@ -193,7 +198,8 @@ public partial class MessageEventCoverageTests
         Assert.Contains("BaseMessageEvents", json, StringComparison.Ordinal);
         Assert.Contains("LoadingProgressMessageEvent", json, StringComparison.Ordinal);
         Assert.Contains("\"Progress\":42", json, StringComparison.Ordinal);
-        Assert.Contains("ChatMessages", json, StringComparison.Ordinal);
+        Assert.DoesNotContain("ChatMessages", json, StringComparison.Ordinal);
+        Assert.DoesNotContain("PingMessages", json, StringComparison.Ordinal);
         Assert.Contains("serialized", json, StringComparison.Ordinal);
     }
 
@@ -201,7 +207,7 @@ public partial class MessageEventCoverageTests
     public async Task ReplayDecoderExposesUnifiedAndLegacyViewsAsync()
     {
         string replayPath = Path.Combine(AppContext.BaseDirectory, "replays", "test2.SC2Replay");
-        using ReplayDecoder decoder = new();
+        ReplayDecoder decoder = new();
         ReplayDecoderOptions options = new()
         {
             Initdata = false,

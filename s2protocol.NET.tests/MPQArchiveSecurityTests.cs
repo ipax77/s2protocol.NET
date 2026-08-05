@@ -2,6 +2,7 @@ using System;
 using System.Buffers.Binary;
 using System.IO;
 using System.Text;
+using System.Threading;
 using System.Threading.Tasks;
 using s2protocol.NET.Mpq;
 using Xunit;
@@ -113,6 +114,49 @@ public sealed class MPQArchiveSecurityTests
             await archive.ReadFileAsync("short.bin", true));
     }
 
+    [Fact]
+    public async Task MissingEntriesReturnNullSynchronouslyAndAsynchronouslyAsync()
+    {
+        using MPQArchive archive = CreateArchive();
+
+#pragma warning disable CA1849 // Both public paths are intentionally covered.
+        Assert.Null(archive.ReadFile("missing.bin"));
+#pragma warning restore CA1849
+        Assert.Null(await archive.ReadFileAsync("missing.bin"));
+    }
+
+    [Fact]
+    public async Task AsyncReadHonorsPreCanceledTokenAsync()
+    {
+        using MPQArchive archive = CreateArchive();
+        using CancellationTokenSource cancellation = new();
+        await cancellation.CancelAsync();
+
+        await Assert.ThrowsAnyAsync<OperationCanceledException>(async () =>
+            await archive.ReadFileAsync("safe.bin", cancellationToken: cancellation.Token));
+    }
+
+    [Fact]
+    public void CorrectlyNamedExtractionWritesTheRequestedEntry()
+    {
+        string fileName = $"s2protocol-extract-{Guid.NewGuid():N}.bin";
+        string outputPath = Path.Combine(Environment.CurrentDirectory, fileName);
+        byte[] payload = [1, 2, 3, 4];
+        MpqTestArchiveBuilder builder = new();
+        builder.AddSingleUnit(fileName, payload);
+        using MPQArchive archive = new(new MemoryStream(builder.Build()), false);
+
+        try
+        {
+            archive.ExtractFilesToDisk(fileName);
+            Assert.Equal(payload, File.ReadAllBytes(outputPath));
+        }
+        finally
+        {
+            File.Delete(outputPath);
+        }
+    }
+
     [Theory]
     [InlineData("../escape.bin")]
     [InlineData("folder/../../escape.bin")]
@@ -120,7 +164,7 @@ public sealed class MPQArchiveSecurityTests
     {
         using MPQArchive archive = CreateArchive();
 
-        Assert.Throws<InvalidDataException>(() => archive.ExtractFilesToDisc(archivePath));
+        Assert.Throws<InvalidDataException>(() => archive.ExtractFilesToDisk(archivePath));
     }
 
     [Fact]
@@ -129,7 +173,7 @@ public sealed class MPQArchiveSecurityTests
         using MPQArchive archive = CreateArchive();
         string rootedPath = Path.Combine(Path.GetPathRoot(Environment.CurrentDirectory)!, "escape.bin");
 
-        Assert.Throws<InvalidDataException>(() => archive.ExtractFilesToDisc(rootedPath));
+        Assert.Throws<InvalidDataException>(() => archive.ExtractFilesToDisk(rootedPath));
     }
 
     private static MPQArchive CreateArchive()

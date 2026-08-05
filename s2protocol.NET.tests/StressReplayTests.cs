@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Collections.Concurrent;
 using System.IO;
 using System.Linq;
 using System.Threading;
@@ -11,15 +12,6 @@ namespace s2protocol.NET.tests;
 public sealed class StressReplayTests
 {
     private const string RunStressTestsEnvironmentVariable = "S2PROTOCOL_RUN_STRESS_TESTS";
-
-    private static readonly string[] StressReplayNames =
-    [
-        "Direct Strike (10060).SC2Replay",
-        "Direct Strike (10096).SC2Replay",
-        "Direct Strike (10124).SC2Replay",
-        "Direct Strike (10143).SC2Replay",
-        "Direct Strike TE (1904).SC2Replay",
-    ];
 
     [StressReplayTheory]
     [InlineData("Direct Strike (10060).SC2Replay")]
@@ -41,10 +33,9 @@ public sealed class StressReplayTests
             return;
         }
 
-        using ReplayDecoder replayDecoder = new();
+        ReplayDecoder replayDecoder = new();
         Sc2Replay replay = await replayDecoder.DecodeAsync(replayPath, CreateDirectStrikeCoreOptions(), CancellationToken.None)
-            .ConfigureAwait(false)
-            ?? throw new InvalidOperationException($"Could not decode replay '{replayPath}'.");
+            .ConfigureAwait(false);
 
         Assert.NotNull(replay.Details);
         Assert.StartsWith("Direct Strike", replay.Details.Title, StringComparison.OrdinalIgnoreCase);
@@ -64,7 +55,6 @@ public sealed class StressReplayTests
         }
 
         string[] replayPaths = Directory.GetFiles(replayDirectory, "*.SC2Replay", SearchOption.TopDirectoryOnly)
-            .Where(path => StressReplayNames.Contains(Path.GetFileName(path), StringComparer.OrdinalIgnoreCase))
             .OrderBy(path => path, StringComparer.OrdinalIgnoreCase)
             .ToArray();
 
@@ -73,26 +63,30 @@ public sealed class StressReplayTests
             return;
         }
 
-        using ReplayDecoder replayDecoder = new();
+        Assert.Equal(30, replayPaths.Length);
+
+        ReplayDecoder replayDecoder = new();
 
         int decoded = 0;
-        List<string> errors = [];
-#pragma warning disable CS0618 // Stress test keeps legacy helper coverage while it remains public.
-        await foreach (DecodeParallelResult result in replayDecoder.DecodeParallelWithErrorReport(
-                           replayPaths,
-                           2,
-                           CreateDirectStrikeCoreOptions(),
-                           CancellationToken.None).ConfigureAwait(false))
-#pragma warning restore CS0618 // Stress test keeps legacy helper coverage while it remains public.
+        ConcurrentQueue<string> errors = new();
+        ParallelOptions parallelOptions = new()
         {
-            if (result.Sc2Replay is null)
-            {
-                errors.Add($"{Path.GetFileName(result.ReplayPath)}: {result.Exception}");
-                continue;
-            }
+            MaxDegreeOfParallelism = 2,
+            CancellationToken = CancellationToken.None,
+        };
 
-            decoded++;
-        }
+        await Parallel.ForEachAsync(replayPaths, parallelOptions, async (replayPath, token) =>
+        {
+            try
+            {
+                await replayDecoder.DecodeAsync(replayPath, CreateDirectStrikeCoreOptions(), token).ConfigureAwait(false);
+                Interlocked.Increment(ref decoded);
+            }
+            catch (Exception ex) when (ex is not OperationCanceledException)
+            {
+                errors.Enqueue($"{Path.GetFileName(replayPath)}: {ex.Message}");
+            }
+        }).ConfigureAwait(false);
 
         Assert.Empty(errors);
         Assert.Equal(replayPaths.Length, decoded);

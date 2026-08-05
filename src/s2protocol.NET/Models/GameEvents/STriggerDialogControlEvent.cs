@@ -24,6 +24,7 @@ public sealed class STriggerDialogControlEvent : GameEvent
     }
 
     /// <summary>Creates a dialog-control event with every protocol choice exposed.</summary>
+    [System.Text.Json.Serialization.JsonConstructor]
     public STriggerDialogControlEvent(
         int userId,
         int eventId,

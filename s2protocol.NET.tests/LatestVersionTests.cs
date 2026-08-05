@@ -10,15 +10,15 @@ public class LatestVersionTests
     public static readonly string? assemblyPath = Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location);
 
     [Theory]
-    [InlineData("test9.SC2Replay")]
-    public async Task HeaderTestAsync(string replayFile)
+    [InlineData("test11.SC2Replay")]
+    public async Task LatestBundledProtocolReplayDecodes(string replayFile)
     {
         Assert.True(assemblyPath != null, "Could not get ExecutionAssembly path");
         if (assemblyPath == null)
         {
             return;
         }
-        using ReplayDecoder decoder = new();
+        ReplayDecoder decoder = new();
         ReplayDecoderOptions options = new ReplayDecoderOptions()
         {
             Initdata = true,
@@ -30,18 +30,11 @@ public class LatestVersionTests
             AttributeEvents = false,
         };
         var replay = await decoder.DecodeAsync(Path.Combine(assemblyPath, "replays", replayFile), options);
-        Assert.NotNull(replay);
-        if (replay == null)
-        {
-            decoder.Dispose();
-            return;
-        }
-
-        int latestVersion = 95299;
-        string latestVersionString = "5.0.15.95299";
+        int latestVersion = 97563;
+        string latestVersionString = "5.0.16";
         Assert.True(replay.Header.BaseBuild > 0, "Could not get replay.Header BaseBuild");
+        Assert.Equal(latestVersion, replay.Header.Build);
         Assert.Equal(latestVersion, replay.Header.BaseBuild);
-        Assert.Equal(latestVersionString, replay.Metadata?.GameVersion.ToString()); 
-        decoder.Dispose();
+        Assert.Equal(latestVersionString, replay.Metadata?.GameVersion.ToString(3));
     }
 }

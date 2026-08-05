@@ -68,42 +68,12 @@ public sealed partial record S2ProtocolVersion
     public TrackerEvents DecodeReplayTrackerEvents(ReadOnlyMemory<byte> content)
     {
         VersionedTypedDecoder decoder = new(content, TypeInfos);
-        List<SPlayerSetupEvent> playerSetupEvents = [];
-        List<SPlayerStatsEvent> playerStatsEvents = [];
-        List<SUnitBornEvent> unitBornEvents = [];
-        List<SUnitDiedEvent> unitDiedEvents = [];
-        List<SUnitOwnerChangeEvent> unitOwnerChangeEvents = [];
-        List<SUnitPositionsEvent> unitPositionsEvents = [];
-        List<SUnitTypeChangeEvent> unitTypeChangeEvents = [];
-        List<SUpgradeEvent> upgradeEvents = [];
-        List<SUnitInitEvent> unitInitEvents = [];
-        List<SUnitDoneEvent> unitDoneEvents = [];
-        TrackerEventHandler handler = new(
-            decoder,
-            playerSetupEvents,
-            playerStatsEvents,
-            unitBornEvents,
-            unitDiedEvents,
-            unitOwnerChangeEvents,
-            unitPositionsEvents,
-            unitTypeChangeEvents,
-            upgradeEvents,
-            unitInitEvents,
-            unitDoneEvents);
+        TrackerEventStore events = new();
+        TrackerEventHandler handler = new(decoder, events);
 
         DecodeEventStream(decoder, TrackerEventIdTypeId ?? 2, TrackerEvents, decodeUserId: false, ref handler);
 
-        return new TrackerEvents(
-            playerSetupEvents,
-            playerStatsEvents,
-            unitBornEvents,
-            unitDiedEvents,
-            unitOwnerChangeEvents,
-            unitPositionsEvents,
-            unitTypeChangeEvents,
-            upgradeEvents,
-            unitInitEvents,
-            unitDoneEvents);
+        return new TrackerEvents(events);
     }
 
     public static AttributeEvents DecodeReplayAttributeEvents(ReadOnlyMemory<byte> content)
@@ -125,7 +95,7 @@ public sealed partial record S2ProtocolVersion
             int attrId = (int)buffer.ReadBits(32);
             int scope = (int)buffer.ReadBits(8);
             string value = DecodeAttributeValue(buffer.ReadAlignedSpan(AttributeValueSize));
-            attributes.Add(new AttributeEventScope(scope, attrId, ns, attrId, value));
+            attributes.Add(new AttributeEventScope(scope, attrId, ns, value));
         }
 
         return new AttributeEvents(source, mapNamespace, attributes);
@@ -531,7 +501,7 @@ public sealed partial record S2ProtocolVersion
                 GameEventType.STriggerSoundLengthSyncEvent => ReadSoundLengthSyncEvent(decoder, decodedEvent.TypeId, decodedEvent.UserId, decodedEvent.EventId, decodedEvent.Bits, decodedEvent.Gameloop),
                 GameEventType.SUserFinishedLoadingSyncEvent => ReadEmptyGameEvent(decoder, decodedEvent.TypeId, decodedEvent.UserId, decodedEvent.EventId, decodedEvent.Bits, decodedEvent.Gameloop),
                 GameEventType.SUserOptionsEvent => ReadSUserOptionsEvent(decoder, decodedEvent.TypeId, decodedEvent.UserId, decodedEvent.EventId, decodedEvent.Bits, decodedEvent.Gameloop),
-                GameEventType.SCmdUpdateTargetUnitEvents => ReadSCmdUpdateTargetUnitEvent(decoder, decodedEvent.TypeId, decodedEvent.UserId, decodedEvent.EventId, decodedEvent.Bits, decodedEvent.Gameloop),
+                GameEventType.SCmdUpdateTargetUnitEvent => ReadSCmdUpdateTargetUnitEvent(decoder, decodedEvent.TypeId, decodedEvent.UserId, decodedEvent.EventId, decodedEvent.Bits, decodedEvent.Gameloop),
                 GameEventType.STriggerKeyPressedEvent => ReadSTriggerKeyPressedEvent(decoder, decodedEvent.TypeId, decodedEvent.UserId, decodedEvent.EventId, decodedEvent.Bits, decodedEvent.Gameloop),
                 GameEventType.SUnitClickEvent => ReadSUnitClickEvent(decoder, decodedEvent.TypeId, decodedEvent.UserId, decodedEvent.EventId, decodedEvent.Bits, decodedEvent.Gameloop),
                 GameEventType.SDecrementGameTimeRemainingEvent => ReadSDecrementGameTimeRemainingEvent(decoder, decodedEvent.TypeId, decodedEvent.UserId, decodedEvent.EventId, decodedEvent.Bits, decodedEvent.Gameloop),
@@ -631,56 +601,28 @@ public sealed partial record S2ProtocolVersion
 
     private readonly struct TrackerEventHandler(
         TypedProtocolDecoder decoder,
-        List<SPlayerSetupEvent> playerSetupEvents,
-        List<SPlayerStatsEvent> playerStatsEvents,
-        List<SUnitBornEvent> unitBornEvents,
-        List<SUnitDiedEvent> unitDiedEvents,
-        List<SUnitOwnerChangeEvent> unitOwnerChangeEvents,
-        List<SUnitPositionsEvent> unitPositionsEvents,
-        List<SUnitTypeChangeEvent> unitTypeChangeEvents,
-        List<SUpgradeEvent> upgradeEvents,
-        List<SUnitInitEvent> unitInitEvents,
-        List<SUnitDoneEvent> unitDoneEvents) : IEventHandler
+        TrackerEventStore events) : IEventHandler
     {
         public void Handle(in DecodedEvent decodedEvent)
         {
             TrackerEventType eventType = GetTrackerEventType(decodedEvent.TypeName);
-            switch (eventType)
+            TrackerEvent trackerEvent = eventType switch
             {
-                case TrackerEventType.SPlayerSetupEvent:
-                    playerSetupEvents.Add(ReadSPlayerSetupEvent(decoder, decodedEvent.TypeId, decodedEvent.EventId, decodedEvent.Bits, decodedEvent.Gameloop));
-                    break;
-                case TrackerEventType.SPlayerStatsEvent:
-                    playerStatsEvents.Add(ReadSPlayerStatsEvent(decoder, decodedEvent.TypeId, decodedEvent.EventId, decodedEvent.Bits, decodedEvent.Gameloop));
-                    break;
-                case TrackerEventType.SUnitBornEvent:
-                    unitBornEvents.Add(ReadSUnitBornEvent(decoder, decodedEvent.TypeId, decodedEvent.EventId, decodedEvent.Bits, decodedEvent.Gameloop));
-                    break;
-                case TrackerEventType.SUnitDiedEvent:
-                    unitDiedEvents.Add(ReadSUnitDiedEvent(decoder, decodedEvent.TypeId, decodedEvent.EventId, decodedEvent.Bits, decodedEvent.Gameloop));
-                    break;
-                case TrackerEventType.SUnitOwnerChangeEvent:
-                    unitOwnerChangeEvents.Add(ReadSUnitOwnerChangeEvent(decoder, decodedEvent.TypeId, decodedEvent.EventId, decodedEvent.Bits, decodedEvent.Gameloop));
-                    break;
-                case TrackerEventType.SUnitPositionsEvent:
-                    unitPositionsEvents.Add(ReadSUnitPositionsEvent(decoder, decodedEvent.TypeId, decodedEvent.EventId, decodedEvent.Bits, decodedEvent.Gameloop));
-                    break;
-                case TrackerEventType.SUnitTypeChangeEvent:
-                    unitTypeChangeEvents.Add(ReadSUnitTypeChangeEvent(decoder, decodedEvent.TypeId, decodedEvent.EventId, decodedEvent.Bits, decodedEvent.Gameloop));
-                    break;
-                case TrackerEventType.SUpgradeEvent:
-                    upgradeEvents.Add(ReadSUpgradeEvent(decoder, decodedEvent.TypeId, decodedEvent.EventId, decodedEvent.Bits, decodedEvent.Gameloop));
-                    break;
-                case TrackerEventType.SUnitInitEvent:
-                    unitInitEvents.Add(ReadSUnitInitEvent(decoder, decodedEvent.TypeId, decodedEvent.EventId, decodedEvent.Bits, decodedEvent.Gameloop));
-                    break;
-                case TrackerEventType.SUnitDoneEvent:
-                    unitDoneEvents.Add(ReadSUnitDoneEvent(decoder, decodedEvent.TypeId, decodedEvent.EventId, decodedEvent.Bits, decodedEvent.Gameloop));
-                    break;
-                default:
-                    decoder.SkipType(decodedEvent.TypeId);
-                    break;
-            }
+                TrackerEventType.SPlayerSetupEvent => ReadSPlayerSetupEvent(decoder, decodedEvent.TypeId, decodedEvent.EventId, decodedEvent.Bits, decodedEvent.Gameloop),
+                TrackerEventType.SPlayerStatsEvent => ReadSPlayerStatsEvent(decoder, decodedEvent.TypeId, decodedEvent.EventId, decodedEvent.Bits, decodedEvent.Gameloop),
+                TrackerEventType.SUnitBornEvent => ReadSUnitBornEvent(decoder, decodedEvent.TypeId, decodedEvent.EventId, decodedEvent.Bits, decodedEvent.Gameloop),
+                TrackerEventType.SUnitDiedEvent => ReadSUnitDiedEvent(decoder, decodedEvent.TypeId, decodedEvent.EventId, decodedEvent.Bits, decodedEvent.Gameloop),
+                TrackerEventType.SUnitOwnerChangeEvent => ReadSUnitOwnerChangeEvent(decoder, decodedEvent.TypeId, decodedEvent.EventId, decodedEvent.Bits, decodedEvent.Gameloop),
+                TrackerEventType.SUnitPositionsEvent => ReadSUnitPositionsEvent(decoder, decodedEvent.TypeId, decodedEvent.EventId, decodedEvent.Bits, decodedEvent.Gameloop),
+                TrackerEventType.SUnitTypeChangeEvent => ReadSUnitTypeChangeEvent(decoder, decodedEvent.TypeId, decodedEvent.EventId, decodedEvent.Bits, decodedEvent.Gameloop),
+                TrackerEventType.SUpgradeEvent => ReadSUpgradeEvent(decoder, decodedEvent.TypeId, decodedEvent.EventId, decodedEvent.Bits, decodedEvent.Gameloop),
+                TrackerEventType.SUnitInitEvent => ReadSUnitInitEvent(decoder, decodedEvent.TypeId, decodedEvent.EventId, decodedEvent.Bits, decodedEvent.Gameloop),
+                TrackerEventType.SUnitDoneEvent => ReadSUnitDoneEvent(decoder, decodedEvent.TypeId, decodedEvent.EventId, decodedEvent.Bits, decodedEvent.Gameloop),
+                _ => ReadUnknownTrackerEvent(decoder, decodedEvent.TypeId, decodedEvent.EventId,
+                    decodedEvent.Bits, decodedEvent.Gameloop, decodedEvent.TypeName),
+            };
+
+            events.Add(trackerEvent);
         }
 
         public void Complete(int bits)
@@ -745,7 +687,7 @@ public sealed partial record S2ProtocolVersion
         "NNet.Game.STriggerSoundLengthSyncEvent" => GameEventType.STriggerSoundLengthSyncEvent,
         "NNet.Game.SUserFinishedLoadingSyncEvent" => GameEventType.SUserFinishedLoadingSyncEvent,
         "NNet.Game.SUserOptionsEvent" => GameEventType.SUserOptionsEvent,
-        "NNet.Game.SCmdUpdateTargetUnitEvent" => GameEventType.SCmdUpdateTargetUnitEvents,
+        "NNet.Game.SCmdUpdateTargetUnitEvent" => GameEventType.SCmdUpdateTargetUnitEvent,
         "NNet.Game.STriggerKeyPressedEvent" => GameEventType.STriggerKeyPressedEvent,
         "NNet.Game.SUnitClickEvent" => GameEventType.SUnitClickEvent,
         "NNet.Game.SDecrementGameTimeRemainingEvent" => GameEventType.SDecrementGameTimeRemainingEvent,

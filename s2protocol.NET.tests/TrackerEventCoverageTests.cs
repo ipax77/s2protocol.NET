@@ -3,6 +3,7 @@ using s2protocol.NET.S2Protocol;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Text.Json;
 using System.Text.RegularExpressions;
 using Xunit;
 
@@ -32,6 +33,11 @@ public partial class TrackerEventCoverageTests
                 Assert.Equal(eventName, decoded.GetType().Name);
                 Assert.Equal(eventId, decoded.EventId);
                 Assert.NotEqual(TrackerEventType.None, decoded.EventType);
+
+                string json = JsonSerializer.Serialize<TrackerEvent>(decoded);
+                TrackerEvent roundTripped = Assert.IsAssignableFrom<TrackerEvent>(JsonSerializer.Deserialize<TrackerEvent>(json));
+                Assert.Equal(decoded.GetType(), roundTripped.GetType());
+                Assert.Equal(json, JsonSerializer.Serialize<TrackerEvent>(roundTripped));
             }
         }
 
@@ -58,6 +64,41 @@ public partial class TrackerEventCoverageTests
             Assert.True(Enum.TryParse(eventName, out TrackerEventType parsed), eventName);
             Assert.NotEqual(TrackerEventType.None, parsed);
         }
+    }
+
+    [Fact]
+    public void OrderedStoreRetainsUnknownEventsAndKeepsTypedViewsSynchronized()
+    {
+        S2ProtocolVersion canonical = TypeInfoLoader.LoadTypeInfos(80949);
+        S2ProtocolVersion protocol = canonical with
+        {
+            TrackerEvents = new Dictionary<int, S2EventType>(canonical.TrackerEvents),
+        };
+
+        KeyValuePair<int, S2EventType> setup = protocol.TrackerEvents.Single(item =>
+            item.Value.Name.EndsWith(nameof(SPlayerSetupEvent), StringComparison.Ordinal));
+        KeyValuePair<int, S2EventType> upgrade = protocol.TrackerEvents.Single(item =>
+            item.Value.Name.EndsWith(nameof(SUpgradeEvent), StringComparison.Ordinal));
+        protocol.TrackerEvents[upgrade.Key] = upgrade.Value with { Name = "NNet.Replay.Tracker.SFutureEvent" };
+
+        byte[] encoded = VersionedTestEncoder.EncodeTrackerEvent(protocol, setup.Key)
+            .Concat(VersionedTestEncoder.EncodeTrackerEvent(protocol, upgrade.Key))
+            .Concat(VersionedTestEncoder.EncodeTrackerEvent(protocol, setup.Key))
+            .ToArray();
+
+        TrackerEvents decoded = protocol.DecodeReplayTrackerEvents(encoded);
+        Assert.Collection(decoded.BaseTrackerEvents,
+            item => Assert.IsType<SPlayerSetupEvent>(item),
+            item => Assert.Equal("NNet.Replay.Tracker.SFutureEvent", Assert.IsType<UnknownTrackerEvent>(item).EventTypeName),
+            item => Assert.IsType<SPlayerSetupEvent>(item));
+        Assert.Equal(2, decoded.SPlayerSetupEvents.Count);
+
+        SPlayerSetupEvent added = new(1, 2, 3, 4, 5, 6, 7);
+        decoded.SPlayerSetupEvents.Add(added);
+        Assert.Same(added, decoded.BaseTrackerEvents.Last());
+        Assert.Equal(3, decoded.SPlayerSetupEvents.Count);
+        Assert.True(decoded.SPlayerSetupEvents.Remove(added));
+        Assert.Equal(3, decoded.BaseTrackerEvents.Count);
     }
 
     [Fact]
@@ -116,16 +157,7 @@ public partial class TrackerEventCoverageTests
     }
 
     private static IEnumerable<TrackerEvent> AllEvents(TrackerEvents events)
-        => events.SPlayerSetupEvents.Cast<TrackerEvent>()
-            .Concat(events.SPlayerStatsEvents)
-            .Concat(events.SUnitBornEvents)
-            .Concat(events.SUnitDiedEvents)
-            .Concat(events.SUnitOwnerChangeEvents)
-            .Concat(events.SUnitPositionsEvents)
-            .Concat(events.SUnitTypeChangeEvents)
-            .Concat(events.SUpgradeEvents)
-            .Concat(events.SUnitInitEvents)
-            .Concat(events.SUnitDoneEvents);
+        => events.BaseTrackerEvents;
 
     private static string ShortName(string fullName) => fullName[(fullName.LastIndexOf('.') + 1)..];
 

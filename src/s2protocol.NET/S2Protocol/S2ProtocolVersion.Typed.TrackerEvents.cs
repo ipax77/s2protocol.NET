@@ -4,6 +4,41 @@ namespace s2protocol.NET.S2Protocol;
 
 public sealed partial record S2ProtocolVersion
 {
+    private static UnknownTrackerEvent ReadUnknownTrackerEvent(
+        TypedProtocolDecoder decoder,
+        int typeId,
+        int eventId,
+        int bits,
+        int gameloop,
+        string eventTypeName)
+    {
+        UnknownTrackerEventReadState state = default;
+        decoder.ReadStruct(typeId, ref state);
+        return new UnknownTrackerEvent(
+            state.PlayerId,
+            eventId,
+            TrackerEventType.None,
+            bits,
+            gameloop,
+            eventTypeName);
+    }
+
+    private struct UnknownTrackerEventReadState : IStructFieldReader
+    {
+        public int PlayerId;
+
+        public bool ReadField(TypedProtocolDecoder decoder, string name, int fieldTypeId)
+        {
+            if (name != "m_playerId")
+            {
+                return false;
+            }
+
+            PlayerId = decoder.ReadInt(fieldTypeId);
+            return true;
+        }
+    }
+
     private static SPlayerSetupEvent ReadSPlayerSetupEvent(TypedProtocolDecoder decoder, int typeId, int eventId, int bits, int gameloop)
     {
         SPlayerSetupEventReadState state = default;

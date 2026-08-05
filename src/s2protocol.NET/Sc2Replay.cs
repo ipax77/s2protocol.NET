@@ -1,12 +1,13 @@
 
 using s2protocol.NET.Models;
+using s2protocol.NET.Parser;
 using System.Text.Json.Serialization;
 
 namespace s2protocol.NET;
 
 /// <summary>Record <c>Sc2Replay</c> Starcaft2 replay model</summary>
 ///
-public record Sc2Replay
+public record Sc2Replay : IJsonOnDeserialized
 {
     /// <summary>Record <c>Sc2Replay</c> constructor</summary>
     ///
@@ -56,12 +57,12 @@ public record Sc2Replay
     public MessageEvents? MessageEvents { get; internal set; }
     /// <summary>Replay chat messages</summary>
     ///
-    [JsonInclude]
-    public ICollection<ChatMessageEvent>? ChatMessages { get; internal set; }
+    [JsonIgnore]
+    public ICollection<ChatMessageEvent>? ChatMessages => MessageEvents?.ChatMessages;
     /// <summary>Replay ping messages</summary>
     ///
-    [JsonInclude]
-    public ICollection<PingMessageEvent>? PingMessages { get; internal set; }
+    [JsonIgnore]
+    public ICollection<PingMessageEvent>? PingMessages => MessageEvents?.PingMessages;
     /// <summary>Replay TrackerEvents</summary>
     ///
     [JsonInclude]
@@ -74,4 +75,15 @@ public record Sc2Replay
     ///
     [JsonInclude]
     public AttributeEvents? AttributeEvents { get; internal set; }
+
+    void IJsonOnDeserialized.OnDeserialized()
+    {
+        if (TrackerEvents is null)
+        {
+            return;
+        }
+
+        ReplayDecoder.SetTrackerEventUnitIndexes(TrackerEvents);
+        Parse.SetTrackerEventsUnitConnections(TrackerEvents);
+    }
 }

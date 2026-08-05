@@ -26,7 +26,7 @@ public sealed class ReplayDecoderDisposalTests
         string replayPath = CreateTemporaryReplay(await File.ReadAllBytesAsync(GetReplayPath()));
         try
         {
-            using ReplayDecoder decoder = new();
+            ReplayDecoder decoder = new();
 
             await decoder.DecodeAsync(replayPath, HeaderOnly);
 
@@ -45,7 +45,7 @@ public sealed class ReplayDecoderDisposalTests
         string replayPath = CreateTemporaryReplay(new byte[] { 0x4D, 0x50, 0x51, 0x1A });
         try
         {
-            using ReplayDecoder decoder = new();
+            ReplayDecoder decoder = new();
 
             DecodeException exception = await Assert.ThrowsAsync<DecodeException>(
                 () => decoder.DecodeAsync(replayPath, HeaderOnly));
@@ -66,7 +66,7 @@ public sealed class ReplayDecoderDisposalTests
         string replayPath = CreateTemporaryReplay(await File.ReadAllBytesAsync(GetReplayPath()));
         try
         {
-            using ReplayDecoder decoder = new();
+            ReplayDecoder decoder = new();
             using CancellationTokenSource cancellation = new();
             await cancellation.CancelAsync();
 
@@ -89,7 +89,7 @@ public sealed class ReplayDecoderDisposalTests
         using MemoryStream stream = new();
         await replay.CopyToAsync(stream);
         stream.Position = 0;
-        using ReplayDecoder decoder = new();
+        ReplayDecoder decoder = new();
 
         await decoder.DecodeAsync(stream, HeaderOnly);
 
@@ -100,7 +100,7 @@ public sealed class ReplayDecoderDisposalTests
     public async Task StreamDecodeLeavesCallerStreamOpenAndPreservesFailureAsync()
     {
         using MemoryStream stream = new(new byte[] { 0x4D, 0x50, 0x51, 0x1A });
-        using ReplayDecoder decoder = new();
+        ReplayDecoder decoder = new();
 
         DecodeException exception = await Assert.ThrowsAsync<DecodeException>(
             () => decoder.DecodeAsync(stream, HeaderOnly));
@@ -116,7 +116,7 @@ public sealed class ReplayDecoderDisposalTests
         using MemoryStream stream = new();
         await replay.CopyToAsync(stream);
         stream.Position = 0;
-        using ReplayDecoder decoder = new();
+        ReplayDecoder decoder = new();
         using CancellationTokenSource cancellation = new();
         await cancellation.CancelAsync();
 
@@ -129,7 +129,7 @@ public sealed class ReplayDecoderDisposalTests
     [Fact]
     public async Task MissingReplayThrowsFileNotFoundExceptionAsync()
     {
-        using ReplayDecoder decoder = new();
+        ReplayDecoder decoder = new();
         string replayPath = Path.Combine(Path.GetTempPath(), $"{Guid.NewGuid():N}.SC2Replay");
 
         FileNotFoundException exception = await Assert.ThrowsAsync<FileNotFoundException>(

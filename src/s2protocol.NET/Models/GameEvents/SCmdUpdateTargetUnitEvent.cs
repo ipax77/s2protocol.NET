@@ -17,7 +17,7 @@ public sealed class SCmdUpdateTargetUnitEvent : GameEvent
                                      int timer,
                                      int targetUnitFlags,
                                      int snapshotUnitLink,
-                                     int tag) : base(userId, eventId, GameEventType.SCmdUpdateTargetUnitEvents, bits, gameloop)
+                                     int tag) : base(userId, eventId, GameEventType.SCmdUpdateTargetUnitEvent, bits, gameloop)
     {
         SnapshotControlPlayerId = snapshotControlPlayerId;
         SnapshotPointX = snapshotPointX;

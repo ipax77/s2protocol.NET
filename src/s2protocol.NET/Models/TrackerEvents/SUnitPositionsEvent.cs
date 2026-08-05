@@ -3,6 +3,26 @@
 ///
 public sealed class SUnitPositionsEvent : TrackerEvent
 {
+    [System.Text.Json.Serialization.JsonConstructor]
+    public SUnitPositionsEvent(
+        int playerId,
+        int eventId,
+        int bits,
+        int gameloop,
+        int firstUnitIndex,
+        ICollection<UnitPosition> unitPositions,
+        int unitIndex,
+        int x,
+        int y) : base(playerId, eventId, TrackerEventType.SUnitPositionsEvent, bits, gameloop)
+    {
+        ArgumentNullException.ThrowIfNull(unitPositions);
+        FirstUnitIndex = firstUnitIndex;
+        UnitPositions = unitPositions;
+        UnitIndex = unitIndex;
+        X = x;
+        Y = y;
+    }
+
     /// <summary>Record <c>SUnitPositionsEvent</c> constructor</summary>
     /// <comment>Only units that have inflicted or taken damage are mentioned in unit position events, and they occur periodically with a limit of 256 units mentioned per event.</comment>
     /// 

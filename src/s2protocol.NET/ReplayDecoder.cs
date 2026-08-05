@@ -12,7 +12,7 @@ namespace s2protocol.NET;
 /// <remarks>The <see cref="ReplayDecoder"/> class is designed to decode individual Starcraft II replay files with
 /// customizable decoding options. For large replay sets, prefer <see cref="DecodeAsync(string, ReplayDecoderOptions?, CancellationToken)"/>
 /// with caller-owned parallelism so the caller can control buffering, persistence, and memory use.</remarks>
-public sealed partial class ReplayDecoder : IDisposable
+public sealed partial class ReplayDecoder
 {
     /// <summary>Creates the decoder</summary>
     public ReplayDecoder()
@@ -24,7 +24,7 @@ public sealed partial class ReplayDecoder : IDisposable
     /// <param name="options">Optional decoding options</param>
     /// <param name="token">Optional CancellationToken</param>
     /// <remarks>The caller owns <paramref name="stream"/>; this method leaves it open.</remarks>
-    public async Task<Sc2Replay?> DecodeAsync(Stream stream,
+    public async Task<Sc2Replay> DecodeAsync(Stream stream,
                                               ReplayDecoderOptions? options = null,
                                               CancellationToken token = default)
     {
@@ -50,7 +50,7 @@ public sealed partial class ReplayDecoder : IDisposable
     /// <param name="replayPath">The path to the Starcraft2 replay</param>
     /// <param name="options">Optional decoding options</param>
     /// <param name="token">Optional CancellationToken</param>
-    public async Task<Sc2Replay?> DecodeAsync(string replayPath,
+    public async Task<Sc2Replay> DecodeAsync(string replayPath,
                                               ReplayDecoderOptions? options = null,
                                               CancellationToken token = default)
     {
@@ -77,7 +77,7 @@ public sealed partial class ReplayDecoder : IDisposable
     }
 
 #pragma warning disable CA1822 // Mark members as static
-    private async Task<Sc2Replay?> DecodeAsync(MPQArchive MPQArchive,
+    private async Task<Sc2Replay> DecodeAsync(MPQArchive MPQArchive,
                                                string replayPath,
                                                ReplayDecoderOptions? options = null,
                                                CancellationToken token = default)
@@ -128,8 +128,6 @@ public sealed partial class ReplayDecoder : IDisposable
             var messages = await GetMessagesAsync(MPQArchive, s2protocol, token).ConfigureAwait(false);
             ArgumentNullException.ThrowIfNull((object?)messages, nameof(messages));
             replay.MessageEvents = messages;
-            replay.ChatMessages = messages.ChatMessages;
-            replay.PingMessages = messages.PingMessages;
         }
 
         if (options.TrackerEvents)
@@ -164,31 +162,28 @@ public sealed partial class ReplayDecoder : IDisposable
         return replay;
     }
 
-    private static void SetTrackerEventUnitIndexes(TrackerEvents trackerEvents)
+    internal static void SetTrackerEventUnitIndexes(TrackerEvents trackerEvents)
     {
-        foreach (var e in trackerEvents.SUnitBornEvents)
+        foreach (TrackerEvent trackerEvent in trackerEvents.BaseTrackerEvents)
         {
-            e.UnitIndex = GetUnitIndex(e.UnitTagIndex, e.UnitTagRecycle);
-        }
-
-        foreach (var e in trackerEvents.SUnitInitEvents)
-        {
-            e.UnitIndex = GetUnitIndex(e.UnitTagIndex, e.UnitTagRecycle);
-        }
-
-        foreach (var e in trackerEvents.SUnitDiedEvents)
-        {
-            e.UnitIndex = GetUnitIndex(e.UnitTagIndex, e.UnitTagRecycle);
-        }
-
-        foreach (var e in trackerEvents.SUnitDoneEvents)
-        {
-            e.UnitIndex = GetUnitIndex(e.UnitTagIndex, e.UnitTagRecycle);
-        }
-
-        foreach (var e in trackerEvents.SUnitOwnerChangeEvents)
-        {
-            e.UnitIndex = GetUnitIndex(e.UnitTagIndex, e.UnitTagRecycle);
+            switch (trackerEvent)
+            {
+                case SUnitBornEvent e:
+                    e.UnitIndex = GetUnitIndex(e.UnitTagIndex, e.UnitTagRecycle);
+                    break;
+                case SUnitInitEvent e:
+                    e.UnitIndex = GetUnitIndex(e.UnitTagIndex, e.UnitTagRecycle);
+                    break;
+                case SUnitDiedEvent e:
+                    e.UnitIndex = GetUnitIndex(e.UnitTagIndex, e.UnitTagRecycle);
+                    break;
+                case SUnitDoneEvent e:
+                    e.UnitIndex = GetUnitIndex(e.UnitTagIndex, e.UnitTagRecycle);
+                    break;
+                case SUnitOwnerChangeEvent e:
+                    e.UnitIndex = GetUnitIndex(e.UnitTagIndex, e.UnitTagRecycle);
+                    break;
+            }
         }
     }
 
@@ -265,9 +260,4 @@ public sealed partial class ReplayDecoder : IDisposable
         return null;
     }
 
-    /// <summary>Suppress finalization for compatibility with <see cref="IDisposable"/>.</summary>
-    public void Dispose()
-    {
-        GC.SuppressFinalize(this);
-    }
 }

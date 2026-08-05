@@ -102,25 +102,19 @@ public class AttributeEventCoverageTests
     }
 
     [Fact]
-    public void CorrectedAliasesStaySynchronizedWithoutChangingJsonShape()
+    public void CorrectedPropertiesRoundTripWithCanonicalJsonShape()
     {
-        AttributeEventScope entry = new(2, 17, 3, 17, "Fast");
+        AttributeEventScope entry = new(2, 17, 3, "Fast");
         AttributeEvents events = new(1, 99, [entry]);
 
-#pragma warning disable CS0618 // Compatibility properties are intentionally verified.
-        Assert.Equal(events.MapNamespace, events.MapNameSpace);
-        Assert.Same(events.Attributes, events.Scopes);
-        Assert.Equal(entry.AttributeId, entry.Attrid);
-        Assert.Equal(entry.AttributeId, entry.SopeId);
-#pragma warning restore CS0618
-
         string json = JsonSerializer.Serialize(events);
-        Assert.Contains("\"MapNameSpace\":99", json, StringComparison.Ordinal);
-        Assert.Contains("\"Scopes\":", json, StringComparison.Ordinal);
-        Assert.Contains("\"Attrid\":17", json, StringComparison.Ordinal);
-        Assert.DoesNotContain("\"MapNamespace\":", json, StringComparison.Ordinal);
-        Assert.DoesNotContain("\"Attributes\":", json, StringComparison.Ordinal);
-        Assert.DoesNotContain("\"AttributeId\":", json, StringComparison.Ordinal);
+        Assert.Contains("\"MapNamespace\":99", json, StringComparison.Ordinal);
+        Assert.Contains("\"Attributes\":", json, StringComparison.Ordinal);
+        Assert.Contains("\"AttributeId\":17", json, StringComparison.Ordinal);
+        Assert.DoesNotContain("MapNameSpace", json, StringComparison.Ordinal);
+        Assert.DoesNotContain("Scopes", json, StringComparison.Ordinal);
+        Assert.DoesNotContain("Attrid", json, StringComparison.Ordinal);
+        Assert.DoesNotContain("SopeId", json, StringComparison.Ordinal);
 
         AttributeEvents roundTripped = Assert.IsType<AttributeEvents>(JsonSerializer.Deserialize<AttributeEvents>(json));
         AttributeEventScope roundTrippedEntry = Assert.Single(roundTripped.Attributes);

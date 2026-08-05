@@ -19,6 +19,7 @@ public sealed class STriggerMouseClickedEvent : GameEvent
     }
 
     /// <summary>Creates a mouse-click event including world coordinates when supplied by the protocol.</summary>
+    [System.Text.Json.Serialization.JsonConstructor]
     public STriggerMouseClickedEvent(
         int userId,
         int eventId,

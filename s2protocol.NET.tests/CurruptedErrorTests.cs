@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.IO;
 using System.Reflection;
 using System.Threading.Tasks;
@@ -19,7 +19,7 @@ public class CurruptedErrorTests
         {
             return;
         }
-        using ReplayDecoder decoder = new();
+        ReplayDecoder decoder = new();
         ReplayDecoderOptions options = new ReplayDecoderOptions()
         {
             Initdata = false,
@@ -39,8 +39,6 @@ public class CurruptedErrorTests
         {
             Assert.Equal("VersionedTypedDecoder", ex.Message);
         }
-
-        decoder.Dispose();
     }
 
     [Theory]
@@ -52,7 +50,7 @@ public class CurruptedErrorTests
         {
             return;
         }
-        using ReplayDecoder decoder = new();
+        ReplayDecoder decoder = new();
         ReplayDecoderOptions options = new ReplayDecoderOptions()
         {
             Initdata = false,
@@ -73,7 +71,5 @@ public class CurruptedErrorTests
             Assert.Equal("MPQ archive is truncated.", ex.Message);
             Assert.IsType<InvalidDataException>(ex.InnerException);
         }
-
-        decoder.Dispose();
     }
 }

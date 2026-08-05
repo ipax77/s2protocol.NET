@@ -1,6 +1,19 @@
-﻿namespace s2protocol.NET.Models;
-/// <summary>Record <c>Event</c> Event baseclass</summary>
-///
+using System.Text.Json.Serialization;
+
+namespace s2protocol.NET.Models;
+
+/// <summary>Base class for replay tracker events.</summary>
+[JsonDerivedType(typeof(SPlayerSetupEvent), nameof(SPlayerSetupEvent))]
+[JsonDerivedType(typeof(SPlayerStatsEvent), nameof(SPlayerStatsEvent))]
+[JsonDerivedType(typeof(SUnitBornEvent), nameof(SUnitBornEvent))]
+[JsonDerivedType(typeof(SUnitDiedEvent), nameof(SUnitDiedEvent))]
+[JsonDerivedType(typeof(SUnitOwnerChangeEvent), nameof(SUnitOwnerChangeEvent))]
+[JsonDerivedType(typeof(SUnitPositionsEvent), nameof(SUnitPositionsEvent))]
+[JsonDerivedType(typeof(SUnitTypeChangeEvent), nameof(SUnitTypeChangeEvent))]
+[JsonDerivedType(typeof(SUpgradeEvent), nameof(SUpgradeEvent))]
+[JsonDerivedType(typeof(SUnitInitEvent), nameof(SUnitInitEvent))]
+[JsonDerivedType(typeof(SUnitDoneEvent), nameof(SUnitDoneEvent))]
+[JsonDerivedType(typeof(UnknownTrackerEvent), nameof(UnknownTrackerEvent))]
 public abstract class TrackerEvent
 {
     protected TrackerEvent(
@@ -24,17 +37,20 @@ public abstract class TrackerEvent
     public int Gameloop { get; }
 }
 
+/// <summary>A tracker event whose schema name is not known by this library.</summary>
 public sealed class UnknownTrackerEvent(
     int playerId,
     int eventId,
     TrackerEventType eventType,
     int bits,
-    int gameloop) : TrackerEvent(playerId, eventId, eventType, bits, gameloop)
+    int gameloop,
+    string eventTypeName = "") : TrackerEvent(playerId, eventId, eventType, bits, gameloop)
 {
+    /// <summary>Full Blizzard schema name.</summary>
+    public string EventTypeName { get; } = eventTypeName;
 }
 
-/// <summary>Enum <c>EventType</c> Event type</summary>
-///
+/// <summary>Known replay tracker event types.</summary>
 public enum TrackerEventType
 {
     None = 0,

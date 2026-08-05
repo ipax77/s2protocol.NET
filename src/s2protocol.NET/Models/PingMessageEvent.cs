@@ -11,7 +11,8 @@ public sealed class PingMessageEvent : MessageEvent
     {
     }
 
-    internal PingMessageEvent(int recipient, int userId, int eventId, int bits, int gameloop, long x, long y)
+    [System.Text.Json.Serialization.JsonConstructor]
+    public PingMessageEvent(int recipient, int userId, int eventId, int bits, int gameloop, long x, long y)
         : base(userId, eventId, MessageEventType.PingMessageEvent, bits, gameloop)
     {
         Recipient = recipient;

@@ -15,6 +15,7 @@ public sealed class SDecrementGameTimeRemainingEvent : GameEvent
     }
 
     /// <summary>Creates an event while retaining the original seconds or milliseconds wire field.</summary>
+    [System.Text.Json.Serialization.JsonConstructor]
     public SDecrementGameTimeRemainingEvent(
         int userId,
         int eventId,

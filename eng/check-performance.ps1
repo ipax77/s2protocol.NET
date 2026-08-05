@@ -65,11 +65,11 @@ $baseline = Get-Content -LiteralPath $BaselinePath -Raw | ConvertFrom-Json
 $elapsedLimit = 1 + ($baseline.elapsedRegressionBudgetPercent / 100)
 $allocationLimit = 1 + ($baseline.allocatedBytesRegressionBudgetPercent / 100)
 $reportCache = @{}
-$allocationFailures = 0
+$failures = 0
 $lines = [Collections.Generic.List[string]]::new()
 $lines.Add('## Performance regression report')
 $lines.Add('')
-$lines.Add("Elapsed time is report-only with a $($baseline.elapsedRegressionBudgetPercent)% budget; allocated bytes enforce a $($baseline.allocatedBytesRegressionBudgetPercent)% budget.")
+$lines.Add("Elapsed time and allocated bytes enforce $($baseline.elapsedRegressionBudgetPercent)% and $($baseline.allocatedBytesRegressionBudgetPercent)% regression budgets, respectively.")
 $lines.Add('')
 $lines.Add('| Scenario | Mean | Elapsed change | Allocated | Allocation change | Status |')
 $lines.Add('| --- | ---: | ---: | ---: | ---: | :---: |')
@@ -89,13 +89,13 @@ foreach ($scenario in $baseline.scenarios) {
     $allocatedBytes = Convert-SizeToBytes $row.Allocated
     $elapsedRatio = $meanNanoseconds / $scenario.baselineMeanNanoseconds
     $allocationRatio = $allocatedBytes / $scenario.baselineAllocatedBytes
-    $elapsedStatus = if ($elapsedRatio -le $elapsedLimit) { 'within' } else { 'over (report)' }
+    $elapsedStatus = if ($elapsedRatio -le $elapsedLimit) { 'within' } else { 'over' }
     $allocationStatus = if ($allocationRatio -le $allocationLimit) { 'within' } else { 'over' }
-    if ($allocationRatio -gt $allocationLimit) {
-        $allocationFailures++
+    if ($elapsedRatio -gt $elapsedLimit -or $allocationRatio -gt $allocationLimit) {
+        $failures++
     }
 
-    $status = if ($allocationRatio -le $allocationLimit) { '✅' } else { '❌' }
+    $status = if ($elapsedRatio -le $elapsedLimit -and $allocationRatio -le $allocationLimit) { '✅' } else { '❌' }
     $meanText = ($meanNanoseconds / 1e6).ToString('N3', [Globalization.CultureInfo]::InvariantCulture)
     $elapsedChangeText = ($elapsedRatio - 1).ToString(
         '+0.0%;-0.0%;0.0%', [Globalization.CultureInfo]::InvariantCulture)
@@ -112,6 +112,6 @@ if ($SummaryPath) {
     $report | Out-File -LiteralPath $SummaryPath -Encoding utf8 -Append
 }
 
-if ($allocationFailures -gt 0) {
-    throw "$allocationFailures scenario(s) exceeded the allocated-bytes regression budget."
+if ($failures -gt 0) {
+    throw "$failures scenario(s) exceeded a performance regression budget."
 }

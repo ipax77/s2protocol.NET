@@ -31,6 +31,7 @@ public sealed class SUserOptionsEvent : GameEvent
     }
 
     /// <summary>Creates user options including fields found only in historical protocol variants.</summary>
+    [System.Text.Json.Serialization.JsonConstructor]
     public SUserOptionsEvent(
         int userId,
         int eventId,

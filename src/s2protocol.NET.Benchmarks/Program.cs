@@ -55,18 +55,16 @@ public class SingleReplayDecodeBenchmarks
     {
         ReplayDecoderOptions options = ReplayDecodeMode.CreateOptions(DecodeMode);
 
-        using ReplayDecoder replayDecoder = new();
+        ReplayDecoder replayDecoder = new();
         Sc2Replay replay;
         if (string.Equals(DecodeSource, "MemoryStream", StringComparison.Ordinal))
         {
             using MemoryStream stream = new(replayBytes, writable: false);
-            replay = await replayDecoder.DecodeAsync(stream, options, CancellationToken.None).ConfigureAwait(false)
-                ?? throw new InvalidOperationException($"Could not decode replay '{replayPath}'.");
+            replay = await replayDecoder.DecodeAsync(stream, options, CancellationToken.None).ConfigureAwait(false);
         }
         else
         {
-            replay = await replayDecoder.DecodeAsync(replayPath, options, CancellationToken.None).ConfigureAwait(false)
-                ?? throw new InvalidOperationException($"Could not decode replay '{replayPath}'.");
+            replay = await replayDecoder.DecodeAsync(replayPath, options, CancellationToken.None).ConfigureAwait(false);
         }
 
         return ReplayDecodeSummary.From(replay);
@@ -90,9 +88,8 @@ public class SingleGameEventsReplayDecodeBenchmarks
     {
         ReplayDecoderOptions options = ReplayDecodeMode.CreateOptions(ReplayDecodeMode.GameEventsOnly);
 
-        using ReplayDecoder replayDecoder = new();
-        Sc2Replay replay = await replayDecoder.DecodeAsync(replayPath, options, CancellationToken.None).ConfigureAwait(false)
-            ?? throw new InvalidOperationException($"Could not decode replay '{replayPath}'.");
+        ReplayDecoder replayDecoder = new();
+        Sc2Replay replay = await replayDecoder.DecodeAsync(replayPath, options, CancellationToken.None).ConfigureAwait(false);
 
         return ReplayDecodeSummary.From(replay);
     }
@@ -115,9 +112,8 @@ public class SingleMessageEventsReplayDecodeBenchmarks
     {
         ReplayDecoderOptions options = ReplayDecodeMode.CreateOptions(ReplayDecodeMode.MessageEventsOnly);
 
-        using ReplayDecoder replayDecoder = new();
-        Sc2Replay replay = await replayDecoder.DecodeAsync(replayPath, options, CancellationToken.None).ConfigureAwait(false)
-            ?? throw new InvalidOperationException($"Could not decode replay '{replayPath}'.");
+        ReplayDecoder replayDecoder = new();
+        Sc2Replay replay = await replayDecoder.DecodeAsync(replayPath, options, CancellationToken.None).ConfigureAwait(false);
 
         return ReplayDecodeSummary.From(replay);
     }
@@ -140,9 +136,8 @@ public class SingleTrackerEventsReplayDecodeBenchmarks
     {
         ReplayDecoderOptions options = ReplayDecodeMode.CreateOptions(ReplayDecodeMode.TrackerEventsOnly);
 
-        using ReplayDecoder replayDecoder = new();
-        Sc2Replay replay = await replayDecoder.DecodeAsync(replayPath, options, CancellationToken.None).ConfigureAwait(false)
-            ?? throw new InvalidOperationException($"Could not decode replay '{replayPath}'.");
+        ReplayDecoder replayDecoder = new();
+        Sc2Replay replay = await replayDecoder.DecodeAsync(replayPath, options, CancellationToken.None).ConfigureAwait(false);
 
         return ReplayDecodeSummary.From(replay);
     }
@@ -169,9 +164,8 @@ public class SingleAttributeEventsReplayDecodeBenchmarks
     {
         ReplayDecoderOptions options = ReplayDecodeMode.CreateOptions(ReplayDecodeMode.AttributeEventsOnly);
 
-        using ReplayDecoder replayDecoder = new();
-        Sc2Replay replay = await replayDecoder.DecodeAsync(replayPath, options, CancellationToken.None).ConfigureAwait(false)
-            ?? throw new InvalidOperationException($"Could not decode replay '{replayPath}'.");
+        ReplayDecoder replayDecoder = new();
+        Sc2Replay replay = await replayDecoder.DecodeAsync(replayPath, options, CancellationToken.None).ConfigureAwait(false);
 
         return ReplayDecodeSummary.From(replay);
     }
@@ -200,28 +194,30 @@ public class ParallelReplayDecodeBenchmarks
     public async Task<ReplayBatchDecodeSummary> DecodeCorpusParallel()
     {
         ReplayDecoderOptions options = ReplayDecodeMode.CreateOptions(ReplayDecodeMode.DirectStrikeCore);
-        using ReplayDecoder replayDecoder = new();
+        ReplayDecoder replayDecoder = new();
 
         int decoded = 0;
         int errors = 0;
         int trackerEvents = 0;
-#pragma warning disable CS0618 // Benchmark keeps legacy helper coverage while it remains public.
-        await foreach (DecodeParallelResult result in replayDecoder.DecodeParallelWithErrorReport(
-                           replayPaths,
-                           Threads,
-                           options,
-                           CancellationToken.None).ConfigureAwait(false))
-#pragma warning restore CS0618 // Benchmark keeps legacy helper coverage while it remains public.
+        ParallelOptions parallelOptions = new()
         {
-            if (result.Sc2Replay is null)
-            {
-                errors++;
-                continue;
-            }
+            MaxDegreeOfParallelism = Threads,
+            CancellationToken = CancellationToken.None,
+        };
 
-            decoded++;
-            trackerEvents += result.Sc2Replay.TrackerEvents?.SUnitBornEvents.Count ?? 0;
-        }
+        await Parallel.ForEachAsync(replayPaths, parallelOptions, async (replayPath, token) =>
+        {
+            try
+            {
+                Sc2Replay replay = await replayDecoder.DecodeAsync(replayPath, options, token).ConfigureAwait(false);
+                Interlocked.Increment(ref decoded);
+                Interlocked.Add(ref trackerEvents, replay.TrackerEvents?.SUnitBornEvents.Count ?? 0);
+            }
+            catch (DecodeException)
+            {
+                Interlocked.Increment(ref errors);
+            }
+        }).ConfigureAwait(false);
 
         if (errors > 0)
         {

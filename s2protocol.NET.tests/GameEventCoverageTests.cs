@@ -3,6 +3,7 @@ using s2protocol.NET.S2Protocol;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Text.Json;
 using System.Text.RegularExpressions;
 using Xunit;
 
@@ -41,6 +42,11 @@ public partial class GameEventCoverageTests
                 Assert.IsNotType<UnknownGameEvent>(decoded);
                 Assert.Equal(eventName, decoded.GetType().Name);
                 Assert.NotEqual(GameEventType.None, decoded.EventType);
+
+                string json = JsonSerializer.Serialize<GameEvent>(decoded);
+                GameEvent roundTripped = Assert.IsAssignableFrom<GameEvent>(JsonSerializer.Deserialize<GameEvent>(json));
+                Assert.Equal(decoded.GetType(), roundTripped.GetType());
+                Assert.Equal(json, JsonSerializer.Serialize<GameEvent>(roundTripped));
             }
         }
 
@@ -66,7 +72,7 @@ public partial class GameEventCoverageTests
             Assert.True(typeof(GameEvent).IsAssignableFrom(model), eventName);
 
             string enumName = eventName == "SCmdUpdateTargetUnitEvent"
-                ? nameof(GameEventType.SCmdUpdateTargetUnitEvents)
+                ? nameof(GameEventType.SCmdUpdateTargetUnitEvent)
                 : eventName;
             Assert.True(Enum.TryParse(enumName, out GameEventType parsed), eventName);
             Assert.NotEqual(GameEventType.None, parsed);

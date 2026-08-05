@@ -69,7 +69,7 @@ public sealed partial class MPQArchive
     /// directory,  preserving the directory structure indicated by the file paths. If a file cannot be read, it is
     /// skipped.</remarks>
     /// <param name="filenames">An array of file names to extract. Each file name should be a valid relative path.</param>
-    public void ExtractFilesToDisc(params string[] filenames)
+    public void ExtractFilesToDisk(params string[] filenames)
     {
         ArgumentNullException.ThrowIfNull(filenames);
         string outputDirectory = Directory.GetCurrentDirectory();

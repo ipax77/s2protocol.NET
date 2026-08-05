@@ -17,21 +17,22 @@ public sealed class STriggerMouseMovedEvent : GameEvent
     }
 
     /// <summary>Creates a mouse-move event including world coordinates when supplied by the protocol.</summary>
+    [System.Text.Json.Serialization.JsonConstructor]
     public STriggerMouseMovedEvent(
         int userId,
         int eventId,
         int bits,
         int gameloop,
         int flags,
-        long posX,
-        long posY,
+        long posUIX,
+        long posUIY,
         long? posWorldX,
         long? posWorldY,
         long? posWorldZ) : base(userId, eventId, GameEventType.STriggerMouseMovedEvent, bits, gameloop)
     {
         Flags = flags;
-        PosUIX = posX;
-        PosUIY = posY;
+        PosUIX = posUIX;
+        PosUIY = posUIY;
         PosWorldX = posWorldX;
         PosWorldY = posWorldY;
         PosWorldZ = posWorldZ;

@@ -25,7 +25,7 @@ public sealed class GameEventTests
 
         foreach (string replayPath in replayPaths)
         {
-            using ReplayDecoder decoder = new();
+            ReplayDecoder decoder = new();
             Sc2Replay replay;
             try
             {
@@ -55,7 +55,7 @@ public sealed class GameEventTests
     [Fact]
     public async Task CommandsAreStronglyTypedAsync()
     {
-        using ReplayDecoder decoder = new();
+        ReplayDecoder decoder = new();
         Sc2Replay replay = Assert.IsType<Sc2Replay>(await decoder.DecodeAsync(
             Path.Combine(AssemblyPath, "replays", "test6.SC2Replay"),
             new ReplayDecoderOptions
@@ -84,7 +84,7 @@ public sealed class GameEventTests
     [Fact]
     public async Task SelectionDeltasAreStronglyTypedAsync()
     {
-        using ReplayDecoder decoder = new();
+        ReplayDecoder decoder = new();
         Sc2Replay replay = Assert.IsType<Sc2Replay>(await decoder.DecodeAsync(
             Path.Combine(AssemblyPath, "replays", "test6.SC2Replay"),
             new ReplayDecoderOptions
@@ -118,7 +118,7 @@ public sealed class GameEventTests
     [Fact]
     public async Task CommandManagerStatesAreStronglyTypedAsync()
     {
-        using ReplayDecoder decoder = new();
+        ReplayDecoder decoder = new();
         Sc2Replay replay = Assert.IsType<Sc2Replay>(await decoder.DecodeAsync(
             Path.Combine(AssemblyPath, "replays", "test6.SC2Replay"),
             new ReplayDecoderOptions
@@ -146,7 +146,7 @@ public sealed class GameEventTests
     [Fact]
     public async Task UnitTargetCommandsExposeTargetUnitTagAsync()
     {
-        using ReplayDecoder decoder = new();
+        ReplayDecoder decoder = new();
         Sc2Replay replay = Assert.IsType<Sc2Replay>(await decoder.DecodeAsync(
             Path.Combine(AssemblyPath, "replays", "karax-target.SC2Replay"),
             new ReplayDecoderOptions

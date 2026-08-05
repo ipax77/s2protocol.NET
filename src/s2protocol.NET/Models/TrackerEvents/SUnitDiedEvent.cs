@@ -46,6 +46,7 @@ public sealed class SUnitDiedEvent(int playerId,
     public int? KillerUnitTagIndex { get; } = killerUnitTagIndex;
     /// <summary>Event KillerUnitEvent - either SUnitBorn- or SUnitInitEvent</summary>
     ///
+    [JsonIgnore]
     public SUnitInitEvent? KillerUnitInitEvent { get; internal set; }
     /// <summary>Event KillerUnitEvent - either SUnitBorn- or SUnitInitEvent</summary>
     ///

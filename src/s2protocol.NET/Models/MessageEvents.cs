@@ -1,4 +1,5 @@
 using System.Collections;
+using System.Text.Json.Serialization;
 
 namespace s2protocol.NET.Models;
 
@@ -8,6 +9,15 @@ public sealed class MessageEvents
     private readonly MessageEventStore _events;
     private ICollection<ChatMessageEvent>? _chatMessages;
     private ICollection<PingMessageEvent>? _pingMessages;
+
+    /// <summary>Creates message events from one ordered collection.</summary>
+    [JsonConstructor]
+    public MessageEvents(ICollection<MessageEvent> baseMessageEvents)
+    {
+        ArgumentNullException.ThrowIfNull(baseMessageEvents);
+        _events = new MessageEventStore(baseMessageEvents.Count);
+        _events.AddRange(baseMessageEvents);
+    }
 
     /// <summary>Creates message events from the legacy categorized collections.</summary>
     /// <remarks>The collections are merged with chat messages followed by ping messages.</remarks>
@@ -32,6 +42,7 @@ public sealed class MessageEvents
     public ICollection<MessageEvent> BaseMessageEvents => _events;
 
     /// <summary>Replay chat messages.</summary>
+    [JsonIgnore]
     public ICollection<ChatMessageEvent> ChatMessages
     {
         get => _chatMessages ??= _events.CreateView<ChatMessageEvent>(MessageEventType.ChatMessageEvent);
@@ -44,6 +55,7 @@ public sealed class MessageEvents
     }
 
     /// <summary>Replay ping messages.</summary>
+    [JsonIgnore]
     public ICollection<PingMessageEvent> PingMessages
     {
         get => _pingMessages ??= _events.CreateView<PingMessageEvent>(MessageEventType.PingMessageEvent);

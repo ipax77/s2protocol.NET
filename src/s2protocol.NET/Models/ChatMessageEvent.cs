@@ -11,7 +11,8 @@ public sealed class ChatMessageEvent : MessageEvent
     {
     }
 
-    internal ChatMessageEvent(int recipient, int userId, string message, int eventId, int bits, int gameloop)
+    [System.Text.Json.Serialization.JsonConstructor]
+    public ChatMessageEvent(int recipient, int userId, string message, int eventId, int bits, int gameloop)
         : base(userId, eventId, MessageEventType.ChatMessageEvent, bits, gameloop)
     {
         Recipient = recipient;

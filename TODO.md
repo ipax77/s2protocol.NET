@@ -30,17 +30,17 @@ The decoder is feature-complete for the currently bundled StarCraft II protocol 
 
 ## Public API freeze
 
-- [ ] Preserve tracker events in their encoded stream order.
+- [x] Preserve tracker events in their encoded stream order.
   - Add an ordered `BaseTrackerEvents` collection comparable to game and message events.
   - Keep the existing categorized tracker collections as compatibility views.
   - Retain `UnknownTrackerEvent` instances rather than silently discarding them.
 
-- [ ] Define the JSON contract.
+- [x] Define the JSON contract.
   - Decide whether the complete `Sc2Replay` graph supports serialization only or full round-tripping.
   - If round-tripping is supported, add polymorphic metadata or converters for game and tracker events and test the complete graph.
   - Document the supported JSON contract and its AOT behavior.
 
-- [ ] Resolve pre-1.0 API baggage.
+- [x] Resolve pre-1.0 API baggage.
   - Decide whether to remove the obsolete built-in parallel decoding helpers before v1.0.
   - Add the correctly named `ExtractFilesToDisk` API and obsolete or remove `ExtractFilesToDisc`.
   - Review obsolete misspelled attribute aliases and the plural `SCmdUpdateTargetUnitEvents` enum member.
@@ -48,34 +48,34 @@ The decoder is feature-complete for the currently bundled StarCraft II protocol 
   - Make `DecodeAsync` non-nullable if a successful decode cannot return `null`.
   - Decide whether `ReplayDecoder` should remain `IDisposable` when it owns no persistent resources.
 
-- [ ] Establish API compatibility enforcement.
+- [x] Establish API compatibility enforcement.
   - Generate and review a public API baseline.
   - Add an API compatibility check to CI so accidental breaking changes fail the build.
 
-- [ ] Confirm the target-framework policy for v1.0.
+- [x] Confirm the target-framework policy for v1.0.
   - Decide whether `net10.0` alone is intentional or whether a broader target such as `net8.0` should also be supported.
 
 ## Test and release gates
 
-- [ ] Add at least one real replay for the latest bundled protocol (`97563`).
+- [x] Add at least one real replay for the latest bundled protocol (`97563`).
   - Rename or update the current “latest version” test, whose newest real fixture is `95299`.
   - Continue synthetic coverage across every canonical protocol resource.
   - "C:\Users\pax77\source\repos\s2protocol.NET\s2protocol.NET.tests\replays\test11.SC2Replay"
 
-- [ ] Run the optional stress corpus in CI or in a required pre-release workflow.
+- [x] Run the optional stress corpus in CI or in a required pre-release workflow.
 
-- [ ] Raise coverage around public I/O boundaries.
+- [x] Raise coverage around public I/O boundaries.
   - Prioritize stream decoding, MPQ read/decompression branches, extraction, cancellation, and malformed input.
   - Record an agreed coverage floor; the audit baseline was 66.09% line and 52.45% branch coverage.
 
-- [ ] Expand the CI release matrix.
+- [x] Expand the CI release matrix.
   - Build and test the root solution and `s2cli` using a pinned .NET 10 SDK.
   - Pack both distributable artifacts.
   - Publish and execute a Native AOT smoke test against a representative replay.
   - Check NuGet dependencies for known vulnerabilities.
   - Validate package contents and metadata.
 
-- [ ] Add release automation and consistency checks.
+- [x] Add release automation and consistency checks.
   - Keep assembly, file, package, CLI, changelog, and Git tag versions synchronized.
   - Produce symbols/source-link metadata if desired for NuGet debugging.
 
