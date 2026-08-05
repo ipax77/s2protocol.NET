@@ -36,6 +36,10 @@ internal sealed record CompactProtocolVersion
         S2ProtocolVersion protocolVersion = new()
         {
             Version = Version,
+            TypeInfos = new List<S2TypeInfo>(TypeInfos.Count),
+            GameEvents = new Dictionary<int, S2EventType>(GameEvents.Count),
+            MessageEvents = new Dictionary<int, S2EventType>(MessageEvents.Count),
+            TrackerEvents = new Dictionary<int, S2EventType>(TrackerEvents.Count),
             GameEventIdTypeId = GameEventIdTypeId,
             MessageEventIdTypeId = MessageEventIdTypeId,
             TrackerEventIdTypeId = TrackerEventIdTypeId,
@@ -84,7 +88,14 @@ internal sealed record CompactTypeInfo
 
     public S2TypeInfo ToTypeInfo(int number)
     {
-        S2TypeInfo typeInfo = new(TypeName, number);
+        int elementCount = (Bounds is null ? 0 : 1) +
+            (TypeId is null ? 0 : 1) +
+            (Fields is null ? 0 : 1) +
+            (Choices is null ? 0 : 1);
+        S2TypeInfo typeInfo = new(TypeName, number)
+        {
+            Elements = new List<S2TypeInfoElement>(elementCount),
+        };
 
         if (Bounds is not null)
         {
@@ -109,7 +120,10 @@ internal sealed record CompactTypeInfo
 
         if (Fields is not null)
         {
-            var fieldElement = new S2TypeInfoMElement();
+            var fieldElement = new S2TypeInfoMElement
+            {
+                Elements = new List<S2MElement>(Fields.Count),
+            };
             foreach (var field in Fields)
             {
                 fieldElement.Elements.Add(new S2MElement
@@ -124,7 +138,10 @@ internal sealed record CompactTypeInfo
 
         if (Choices is not null)
         {
-            var choiceElement = new DsTypeInfoChoiceElemet();
+            var choiceElement = new DsTypeInfoChoiceElemet
+            {
+                Elements = new Dictionary<int, S2ChoiceElement>(Choices.Count),
+            };
             foreach (var (tag, choice) in Choices)
             {
                 choiceElement.Elements[tag] = new S2ChoiceElement

@@ -450,7 +450,7 @@ public sealed partial record S2ProtocolVersion
         SUnitPositionsEventReadState state = default;
         decoder.ReadStruct(typeId, ref state);
         return new SUnitPositionsEvent(state.PlayerId, eventId, bits, gameloop, state.FirstUnitIndex,
-            state.Items is null ? [] : [.. state.Items]);
+            state.Items ?? []);
     }
 
     private struct SUnitPositionsEventReadState : IStructFieldReader

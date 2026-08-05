@@ -95,7 +95,7 @@ All optimizations must be benchmarked against the existing full, tracker-only, m
 - [x] Prevent duplicate protocol resource initialization during concurrent first use.
   - Ensure only one thread deserializes and builds decoder metadata for each canonical protocol payload.
 
-- [ ] Review collection sizing and compatibility views for avoidable copies and repeated enumeration.
+- [x] Review collection sizing and compatibility views for avoidable copies and repeated enumeration.
 
 - [ ] Define performance regression budgets for elapsed time and allocated bytes, then enforce or report them in the pre-release workflow.
 
