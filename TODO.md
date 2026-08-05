@@ -87,7 +87,7 @@ All optimizations must be benchmarked against the existing full, tracker-only, m
   - Avoid the second full table buffer and the per-word `BitConverter.GetBytes` allocation.
   - Prefer span-based `BinaryPrimitives` reads and writes.
 
-- [ ] Replace linear MPQ hash-table scans with the format's hash/probing lookup algorithm.
+- [x] Replace linear MPQ hash-table scans with the format's hash/probing lookup algorithm.
 
 - [ ] Pool transient compressed buffers where ownership and lifetime are unambiguous.
   - Do not pool buffers returned as `ReadOnlyMemory<byte>` unless ownership is represented safely.

@@ -302,11 +302,25 @@ public sealed partial class MPQArchive
 
     private MPQHashTableEntry? GetHashTableEntry(string filename)
     {
-        uint hashA = Hash(filename, "NAMEA");
-        uint hashB = Hash(filename, "NAMEB");
+        uint tableLength = checked((uint)_hashTable.Length);
+        uint tableMask = tableLength - 1;
+        uint initialIndex = Hash(filename, MpqHashType.TableOffset) & tableMask;
+        uint hashA = Hash(filename, MpqHashType.NameA);
+        uint hashB = Hash(filename, MpqHashType.NameB);
 
-        foreach (MPQHashTableEntry entry in _hashTable)
+        for (uint probe = 0; probe < tableLength; probe++)
         {
+            MPQHashTableEntry entry = _hashTable[(initialIndex + probe) & tableMask];
+            if (entry.BlockIndex == MpqHashEntryEmpty)
+            {
+                return null;
+            }
+
+            if (entry.BlockIndex == MpqHashEntryDeleted)
+            {
+                continue;
+            }
+
             if (entry.NameHashA == hashA && entry.NameHashB == hashB)
             {
                 return entry;

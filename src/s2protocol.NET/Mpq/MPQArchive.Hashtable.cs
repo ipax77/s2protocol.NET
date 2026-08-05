@@ -27,7 +27,7 @@ public sealed partial class MPQArchive
             throw new ArgumentException("Invalid table type.");
         }
 
-        uint key = Hash($"({tableType} table)", "TABLE");
+        uint key = Hash($"({tableType} table)", MpqHashType.Table);
 
         int entrySize = Marshal.SizeOf<T>();
         if (entrySize != 16)
@@ -46,29 +46,28 @@ public sealed partial class MPQArchive
         return entries;
     }
 
-    private static uint Hash(string input, string hashType)
+    private static uint Hash(string input, MpqHashType hashType)
     {
-        input = input.ToUpperInvariant();
-        int type = hashType switch
-        {
-            "TABLE" => 3,
-            "NAMEA" => 1,
-            "NAMEB" => 2,
-            _ => throw new ArgumentException("Invalid hash type."),
-        };
-
         uint seed1 = 0x7FED7FED;
         uint seed2 = 0xEEEEEEEE;
 
-        foreach (char c in input)
+        foreach (char character in input)
         {
-            uint ch = c;
-            var value = StormBuffer[(type << 8) + ch];
+            uint ch = char.ToUpperInvariant(character);
+            var value = StormBuffer[((int)hashType << 8) + ch];
             seed1 = (value ^ (seed1 + seed2)) & 0xFFFFFFFF;
             seed2 = ch + seed1 + seed2 + (seed2 << 5) + 3 & 0xFFFFFFFF;
         }
 
         return seed1;
+    }
+
+    private enum MpqHashType
+    {
+        TableOffset,
+        NameA,
+        NameB,
+        Table,
     }
 
     private static void DecryptTable(Span<byte> data, uint key)
