@@ -22,7 +22,7 @@ The decoder is feature-complete for the currently bundled StarCraft II protocol 
   - Make async decompression verify the exact decompressed length, matching the synchronous path.
   - Add tests for truncated input, invalid tables and sectors, oversized declarations, multi-sector files, Zlib, BZip2, and extraction traversal.
 
-- [ ] Fix `s2cli` release-visible behavior, or explicitly exclude it from the library v1.0 scope.
+- [x] Fix `s2cli` release-visible behavior, or explicitly exclude it from the library v1.0 scope.
   - Make `--versions` enumerate the generated JSON manifest instead of removed `.py` resources.
   - Allow `--versions` without requiring a replay path.
   - Make `--all` include the replay header.

@@ -20,9 +20,18 @@ jobs:
     - name: Restore dependencies
       run: dotnet restore
     - name: Build
-      run: dotnet build --no-restore
+      run: dotnet build --configuration Release --no-restore
     - name: Test
-      run: dotnet test --no-build --verbosity normal --logger "trx;LogFileName=test-results.trx" --results-directory "TestResults"
+      run: dotnet test --configuration Release --no-build --verbosity normal --logger "trx;LogFileName=test-results.trx" --results-directory "TestResults"
+    - name: Pack library
+      run: dotnet pack src/s2protocol.NET/s2protocol.NET.csproj --configuration Release --no-build --output artifacts
+    - name: Pack CLI
+      run: dotnet pack src/s2cli/s2cli.csproj --configuration Release --no-build --output artifacts
+    - name: Upload packages
+      uses: actions/upload-artifact@v6
+      with:
+        name: nuget-packages
+        path: artifacts/*.nupkg
     - name: Test Report
       uses: dorny/test-reporter@v2
       if: success() || failure()

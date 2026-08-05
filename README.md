@@ -89,7 +89,7 @@ s2cli --replay path/to/game.SC2Replay [options]
 ```
 | Option           | Description                              |
 | ---------------- | ---------------------------------------- |
-| `-r`, `--replay` | **(Required)** Path to `.SC2Replay` file |
+| `-r`, `--replay` | Path to `.SC2Replay` file (not required with `--versions`) |
 
 | Option                     | Description                               |
 | -------------------------- | ----------------------------------------- |
